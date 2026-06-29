@@ -1,0 +1,2751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solution Architecture — AI-Driven Safety Analytics Platform - Trmeric</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        /* ══════════════════════════════════════
+           TOP BAR
+        ══════════════════════════════════════ */
+        .top-bar {
+            position: fixed; top:0; left:0; right:0;
+            height: 52px; background: white;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; align-items: center;
+            padding: 0 16px; gap: 16px; z-index: 200;
+        }
+        .top-bar__logo {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: #FFA426; color: #1a1a1a;
+            font-size: 14px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .top-bar__breadcrumb {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12.5px; color: #888; flex-shrink: 0;
+        }
+        .top-bar__breadcrumb-sep { color: #ddd; }
+        .top-bar__breadcrumb-current { color: #1a1a1a; font-weight: 600; }
+        .top-bar__status-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border: 1.5px solid #22c55e;
+            border-radius: 99px; font-size: 11px; font-weight: 600;
+            color: #16a34a;
+        }
+        .top-bar__status-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #22c55e;
+        }
+        .top-bar__center {
+            flex: 1; display: flex; justify-content: center;
+        }
+        .view-toggle {
+            display: flex; background: #f5f5f5;
+            border-radius: 10px; padding: 3px; gap: 2px;
+        }
+        .view-toggle__btn {
+            padding: 5px 18px; border-radius: 7px;
+            border: none; cursor: pointer;
+            font-size: 12px; font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            color: #888; background: transparent;
+            transition: all 150ms;
+        }
+        .view-toggle__btn.active {
+            background: white; color: #1a1a1a;
+            font-weight: 600;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .top-bar__right {
+            display: flex; align-items: center; gap: 4px;
+        }
+        .top-bar__icon-btn {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: transparent; border: none;
+            cursor: pointer; color: #888;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 150ms;
+        }
+        .top-bar__icon-btn:hover { background: #f5f5f5; color: #333; }
+        .top-bar__avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-left: 4px;
+        }
+
+        /* ══════════════════════════════════════
+           APP SHELL
+        ══════════════════════════════════════ */
+        .app-shell {
+            display: flex;
+            margin-top: 52px;
+            height: calc(100vh - 52px);
+            overflow: hidden;
+        }
+
+        /* Inner nav */
+        .inner-nav {
+            width: 220px; flex-shrink: 0; height: 100%;
+            background: white; border-right: 1px solid #f0f0f0;
+            display: flex; flex-direction: column;
+            transition: width 280ms cubic-bezier(0.4,0,0.2,1);
+            overflow: hidden;
+        }
+        .inner-nav.collapsed { width: 52px; }
+        .inner-nav__toggle {
+            width: 100%; height: 44px; background: transparent;
+            border: none; display: flex; align-items: center;
+            padding: 0 14px; gap: 10px; cursor: pointer;
+            border-bottom: 1px solid #f5f5f5; flex-shrink: 0;
+            transition: background 150ms;
+        }
+        .inner-nav__toggle:hover { background: #fafafa; }
+        .inner-nav__toggle-icon {
+            width: 24px; height: 24px; flex-shrink: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 4px;
+        }
+        .inner-nav__toggle-icon span {
+            display: block; width: 14px; height: 1.5px;
+            background: #888; border-radius: 2px;
+        }
+        .inner-nav__toggle-label {
+            font-size: 11px; font-weight: 600; color: #888;
+            white-space: nowrap; overflow: hidden; transition: opacity 200ms;
+        }
+        .inner-nav.collapsed .inner-nav__toggle-label { opacity: 0; }
+        .inner-nav__section-label {
+            font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #ccc;
+            padding: 14px 14px 6px; white-space: nowrap;
+            overflow: hidden; transition: opacity 200ms;
+        }
+        .inner-nav.collapsed .inner-nav__section-label { opacity: 0; }
+        .inner-nav__item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 14px; cursor: pointer; border-radius: 0;
+            transition: background 150ms; position: relative;
+            white-space: nowrap; border: none; background: transparent;
+            font-family: 'Poppins', sans-serif; width: 100%; text-align: left;
+        }
+        .inner-nav__item:hover { background: #fafafa; }
+        .inner-nav__item.active { background: #FFF8F0; }
+        .inner-nav__item-icon {
+            width: 26px; height: 26px; border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0; transition: background 150ms;
+        }
+        .inner-nav__item.active .inner-nav__item-icon { background: #FFA426; }
+        .inner-nav__item-label {
+            font-size: 13px; font-weight: 500; color: #666;
+            overflow: hidden; transition: opacity 200ms; flex: 1;
+        }
+        .inner-nav__item.active .inner-nav__item-label { color: #FFA426; font-weight: 600; }
+        .inner-nav.collapsed .inner-nav__item-label { opacity: 0; }
+        .inner-nav__notif {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #FFA426; flex-shrink: 0;
+        }
+        .inner-nav.collapsed .inner-nav__notif { opacity: 0; }
+
+        /* Right nav */
+        .right-nav {
+            width: 52px; flex-shrink: 0; height: 100%;
+            background: white; border-left: 1px solid #f0f0f0;
+            display: flex; flex-direction: column;
+            align-items: center; padding: 10px 0; gap: 4px; z-index: 50;
+            overflow: hidden;
+        }
+        .right-nav__tango-btn {
+            width: 38px; padding: 8px 0 10px;
+            background: linear-gradient(160deg, #8b5cf6, #FFA426);
+            border: none; border-radius: 12px; cursor: pointer;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 4px;
+            margin-bottom: 6px; transition: all 150ms;
+            font-family: 'Poppins', sans-serif;
+        }
+        .right-nav__tango-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+        .right-nav__tango-icon { font-size: 16px; color: white; }
+        .right-nav__tango-label { font-size: 8px; font-weight: 700; color: white; letter-spacing: 0.06em; text-transform: uppercase; }
+        .right-nav__btn {
+            width: 36px; height: 36px; border-radius: 9px;
+            background: transparent; border: none;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 2px; cursor: pointer; transition: background 150ms; color: #bbb;
+        }
+        .right-nav__btn:hover { background: #f5f5f5; color: #666; }
+        .right-nav__btn.active { background: #FFF8F0; color: #FFA426; }
+        .right-nav__btn-icon { font-size: 16px; }
+        .right-nav__btn-label { font-size: 8px; font-weight: 600; letter-spacing: 0.03em; }
+        .right-nav__divider { width: 24px; height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+        /* ══════════════════════════════════════
+           MAIN CONTENT AREA
+        ══════════════════════════════════════ */
+        .doc-canvas-bg {
+            flex: 1; min-width: 0; height: 100%;
+            overflow-y: auto; overflow-x: hidden; background: #f0f2f5;
+            display: flex; flex-direction: column; align-items: stretch;
+        }
+
+        /* Document meta bar above the paper */
+        .doc-meta-bar {
+            width: 100%; max-width: 900px;
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding: 0 4px;
+        }
+        .doc-meta-left {
+            display: flex; align-items: center; gap: 8px;
+        }
+        .doc-section-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 99px;
+            font-size: 11px; font-weight: 700;
+            background: #FFF8F0; color: #FFA426;
+            border: 1px solid rgba(255,164,38,0.25);
+        }
+        .doc-status-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 12px; border-radius: 99px;
+            font-size: 11px; font-weight: 600;
+            background: #f0fdf4; color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        .doc-meta-right {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .doc-collab-avatars {
+            display: flex; align-items: center;
+        }
+        .doc-collab-av {
+            width: 26px; height: 26px; border-radius: 50%;
+            border: 2px solid white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700; color: white;
+            margin-left: -6px; cursor: pointer;
+            transition: transform 150ms;
+        }
+        .doc-collab-av:first-child { margin-left: 0; }
+        .doc-collab-av:hover { transform: translateY(-2px); z-index: 2; }
+        .doc-action-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 8px;
+            font-size: 12px; font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer; transition: all 150ms; border: none;
+        }
+        .doc-action-btn.primary {
+            background: #FFA426; color: #1a1a1a;
+        }
+        .doc-action-btn.primary:hover { background: #F89622; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,164,38,0.3); }
+        .doc-action-btn.ghost {
+            background: white; color: #555;
+            border: 1px solid #e5e5e5;
+        }
+        .doc-action-btn.ghost:hover { background: #fafafa; border-color: #d0d0d0; }
+
+        /* ── The paper itself ── */
+        .doc-paper {
+            width: calc(100% - 80px); max-width: 900px;
+            background: white; border-radius: 12px;
+            padding: 56px 72px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 1px 4px rgba(0,0,0,0.04);
+            position: relative;
+            margin: 32px auto 24px auto;
+            overflow: visible;
+        }
+
+        /* ── Document header ── */
+        .doc-title-eyebrow {
+            font-size: 10.5px; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #FFA426;
+            margin-bottom: 10px;
+        }
+        .doc-title {
+            font-size: 30px; font-weight: 700; color: #0f0f0f;
+            line-height: 1.22; margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .doc-subtitle {
+            font-size: 15px; font-weight: 400; color: #888;
+            margin-bottom: 28px;
+        }
+        .doc-meta-row {
+            display: flex; align-items: center; gap: 20px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 36px;
+        }
+        .doc-meta-item {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12px; color: #888;
+        }
+        .doc-meta-item strong { color: #1a1a1a; font-weight: 600; }
+        .doc-meta-divider { width: 1px; height: 16px; background: #e5e5e5; }
+
+        /* ── Section headings ── */
+        .doc-h2 {
+            font-size: 18px; font-weight: 700; color: #1a1a1a;
+            margin: 36px 0 14px; letter-spacing: -0.2px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .doc-h2-num {
+            width: 26px; height: 26px; border-radius: 7px;
+            background: #FFF8F0; color: #FFA426;
+            font-size: 11px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .doc-h3 {
+            font-size: 14px; font-weight: 700; color: #333;
+            margin: 22px 0 8px;
+        }
+        .doc-p {
+            font-size: 13.5px; color: #3d3d3d; line-height: 1.8;
+            margin-bottom: 16px; font-weight: 400;
+        }
+
+        /* ── Paragraph block wrapper (for sparkle trigger) ── */
+        .doc-block {
+            position: relative;
+            padding-left: 0;
+            overflow: visible;
+        }
+        .doc-block:hover .doc-sparkle {
+            opacity: 1; transform: translateX(0); z-index: 120;
+        }
+        .doc-sparkle {
+            position: absolute; left: -36px; top: 2px;
+            width: 24px; height: 24px; border-radius: 7px;
+            background: white; border: 1px solid #e8e2ff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; cursor: pointer; opacity: 0.15;
+            transform: translateX(4px);
+            transition: all 150ms;
+            box-shadow: 0 2px 8px rgba(139,92,246,0.12);
+            user-select: none;
+            z-index: 110;
+        }
+        .doc-sparkle:hover {
+            background: #f5f0ff;
+            border-color: #8b5cf6;
+            box-shadow: 0 2px 12px rgba(139,92,246,0.25);
+        }
+
+        /* ── AI-generated paragraph ── */
+        .doc-ai-block {
+            position: relative;
+            border-left: 3px solid #8b5cf6;
+            padding-left: 18px;
+            margin: 18px 0;
+            background: linear-gradient(90deg, rgba(139,92,246,0.03) 0%, transparent 100%);
+            border-radius: 0 6px 6px 0;
+        }
+        .doc-ai-label {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 10px; font-weight: 700; color: #8b5cf6;
+            letter-spacing: 0.05em; text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .doc-ai-text {
+            font-size: 13.5px; color: #3d3d3d; line-height: 1.8;
+        }
+        /* Typing cursor animation */
+        .doc-ai-cursor {
+            display: inline-block;
+            width: 2px; height: 15px;
+            background: #8b5cf6;
+            border-radius: 1px;
+            vertical-align: middle;
+            margin-left: 2px;
+            animation: blink 1.1s step-end infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        /* ── Collab cursor ── */
+        .collab-cursor-wrap {
+            position: relative; display: inline;
+        }
+        .collab-caret {
+            position: absolute;
+            width: 2px; height: 20px;
+            background: #059669;
+            border-radius: 1px;
+            top: 0; left: 0;
+            animation: blink 1.3s step-end infinite;
+        }
+        .collab-caret-label {
+            position: absolute;
+            top: -22px; left: 0;
+            background: #059669; color: white;
+            font-size: 10px; font-weight: 700;
+            padding: 2px 7px; border-radius: 99px 99px 99px 0;
+            white-space: nowrap; pointer-events: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ── Callout / highlight box ── */
+        .doc-callout {
+            background: #FFF8F0;
+            border: 1px solid rgba(255,164,38,0.2);
+            border-left: 4px solid #FFA426;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px; margin: 20px 0;
+        }
+        .doc-callout-label {
+            font-size: 10px; font-weight: 700; color: #FFA426;
+            text-transform: uppercase; letter-spacing: 0.07em;
+            margin-bottom: 4px;
+        }
+        .doc-callout p {
+            font-size: 13px; color: #4a3800; line-height: 1.7;
+        }
+
+        /* ── KPI / metric row ── */
+        .doc-kpi-row {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 14px; margin: 22px 0;
+        }
+        .doc-kpi-card {
+            background: #fafafa; border: 1px solid #f0f0f0;
+            border-radius: 10px; padding: 16px 18px;
+        }
+        .doc-kpi-label {
+            font-size: 10.5px; font-weight: 600; color: #aaa;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 6px;
+        }
+        .doc-kpi-value {
+            font-size: 22px; font-weight: 800; color: #1a1a1a;
+            line-height: 1.1;
+        }
+        .doc-kpi-sub {
+            font-size: 11px; color: #888; margin-top: 3px;
+        }
+        .doc-kpi-trend {
+            font-size: 11px; font-weight: 700;
+            margin-top: 4px;
+        }
+        .doc-kpi-trend.up { color: #10b981; }
+        .doc-kpi-trend.warn { color: #f59e0b; }
+
+        /* ── Risk table ── */
+        .doc-table {
+            width: 100%; border-collapse: collapse;
+            margin: 16px 0; font-size: 12.5px;
+        }
+        .doc-table th {
+            text-align: left; padding: 9px 14px;
+            background: #fafafa; border-bottom: 1px solid #e5e5e5;
+            font-size: 10px; font-weight: 700; color: #aaa;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .doc-table td {
+            padding: 11px 14px; border-bottom: 1px solid #f5f5f5;
+            color: #3d3d3d; vertical-align: top;
+        }
+        .doc-table tr:last-child td { border-bottom: none; }
+        .doc-table tr:hover td { background: #fafff9; }
+        .risk-badge {
+            display: inline-flex; padding: 2px 9px;
+            border-radius: 99px; font-size: 10px; font-weight: 700;
+        }
+        .risk-high { background: #fef2f2; color: #dc2626; }
+        .risk-med  { background: #fffbeb; color: #d97706; }
+        .risk-low  { background: #f0fdf4; color: #16a34a; }
+
+        /* ── Section divider ── */
+        .doc-divider {
+            border: none; border-top: 1px solid #f0f0f0;
+            margin: 36px 0;
+        }
+
+        /* ── Floating Tango suggestion bar ── */
+        .tango-suggestion-bar {
+            width: 100%; max-width: 900px;
+            background: white;
+            border: 1px solid rgba(139,92,246,0.2);
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 4px 16px rgba(139,92,246,0.08);
+            margin-bottom: 16px;
+        }
+        .tsb-icon {
+            width: 32px; height: 32px; border-radius: 9px;
+            background: linear-gradient(135deg, #FFA426, #f59e0b);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .tsb-text {
+            flex: 1; font-size: 12.5px; color: #555; line-height: 1.5;
+        }
+        .tsb-text strong { color: #7c3aed; }
+        .tsb-actions { display: flex; gap: 8px; }
+        .tsb-btn {
+            padding: 6px 14px; border-radius: 8px;
+            font-size: 12px; font-weight: 600;
+            font-family: 'Poppins', sans-serif; cursor: pointer;
+            transition: all 150ms; border: none;
+        }
+        .tsb-btn.accept {
+            background: #8b5cf6; color: white;
+        }
+        .tsb-btn.accept:hover { background: #7c3aed; }
+        .tsb-btn.dismiss {
+            background: #f5f5f5; color: #888;
+        }
+        .tsb-btn.dismiss:hover { background: #ebebeb; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: white; border-radius: 10px;
+            border-left: 3px solid #FFA426;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 12px 16px; min-width: 240px; max-width: 320px;
+            display: flex; gap: 12px; align-items: flex-start;
+            z-index: 9000; opacity: 0; transform: translateY(12px);
+            transition: all 250ms ease; pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .toast-body { flex: 1; }
+        .toast-title { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+        .toast-msg { font-size: 11px; color: #888; margin-top: 1px; }
+
+        /* ── Floating inline formatting toolbar ── */
+        .inline-toolbar {
+            position: fixed;
+            display: none;
+            align-items: center;
+            gap: 2px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 5px 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.12);
+            z-index: 9999;
+            transform: translateX(-50%) translateY(-8px);
+            pointer-events: auto;
+            /* Entry animation */
+            animation: toolbarPop 150ms cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        .inline-toolbar.visible { display: flex; }
+        @keyframes toolbarPop {
+            from { opacity:0; transform: translateX(-50%) translateY(-2px) scale(0.92); }
+            to   { opacity:1; transform: translateX(-50%) translateY(-8px) scale(1); }
+        }
+        /* Tiny caret below the toolbar */
+        .inline-toolbar::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #1a1a1a;
+            border-bottom: none;
+        }
+        .itb-btn {
+            width: 28px; height: 28px;
+            border-radius: 5px; border: none;
+            background: transparent; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #d0d0d0;
+            transition: background 100ms, color 100ms;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px; font-weight: 700;
+            flex-shrink: 0;
+        }
+        .itb-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+        .itb-btn svg { width: 13px; height: 13px; stroke: currentColor; }
+        .itb-divider {
+            width: 1px; height: 16px;
+            background: rgba(255,255,255,0.12);
+            margin: 0 2px; flex-shrink: 0;
+        }
+        /* Tango rewrite button — purple accent */
+        .itb-tango {
+            background: rgba(139,92,246,0.2);
+            color: #c4b5fd;
+            width: auto; padding: 0 10px;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: 0.02em;
+            border-radius: 5px; gap: 5px;
+        }
+        .itb-tango:hover { background: rgba(139,92,246,0.38); color: #ddd6fe; }
+        /* Color dot */
+        .itb-color-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+            background: conic-gradient(#ef4444,#f59e0b,#22c55e,#3b82f6,#8b5cf6,#ef4444);
+            flex-shrink: 0;
+        }
+
+        /* ── Quiet Mode / AI Assist toggle ── */
+        .ai-toggle-wrap {
+            display: flex; align-items: center; gap: 8px;
+            padding: 0 2px;
+        }
+        .ai-toggle-label {
+            font-size: 11px; font-weight: 600; color: #888;
+            white-space: nowrap; user-select: none;
+        }
+        .ai-toggle {
+            position: relative;
+            width: 34px; height: 19px; flex-shrink: 0;
+        }
+        .ai-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .ai-toggle-track {
+            position: absolute; inset: 0;
+            background: #8b5cf6;
+            border-radius: 99px;
+            transition: background 220ms;
+            cursor: pointer;
+        }
+        .ai-toggle-track::after {
+            content: '';
+            position: absolute;
+            top: 2.5px; left: 2.5px;
+            width: 14px; height: 14px;
+            border-radius: 50%;
+            background: white;
+            transition: transform 220ms cubic-bezier(0.34,1.4,0.64,1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .ai-toggle input:checked + .ai-toggle-track { background: #8b5cf6; }
+        .ai-toggle input:not(:checked) + .ai-toggle-track { background: #d0d0d0; }
+        .ai-toggle input:checked + .ai-toggle-track::after { transform: translateX(15px); }
+
+        /* ── Quiet mode: .ai-disabled on doc-canvas-bg ── */
+        .ai-disabled .doc-sparkle       { opacity: 0 !important; pointer-events: none !important; }
+        .ai-disabled .doc-ai-block      { opacity: 0.25; filter: grayscale(1); pointer-events: none; }
+        .ai-disabled .right-nav__tango-btn {
+            opacity: 0.35; filter: grayscale(1); pointer-events: none;
+        }
+        .ai-disabled .tango-suggestion-bar { display: none !important; }
+
+        /* ── Notification dot on Tango button ── */
+        .tango-notif-dot {
+            position: absolute; top: 6px; right: 6px;
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #FFA426;
+            border: 1.5px solid white;
+        }
+        .right-nav__tango-btn { position: relative; }
+
+        /* ── Tango suggestion panel (inside right nav context) ── */
+
+
+        /* ══════════════════════════════════════
+           RICH TEXT EDITOR BEHAVIOUR
+        ══════════════════════════════════════ */
+
+        /* Editable blocks */
+        .doc-editable {
+            outline: none;
+            cursor: text;
+            border-radius: 4px;
+            transition: background 150ms;
+            position: relative;
+        }
+        .doc-editable:hover {
+            background: rgba(0,0,0,0.015);
+        }
+        .doc-editable:focus {
+            background: rgba(0,0,0,0.02);
+            box-shadow: inset 0 0 0 1.5px rgba(255,164,38,0.25);
+        }
+        /* Placeholder text */
+        .doc-editable:empty:before {
+            content: attr(data-placeholder);
+            color: #c0c0c0;
+            pointer-events: none;
+            font-style: italic;
+        }
+        /* Editable headings */
+        .doc-h2[contenteditable], .doc-h3[contenteditable] {
+            outline: none; cursor: text;
+            border-radius: 4px; padding: 2px 6px;
+            transition: background 120ms;
+        }
+        .doc-h2[contenteditable]:hover  { background: rgba(255,164,38,0.05); }
+        .doc-h2[contenteditable]:focus  { background: rgba(255,164,38,0.08); box-shadow: inset 0 0 0 1.5px rgba(255,164,38,0.2); }
+        .doc-h3[contenteditable]:hover  { background: rgba(0,0,0,0.02); }
+        .doc-h3[contenteditable]:focus  { background: rgba(0,0,0,0.03); }
+
+        /* ── Finalize button at bottom ── */
+        .doc-finalize-bar {
+            max-width: 900px; margin: 24px auto 0;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 0;
+            border-top: 1px solid #f0f0f0;
+        }
+        .doc-finalize-status {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 12px; color: #888;
+        }
+        .doc-finalize-status-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: #f59e0b;
+        }
+        .doc-finalize-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px; border-radius: 9px;
+            background: #1a1a1a; border: none; color: white;
+            font-size: 13px; font-weight: 700;
+            font-family: 'Poppins', sans-serif; cursor: pointer;
+            transition: all 150ms;
+        }
+        .doc-finalize-btn:hover {
+            background: #333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .doc-save-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 8px;
+            background: transparent; border: 1px solid #e5e5e5;
+            color: #666; font-size: 12px; font-weight: 600;
+            font-family: 'Poppins', sans-serif; cursor: pointer;
+            transition: all 120ms;
+        }
+        .doc-save-btn:hover { background: #f5f5f5; border-color: #ccc; }
+
+        /* ── Comment indicator on editable blocks ── */
+        .doc-comment-chip {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 10px; font-weight: 600; color: #8b5cf6;
+            background: #f5f0ff; padding: 1px 8px; border-radius: 99px;
+            margin-left: 8px; cursor: pointer; vertical-align: middle;
+            transition: background 120ms;
+        }
+        .doc-comment-chip:hover { background: #ede9fe; }
+
+        /* Selection highlight for comments */
+        .doc-paper ::selection {
+            background: rgba(255,164,38,0.2);
+        }
+
+        /* ── Type-to-edit hint on first focus ── */
+        .doc-paper:not(:focus-within) .doc-editable-hint {
+            opacity: 1;
+        }
+        .doc-editable-hint {
+            font-size: 11px; color: #ccc; font-style: italic;
+            opacity: 0; transition: opacity 200ms;
+            pointer-events: none; text-align: right;
+            margin-bottom: 8px;
+        }
+
+        /* ══════════════════════════════════════
+           SLIM SOLUTIONING WINDOW RIBBON
+        ══════════════════════════════════════ */
+        .sol-ribbon-wrap {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        .sol-ribbon {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 9px 32px;
+            cursor: pointer;
+            transition: background 120ms;
+            min-height: 40px;
+        }
+        .sol-ribbon:hover { background: #fafafa; }
+        .sol-ribbon-left {
+            display: flex; align-items: center; gap: 10px;
+            flex-shrink: 0;
+        }
+        .sol-ribbon-label {
+            font-size: 9.5px; font-weight: 800; color: #bbb;
+            letter-spacing: 0.1em; text-transform: uppercase;
+        }
+        .sol-ribbon-dates {
+            font-size: 12.5px; font-weight: 600; color: #1a1a1a;
+        }
+        .sol-ribbon-pill {
+            background: #f0fdf4; color: #16a34a;
+            font-size: 10.5px; font-weight: 700;
+            padding: 2px 9px; border-radius: 99px;
+            border: 1px solid #bbf7d0;
+        }
+        .sol-ribbon-remaining {
+            font-size: 11.5px; color: #888;
+        }
+        .sol-ribbon-right {
+            display: flex; align-items: center; gap: 6px;
+        }
+        .sol-phase-chip {
+            font-size: 10.5px; font-weight: 600;
+            padding: 3px 9px; border-radius: 99px;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .sol-phase-chip.done {
+            background: #f0fdf4; color: #16a34a;
+            border-color: #bbf7d0;
+        }
+        .sol-phase-chip.active {
+            background: #FFF8F0; color: #FFA426;
+            border-color: rgba(255,164,38,0.3);
+        }
+        .sol-phase-chip.pending {
+            background: #f8fafc; color: #94a3b8;
+            border-color: #e2e8f0;
+        }
+        .sol-ribbon-expand {
+            font-size: 9px; font-weight: 800; color: #aaa;
+            letter-spacing: 0.08em; background: none; border: none;
+            cursor: pointer; padding: 4px 8px;
+            border-radius: 5px; transition: all 120ms;
+            font-family: 'Poppins', sans-serif;
+            white-space: nowrap; margin-left: 4px;
+        }
+        .sol-ribbon-expand:hover { background: #f5f5f5; color: #555; }
+        /* Expanded detail row */
+        .sol-ribbon-expanded {
+            padding: 10px 32px 14px;
+            background: #fafafa;
+            border-top: 1px solid #f5f5f5;
+        }
+        .sol-exp-row {
+            display: flex; align-items: center; gap: 16px;
+        }
+        .sol-exp-track-wrap {
+            display: flex; align-items: center; gap: 10px; flex: 1;
+        }
+        .sol-exp-label {
+            font-size: 10px; font-weight: 700; color: #bbb;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            white-space: nowrap;
+        }
+        .sol-exp-track {
+            flex: 1; height: 4px; background: #e5e5e5;
+            border-radius: 99px; overflow: hidden;
+        }
+        .sol-exp-fill {
+            height: 100%; background: #FFA426; border-radius: 99px;
+            transition: width 800ms cubic-bezier(0.34,1.2,0.64,1);
+        }
+        .sol-exp-pct {
+            font-size: 11.5px; font-weight: 700; color: #FFA426;
+            white-space: nowrap;
+        }
+        .sol-exp-edit {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 12px; border-radius: 7px;
+            font-size: 11px; font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            background: white; border: 1px solid #e5e5e5;
+            color: #666; cursor: pointer; transition: all 120ms;
+            flex-shrink: 0;
+        }
+        .sol-exp-edit:hover { background: #f5f5f5; color: #1a1a1a; border-color: #ccc; }
+
+    </style>
+    <style>
+        /* ══════════════════════════════════════
+           SOLUTION PAGE — NEW COMPONENTS
+        ══════════════════════════════════════ */
+
+        /* ── Timeframe Widget — metadata component, sits between doc-meta-row and content ── */
+        .doc-timeframe-widget {
+            background: #fafafa;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 12px 0 16px;
+        }
+        .dtw-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .dtw-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dtw-icon {
+            width: 30px; height: 30px;
+            border-radius: 8px;
+            background: #FFF8F0;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .dtw-text-wrap {}
+        .dtw-label {
+            font-size: 10px; font-weight: 700; color: #aaa;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 2px;
+        }
+        .dtw-range {
+            font-size: 13.5px; font-weight: 600; color: #1a1a1a;
+        }
+        .dtw-range .dtw-sep {
+            color: #bbb; font-weight: 400; margin: 0 6px;
+        }
+        .dtw-duration {
+            display: inline-flex; align-items: center;
+            font-size: 11.5px; font-weight: 600;
+            background: #f0fdf4; color: #16a34a;
+            padding: 2px 10px; border-radius: 99px;
+            margin-left: 10px;
+        }
+        .dtw-edit-btn {
+            padding: 5px 12px;
+            background: transparent;
+            border: 1px solid #e5e5e5;
+            border-radius: 7px;
+            font-size: 11px; font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            color: #aaa; cursor: pointer;
+            opacity: 0;
+            transition: all 150ms;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .doc-timeframe-widget:hover .dtw-edit-btn {
+            opacity: 1;
+            color: #555; border-color: #ccc;
+        }
+        .dtw-edit-btn:hover {
+            background: #f5f5f5 !important;
+            color: #1a1a1a !important;
+        }
+        /* Progress track */
+        .dtw-track-wrap {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .dtw-track {
+            flex: 1; height: 4px;
+            background: #e5e5e5; border-radius: 99px;
+            overflow: hidden;
+        }
+        .dtw-fill {
+            height: 100%; background: #FFA426;
+            border-radius: 99px;
+            transition: width 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .dtw-remaining {
+            font-size: 11px; font-weight: 600;
+            color: #888; white-space: nowrap; flex-shrink: 0;
+        }
+        .dtw-remaining strong { color: #FFA426; }
+
+        /* ── Milestone chips strip ── */
+        .dtw-milestones {
+            display: flex; align-items: center; gap: 6px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .dtw-ms-label {
+            font-size: 10px; font-weight: 700; color: #bbb;
+            text-transform: uppercase; letter-spacing: 0.07em;
+            flex-shrink: 0; margin-right: 2px;
+        }
+        .dtw-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border-radius: 99px;
+            font-size: 11px; font-weight: 600;
+            border: 1px solid transparent; cursor: default;
+            white-space: nowrap;
+        }
+        .dtw-chip.done    { background: #f0fdf4; color: #16a34a; border-color: #bbf7d0; }
+        .dtw-chip.active  { background: #FFF8F0; color: #FFA426; border-color: rgba(255,164,38,0.3); }
+        .dtw-chip.pending { background: #f8fafc; color: #94a3b8; border-color: #e2e8f0; }
+        .dtw-chip-dot {
+            width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+        }
+        .dtw-chip.done .dtw-chip-dot    { background: #22c55e; }
+        .dtw-chip.active .dtw-chip-dot  { background: #FFA426; }
+        .dtw-chip.pending .dtw-chip-dot { background: #cbd5e1; }
+
+        /* ── Tech stack list ── */
+        .doc-tech-list {
+            list-style: none;
+            margin: 10px 0 18px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .doc-tech-list li {
+            display: flex; align-items: flex-start; gap: 8px;
+            font-size: 13px; color: #3d3d3d; line-height: 1.5;
+        }
+        .doc-tech-list li::before {
+            content: '';
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #FFA426; flex-shrink: 0; margin-top: 6px;
+        }
+        .doc-tech-tag {
+            display: inline-flex; align-items: center;
+            font-size: 11px; font-weight: 700;
+            background: #f1f5f9; color: #475569;
+            padding: 1px 8px; border-radius: 5px;
+            margin-right: 4px; letter-spacing: 0.01em;
+        }
+
+        /* ── Architecture diagram placeholder ── */
+        .doc-arch-diagram {
+            border: 1.5px dashed #e5e5e5;
+            border-radius: 10px; padding: 28px 20px;
+            margin: 18px 0;
+            background: #fafafa;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 16px;
+        }
+        .arch-layers {
+            display: flex; align-items: stretch; gap: 12px;
+            width: 100%;
+        }
+        .arch-layer {
+            flex: 1; border-radius: 8px; padding: 12px 14px;
+            text-align: center;
+        }
+        .arch-layer-label {
+            font-size: 9px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.1em; margin-bottom: 8px;
+        }
+        .arch-items { display: flex; flex-direction: column; gap: 5px; }
+        .arch-item {
+            font-size: 11px; font-weight: 600;
+            padding: 5px 8px; border-radius: 6px; color: white;
+        }
+        .arch-arrow {
+            display: flex; align-items: center; color: #cbd5e1;
+            font-size: 18px; flex-shrink: 0; align-self: center;
+        }
+        .arch-layer.ingestion { background: #eff6ff; }
+        .arch-layer.ingestion .arch-layer-label { color: #3b82f6; }
+        .arch-layer.ingestion .arch-item { background: #3b82f6; }
+        .arch-layer.processing { background: #FFF8F0; }
+        .arch-layer.processing .arch-layer-label { color: #FFA426; }
+        .arch-layer.processing .arch-item { background: #FFA426; color: #1a1a1a; }
+        .arch-layer.ai-layer { background: #f5f0ff; }
+        .arch-layer.ai-layer .arch-layer-label { color: #8b5cf6; }
+        .arch-layer.ai-layer .arch-item { background: #8b5cf6; }
+        .arch-layer.output { background: #f0fdf4; }
+        .arch-layer.output .arch-layer-label { color: #10b981; }
+        .arch-layer.output .arch-item { background: #10b981; }
+
+        /* ══════════════════════════════════════
+           STICKY EDITOR TOOLBAR
+        ══════════════════════════════════════ */
+        .sol-editor-bar {
+            background: white;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 6px 32px;
+            display: flex; align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 40px;   /* sits just below the ribbon (40px tall) */
+            z-index: 89;
+            box-shadow: 0 1px 0 #f0f0f0;
+        }
+        .sol-editor-tools {
+            display: flex; align-items: center; gap: 2px;
+        }
+        .sed-btn {
+            height: 28px; min-width: 28px;
+            border-radius: 5px; border: none;
+            background: transparent; cursor: pointer;
+            display: inline-flex; align-items: center;
+            justify-content: center;
+            color: #555; font-size: 12.5px;
+            font-family: 'Poppins', sans-serif;
+            padding: 0 6px;
+            transition: background 100ms, color 100ms;
+        }
+        .sed-btn:hover { background: #f5f5f5; color: #1a1a1a; }
+        .sed-btn:active { background: #ebebeb; }
+        .sed-italic  { font-style: italic; }
+        .sed-underline { text-decoration: underline; }
+        .sed-label   { font-size: 11px; font-weight: 800; letter-spacing: -0.3px; }
+        .sed-divider {
+            width: 1px; height: 18px;
+            background: #e5e5e5; margin: 0 4px;
+            flex-shrink: 0;
+        }
+        .sed-tango {
+            background: rgba(139,92,246,0.08);
+            color: #7c3aed; font-weight: 700;
+            padding: 0 12px; gap: 5px;
+            font-size: 11.5px; border-radius: 6px;
+        }
+        .sed-tango:hover { background: rgba(139,92,246,0.16); }
+        .sol-editor-status {
+            font-size: 10.5px; color: #bbb;
+            font-style: italic; flex-shrink: 0;
+        }
+        .sol-editor-status.active { color: #FFA426; font-style: normal; font-weight: 600; }
+
+
+        /* ══════════════════════════════════════════════════════════
+           ZONE HEADER — Demand Live pattern
+        ══════════════════════════════════════════════════════════ */
+        .zone-header {
+            background: white; border-bottom: 1px solid #f0f0f0;
+            padding: 24px 40px 0;
+            flex-shrink: 0; width: 100%; box-sizing: border-box;
+        }
+        /* Row 1: title + actions */
+        .zh-title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding-bottom: 14px;
+            gap: 16px;
+        }
+        .zh-title-left {}
+        .zh-eyebrow {
+            font-size: 10px; font-weight: 800;
+            color: #FFA426; letter-spacing: 0.12em;
+            text-transform: uppercase; margin-bottom: 4px;
+        }
+        .zh-title {
+            font-size: 22px; font-weight: 700;
+            color: #0f0f0f; letter-spacing: -0.4px;
+            line-height: 1.15; margin: 0;
+        }
+        .zh-title-right {
+            display: flex; align-items: center;
+            gap: 10px; flex-shrink: 0; padding-top: 4px;
+        }
+        /* Stacked avatars */
+        .zh-avatars { display: flex; align-items: center; }
+        .zh-av {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 800; color: white;
+            border: 2px solid white;
+            margin-left: -6px; cursor: pointer;
+            transition: transform 120ms;
+        }
+        .zh-avatars .zh-av:first-child { margin-left: 0; }
+        .zh-av:hover { transform: translateY(-2px); z-index: 2; }
+
+        /* Submit button — demand live orange pill */
+        .canvas-submit-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 18px; background: #FFA426; border: none;
+            border-radius: 99px; font-size: 12px; font-weight: 700;
+            color: #1a1a1a; cursor: pointer;
+            font-family: 'Poppins', sans-serif; transition: all 150ms;
+            flex-shrink: 0; white-space: nowrap;
+        }
+        .canvas-submit-btn:hover {
+            background: #F89622; transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,164,38,0.3);
+        }
+
+        /* Expand chevron toggle */
+        .zh-expand-btn {
+            width: 28px; height: 28px; border-radius: 7px;
+            background: #f5f5f5; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #888; transition: all 120ms; flex-shrink: 0;
+        }
+        .zh-expand-btn:hover { background: #ebebeb; color: #333; }
+        .zh-expand-btn svg { transition: transform 250ms ease; }
+        .zone-header.collapsed .zh-expand-btn svg { transform: rotate(-90deg); }
+        .zone-header:not(.collapsed) .zh-expand-btn svg { transform: rotate(0deg); }
+
+        /* Collapsed state — everything on one uniform line */
+        .zone-header.collapsed .zh-eyebrow      { display: none; }
+        .zone-header.collapsed .zh-title-row    { align-items: center; padding-bottom: 12px; }
+        .zone-header.collapsed .zh-title-left   { display: flex; flex-direction: row; align-items: center; gap: 10px; }
+        .zone-header.collapsed .zh-title        { font-size: 15px; font-weight: 700; white-space: nowrap; }
+        /* Hide the inner flex wrapper's wrap behaviour when collapsed */
+        .zone-header.collapsed .zh-title-left > div { flex-wrap: nowrap; align-items: center; }
+
+        /* Row 2: collapsible chips */
+        .zh-collapsible {
+            overflow: hidden;
+            transition: max-height 260ms cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 180ms ease;
+            max-height: 60px;
+            opacity: 1;
+        }
+        .zh-collapsible.hidden {
+            max-height: 0 !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .zh-chips-row {
+            display: flex; align-items: center; flex-wrap: wrap;
+            gap: 6px; padding-bottom: 14px;
+        }
+        /* Base chip */
+        .zh-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: 99px;
+            font-size: 11px; font-weight: 600;
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            color: #475569; white-space: nowrap;
+        }
+        .zh-chip-dot {
+            width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+        }
+        .zh-chip-dot.amber { background: #f59e0b; }
+        .zh-chip-dot.green { background: #22c55e; }
+        /* Status chip */
+        .zh-chip-status { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+        /* Phase chips */
+        .zh-chip-phase.done    { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+        .zh-chip-phase.active  { background: #FFF8F0; border-color: rgba(255,164,38,0.35); color: #FFA426; }
+        .zh-chip-phase.pending { background: #f8fafc; border-color: #e2e8f0; color: #94a3b8; }
+
+        /* ══════════════════════════════════════════════════════════
+           STICKY RICH TEXT EDITOR TOOLBAR
+        ══════════════════════════════════════════════════════════ */
+        .sticky-editor-toolbar {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; gap: 2px;
+            padding: 10px 40px;
+            background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid #e8edf2;
+            width: 100%; box-sizing: border-box; margin: 0;
+            box-shadow: 0 1px 0 #e8edf2, 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .set-group {
+            display: flex; align-items: center; gap: 1px;
+        }
+        .set-group-ai { margin-left: auto; }
+        .set-divider {
+            width: 1px; height: 20px;
+            background: #e2e8f0; margin: 0 6px; flex-shrink: 0;
+        }
+
+        /* Dropdown (text-type, font, size) */
+        .set-dropdown {
+            position: relative;
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 9px; border-radius: 6px;
+            font-size: 11.5px; font-weight: 600; color: #374151;
+            cursor: pointer; user-select: none;
+            background: transparent;
+            transition: background 100ms;
+            min-width: 110px; white-space: nowrap;
+            font-family: 'Poppins', sans-serif;
+        }
+        .set-dropdown:hover, .set-dropdown:focus { background: #f3f4f6; outline: none; }
+        .set-dropdown svg { margin-left: auto; color: #9ca3af; flex-shrink: 0; }
+        .set-dropdown-menu {
+            display: none;
+            position: absolute; top: calc(100% + 4px); left: 0;
+            background: white; border: 1px solid #e5e7eb;
+            border-radius: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            min-width: 140px; z-index: 200; overflow: hidden;
+        }
+        .set-dropdown.open .set-dropdown-menu { display: block; }
+        .set-dd-item {
+            padding: 8px 12px;
+            font-size: 12px; font-weight: 500; color: #374151;
+            cursor: pointer; transition: background 100ms;
+            font-family: 'Poppins', sans-serif;
+        }
+        .set-dd-item:hover    { background: #f9fafb; }
+        .set-dd-active        { color: #FFA426; font-weight: 700; }
+        .set-dd-h1 { font-size: 16px; font-weight: 700; color: #111; }
+        .set-dd-h2 { font-size: 14px; font-weight: 700; color: #111; }
+        .set-dd-h3 { font-size: 13px; font-weight: 600; color: #333; }
+
+        /* Icon + label buttons */
+        .set-btn {
+            width: 30px; height: 30px;
+            border-radius: 6px; border: none;
+            background: transparent; cursor: pointer;
+            display: inline-flex; align-items: center;
+            justify-content: center;
+            color: #374151; font-size: 13px;
+            font-family: 'Poppins', sans-serif;
+            transition: background 100ms, color 100ms;
+            flex-shrink: 0;
+        }
+        .set-btn:hover  { background: #f3f4f6; color: #111827; }
+        .set-btn:active { background: #e5e7eb; }
+        .set-bold       { font-weight: 800; font-size: 14px; }
+        .set-italic     { font-style: italic; font-weight: 700; font-size: 14px; }
+        .set-underline  { text-decoration: underline; font-weight: 700; font-size: 14px; }
+        .set-strike     { /* icon only */ }
+
+        /* Color buttons */
+        .set-color-btn {
+            width: 30px; height: 30px;
+            flex-direction: column; gap: 2px; padding: 4px 5px;
+        }
+        .set-color-swatch {
+            display: block; width: 14px; height: 3px;
+            border-radius: 2px; flex-shrink: 0;
+        }
+
+        /* Tango AI button — far right */
+        .set-tango-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 14px; border-radius: 8px; border: none;
+            background: #8b5cf6; color: white;
+            font-size: 12px; font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer; transition: all 150ms;
+            white-space: nowrap;
+        }
+        .set-tango-btn:hover {
+            background: #7c3aed;
+            box-shadow: 0 4px 12px rgba(139,92,246,0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ── Editable timeline chip ── */
+        .editable-timeline {
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            background: white;
+            display: inline-flex; align-items: center;
+            transition: border-color 150ms, box-shadow 150ms, background 150ms;
+        }
+        .editable-timeline:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+            background: #fafcff;
+        }
+        .editable-timeline:active {
+            transform: translateY(1px);
+            box-shadow: none;
+        }
+
+        /* ══════════════════════════════════════
+           TIMELINE EDITOR POPOVER
+        ══════════════════════════════════════ */
+        .timeline-popover {
+            position: fixed;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+            padding: 16px 18px 14px;
+            width: 300px;
+            z-index: 1000;
+            display: none;
+        }
+        .timeline-popover.open { display: block; animation: tlPop 150ms cubic-bezier(0.34,1.2,0.64,1); }
+        @keyframes tlPop {
+            from { opacity:0; transform: translateY(-6px) scale(0.97); }
+            to   { opacity:1; transform: translateY(0)   scale(1); }
+        }
+        .tl-pop-title {
+            font-size: 11px; font-weight: 800; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+        .tl-pop-row {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 10px; margin-bottom: 10px;
+        }
+        .tl-pop-field label {
+            display: block; font-size: 10.5px; font-weight: 700;
+            color: #64748b; margin-bottom: 4px; letter-spacing: 0.02em;
+        }
+        .tl-pop-field input[type="date"] {
+            width: 100%; padding: 7px 10px;
+            border: 1.5px solid #e2e8f0; border-radius: 7px;
+            font-family: 'Poppins', sans-serif; font-size: 12px;
+            color: #1a1a1a; outline: none;
+            transition: border-color 150ms;
+            cursor: pointer;
+        }
+        .tl-pop-field input[type="date"]:focus { border-color: #FFA426; }
+        .tl-pop-duration {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px; background: #f8fafc;
+            border-radius: 7px; margin-bottom: 12px;
+            font-size: 12px; color: #475569;
+        }
+        .tl-pop-duration strong { color: #FFA426; font-weight: 800; }
+        .tl-pop-duration span   { color: #94a3b8; font-size: 11px; }
+        .tl-pop-actions { display: flex; gap: 8px; }
+        .tl-pop-apply {
+            flex: 1; padding: 8px;
+            background: #FFA426; border: none; border-radius: 8px;
+            font-size: 12px; font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            color: #1a1a1a; cursor: pointer; transition: all 120ms;
+        }
+        .tl-pop-apply:hover { background: #F89622; }
+        .tl-pop-cancel {
+            padding: 8px 14px; background: #f1f5f9;
+            border: none; border-radius: 8px;
+            font-size: 12px; font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            color: #64748b; cursor: pointer; transition: background 120ms;
+        }
+        .tl-pop-cancel:hover { background: #e2e8f0; }
+
+        /* ══════════════════════════════════════
+           TANGO AGENT PANEL
+        ══════════════════════════════════════ */
+        .tango-agent-panel {
+            width: 0;
+            min-width: 0;
+            flex-shrink: 0;
+            height: 100%;
+            background: white;
+            border-left: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            pointer-events: none;
+            transition: width 260ms cubic-bezier(0.4, 0, 0.2, 1),
+                        min-width 260ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: none;
+        }
+        .tango-agent-panel.open {
+            width: 320px;
+            min-width: 320px;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.06);
+            pointer-events: auto;
+        }
+        @keyframes tapSlide {
+            from { opacity:0; }
+            to   { opacity:1; }
+        }
+
+        /* Header */
+        .tap-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            background: white;
+            flex-shrink: 0;
+        }
+        .tap-header-left { display: flex; align-items: center; gap: 10px; }
+        .tap-icon {
+            width: 32px; height: 32px; border-radius: 9px;
+            background: linear-gradient(135deg, #8b5cf6, #FFA426);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .tap-title    { font-size: 13px; font-weight: 700; color: #0f0f0f; }
+        .tap-subtitle { font-size: 10.5px; color: #94a3b8; margin-top: 1px; }
+        .tap-close {
+            width: 28px; height: 28px; border-radius: 7px;
+            background: transparent; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; transition: all 120ms;
+        }
+        .tap-close:hover { background: #f5f5f5; color: #333; }
+
+        /* Context bar */
+        .tap-context-bar {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 16px;
+            background: #FFF8F0;
+            border-bottom: 1px solid rgba(255,164,38,0.2);
+            font-size: 11px; font-weight: 600; color: #FFA426;
+            flex-shrink: 0;
+        }
+
+        /* Messages */
+        .tap-messages {
+            flex: 1; overflow-y: auto; padding: 16px;
+            display: flex; flex-direction: column; gap: 12px;
+            scroll-behavior: smooth;
+        }
+
+        /* Message bubbles */
+        .tap-msg {
+            max-width: 90%; display: flex; flex-direction: column; gap: 3px;
+        }
+        .tap-msg.agent { align-self: flex-start; }
+        .tap-msg.user  { align-self: flex-end; }
+        .tap-bubble {
+            padding: 10px 13px; border-radius: 10px;
+            font-size: 12.5px; line-height: 1.6; color: #1e293b;
+        }
+        .tap-msg.agent .tap-bubble {
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 2px 10px 10px 10px;
+        }
+        .tap-msg.user .tap-bubble {
+            background: #FFA426; color: #1a1a1a;
+            border-radius: 10px 10px 2px 10px;
+        }
+        .tap-msg-time {
+            font-size: 10px; color: #94a3b8;
+            padding: 0 4px;
+        }
+        .tap-msg.user .tap-msg-time { text-align: right; }
+
+        /* Quick reply chips */
+        .tap-quick-replies {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            padding: 0 16px 10px;
+            flex-shrink: 0;
+        }
+        .tap-qr-chip {
+            padding: 5px 12px; border-radius: 99px;
+            border: 1px solid #e2e8f0; background: white;
+            font-size: 11.5px; font-weight: 600; color: #475569;
+            cursor: pointer; transition: all 120ms;
+            font-family: 'Poppins', sans-serif;
+        }
+        .tap-qr-chip:hover { border-color: #FFA426; color: #e07b00; background: #FFF8F0; }
+
+        /* Typing indicator */
+        .tap-typing {
+            display: flex; align-items: center; gap: 5px;
+            padding: 10px 13px;
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 2px 10px 10px 10px;
+            width: fit-content;
+        }
+        .tap-typing-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #94a3b8;
+            animation: tapDot 1.2s ease-in-out infinite;
+        }
+        .tap-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .tap-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes tapDot {
+            0%,80%,100% { transform: scale(0.6); opacity:0.4; }
+            40%          { transform: scale(1);   opacity:1; }
+        }
+
+        /* Suggestion card */
+        .tap-suggestion-card {
+            margin: 0 14px 10px;
+            border: 1.5px solid rgba(255,164,38,0.3);
+            border-radius: 10px; overflow: hidden;
+            flex-shrink: 0;
+        }
+        .tap-sug-label {
+            padding: 8px 12px 6px;
+            font-size: 10px; font-weight: 800; color: #FFA426;
+            text-transform: uppercase; letter-spacing: 0.07em;
+            background: #FFF8F0;
+            border-bottom: 1px solid rgba(255,164,38,0.15);
+        }
+        .tap-sug-text {
+            padding: 10px 12px;
+            font-size: 12px; line-height: 1.7; color: #334155;
+            max-height: 120px; overflow-y: auto;
+            background: white;
+        }
+        .tap-sug-actions {
+            display: flex; gap: 8px; padding: 10px 12px;
+            background: #fafbff; border-top: 1px solid #f1f5f9;
+        }
+        .tap-sug-accept {
+            flex: 1; padding: 7px;
+            background: #FFA426; border: none; border-radius: 7px;
+            font-size: 11.5px; font-weight: 700;
+            font-family: 'Poppins', sans-serif; color: #1a1a1a;
+            cursor: pointer; transition: all 120ms;
+        }
+        .tap-sug-accept:hover { background: #F89622; }
+        .tap-sug-retry {
+            padding: 7px 12px;
+            background: #f1f5f9; border: none; border-radius: 7px;
+            font-size: 11.5px; font-weight: 600;
+            font-family: 'Poppins', sans-serif; color: #64748b;
+            cursor: pointer; transition: background 120ms;
+        }
+        .tap-sug-retry:hover { background: #e2e8f0; }
+
+        /* Input area */
+        .tap-input-area {
+            display: flex; align-items: flex-end; gap: 8px;
+            padding: 12px 14px;
+            border-top: 1px solid #f0f0f0;
+            background: white; flex-shrink: 0;
+        }
+        .tap-input {
+            flex: 1; resize: none; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; padding: 9px 12px;
+            font-size: 12.5px; font-family: 'Poppins', sans-serif;
+            color: #1a1a1a; outline: none; line-height: 1.5;
+            transition: border-color 150ms;
+        }
+        .tap-input:focus { border-color: #FFA426; }
+        .tap-input::placeholder { color: #94a3b8; }
+        .tap-send-btn {
+            width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+            background: #FFA426; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #1a1a1a; transition: all 120ms;
+        }
+        .tap-send-btn:hover { background: #F89622; transform: scale(1.05); }
+        .tap-send-btn:disabled { background: #e2e8f0; cursor: not-allowed; transform: none; }
+    </style>
+</head>
+<body>
+
+    <!-- ── Top Bar ── -->
+    <header class="top-bar">
+         <img
+        src="trmericLogo.svg"
+        alt="trmeric logo"
+        style="height: 32px"
+        class="trmeric-logo"
+      />
+        <!-- <div class="top-bar__logo">T</div>
+        <nav class="top-bar__breadcrumb">
+            <span>Workspace</span>
+            <span class="top-bar__breadcrumb-sep">›</span>
+            <span>BHP WAIO</span>
+            <span class="top-bar__breadcrumb-sep">›</span>
+            <span class="top-bar__breadcrumb-current">Q1 Strategic Investment</span>
+            <span class="top-bar__status-chip">
+                <span class="top-bar__status-dot"></span>Active
+            </span>
+        </nav> -->
+        <div class="top-bar__center">
+            <div class="view-toggle">
+                <button class="view-toggle__btn active">My Hub</button>
+                <button class="view-toggle__btn">Tango</button>
+            </div>
+        </div>
+        <div class="top-bar__right">
+            <button class="top-bar__icon-btn" title="Search">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <button class="top-bar__icon-btn" title="Notifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </button>
+            <button class="top-bar__icon-btn" title="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+            <div class="top-bar__avatar">KV</div>
+        </div>
+    </header>
+
+    <!-- ── App Shell ── -->
+    <div class="app-shell">
+
+        <!-- Inner Nav -->
+        <nav class="inner-nav" id="innerNav">
+            <button class="inner-nav__toggle" onclick="document.getElementById('innerNav').classList.toggle('collapsed')">
+                <div class="inner-nav__toggle-icon"><span></span><span></span><span></span></div>
+                <span class="inner-nav__toggle-label">Collapse</span>
+            </button>
+            <div class="inner-nav__section-label">WORKSPACE VIEWS</div>
+            <button class="inner-nav__item" onclick="window.location.href='trmeric-execution-raid-v3.html'">
+                <div class="inner-nav__item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </div>
+                <span class="inner-nav__item-label">Overview</span>
+            </button>
+            <button class="inner-nav__item" onclick="window.location.href='trmeric-scope.html'">
+                <div class="inner-nav__item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <span class="inner-nav__item-label">Scope &amp; Business case</span>
+            </button>
+            <button class="inner-nav__item active" id="navSolution">
+                <div class="inner-nav__item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                </div>
+                <span class="inner-nav__item-label">Solution</span>
+            </button>
+            <button class="inner-nav__item" onclick="window.location.href='trmeric-structure.html'">
+                <div class="inner-nav__item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="2"/><rect x="3" y="11" width="7" height="4" rx="1"/><rect x="14" y="11" width="7" height="4" rx="1"/><rect x="3" y="19" width="7" height="2" rx="1"/><rect x="14" y="19" width="7" height="2" rx="1"/></svg>
+                </div>
+                <span class="inner-nav__item-label">Structure</span>
+            </button>
+            <button class="inner-nav__item" onclick="window.location.href='trmeric-execution-raid-v3.html'">
+                <div class="inner-nav__item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <span class="inner-nav__item-label">Live</span>
+                <span class="inner-nav__notif"></span>
+            </button>
+        </nav>
+
+        <!-- ── Document Canvas ── -->
+        <div class="doc-canvas-bg" id="docCanvas">
+
+            <!-- ══════════════════════════════════════════════════════
+                 ZONE HEADER — Demand Live pattern
+            ══════════════════════════════════════════════════════ -->
+            <div class="zone-header" id="zoneHeader">
+
+                <!-- Row 1: ALWAYS VISIBLE — title + phase tag + avatars + submit + chevron -->
+                <div class="zh-title-row">
+                    <div class="zh-title-left" style="flex:1; min-width:0;">
+                        <div class="zh-eyebrow">BHP WAIO</div>
+                        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                            <h1 class="zh-title">SAP PCBA Consignment</h1>
+                            <span class="zh-chip" style="background:#FFF8F0; color:#FFA426; border-color:rgba(255,164,38,0.3); font-size:11px; padding:3px 10px; font-weight:700;">💡 Solutioning Phase</span>
+                        </div>
+                    </div>
+                    <div class="zh-title-right">
+                        <div class="zh-avatars">
+                            <div class="zh-av" style="background:linear-gradient(135deg,#667eea,#764ba2);" title="Kevin V.">KV</div>
+                            <div class="zh-av" style="background:linear-gradient(135deg,#f093fb,#f5576c);" title="Arjun M. — editing">AM</div>
+                            <div class="zh-av" style="background:linear-gradient(135deg,#11998e,#38ef7d);color:#1a1a1a;" title="Sarah C.">SC</div>
+                        </div>
+                        <div class="ai-toggle-wrap" title="Toggle AI assistance">
+                            <span class="ai-toggle-label">AI Assist</span>
+                            <label class="ai-toggle">
+                                <input type="checkbox" id="aiAssistToggle" checked onchange="toggleAiMode(this)">
+                                <span class="ai-toggle-track"></span>
+                            </label>
+                        </div>
+                        <button class="canvas-submit-btn" onclick="showToast('🚀','Submitted for review','Solution sent to Kevin V. for final review.','#10b981')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            Submit for Final Review
+                        </button>
+                        <button class="zh-expand-btn" id="zhExpandBtn" onclick="toggleZoneHeader()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="zhChevron"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 2: COLLAPSIBLE — chips + date -->
+                <div class="zh-collapsible" id="zhCollapsible">
+                    <div style="display:flex; align-items:center; gap:8px; padding-bottom:12px; width:100%;">
+                        <span class="zh-chip zh-chip-status" style="font-size:11px;">
+                            <span class="zh-chip-dot amber"></span>In Review
+                        </span>
+                        <span class="zh-chip" style="font-size:11px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                            Arjun M.
+                        </span>
+                        <span style="flex:1;"></span>
+                        <button class="zh-chip editable-timeline" style="font-size:11px;" onclick="openTimelinePopover(this)">
+                            📅 Jan 14, 2025 — Feb 05, 2025
+                            <span style="color:#cbd5e1; margin:0 4px;">|</span>
+                            <span style="color:#FFA426; font-weight:700;">12 days left</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px; color:#94a3b8; flex-shrink:0;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+            </div><!-- /zone-header -->
+
+            <!-- ══════════════════════════════════════════════════════
+                 STICKY RICH TEXT EDITOR TOOLBAR
+            ══════════════════════════════════════════════════════ -->
+            <div class="sticky-editor-toolbar" id="stickyEditorBar">
+                <!-- Group 1: Text type dropdown -->
+                <div class="set-group">
+                    <div class="set-dropdown" onclick="toggleSetDropdown(this)" tabindex="0">
+                        <span id="setStyleLabel">Normal Text</span>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <div class="set-dropdown-menu">
+                            <div class="set-dd-item" onclick="applyBlockFormat('p','Normal Text')">Normal Text</div>
+                            <div class="set-dd-item set-dd-h1" onclick="applyBlockFormat('h1','Heading 1')">Heading 1</div>
+                            <div class="set-dd-item set-dd-h2" onclick="applyBlockFormat('h2','Heading 2')">Heading 2</div>
+                            <div class="set-dd-item set-dd-h3" onclick="applyBlockFormat('h3','Heading 3')">Heading 3</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="set-divider"></div>
+                <!-- Group 2: Font + Size -->
+                <div class="set-group">
+                    <div class="set-dropdown" style="min-width:90px;" onclick="toggleSetDropdown(this)" tabindex="0">
+                        <span>Poppins</span>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <div class="set-dropdown-menu">
+                            <div class="set-dd-item" onclick="document.execCommand('fontName','false','Poppins')">Poppins</div>
+                            <div class="set-dd-item" style="font-family:Georgia,serif;" onclick="document.execCommand('fontName','false','Georgia')">Georgia</div>
+                            <div class="set-dd-item" style="font-family:monospace;" onclick="document.execCommand('fontName','false','monospace')">Monospace</div>
+                        </div>
+                    </div>
+                    <div class="set-dropdown" style="min-width:58px;" onclick="toggleSetDropdown(this)" tabindex="0">
+                        <span id="setFontSize">14px</span>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <div class="set-dropdown-menu">
+                            <div class="set-dd-item" onclick="applyFontSize(1,'12px')">12px</div>
+                            <div class="set-dd-item" onclick="applyFontSize(2,'13px')">13px</div>
+                            <div class="set-dd-item set-dd-active" onclick="applyFontSize(3,'14px')">14px</div>
+                            <div class="set-dd-item" onclick="applyFontSize(4,'16px')">16px</div>
+                            <div class="set-dd-item" onclick="applyFontSize(5,'18px')">18px</div>
+                            <div class="set-dd-item" onclick="applyFontSize(6,'20px')">20px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="set-divider"></div>
+                <!-- Group 3: Formatting -->
+                <div class="set-group">
+                    <button class="set-btn set-bold" title="Bold (Ctrl+B)" onclick="document.execCommand('bold')">B</button>
+                    <button class="set-btn set-italic" title="Italic (Ctrl+I)" onclick="document.execCommand('italic')">I</button>
+                    <button class="set-btn set-underline" title="Underline (Ctrl+U)" onclick="document.execCommand('underline')">U</button>
+                    <button class="set-btn set-strike" title="Strikethrough" onclick="document.execCommand('strikethrough')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="12" x2="20" y2="12"/><path d="M17.5 6.5C17 4.5 15 3 12 3c-3.5 0-5.5 2-5.5 4.5 0 1.8 1 3.1 2.5 4"/><path d="M6.5 17.5C7 19.5 9 21 12 21c3.5 0 5.5-2 5.5-4.5 0-1.3-.5-2.4-1.5-3.2"/></svg>
+                    </button>
+                </div>
+                <div class="set-divider"></div>
+                <!-- Group 4: Colors -->
+                <div class="set-group">
+                    <button class="set-btn set-color-btn" title="Text color" onclick="showSetColorPicker(event,'fore')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 3L5 20"/><path d="M15 3l4 17"/><path d="M6.5 13h11"/><path d="M3 20h18"/></svg>
+                        <span class="set-color-swatch" id="setForeColor" style="background:#1a1a1a;"></span>
+                    </button>
+                    <button class="set-btn set-color-btn" title="Highlight color" onclick="showSetColorPicker(event,'back')">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15.5 2.1L3.9 13.7c-.4.4-.6.9-.6 1.4V20h4.9c.5 0 1-.2 1.4-.6L21.2 7.8c.5-.5.5-1.4 0-1.9L17.4 2.1c-.5-.5-1.4-.5-1.9 0z"/><line x1="13" y1="4" x2="19" y2="10"/></svg>
+                        <span class="set-color-swatch" id="setBackColor" style="background:#fef08a;"></span>
+                    </button>
+                </div>
+                <div class="set-divider"></div>
+                <!-- Group 5: Paragraph -->
+                <div class="set-group">
+                    <button class="set-btn" title="Bullet list" onclick="document.execCommand('insertUnorderedList')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg>
+                    </button>
+                    <button class="set-btn" title="Numbered list" onclick="document.execCommand('insertOrderedList')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+                    </button>
+                    <button class="set-btn" title="Align left" onclick="document.execCommand('justifyLeft')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="15" y2="12"/><line x1="3" y1="18" x2="18" y2="18"/></svg>
+                    </button>
+                    <button class="set-btn" title="Align center" onclick="document.execCommand('justifyCenter')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                    </button>
+                    <button class="set-btn" title="Align right" onclick="document.execCommand('justifyRight')">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="9" y1="12" x2="21" y2="12"/><line x1="6" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                </div>
+                <div class="set-divider"></div>
+                <!-- Group 6: AI — pushed far right -->
+                <div class="set-group set-group-ai">
+                    <button class="set-tango-btn" onclick="tangoRewriteSelection()">
+                        ✦ Rewrite with Tango
+                    </button>
+                </div>
+            </div><!-- /sticky-editor-toolbar -->
+
+            <!-- ═══════════════════════════════
+                 THE PAPER — editable document canvas
+            ═══════════════════════════════ -->
+            <div class="doc-paper">
+
+
+                <h2 class="doc-h2"><span class="doc-h2-num">1</span> Technical Architecture</h2>
+
+                <div class="doc-block">
+                    <span class="doc-sparkle" onclick="triggerTangoBlock(this)">✦</span>
+                    <p class="doc-p doc-editable" contenteditable="true" spellcheck="false">The platform is built on a cloud-native, event-driven architecture hosted on Microsoft Azure. The core design principle is separation of concerns — raw sensor data flows through a dedicated ingestion layer before being normalised and enriched in a structured processing pipeline, ensuring data quality is enforced at the earliest possible stage rather than at query time.</p>
+                </div>
+
+                <!-- Architecture layer diagram -->
+                <div class="doc-arch-diagram">
+                    <div class="arch-layers">
+                        <div class="arch-layer ingestion">
+                            <div class="arch-layer-label">Ingestion</div>
+                            <div class="arch-items">
+                                <div class="arch-item">Azure IoT Hub</div>
+                                <div class="arch-item">Event Hubs</div>
+                                <div class="arch-item">API Connectors</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-layer processing">
+                            <div class="arch-layer-label">Processing</div>
+                            <div class="arch-items">
+                                <div class="arch-item">Databricks</div>
+                                <div class="arch-item">Azure Data Factory</div>
+                                <div class="arch-item">Delta Lake</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-layer ai-layer">
+                            <div class="arch-layer-label">AI / ML</div>
+                            <div class="arch-items">
+                                <div class="arch-item">Azure ML Studio</div>
+                                <div class="arch-item">Trmeric AI Engine</div>
+                                <div class="arch-item">MLflow</div>
+                            </div>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-layer output">
+                            <div class="arch-layer-label">Output</div>
+                            <div class="arch-items">
+                                <div class="arch-item">Safety Dashboard</div>
+                                <div class="arch-item">Compliance API</div>
+                                <div class="arch-item">Alerts Engine</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size:10.5px;color:#aaa;font-style:italic;">High-level architecture · Click layers to expand</div>
+                </div>
+
+                <h3 class="doc-h3" contenteditable="true" spellcheck="false">Core technology stack</h3>
+                <div class="doc-block">
+                    <span class="doc-sparkle" onclick="triggerTangoBlock(this)">✦</span>
+                    <ul class="doc-tech-list" id="techList">
+                        <li><span class="doc-tech-tag">Ingestion</span> Azure IoT Hub — manages 1,200+ sensor connections with guaranteed delivery and schema validation at the edge</li>
+                        <li><span class="doc-tech-tag">Streaming</span> Azure Event Hubs — processes 50,000+ events/second with millisecond latency for real-time risk signal processing</li>
+                        <li><span class="doc-tech-tag">Pipeline</span> Databricks + Delta Lake — unified analytics engine with ACID-compliant lakehouse storage for sensor and ERP data</li>
+                        <li><span class="doc-tech-tag">Orchestration</span> Azure Data Factory — manages ETL pipelines with dependency resolution, retry logic, and lineage tracking</li>
+                        <li><span class="doc-tech-tag">AI / ML</span> Azure ML Studio + MLflow — model training, experiment tracking, and automated retraining on drift detection</li>
+                        <li><span class="doc-tech-tag">API Layer</span> Azure API Management — rate-limited, OAuth2-secured endpoints for dashboard and third-party integrations</li>
+                        <li><span class="doc-tech-tag">Frontend</span> Trmeric Platform — React-based analytics canvas with role-specific executive and operational views</li>
+                        <li><span class="doc-tech-tag">Compliance</span> Microsoft Purview — automated data classification, lineage, and audit trail for HIPAA and AS/NZS 4801 requirements</li>
+                    </ul>
+                </div>
+
+                <hr class="doc-divider">
+
+                <!-- ══════════════════════════════════════
+                     SECTION 2 — Data Flow & Integration
+                            <h2 class="doc-h2"><span class="doc-h2-num">2</span> Data Flow &amp; Integration</h2>
+
+                <div class="doc-block">
+                    <span class="doc-sparkle" onclick="triggerTangoBlock(this)">✦</span>
+                    <p class="doc-p doc-editable" contenteditable="true" spellcheck="false">Data originates at three distinct source tiers: edge sensors (IoT devices on equipment and environmental monitors), operational systems (ERP, SCADA, maintenance management), and external feeds (weather APIs, regulatory databases). Each tier has a dedicated ingestion adapter with schema enforcement, deduplication, and field-level lineage tracking built in from day one.</p>
+                </div>
+
+                <div class="doc-callout">
+                    <div class="doc-callout-label">🔗 Integration Constraint</div>
+                    <p>The BHP SCADA system (OSIsoft PI) operates on a closed network segment. A dedicated data diode with a scheduled 15-minute batch export has been agreed with the WAIO IT Security team as the approved integration pattern — real-time streaming from SCADA is out of scope for Phase 1.</p>
+                </div>
+
+                <!-- AI-generated block — live typing state -->
+                <div class="doc-ai-block" id="aiGeneratedBlock">
+                    <div class="doc-ai-label">
+                        <span>✦</span> Tango · AI-generated
+                        <span style="background:#f0e8ff;color:#8b5cf6;padding:1px 8px;border-radius:99px;font-size:9px;margin-left:4px;">Draft</span>
+                    </div>
+                    <div class="doc-ai-text doc-editable" contenteditable="true" spellcheck="false">
+                        The Salesforce CRM and Google Analytics connectors will use OAuth2 device-flow authentication with token refresh handled by the API Management gateway. Field mapping tables have been pre-defined for 47 CRM attributes and 23 GA4 event dimensions. A schema registry in Delta Lake will version all field mappings, enabling upstream schema changes to be detected and surfaced as breaking-change alerts before they propagate into the analytics layer.<span class="doc-ai-cursor"></span>
+                    </div>
+                </div>
+
+                <div class="doc-block">
+                    <span class="doc-sparkle" onclick="triggerTangoBlock(this)">✦</span>
+                    <p class="doc-p doc-editable" contenteditable="true" spellcheck="false">Downstream, all processed data is served via a GraphQL API layer that enforces row-level security based on the user's site access profile. Executive users receive aggregated, cross-site views, while site safety managers are restricted to their assigned geographic cluster. This access model was validated in a security design review with BHP's CISO team on Jan 28, 2025.</p>
+                </div>
+
+                <hr class="doc-divider">
+
+                <!-- ══════════════════════════════════════
+                     SECTION 3 — Resource Requirements
+            
+                <h2 class="doc-h2"><span class="doc-h2-num">3</span> Resource Requirements</h2>
+
+                <div class="doc-block">
+                    <span class="doc-sparkle" onclick="triggerTangoBlock(this)">✦</span>
+                    <p class="doc-p doc-editable" contenteditable="true" spellcheck="false">Phase 1 delivery requires a cross-functional team of 8 core contributors across EY, BHP WAIO digital, and vendor partners. Cloud infrastructure is provisioned on a consumption-based model with hard spend caps enforced at the Azure subscription level.</p>
+                </div>
+
+                <div class="doc-kpi-row">
+                    <div class="doc-kpi-card">
+                        <div class="doc-kpi-label">Total Cloud Cost</div>
+                        <div class="doc-kpi-value">$500K</div>
+                        <div class="doc-kpi-sub">Azure consumption · FY25</div>
+                        <div class="doc-kpi-trend warn">⚠ Databricks GPUs at risk</div>
+                    </div>
+                    <div class="doc-kpi-card">
+                        <div class="doc-kpi-label">Required FTEs</div>
+                        <div class="doc-kpi-value">8.5</div>
+                        <div class="doc-kpi-sub">Core team headcount</div>
+                        <div class="doc-kpi-trend up">↑ 1 open role to fill</div>
+                    </div>
+                    <div class="doc-kpi-card">
+                        <div class="doc-kpi-label">Vendor Spend</div>
+                        <div class="doc-kpi-value">$320K</div>
+                        <div class="doc-kpi-sub">Databricks + Trmeric licences</div>
+                        <div class="doc-kpi-trend up">✓ Contracts signed</div>
+                    </div>
+                </div>
+
+                <h3 class="doc-h3" contenteditable="true" spellcheck="false">Staffing model</h3>
+                <div class="doc-block">
+                    <span class="doc-sparkle" onclick="triggerTangoBlock(this)">✦</span>
+                    <p class="doc-p doc-editable" contenteditable="true" spellcheck="false">The engagement model splits delivery responsibility: EY leads architecture, cloud provisioning, and ML pipeline development (5 FTEs). BHP WAIO digital contributes a product owner, a data steward, and a site liaison (2 FTEs). One open Data Engineer role — identified as the critical path dependency for the transformation pipeline — is being actively recruited with a target start date of March 3, 2025.</p>
+                </div>
+
+                <hr class="doc-divider">
+
+                <!-- ══════════════════════════════════════
+                     SECTION 4 — Decision Log
+                ══════════════════════════════════════ -->
+                <h2 class="doc-h2"><span class="doc-h2-num">4</span> Key Decisions &amp; Assumptions</h2>
+
+                <div class="doc-block">
+                    <span class="doc-sparkle" onclick="triggerTangoBlock(this)">✦</span>
+                    <p class="doc-p doc-editable" contenteditable="true" spellcheck="false">The following architectural decisions are locked and should not be revisited without a formal change request to the steering committee. Each carries a date and owner to maintain an auditable record of the solution rationale.</p>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+                    <!-- Decision row -->
+                    <div style="display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:13px 16px;background:#fafafa;border:1px solid #f0f0f0;border-radius:9px;border-left:3px solid #3b82f6;">
+                        <div style="width:24px;height:24px;border-radius:6px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#3b82f6;flex-shrink:0;">D1</div>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px;">Azure over AWS for primary cloud platform</div>
+                            <div style="font-size:12px;color:#64748b;line-height:1.5;">BHP's enterprise agreement with Microsoft provides a 28% discount on Azure consumption. Existing BHP IT team has Azure skills. Databricks runs natively on both; no re-work needed.</div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;"><div style="font-size:10px;color:#aaa;">Jan 15, 2025</div><div style="font-size:11px;font-weight:600;color:#555;">Kevin V.</div></div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:13px 16px;background:#fafafa;border:1px solid #f0f0f0;border-radius:9px;border-left:3px solid #8b5cf6;">
+                        <div style="width:24px;height:24px;border-radius:6px;background:#f5f0ff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#8b5cf6;flex-shrink:0;">D2</div>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px;">Trmeric as primary analytics and AI orchestration layer</div>
+                            <div style="font-size:12px;color:#64748b;line-height:1.5;">Trmeric's demand-resource management modules replace a planned custom build. Estimated to save 6 weeks of development time and provide an enterprise-tested UI for the safety dashboard.</div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;"><div style="font-size:10px;color:#aaa;">Jan 18, 2025</div><div style="font-size:11px;font-weight:600;color:#555;">Arjun M.</div></div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:start;padding:13px 16px;background:#fafafa;border:1px solid #f0f0f0;border-radius:9px;border-left:3px solid #FFA426;">
+                        <div style="width:24px;height:24px;border-radius:6px;background:#FFF8F0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#FFA426;flex-shrink:0;">D3</div>
+                        <div>
+                            <div style="font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:3px;">Batch export pattern for SCADA integration (Phase 1)</div>
+                            <div style="font-size:12px;color:#64748b;line-height:1.5;">Real-time streaming from OSIsoft PI is not approved by BHP IT Security for Phase 1. 15-minute batch export via data diode is the approved pattern. Real-time to be re-evaluated in Phase 2.</div>
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;"><div style="font-size:10px;color:#aaa;">Jan 28, 2025</div><div style="font-size:11px;font-weight:600;color:#555;">Sarah C.</div></div>
+                    </div>
+                </div>
+
+            </div><!-- /doc-paper -->
+
+        <!-- ── Bottom action bar — finalize + save at the BOTTOM ── -->
+        <div class="doc-finalize-bar">
+            <div class="doc-finalize-status">
+                <span class="doc-finalize-status-dot"></span>
+                In Review · Last saved just now
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;">
+                <button class="doc-save-btn" onclick="showToast('✓','Saved','Document saved for later.')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Save for later
+                </button>
+                <button class="doc-finalize-btn" onclick="showToast('🚀','Solution finalised','Moving to next stage — Execution.', '#10b981')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Finalise Solution &amp; Proceed
+                </button>
+            </div>
+        </div>
+
+        </div><!-- /doc-canvas-bg -->
+
+        <!-- TANGO AGENT PANEL — flex sibling -->
+        <aside class="tango-agent-panel" id="tangoAgentPanel">
+
+        <!-- Header -->
+        <div class="tap-header">
+            <div class="tap-header-left">
+                <div class="tap-icon">✦</div>
+                <div>
+                    <div class="tap-title">Tango Agent</div>
+                    <div class="tap-subtitle" id="tapSubtitle">Ready to help</div>
+                </div>
+            </div>
+            <button class="tap-close" onclick="closeTangoAgent()" title="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+
+        <!-- Context pill — shows which section triggered the agent -->
+        <div class="tap-context-bar" id="tapContextBar" style="display:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span id="tapContextLabel">Section</span>
+        </div>
+
+        <!-- Chat messages -->
+        <div class="tap-messages" id="tapMessages"></div>
+
+        <!-- Suggestion card (appears after AI responds) -->
+        <div class="tap-suggestion-card" id="tapSuggestionCard" style="display:none;">
+            <div class="tap-sug-label">✦ Suggested content</div>
+            <div class="tap-sug-text" id="tapSugText"></div>
+            <div class="tap-sug-actions">
+                <button class="tap-sug-accept" onclick="acceptSuggestion()">Insert into doc</button>
+                <button class="tap-sug-retry"  onclick="retrySuggestion()">Regenerate</button>
+            </div>
+        </div>
+
+        <!-- Input area -->
+        <div class="tap-input-area">
+            <textarea class="tap-input" id="tapInput" placeholder="Add context or ask Tango to refine…" rows="2" onkeydown="handleTapKey(event)"></textarea>
+            <button class="tap-send-btn" id="tapSendBtn" onclick="sendTapMessage()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+        </div>
+
+    </aside>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+
+        /* ── Toast ── */
+        function showToast(icon, title, msg, color) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-icon').textContent  = icon;
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-msg').textContent   = msg || '';
+            t.style.borderLeftColor = color || '#FFA426';
+            t.classList.add('show');
+            clearTimeout(t._t);
+            t._t = setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        /* ── Sparkle contextual trigger ── */
+        /* ══════════════════════════════════════
+           TANGO AGENT — sparkle trigger + chat
+        ══════════════════════════════════════ */
+
+        // Section-aware context data
+        var _sectionContexts = {
+            'Technical Architecture': {
+                question: 'I can see you are working on the Technical Architecture section. What aspect would you like me to help with?',
+                quickReplies: ['Expand the tech stack', 'Add security considerations', 'Suggest Azure services', 'Write integration notes'],
+                suggestion: 'The platform leverages a multi-tier cloud-native architecture on Microsoft Azure. The ingestion layer uses Azure IoT Hub to handle 1,200+ sensor connections with guaranteed delivery, feeding into Azure Event Hubs for real-time stream processing at 50,000+ events/second. Databricks with Delta Lake provides the unified analytics and ML training environment, while Azure API Management enforces OAuth2-secured, rate-limited access for all downstream consumers.'
+            },
+            'Data Flow': {
+                question: 'You have opened the Data Flow & Integration section. Do you want me to help document the integration pattern or suggest error handling?',
+                quickReplies: ['Document the ETL flow', 'Add error handling', 'Describe retry strategy', 'Add data lineage notes'],
+                suggestion: 'All data sources connect through dedicated ingestion adapters with schema validation and deduplication at the edge. IoT sensor data flows through Azure IoT Hub to Event Hubs to Databricks streaming pipeline in under 500ms. ERP and SCADA systems use a scheduled 15-minute batch export via data diode, enforced by BHP IT Security. A schema registry in Delta Lake versions all field mappings and surfaces breaking-change alerts before they propagate downstream.'
+            },
+            'Resource Requirements': {
+                question: 'Looking at Resource Requirements. Should I help estimate costs, define the team structure, or both?',
+                quickReplies: ['Estimate cloud costs', 'Define team roles', 'Add vendor requirements', 'Suggest capacity model'],
+                suggestion: 'Phase 1 requires 8.5 FTEs across three workstreams: EY delivers architecture, cloud provisioning, and ML pipeline development (5 FTEs); BHP WAIO digital contributes a product owner, data steward, and site liaison (2 FTEs); one Data Engineer role remains open on the critical path (target start: March 3, 2025). Cloud spend is capped at $500K via Azure subscription-level spend alerts, with Databricks and Trmeric licences totalling $320K under signed contracts.'
+            },
+            'Key Decisions': {
+                question: 'I can help you document architectural decisions. Want me to suggest a new decision entry, or expand on an existing one?',
+                quickReplies: ['Add a new decision', 'Expand D1 rationale', 'Add risk to D2', 'Document D3 trade-offs'],
+                suggestion: 'D4 - GraphQL over REST for the analytics API layer: A GraphQL API gateway was chosen over REST to allow role-specific field-level access without over-fetching. This enables the executive dashboard to request aggregated cross-site views while site safety managers receive filtered single-site data through the same endpoint. The access model was validated in a security design review with the CISO team on Jan 28, 2025. Owner: Arjun M.'
+            }
+        };
+
+        // Default context
+        var _defaultContext = {
+            question: 'I am ready to help with this section. What would you like me to write, expand, or improve?',
+            quickReplies: ['Expand this section', 'Make it more concise', 'Add technical detail', 'Improve clarity'],
+            suggestion: 'This section can be enhanced with additional context drawn from the project scope, architecture decisions, and stakeholder requirements already captured in Trmeric. Tango can generate a structured draft based on comparable engagement data from the BHP WAIO project baseline.'
+        };
+
+        // State
+        var _tapTargetEl   = null;
+        var _tapSection    = '';
+        var _tapSugContent = '';
+
+        /* ── Open agent from sparkle ── */
+        function triggerTangoBlock(sparkleEl) {
+            var block = sparkleEl.closest('.doc-block') || sparkleEl.parentElement;
+            _tapTargetEl = sparkleEl.nextElementSibling;
+
+            // Walk up to find the nearest preceding h2
+            var node = block ? block.previousElementSibling : null;
+            var sectionName = '';
+            while (node) {
+                if (node.classList && node.classList.contains('doc-h2')) {
+                    sectionName = node.textContent.trim().replace(/^\d+\s*/, '');
+                    break;
+                }
+                node = node.previousElementSibling;
+            }
+            _tapSection = sectionName;
+
+            // Highlight the target paragraph briefly
+            if (_tapTargetEl) {
+                _tapTargetEl.style.transition = 'box-shadow 200ms';
+                _tapTargetEl.style.boxShadow  = 'inset 0 0 0 2px rgba(139,92,246,0.3)';
+                _tapTargetEl.style.borderRadius = '6px';
+                setTimeout(function() {
+                    _tapTargetEl.style.boxShadow = '';
+                    _tapTargetEl.style.borderRadius = '';
+                }, 2000);
+            }
+
+            openTangoAgent(sectionName);
+        }
+
+        /* ── Open from right-nav button ── */
+        function toggleTangoSidePanel() {
+            var panel = document.getElementById('tangoAgentPanel');
+            if (panel.classList.contains('open')) {
+                closeTangoAgent();
+            } else {
+                openTangoAgent('');
+            }
+        }
+
+        function openTangoAgent(sectionName) {
+            var panel = document.getElementById('tangoAgentPanel');
+            if (!panel) return;
+
+            // Reset chat
+            document.getElementById('tapMessages').innerHTML = '';
+            document.getElementById('tapSuggestionCard').style.display = 'none';
+            document.getElementById('tapInput').value = '';
+            document.querySelectorAll('.tap-quick-replies').forEach(function(el) { el.remove(); });
+
+            // Context bar
+            var ctx    = document.getElementById('tapContextBar');
+            var ctxLbl = document.getElementById('tapContextLabel');
+            if (sectionName && ctx && ctxLbl) {
+                ctxLbl.textContent = sectionName;
+                ctx.style.display = 'flex';
+            } else if (ctx) {
+                ctx.style.display = 'none';
+            }
+
+            // Subtitle
+            var sub = document.getElementById('tapSubtitle');
+            if (sub) sub.textContent = sectionName ? 'Working on: ' + sectionName : 'Solution Architecture';
+
+            // Notif dot
+            var dot = document.getElementById('tangoNotifDot');
+            if (dot) dot.style.opacity = '0';
+
+            panel.classList.add('open');
+
+            // Greet after short delay
+            setTimeout(function() {
+                var ctxKey = Object.keys(_sectionContexts).find(function(k) { return sectionName.indexOf(k) >= 0; });
+                var sCtx = ctxKey ? _sectionContexts[ctxKey] : _defaultContext;
+                addAgentMessage(sCtx.question, true);
+                setTimeout(function() { showQuickReplies(sCtx.quickReplies); }, 900);
+            }, 200);
+        }
+
+        function closeTangoAgent() {
+            var panel = document.getElementById('tangoAgentPanel');
+            if (panel) panel.classList.remove('open');
+        }
+        function closeTangoSidePanel() { closeTangoAgent(); }
+
+        /* ── Chat helpers ── */
+        function addAgentMessage(text, withTyping) {
+            var msgs = document.getElementById('tapMessages');
+            if (!msgs) return;
+            document.querySelectorAll('.tap-quick-replies').forEach(function(el) { el.remove(); });
+
+            if (withTyping) {
+                var typing = document.createElement('div');
+                typing.className = 'tap-msg agent';
+                typing.id = 'tapTypingIndicator';
+                typing.innerHTML = '<div class="tap-typing"><div class="tap-typing-dot"></div><div class="tap-typing-dot"></div><div class="tap-typing-dot"></div></div>';
+                msgs.appendChild(typing);
+                msgs.scrollTop = msgs.scrollHeight;
+                setTimeout(function() {
+                    typing.remove();
+                    appendBubble(msgs, 'agent', text);
+                }, 900);
+            } else {
+                appendBubble(msgs, 'agent', text);
+            }
+        }
+
+        function addUserMessage(text) {
+            var msgs = document.getElementById('tapMessages');
+            document.querySelectorAll('.tap-quick-replies').forEach(function(el) { el.remove(); });
+            appendBubble(msgs, 'user', text);
+        }
+
+        function appendBubble(container, role, text) {
+            var now  = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+            var wrap = document.createElement('div');
+            wrap.className = 'tap-msg ' + role;
+            var bubble = document.createElement('div');
+            bubble.className = 'tap-bubble';
+            bubble.textContent = text;
+            var time = document.createElement('div');
+            time.className = 'tap-msg-time';
+            time.textContent = now;
+            wrap.appendChild(bubble);
+            wrap.appendChild(time);
+            container.appendChild(wrap);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showQuickReplies(replies) {
+            var msgs  = document.getElementById('tapMessages');
+            if (!msgs) return;
+            var strip = document.createElement('div');
+            strip.className = 'tap-quick-replies';
+            replies.forEach(function(r) {
+                var chip = document.createElement('button');
+                chip.className = 'tap-qr-chip';
+                chip.textContent = r;
+                chip.onclick = function() {
+                    document.getElementById('tapInput').value = r;
+                    sendTapMessage();
+                };
+                strip.appendChild(chip);
+            });
+            msgs.parentNode.insertBefore(strip, msgs.nextSibling);
+        }
+
+        /* ── Send message ── */
+        function sendTapMessage() {
+            var input = document.getElementById('tapInput');
+            var text  = (input.value || '').trim();
+            if (!text) return;
+            input.value = '';
+            addUserMessage(text);
+
+            var btn = document.getElementById('tapSendBtn');
+            if (btn) btn.disabled = true;
+
+            var lower  = text.toLowerCase();
+            var ctxKey = Object.keys(_sectionContexts).find(function(k) { return _tapSection.indexOf(k) >= 0; });
+            var sCtx   = ctxKey ? _sectionContexts[ctxKey] : _defaultContext;
+
+            var response, suggestion;
+
+            if (lower.indexOf('expand') >= 0 || lower.indexOf('more detail') >= 0 || lower.indexOf('elaborate') >= 0) {
+                response   = 'Sure, I will expand this section with additional technical detail. Here is a draft based on the project architecture and your BHP WAIO context:';
+                suggestion = sCtx.suggestion;
+            } else if (lower.indexOf('concise') >= 0 || lower.indexOf('shorter') >= 0 || lower.indexOf('summarise') >= 0 || lower.indexOf('summarize') >= 0) {
+                response   = 'Here is a more concise version that keeps the key points without the technical depth:';
+                suggestion = sCtx.suggestion.split('.').slice(0,2).join('.') + '.';
+            } else if (lower.indexOf('error') >= 0 || lower.indexOf('retry') >= 0 || lower.indexOf('handling') >= 0) {
+                response   = 'Here is an error handling and retry pattern based on the Azure architecture you have defined:';
+                suggestion = 'All API calls and Event Hub consumers implement exponential backoff with a maximum of 5 retry attempts and a 30-second jitter ceiling. Dead-letter queues are provisioned for all Event Hub consumer groups, with automated alerting when DLQ depth exceeds 500 messages. Failed Databricks jobs surface as Trmeric RAID items within 90 seconds of failure detection.';
+            } else if (lower.indexOf('security') >= 0 || lower.indexOf('compliance') >= 0) {
+                response   = 'Here is a security and compliance paragraph aligned to BHP InfoSec requirements and AS/NZS 4801:';
+                suggestion = 'All data at rest is encrypted using AES-256 via Azure Storage Service Encryption. Data in transit is enforced over TLS 1.3 with mutual authentication for IoT device connections. Role-based access control is implemented at the Azure AD level, with row-level security applied at the Databricks layer for site-scoped views. Microsoft Purview provides automated data classification and lineage tracking to satisfy AS/NZS 4801 and HIPAA audit requirements.';
+            } else if (lower.indexOf('cost') >= 0 || lower.indexOf('budget') >= 0) {
+                response   = 'Here is a cost model summary for this section, drawn from the Cost Estimation canvas:';
+                suggestion = 'Cloud infrastructure for Phase 1 is capped at $500,000 via Azure subscription-level spend alerts. Databricks Premium licensing is $180,000 annually and Trmeric platform access is $140,000 for the engagement period. Total vendor spend of $320,000 is under signed contracts. A contingency reserve of 15% ($75,000) is held against the Azure consumption estimate given GPU compute variance during ML model training.';
+            } else {
+                response   = 'Understood. Based on your project context, here is what I would suggest for this section:';
+                suggestion = sCtx.suggestion;
+            }
+
+            _tapSugContent = suggestion;
+
+            setTimeout(function() {
+                addAgentMessage(response, true);
+                setTimeout(function() {
+                    showSuggestionCard(suggestion);
+                    if (btn) btn.disabled = false;
+                }, 1100);
+            }, 400);
+        }
+
+        function handleTapKey(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendTapMessage();
+            }
+        }
+
+        /* ── Suggestion card ── */
+        function showSuggestionCard(text) {
+            var card = document.getElementById('tapSuggestionCard');
+            var txt  = document.getElementById('tapSugText');
+            if (!card || !txt) return;
+            txt.textContent = text;
+            card.style.display = 'block';
+        }
+
+        function acceptSuggestion() {
+            if (!_tapSugContent) return;
+
+            if (_tapTargetEl && _tapTargetEl.isContentEditable) {
+                _tapTargetEl.textContent = _tapSugContent;
+                _tapTargetEl.style.transition = 'background 400ms';
+                _tapTargetEl.style.background = 'rgba(139,92,246,0.06)';
+                setTimeout(function() { _tapTargetEl.style.background = ''; }, 1200);
+            } else {
+                var paper = document.querySelector('.doc-paper');
+                if (paper) {
+                    var p = document.createElement('p');
+                    p.className = 'doc-p doc-editable';
+                    p.contentEditable = 'true';
+                    p.textContent = _tapSugContent;
+                    paper.appendChild(p);
+                }
+            }
+
+            document.getElementById('tapSuggestionCard').style.display = 'none';
+            addAgentMessage('Done. I have inserted the content. You can edit it directly in the document, or ask me to refine it further.');
+            showToast('\u2726', 'Content inserted', 'Tango added content to the document.', '#8b5cf6');
+        }
+
+        function retrySuggestion() {
+            document.getElementById('tapSuggestionCard').style.display = 'none';
+            addAgentMessage('Let me try a different approach.', true);
+            setTimeout(function() {
+                showSuggestionCard(_tapSugContent);
+                addAgentMessage('Here is an alternative. Let me know if you would like further changes or a different angle.');
+            }, 1500);
+        }
+
+        /* ── AI Assist quiet-mode toggle ── */
+        function toggleAiMode(checkbox) {
+            const canvas = document.getElementById('docCanvas');
+            if (checkbox.checked) {
+                canvas.classList.remove('ai-disabled');
+                showToast('✦', 'AI Assist on', 'Tango suggestions and sparkles are active.', '#8b5cf6');
+            } else {
+                canvas.classList.add('ai-disabled');
+                showToast('🔇', 'Quiet Mode', 'AI features hidden. Toggle to restore.', '#888');
+            }
+        }
+
+        /* ── Keyboard shortcuts ── */
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                showToast('✓', 'Saved', 'Document saved successfully.');
+            }
+            if (e.key === 'Escape') {
+                closeTangoSidePanel();
+            }
+        });
+
+        /* ── Tango rewrite (used by sticky toolbar button) ── */
+        function tangoRewriteSelection() {
+            const sel = window.getSelection();
+            if (!sel || sel.toString().trim().length === 0) {
+                showToast('✦', 'Select text first', 'Highlight a paragraph to rewrite it with Tango.', '#8b5cf6');
+                return;
+            }
+            showToast('✦', 'Tango is rewriting…', 'AI is enhancing your selected text.', '#8b5cf6');
+            setTimeout(() => {
+                showToast('✓', 'Rewrite complete', 'Selection replaced with AI-enhanced copy.', '#8b5cf6');
+            }, 1200);
+        }
+    </script>
+
+    <script>
+        // ── Init ──
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+
+        /* ── Zone header collapse/expand ── */
+        var _zhOpen = true;
+        function toggleZoneHeader() {
+            _zhOpen = !_zhOpen;
+            var coll = document.getElementById('zhCollapsible');
+            var hdr  = document.getElementById('zoneHeader');
+            if (coll) {
+                if (_zhOpen) {
+                    coll.classList.remove('hidden');
+                } else {
+                    coll.classList.add('hidden');
+                }
+            }
+            if (hdr) {
+                if (_zhOpen) {
+                    hdr.classList.remove('collapsed');
+                } else {
+                    hdr.classList.add('collapsed');
+                }
+            }
+        }
+
+        /* ── Sticky toolbar: dropdown toggle ── */
+        function toggleSetDropdown(el) {
+            // close all others
+            document.querySelectorAll('.set-dropdown.open').forEach(function(d) {
+                if (d !== el) d.classList.remove('open');
+            });
+            el.classList.toggle('open');
+        }
+        // Close dropdowns on outside click
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.set-dropdown')) {
+                document.querySelectorAll('.set-dropdown.open').forEach(function(d) {
+                    d.classList.remove('open');
+                });
+            }
+        });
+
+        /* ── Apply block format + update label ── */
+        function applyBlockFormat(tag, label) {
+            document.execCommand('formatBlock', false, tag);
+            var lbl = document.getElementById('setStyleLabel');
+            if (lbl) lbl.textContent = label;
+            document.querySelectorAll('.set-dropdown.open').forEach(function(d) {
+                d.classList.remove('open');
+            });
+        }
+
+        /* ── Apply font size ── */
+        function applyFontSize(size, label) {
+            document.execCommand('fontSize', false, size);
+            var lbl = document.getElementById('setFontSize');
+            if (lbl) lbl.textContent = label;
+            // Update active state
+            document.querySelectorAll('.set-dd-item').forEach(function(i) {
+                i.classList.remove('set-dd-active');
+            });
+            event.target.classList.add('set-dd-active');
+            document.querySelectorAll('.set-dropdown.open').forEach(function(d) {
+                d.classList.remove('open');
+            });
+        }
+
+        /* ── Color pickers ── */
+        function showSetColorPicker(e, type) {
+            e.stopPropagation();
+            var colors = type === 'fore'
+                ? ['#111827','#dc2626','#d97706','#16a34a','#2563eb','#7c3aed','#db2777','#64748b']
+                : ['#fef08a','#bbf7d0','#bfdbfe','#e9d5ff','#fce7f3','#fed7aa','#f1f5f9','transparent'];
+            document.querySelectorAll('.set-color-menu').forEach(function(m){ m.remove(); });
+            var menu = document.createElement('div');
+            menu.className = 'set-color-menu';
+            menu.style.cssText = 'position:fixed;background:white;border:1px solid #e5e7eb;border-radius:8px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;z-index:300;box-shadow:0 8px 20px rgba(0,0,0,0.12);';
+            colors.forEach(function(col) {
+                var dot = document.createElement('div');
+                dot.style.cssText = 'width:20px;height:20px;border-radius:5px;background:' + (col==='transparent'?'#f1f5f9':col) + ';border:1.5px solid rgba(0,0,0,0.08);cursor:pointer;transition:transform 100ms;';
+                if (col === 'transparent') {
+                    dot.innerHTML = '<svg width="20" height="20" viewBox="0 0 20 20"><line x1="2" y1="18" x2="18" y2="2" stroke="#ef4444" stroke-width="1.5"/></svg>';
+                }
+                dot.onmouseenter = function(){ this.style.transform='scale(1.15)'; };
+                dot.onmouseleave = function(){ this.style.transform=''; };
+                dot.onclick = function() {
+                    if (type === 'fore') {
+                        if (col !== 'transparent') document.execCommand('foreColor', false, col);
+                        var sw = document.getElementById('setForeColor');
+                        if (sw) sw.style.background = col === 'transparent' ? '#1a1a1a' : col;
+                    } else {
+                        document.execCommand('hiliteColor', false, col === 'transparent' ? 'transparent' : col);
+                        var sw = document.getElementById('setBackColor');
+                        if (sw) sw.style.background = col === 'transparent' ? '#fef08a' : col;
+                    }
+                    menu.remove();
+                };
+                menu.appendChild(dot);
+            });
+            var r = e.currentTarget.getBoundingClientRect();
+            menu.style.left = r.left + 'px';
+            menu.style.top  = (r.bottom + 5) + 'px';
+            document.body.appendChild(menu);
+            setTimeout(function(){ document.addEventListener('click', function rm(){ menu.remove(); document.removeEventListener('click',rm); }); }, 50);
+        }
+
+
+        function acceptTangoSuggestion() {
+            closeTangoSidePanel();
+            const paper = document.querySelector('.doc-paper');
+            if (paper) {
+                const newBlock = document.createElement('div');
+                newBlock.className = 'doc-ai-block row-new';
+                newBlock.style.marginTop = '18px';
+                newBlock.innerHTML = `
+                    <div class="doc-ai-label"><span>✦</span> Tango · AI-generated <span style="background:#f0e8ff;color:#8b5cf6;padding:1px 8px;border-radius:99px;font-size:9px;margin-left:4px;">New</span></div>
+                    <div class="doc-ai-text">All API calls and event hub consumers implement exponential backoff with a maximum of 5 retry attempts and a 30-second jitter ceiling. Dead-letter queues are provisioned for all Event Hub consumer groups, with automated alerting when DLQ depth exceeds 500 messages. Failed Databricks jobs surface as Trmeric RAID items within 90 seconds of failure detection.<span class="doc-ai-cursor"></span></div>`;
+                // Insert after the callout block
+                const callout = paper.querySelector('.doc-callout');
+                if (callout && callout.nextElementSibling) {
+                    callout.insertAdjacentElement('afterend', newBlock);
+                } else {
+                    paper.appendChild(newBlock);
+                }
+            }
+            document.getElementById('tangoNotifDot').style.display = 'none';
+            showToast('✦', 'Error handling section added', 'Tango generated retry and DLQ pattern.', '#8b5cf6');
+        }
+
+        /* ══════════════════════════════════════
+           TIMELINE EDITOR
+        ══════════════════════════════════════ */
+        function openTimelinePopover(btn) {
+            var pop = document.getElementById('timelinePopover');
+            if (!pop) return;
+
+            // Pre-fill current values from button text
+            var startEl = document.getElementById('tlStartInput');
+            var endEl   = document.getElementById('tlEndInput');
+
+            // Read stored values or fall back to defaults
+            startEl.value = pop.dataset.start || '2025-01-14';
+            endEl.value   = pop.dataset.end   || '2025-02-05';
+
+            updateTlDuration();
+
+            // Position below the button
+            var r = btn.getBoundingClientRect();
+            pop.style.left = Math.min(r.left, window.innerWidth - 320) + 'px';
+            pop.style.top  = (r.bottom + 6) + 'px';
+            pop.classList.add('open');
+
+            // Close on outside click
+            setTimeout(function() {
+                document.addEventListener('click', closeTlOnOutside);
+            }, 50);
+        }
+
+        function closeTlOnOutside(e) {
+            var pop = document.getElementById('timelinePopover');
+            if (pop && !pop.contains(e.target) && !e.target.closest('.editable-timeline')) {
+                closeTimelinePopover();
+                document.removeEventListener('click', closeTlOnOutside);
+            }
+        }
+
+        function closeTimelinePopover() {
+            var pop = document.getElementById('timelinePopover');
+            if (pop) pop.classList.remove('open');
+            document.removeEventListener('click', closeTlOnOutside);
+        }
+
+        function updateTlDuration() {
+            var start = document.getElementById('tlStartInput').value;
+            var end   = document.getElementById('tlEndInput').value;
+            var durEl = document.getElementById('tlDurationLabel');
+            var remEl = document.getElementById('tlRemainingLabel');
+            if (!start || !end) return;
+
+            var startD = new Date(start);
+            var endD   = new Date(end);
+            var today  = new Date();
+            today.setHours(0,0,0,0);
+
+            var total    = Math.round((endD - startD) / 86400000);
+            var remaining = Math.round((endD - today) / 86400000);
+
+            if (durEl) durEl.textContent = Math.max(0, total);
+            if (remEl) {
+                if (remaining > 0) {
+                    remEl.textContent = remaining + ' days left';
+                    remEl.style.color = '#FFA426';
+                    remEl.style.fontWeight = '700';
+                } else if (remaining === 0) {
+                    remEl.textContent = 'Due today';
+                    remEl.style.color = '#ef4444';
+                    remEl.style.fontWeight = '700';
+                } else {
+                    remEl.textContent = Math.abs(remaining) + ' days overdue';
+                    remEl.style.color = '#ef4444';
+                    remEl.style.fontWeight = '700';
+                }
+            }
+        }
+
+        function applyTimeline() {
+            var start = document.getElementById('tlStartInput').value;
+            var end   = document.getElementById('tlEndInput').value;
+            if (!start || !end || new Date(start) >= new Date(end)) {
+                showToast('⚠️', 'Invalid dates', 'End date must be after start date.', '#ef4444');
+                return;
+            }
+
+            var pop   = document.getElementById('timelinePopover');
+            pop.dataset.start = start;
+            pop.dataset.end   = end;
+
+            // Format dates for display: "Jan 14, 2025"
+            function fmtDate(iso) {
+                var d = new Date(iso);
+                return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+            }
+
+            var today     = new Date(); today.setHours(0,0,0,0);
+            var endD      = new Date(end);
+            var total     = Math.round((endD - new Date(start)) / 86400000);
+            var remaining = Math.round((endD - today) / 86400000);
+
+            var remText = remaining > 0
+                ? remaining + ' days left'
+                : remaining === 0 ? 'Due today' : Math.abs(remaining) + 'd overdue';
+            var remColor = remaining >= 0 ? '#FFA426' : '#ef4444';
+
+            // Update ALL editable-timeline buttons on the page
+            document.querySelectorAll('.editable-timeline').forEach(function(btn) {
+                btn.innerHTML =
+                    '📅 ' + fmtDate(start) + ' — ' + fmtDate(end) +
+                    '<span style="color:#cbd5e1;margin:0 4px;">|</span>' +
+                    '<span style="color:' + remColor + ';font-weight:700;">' + remText + '</span>' +
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:6px;color:#94a3b8;flex-shrink:0;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+            });
+
+            closeTimelinePopover();
+            showToast('📅', 'Timeline updated', fmtDate(start) + ' — ' + fmtDate(end) + ' · ' + total + ' days', '#FFA426');
+        }
+
+    </script>
+
+        <!-- Right Nav -->
+        <nav class="right-nav">
+            <button class="right-nav__tango-btn" id="tangoNavBtn" title="Tango Agent" onclick="toggleTangoSidePanel()">
+                <span class="right-nav__tango-icon">✦</span>
+                <span class="right-nav__tango-label">Agent</span>
+                <span class="tango-notif-dot" id="tangoNotifDot"></span>
+            </button>
+            <div class="right-nav__divider"></div>
+            <button class="right-nav__btn active" title="Solution">
+                <span class="right-nav__btn-icon">💡</span>
+                <span class="right-nav__btn-label">Solution</span>
+            </button>
+            <button class="right-nav__btn" title="Diagrams" onclick="showToast('🗂️','Diagrams','Architecture diagram library coming soon.')">
+                <span class="right-nav__btn-icon">🗂️</span>
+                <span class="right-nav__btn-label">Diagrams</span>
+            </button>
+            <button class="right-nav__btn" title="History" onclick="showToast('📋','Version history','4 versions saved.')">
+                <span class="right-nav__btn-icon">🕐</span>
+                <span class="right-nav__btn-label">History</span>
+            </button>
+            <button class="right-nav__btn" title="Comments" onclick="showToast('💬','Comments','4 open comments.')">
+                <span class="right-nav__btn-icon">💬</span>
+                <span class="right-nav__btn-label">Notes</span>
+            </button>
+        </nav>
+    </div><!-- /app-shell -->
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-icon" id="toast-icon">✓</div>
+        <div class="toast-body">
+            <div class="toast-title" id="toast-title"></div>
+            <div class="toast-msg" id="toast-msg"></div>
+        </div>
+    </div>
+
+
+    <!-- Timeline editor popover -->
+    <div class="timeline-popover" id="timelinePopover">
+        <div class="tl-pop-title">Edit Timeline</div>
+        <div class="tl-pop-row">
+            <div class="tl-pop-field">
+                <label>Start Date</label>
+                <input type="date" id="tlStartInput" oninput="updateTlDuration()">
+            </div>
+            <div class="tl-pop-field">
+                <label>End Date</label>
+                <input type="date" id="tlEndInput" oninput="updateTlDuration()">
+            </div>
+        </div>
+        <div class="tl-pop-duration">
+            <span>📅</span>
+            <strong id="tlDurationLabel">22</strong>
+            <span>days total</span>
+            <span style="margin-left:auto;" id="tlRemainingLabel"></span>
+        </div>
+        <div class="tl-pop-actions">
+            <button class="tl-pop-apply"  onclick="applyTimeline()">Apply</button>
+            <button class="tl-pop-cancel" onclick="closeTimelinePopover()">Cancel</button>
+        </div>
+    </div>
+
+</body>
+</html>

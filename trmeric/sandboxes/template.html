@@ -1,0 +1,2036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solution — Choose a Template · Trmeric</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange:#FFA426; --orange-deep:#F89622; --orange-subtle:#FFF8F0;
+  --n900:#1a1a1a; --n800:#333; --n600:#666; --n400:#999;
+  --n200:#e5e5e5; --n100:#f5f5f5; --n50:#fafafa; --white:#fff;
+  --success:#10b981; --info:#3b82f6; --warning:#f59e0b;
+  --purple:#8b5cf6; --gradient-ai:linear-gradient(135deg,#8b5cf6 0%,#FFA426 100%);
+  --r-sm:4px; --r-md:6px; --r-base:8px; --r-lg:12px; --r-full:9999px;
+  --shadow-2:0 1px 3px rgba(0,0,0,0.08);
+  --t-fast:150ms cubic-bezier(0,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Poppins',-apple-system,sans-serif;background:var(--n50);color:var(--n900);font-size:14px;line-height:1.6;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+
+/* ── TOPBAR ── */
+.top-bar{position:fixed;top:0;left:0;right:0;height:52px;background:white;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;padding:0 16px;gap:16px;z-index:200;}
+.top-bar__logo{width:30px;height:30px;border-radius:8px;background:#FFA426;color:#1a1a1a;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.top-bar__breadcrumb{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#888;flex-shrink:0;}
+.top-bar__breadcrumb-sep{color:#ddd;}
+.top-bar__breadcrumb-current{color:#1a1a1a;font-weight:600;}
+.top-bar__status-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1.5px solid #22c55e;border-radius:99px;font-size:11px;font-weight:600;color:#16a34a;}
+.top-bar__status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;}
+.top-bar__center{flex:1;display:flex;justify-content:center;}
+.view-toggle{display:flex;background:#f5f5f5;border-radius:10px;padding:3px;gap:2px;}
+.view-toggle__btn{padding:5px 18px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:500;font-family:'Poppins',sans-serif;color:#888;background:transparent;transition:all 150ms;}
+.view-toggle__btn.active{background:white;color:#1a1a1a;font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,0.08);}
+.top-bar__right{display:flex;align-items:center;gap:4px;}
+.top-bar__icon-btn{width:32px;height:32px;border-radius:8px;background:transparent;border:none;cursor:pointer;color:#888;display:flex;align-items:center;justify-content:center;transition:all 150ms;}
+.top-bar__icon-btn:hover{background:#f5f5f5;color:#333;}
+.top-bar__avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:4px;}
+
+/* ── APP SHELL ── */
+.app-shell{display:flex;margin-top:52px;height:calc(100vh - 52px);overflow:hidden;}
+
+/* ── INNER NAV ── */
+.inner-nav{width:220px;flex-shrink:0;height:100%;background:white;border-right:1px solid #f0f0f0;display:flex;flex-direction:column;transition:width 280ms cubic-bezier(0.4,0,0.2,1);overflow:hidden;}
+.inner-nav.collapsed{width:52px;}
+.inner-nav__toggle{width:100%;height:44px;background:transparent;border:none;display:flex;align-items:center;padding:0 14px;gap:10px;cursor:pointer;border-bottom:1px solid #f5f5f5;flex-shrink:0;transition:background 150ms;}
+.inner-nav__toggle:hover{background:#fafafa;}
+.inner-nav__toggle-icon{width:24px;height:24px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+.inner-nav__toggle-icon span{display:block;width:14px;height:1.5px;background:#888;border-radius:2px;}
+.inner-nav__toggle-label{font-size:11px;font-weight:600;color:#888;white-space:nowrap;overflow:hidden;transition:opacity 200ms;}
+.inner-nav.collapsed .inner-nav__toggle-label{opacity:0;}
+.inner-nav__section-label{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#ccc;padding:14px 14px 6px;white-space:nowrap;overflow:hidden;transition:opacity 200ms;}
+.inner-nav.collapsed .inner-nav__section-label{opacity:0;}
+.inner-nav__item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;border-radius:0;transition:background 150ms;position:relative;white-space:nowrap;border:none;background:transparent;font-family:'Poppins',sans-serif;width:100%;text-align:left;}
+.inner-nav__item:hover{background:#fafafa;}
+.inner-nav__item.active{background:#FFF8F0;}
+.inner-nav__item-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:background 150ms;}
+.inner-nav__item.active .inner-nav__item-icon{background:#FFA426;}
+.inner-nav__item-label{font-size:13px;font-weight:500;color:#666;overflow:hidden;transition:opacity 200ms;flex:1;}
+.inner-nav__item.active .inner-nav__item-label{color:#FFA426;font-weight:600;}
+.inner-nav.collapsed .inner-nav__item-label{opacity:0;}
+.inner-nav__notif{width:7px;height:7px;border-radius:50%;background:#FFA426;flex-shrink:0;}
+.inner-nav.collapsed .inner-nav__notif{opacity:0;}
+
+/* ── MAIN CANVAS ── */
+.doc-canvas-bg{flex:1;min-width:0;height:100%;overflow-y:auto;overflow-x:hidden;background:#f0f2f5;display:flex;flex-direction:column;}
+.doc-canvas-bg::-webkit-scrollbar{width:4px;}
+.doc-canvas-bg::-webkit-scrollbar-thumb{background:var(--n200);border-radius:2px;}
+
+/* ── CONTENT AREA ── */
+.template-page{padding:28px 28px 24px;width:100%;}
+.tpl-eyebrow{font-size:10px;font-weight:700;color:var(--orange);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.tpl-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--orange);}
+.tpl-title{font-size:22px;font-weight:700;color:var(--n900);letter-spacing:-0.3px;margin-bottom:4px;}
+.tpl-sub{font-size:13px;color:var(--n600);margin-bottom:28px;}
+.tpl-sub em{color:var(--purple);font-style:normal;font-weight:600;}
+
+/* ── VIEW TRANSITIONS ── */
+.grid-view {
+  opacity:1;
+  transform:translateY(0);
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+.grid-view.hidden {
+  opacity:0;
+  transform:translateY(-12px);
+  pointer-events:none;
+}
+.workspace-view {
+  display:none;
+  opacity:0;
+  transform:translateY(14px);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+.workspace-view.visible {
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* ── TEMPLATE GRID ── */
+.tmpl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start;align-content:start;}
+.tc{background:var(--white);border-radius:12px;border:1.5px solid var(--n200);cursor:pointer;overflow:hidden;position:relative;box-shadow:var(--shadow-2);transition:transform 200ms ease,box-shadow 200ms ease,border-color 200ms ease;user-select:none;}
+.tc:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.09);border-color:#ccc;}
+.tc.active{border-color:var(--purple);box-shadow:0 0 0 3px rgba(139,92,246,0.12),0 8px 24px rgba(0,0,0,0.1);transform:translateY(-3px);}
+.tc-tango.active{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,164,38,0.14),0 8px 24px rgba(0,0,0,0.1);}
+.tc-tick{position:absolute;top:9px;right:9px;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;z-index:2;}
+.tc.active .tc-tick{display:flex;background:var(--purple);}
+.tc-tango.active .tc-tick{background:var(--orange);}
+.tc-tick svg{width:9px;height:9px;stroke:white;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+/* Upload Card */
+.tc-upload {
+  background:transparent;
+  border:2px dashed var(--n200);
+  border-radius:12px;
+  cursor:pointer;
+  overflow:hidden;
+  position:relative;
+  box-shadow:none;
+  transition:transform 200ms ease,box-shadow 200ms ease,border-color 200ms ease,background 200ms ease;
+  user-select:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:220px;
+  gap:12px;
+}
+.tc-upload:hover {
+  transform:translateY(-3px);
+  box-shadow:0 8px 24px rgba(0,0,0,0.09);
+  border-color:var(--n400);
+  border-style:solid;
+  background:var(--white);
+}
+.tc-upload-icon {
+  width:44px;height:44px;border-radius:12px;
+  background:var(--n100);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--n400);
+  transition:background 200ms ease,color 200ms ease;
+}
+.tc-upload:hover .tc-upload-icon {
+  background:var(--orange-subtle);
+  color:var(--orange);
+}
+.tc-upload-label {
+  font-size:12.5px;font-weight:700;color:var(--n600);
+  text-align:center;
+  transition:color 200ms ease;
+}
+.tc-upload:hover .tc-upload-label { color:var(--n900); }
+.tc-upload-sub {
+  font-size:11px;color:var(--n400);
+  text-align:center;
+  padding:0 20px;
+  transition:color 200ms ease;
+}
+.tc-upload:hover .tc-upload-sub { color:var(--n600); }
+
+/* A4 Thumbnail */
+.tc-thumb{height:180px;max-height:180px;background:#f4f5f7;padding:12px 12px 0;border-bottom:1px solid var(--n100);overflow:hidden;flex-shrink:0;}
+.tc-paper{background:white;border-radius:3px 3px 0 0;height:100%;max-height:168px;padding:11px 12px 0;box-shadow:0 -1px 0 rgba(0,0,0,0.03),1px 0 4px rgba(0,0,0,0.04),-1px 0 4px rgba(0,0,0,0.04);overflow:hidden;}
+.sl{height:3px;border-radius:2px;background:#e5e5e5;margin-bottom:3px;}
+.sl.h{height:7px;} .sl.acc{background:var(--orange);} .sl.dark{background:#1a1a1a;} .sl.pur{background:var(--purple);}
+.sdiv{height:1px;background:#f0f0f0;margin:5px 0;}
+.sbox{border-radius:3px;padding:4px 5px;margin-bottom:3px;}
+.srow{display:flex;gap:4px;margin-bottom:3px;} .scol{flex:1;}
+.skpis{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-bottom:4px;}
+.skpi{height:18px;border-radius:3px;background:#fafafa;border:1px solid #f0f0f0;}
+.spyr{display:flex;flex-direction:column;align-items:center;gap:2px;margin:4px 0 6px;}
+.sprow{height:6px;border-radius:2px;}
+.squad{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:4px;}
+.scell{height:22px;border-radius:3px;border:1px solid #f0f0f0;}
+.sbars{display:flex;gap:2px;align-items:flex-end;height:22px;margin-bottom:3px;}
+.sbar{flex:1;border-radius:2px 2px 0 0;}
+.slayer{height:9px;border-radius:2px;margin-bottom:3px;}
+.sonep{display:flex;gap:5px;margin-bottom:4px;} .sonep-col{flex:1;display:flex;flex-direction:column;gap:3px;}
+
+/* Card info */
+.tc-info{padding:12px 16px 16px;}
+.tc-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 8px;border-radius:var(--r-full);margin-bottom:5px;}
+.b-tango{background:linear-gradient(90deg,rgba(139,92,246,0.1),rgba(255,164,38,0.1));color:#7c3aed;border:1px solid rgba(255,164,38,0.2);}
+.b-mck{background:#eff6ff;color:#1d4ed8;} .b-bcg{background:#f0fdf4;color:#15803d;}
+.b-tech{background:#f8fafc;color:#475569;}
+.tc-name{font-size:13px;font-weight:700;color:var(--n900);margin-bottom:3px;}
+.tc-desc{font-size:11.5px;color:var(--n600);line-height:1.5;}
+
+/* ── TANGO AGENT PANEL ── */
+.tango-agent-panel{width:0;min-width:0;flex-shrink:0;height:100%;background:white;border-left:1px solid #f0f0f0;display:flex;flex-direction:column;overflow:hidden;pointer-events:none;transition:width 260ms cubic-bezier(0.4,0,0.2,1),min-width 260ms cubic-bezier(0.4,0,0.2,1);box-shadow:none;}
+.tango-agent-panel.open{width:320px;min-width:320px;box-shadow:-4px 0 20px rgba(0,0,0,0.06);pointer-events:auto;}
+.tap-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid #f0f0f0;background:white;flex-shrink:0;}
+.tap-header-left{display:flex;align-items:center;gap:10px;}
+.tap-icon{width:32px;height:32px;border-radius:9px;background:var(--gradient-ai);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.tap-title{font-size:13px;font-weight:700;color:#0f0f0f;}
+.tap-subtitle{font-size:10.5px;color:#94a3b8;margin-top:1px;}
+.tap-close{width:28px;height:28px;border-radius:7px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#94a3b8;transition:all 120ms;}
+.tap-close:hover{background:#f5f5f5;color:#333;}
+.tap-context-bar{display:flex;align-items:center;gap:6px;padding:7px 16px;background:#FFF8F0;border-bottom:1px solid rgba(255,164,38,0.2);font-size:11px;font-weight:600;color:#FFA426;flex-shrink:0;}
+.tap-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;}
+.tap-messages::-webkit-scrollbar{width:3px;}
+.tap-messages::-webkit-scrollbar-thumb{background:#e2e8f0;border-radius:2px;}
+.tap-msg{max-width:90%;display:flex;flex-direction:column;gap:3px;}
+.tap-msg.agent{align-self:flex-start;}
+.tap-msg.user{align-self:flex-end;}
+.tap-bubble{padding:10px 13px;border-radius:10px;font-size:12.5px;line-height:1.6;color:#1e293b;}
+.tap-msg.agent .tap-bubble{background:#f8fafc;border:1px solid #e2e8f0;border-radius:2px 10px 10px 10px;}
+.tap-msg.user .tap-bubble{background:#FFA426;color:#1a1a1a;border-radius:10px 10px 2px 10px;}
+.tap-msg-time{font-size:10px;color:#94a3b8;padding:0 4px;}
+.tap-msg.user .tap-msg-time{text-align:right;}
+.tap-quick-replies{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;flex-shrink:0;}
+.tap-qr-chip{padding:5px 12px;border-radius:99px;border:1px solid #e2e8f0;background:white;font-size:11.5px;font-weight:600;color:#475569;cursor:pointer;transition:all 120ms;font-family:'Poppins',sans-serif;}
+.tap-qr-chip:hover{border-color:#FFA426;color:#e07b00;background:#FFF8F0;}
+.tap-typing{display:flex;align-items:center;gap:5px;padding:10px 13px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:2px 10px 10px 10px;width:fit-content;}
+.tap-typing-dot{width:6px;height:6px;border-radius:50%;background:#94a3b8;animation:tapDot 1.2s ease-in-out infinite;}
+.tap-typing-dot:nth-child(2){animation-delay:0.2s;} .tap-typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes tapDot{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+
+/* Section list inside bubble */
+.tap-section-list{margin-top:8px;display:flex;flex-direction:column;gap:0;}
+.tap-section-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #f1f5f9;}
+.tap-section-item:last-child{border-bottom:none;}
+.tap-section-num{width:17px;height:17px;border-radius:4px;background:#FFF8F0;color:#FFA426;font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.tap-section-text{}
+.tap-section-title{font-size:11.5px;font-weight:700;color:#1e293b;line-height:1.3;}
+.tap-section-sub{font-size:10.5px;color:#64748b;line-height:1.4;margin-top:1px;}
+.tap-section-ai{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;color:#7c3aed;margin-top:2px;}
+
+/* Score strip */
+.tap-score-strip{margin-top:10px;padding:10px 12px;background:white;border:1px solid #e2e8f0;border-radius:8px;}
+.tap-score-label{font-size:9.5px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.tap-score-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.tap-score-row:last-child{margin-bottom:0;}
+.tap-score-name{font-size:10.5px;color:#475569;width:80px;flex-shrink:0;}
+.tap-score-track{flex:1;height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden;}
+.tap-score-fill{height:100%;border-radius:99px;width:0;transition:width 800ms cubic-bezier(0.34,1.2,0.64,1);}
+.tap-score-num{font-size:10.5px;font-weight:700;color:#1e293b;width:22px;text-align:right;flex-shrink:0;}
+.tap-score-total{margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;}
+.tap-score-total-lbl{font-size:11px;font-weight:600;color:#475569;}
+.tap-score-total-val{font-size:20px;font-weight:800;}
+
+.tap-input-area{display:flex;align-items:flex-end;gap:8px;padding:12px 14px;border-top:1px solid #f0f0f0;background:white;flex-shrink:0;}
+.tap-input{flex:1;resize:none;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 12px;font-size:12.5px;font-family:'Poppins',sans-serif;color:#1a1a1a;outline:none;line-height:1.5;transition:border-color 150ms;}
+.tap-input:focus{border-color:#FFA426;}
+.tap-input::placeholder{color:#94a3b8;}
+.tap-send-btn{width:34px;height:34px;border-radius:9px;flex-shrink:0;background:#FFA426;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#1a1a1a;transition:all 120ms;}
+.tap-send-btn:hover{background:#F89622;transform:scale(1.05);}
+
+/* ── RIGHT NAV ── */
+.right-nav{width:52px;flex-shrink:0;height:100%;background:white;border-left:1px solid #f0f0f0;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;overflow:hidden;}
+.right-nav__tango-btn{width:38px;padding:8px 0 10px;background:var(--gradient-ai);border:none;border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin-bottom:6px;transition:all 150ms;font-family:'Poppins',sans-serif;position:relative;}
+.right-nav__tango-btn:hover{transform:scale(1.05);box-shadow:0 4px 12px rgba(139,92,246,0.3);}
+.right-nav__tango-icon{font-size:16px;color:white;}
+.right-nav__tango-label{font-size:8px;font-weight:700;color:white;letter-spacing:0.06em;text-transform:uppercase;}
+.right-nav__btn{width:36px;height:36px;border-radius:9px;background:transparent;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;transition:background 150ms;color:#bbb;}
+.right-nav__btn:hover{background:#f5f5f5;color:#666;}
+.right-nav__btn.active{background:#FFF8F0;color:#FFA426;}
+.right-nav__btn-icon{font-size:16px;}
+.right-nav__btn-label{font-size:8px;font-weight:600;letter-spacing:0.03em;}
+.right-nav__divider{width:24px;height:1px;background:#f0f0f0;margin:4px 0;}
+.tango-notif-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;border-radius:50%;background:#FFA426;border:1.5px solid white;display:none;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:white;border-radius:10px;border-left:3px solid #FFA426;box-shadow:0 8px 24px rgba(0,0,0,0.12);padding:12px 16px;min-width:240px;max-width:320px;display:flex;gap:12px;align-items:flex-start;z-index:9000;opacity:0;transform:translateY(12px);transition:all 250ms ease;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.toast-body{flex:1;}
+.toast-title{font-size:12px;font-weight:700;color:#1a1a1a;}
+.toast-msg{font-size:11px;color:#888;margin-top:1px;}
+
+/* ── STICKY SELECTION CTA BAR ── */
+.selection-cta {
+  position:sticky; bottom:0; left:0; right:0;
+  background:white;
+  border-top:1px solid var(--n200);
+  padding:14px 40px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  z-index:30;
+  transform:translateY(100%);
+  opacity:0;
+  pointer-events:none;
+  transition:transform 300ms cubic-bezier(0.4,0,0.2,1), opacity 250ms ease;
+  box-shadow:0 -4px 20px rgba(0,0,0,0.07);
+}
+.selection-cta.visible {
+  transform:translateY(0);
+  opacity:1;
+  pointer-events:auto;
+}
+.scta-left { display:flex; align-items:center; gap:12px; }
+.scta-badge {
+  display:inline-flex; align-items:center;
+  font-size:9px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;
+  padding:2px 8px; border-radius:var(--r-full);
+}
+.scta-label { font-size:13px; font-weight:600; color:var(--n900); }
+.scta-sublabel { font-size:11.5px; color:var(--n600); margin-top:1px; }
+.scta-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.scta-btn-ghost {
+  padding:10px 20px; border-radius:var(--r-full);
+  border:1.5px solid var(--n200); background:transparent;
+  font-size:13px; font-weight:600; color:var(--n600);
+  font-family:'Poppins',sans-serif; cursor:pointer; transition:all var(--t-fast);
+}
+.scta-btn-ghost:hover { border-color:#aaa; color:var(--n900); }
+.scta-btn-primary {
+  padding:10px 24px; border-radius:var(--r-full);
+  background:var(--n900); border:none; color:white;
+  font-size:13px; font-weight:700;
+  font-family:'Poppins',sans-serif; cursor:pointer;
+  display:flex; align-items:center; gap:8px;
+  transition:all var(--t-fast);
+}
+.scta-btn-primary:hover { background:#333; transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.18); }
+.scta-btn-primary svg { flex-shrink:0; }
+
+/* ── WORKSPACE VIEW ── */
+.workspace-header {
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:24px;
+}
+.ws-back-btn {
+  display:flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:var(--r-full);
+  border:1.5px solid var(--n200); background:white;
+  font-size:12px; font-weight:600; color:var(--n600);
+  font-family:'Poppins',sans-serif; cursor:pointer;
+  transition:all var(--t-fast); flex-shrink:0;
+}
+.ws-back-btn:hover { border-color:#aaa; color:var(--n900); background:var(--n50); }
+.workspace-title-group { flex:1; }
+.workspace-title { font-size:18px; font-weight:700; color:var(--n900); letter-spacing:-0.3px; }
+.workspace-sub { font-size:12px; color:var(--n600); margin-top:2px; }
+
+.ws-a4 {
+  background:white;
+  border-radius:12px;
+  border:1px solid #eaeaea;
+  box-shadow:0 2px 12px rgba(0,0,0,0.06);
+  padding:28px 32px 0;
+  margin-bottom:16px;
+}
+.ws-a4-eyebrow { font-size:9px; font-weight:800; color:var(--orange); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:6px; }
+.ws-a4-title { font-size:17px; font-weight:700; color:var(--n900); letter-spacing:-0.3px; margin-bottom:3px; }
+.ws-a4-sub { font-size:11px; color:var(--n600); margin-bottom:14px; }
+.ws-a4-meta { display:flex; gap:16px; padding-bottom:12px; border-bottom:1px solid var(--n100); margin-bottom:8px; }
+.ws-a4-meta-item { font-size:10px; color:var(--n400); }
+.ws-a4-meta-item strong { color:var(--n800); font-weight:600; }
+
+/* Section rows in workspace */
+.ws-sections { display:flex; flex-direction:column; }
+.ws-section-row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid var(--n100);
+  transition:background 150ms;
+}
+.ws-section-row:last-child { border-bottom:none; }
+.ws-section-row.excluded { opacity:0.4; }
+
+.ws-drag-handle {
+  display:flex; flex-direction:column; gap:3px;
+  padding-top:2px;
+  cursor:grab; flex-shrink:0; color:var(--n200);
+  transition:color 150ms;
+}
+.ws-drag-handle:hover { color:var(--n400); }
+.ws-drag-handle span { display:block; width:12px; height:2px; background:currentColor; border-radius:2px; }
+
+.ws-section-num {
+  width:20px; height:20px; border-radius:5px;
+  background:var(--orange-subtle); color:var(--orange);
+  font-size:9px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; margin-top:1px;
+}
+.ws-section-content { flex:1; min-width:0; }
+.ws-section-name { font-size:13px; font-weight:700; color:var(--n900); margin-bottom:2px; }
+.ws-section-desc { font-size:11.5px; color:var(--n600); line-height:1.5; }
+.ws-section-ai-tag {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:9.5px; font-weight:700; color:#7c3aed;
+  margin-top:4px;
+}
+
+/* Toggle switch */
+.ws-toggle {
+  flex-shrink:0;
+  display:flex; align-items:center; gap:0;
+  padding-top:2px;
+}
+.ws-toggle-input { display:none; }
+.ws-toggle-track {
+  width:34px; height:20px; border-radius:10px;
+  background:var(--n200); cursor:pointer;
+  position:relative; transition:background 200ms ease;
+  display:block; flex-shrink:0;
+}
+.ws-toggle-track::after {
+  content:''; position:absolute;
+  top:3px; left:3px;
+  width:14px; height:14px;
+  border-radius:50%;
+  background:white;
+  box-shadow:0 1px 3px rgba(0,0,0,0.15);
+  transition:transform 200ms cubic-bezier(0.4,0,0.2,1);
+}
+.ws-toggle-input:checked + .ws-toggle-track { background:var(--purple); }
+.ws-toggle-input:checked + .ws-toggle-track::after { transform:translateX(14px); }
+.ws-toggle-track:hover { opacity:0.85; }
+
+/* Workspace footer */
+.ws-footer {
+  padding:20px 0 32px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.ws-footer-left { display:flex; align-items:center; gap:10px; }
+.ws-sections-count { font-size:12px; color:var(--n600); }
+.ws-sections-count strong { color:var(--n900); font-weight:700; }
+.ws-generate-btn {
+  padding:12px 28px; border-radius:var(--r-full);
+  background:var(--n900); border:none; color:white;
+  font-size:14px; font-weight:700;
+  font-family:'Poppins',sans-serif; cursor:pointer;
+  display:flex; align-items:center; gap:8px;
+  transition:all var(--t-fast);
+}
+.ws-generate-btn:hover { background:#333; transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,0.18); }
+.ws-generate-btn.ai-mode {
+  background:var(--gradient-ai);
+  color:white;
+}
+.ws-generate-btn.ai-mode:hover { opacity:0.92; transform:translateY(-1px); box-shadow:0 4px 14px rgba(139,92,246,0.35); }
+
+/* ── UPLOAD SPLIT CARD ── */
+.tc-upload-split {
+  background:transparent;
+  border:2px dashed var(--n200);
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  transition:border-color 200ms ease, border-style 200ms ease;
+  min-height:260px;
+  cursor:default;
+}
+.tc-upload-split:hover {
+  border-color:var(--n400);
+  border-style:solid;
+}
+.tc-upload-half {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:10px; padding:20px 16px;
+  cursor:pointer;
+  transition:background 180ms ease;
+}
+.tc-upload-half:hover { background:rgba(255,255,255,0.9); }
+.tc-upload-half:hover .tc-upload-icon {
+  background:var(--orange-subtle);
+  color:var(--orange);
+}
+.tc-upload-half:hover .tc-upload-label { color:var(--n900); }
+.tc-upload-divider {
+  height:1px; background:var(--n200); margin:0 16px;
+  flex-shrink:0;
+}
+
+/* ── CUSTOM PROMPT INPUT ── */
+.ws-custom-prompt-input {
+  width: 100%;
+  margin-top: 7px;
+  padding: 6px 10px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px;
+  color: var(--n800);
+  background: var(--n50);
+  border: 1px solid var(--n200);
+  border-radius: var(--r-md);
+  outline: none;
+  transition: border-color 160ms ease, background 160ms ease;
+  line-height: 1.5;
+}
+.ws-custom-prompt-input::placeholder {
+  color: var(--n400);
+  font-size: 10.5px;
+}
+.ws-custom-prompt-input:focus {
+  border-color: var(--purple);
+  background: #faf7ff;
+}
+
+/* ── ADD SECTION — GHOST ROW (same anatomy as section rows) ── */
+.ws-add-ghost-row {
+  display:flex; align-items:center; gap:12px;
+  padding:11px 0;
+  border-top:1px dashed var(--n200);
+  margin-top:2px;
+  cursor:pointer;
+  border-radius:6px;
+  transition:background 150ms ease;
+}
+.ws-add-ghost-row:hover { background:var(--orange-subtle); }
+.ws-add-ghost-row:hover .ws-add-ghost-num { background:var(--orange); color:white; }
+.ws-add-ghost-row:hover .ws-add-ghost-text { color:var(--orange); }
+
+.ws-add-ghost-num {
+  width:20px; height:20px; border-radius:5px;
+  background:var(--n100); color:var(--n400);
+  font-size:12px; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all 180ms ease;
+}
+.ws-add-ghost-text {
+  font-size:13px; font-weight:600; color:var(--n400);
+  transition:color 180ms ease;
+  display:flex; align-items:center; gap:6px;
+}
+.ws-add-ghost-text svg { opacity:0.5; }
+
+/* ── INLINE EDITABLE ROW (same layout as .ws-section-row) ── */
+.ws-section-row.editing {
+  background:var(--n50);
+  border-radius:8px;
+  border-bottom-color:transparent !important;
+  margin:0 -8px;
+  padding-left:8px; padding-right:8px;
+  box-shadow:0 0 0 1.5px var(--orange);
+}
+.ws-section-row.editing .ws-section-content { gap:6px; display:flex; flex-direction:column; }
+
+/* Inline inputs — look like the text they replace */
+.ws-inline-name {
+  font-size:13px; font-weight:700; color:var(--n900);
+  border:none; border-bottom:1.5px solid var(--n200);
+  background:transparent; outline:none;
+  font-family:'Poppins',sans-serif;
+  width:100%; padding:1px 0 3px;
+  transition:border-color 150ms;
+  line-height:1.4;
+}
+.ws-inline-name:focus { border-bottom-color:var(--orange); }
+.ws-inline-name::placeholder { color:var(--n400); font-weight:500; }
+
+.ws-inline-desc {
+  font-size:11.5px; color:var(--n600);
+  border:none; border-bottom:1px solid var(--n100);
+  background:transparent; outline:none;
+  font-family:'Poppins',sans-serif;
+  width:100%; padding:1px 0 3px;
+  transition:border-color 150ms;
+  line-height:1.5;
+}
+.ws-inline-desc:focus { border-bottom-color:var(--orange); }
+.ws-inline-desc::placeholder { color:var(--n300); font-size:11px; }
+
+.ws-inline-actions {
+  display:flex; align-items:center; gap:8px;
+  margin-top:6px;
+}
+.ws-inline-confirm {
+  padding:4px 14px; border-radius:var(--r-full);
+  background:var(--n900); border:none; color:white;
+  font-size:11px; font-weight:700;
+  font-family:'Poppins',sans-serif; cursor:pointer;
+  transition:all var(--t-fast);
+}
+.ws-inline-confirm:hover { background:#333; }
+.ws-inline-cancel {
+  padding:4px 10px; border-radius:var(--r-full);
+  border:none; background:transparent;
+  font-size:11px; font-weight:600; color:var(--n400);
+  font-family:'Poppins',sans-serif; cursor:pointer;
+  transition:color var(--t-fast);
+}
+.ws-inline-cancel:hover { color:var(--n900); }
+.ws-inline-hint {
+  font-size:10px; color:var(--n400); margin-left:auto;
+}
+
+/* ── FRESH TEMPLATE — doc title editable ── */
+.ws-a4-title-input {
+  font-size:17px; font-weight:700; color:var(--n900); letter-spacing:-0.3px;
+  border:none; border-bottom:2px solid var(--n200);
+  background:transparent; outline:none;
+  font-family:'Poppins',sans-serif;
+  width:100%; padding-bottom:3px;
+  transition:border-color 150ms;
+}
+.ws-a4-title-input:focus { border-bottom-color:var(--orange); }
+.ws-a4-title-input::placeholder { color:var(--n400); font-weight:500; }
+
+/* empty-state placeholder inside sections for fresh mode */
+.ws-fresh-empty {
+  padding:28px 0 20px;
+  text-align:center;
+  color:var(--n400); font-size:12px;
+}
+.ws-fresh-empty svg { display:block; margin:0 auto 10px; opacity:0.3; }
+
+
+/* ── SCORE CHIP IN WORKSPACE HEADER ── */
+.ws-score-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 5px 9px;
+  border-radius: var(--r-full);
+  border: 1.5px solid var(--n200);
+  background: white;
+  cursor: default;
+  font-size: 12px; font-weight: 700;
+  color: var(--n900);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+  flex-shrink: 0;
+  user-select: none;
+}
+.ws-score-chip:hover {
+  border-color: var(--n400);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.ws-score-chip-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.ws-score-chip-label {
+  font-size: 10px; font-weight: 600; color: var(--n600);
+  letter-spacing: 0.02em;
+}
+.ws-score-chip-val {
+  font-size: 14px; font-weight: 800;
+}
+
+/* Hover dropdown card */
+.ws-score-chip-card {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: white;
+  border: 1px solid var(--n200);
+  border-radius: var(--r-lg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.11), 0 2px 6px rgba(0,0,0,0.06);
+  padding: 14px 16px 12px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.ws-score-chip:hover .ws-score-chip-card {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.ws-score-chip-card-label {
+  font-size: 9px; font-weight: 800; color: var(--n400);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+.ws-score-chip-card .tap-score-row { margin-bottom: 7px; }
+.ws-score-chip-card .tap-score-row:last-child { margin-bottom: 0; }
+.ws-score-chip-card .tap-score-name { font-size: 11px; width: 88px; }
+.ws-score-chip-card .tap-score-num { font-size: 11px; }
+.ws-score-chip-card .tap-score-total {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--n100);
+}
+.ws-score-chip-card .tap-score-total-lbl { font-size: 11px; }
+.ws-score-chip-card .tap-score-total-val { font-size: 18px; }
+
+/* ── GRID DIVIDER ── */
+.grid-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 28px 0 18px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--n400);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.grid-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--n200);
+}
+
+/* ── DOC TRANSITION LAYER ── */
+.doc-transition {
+  position:fixed; inset:0; z-index:2000;
+  display:flex; flex-direction:column;
+  pointer-events:none; opacity:0;
+  transition:opacity 260ms ease;
+}
+.doc-transition.active { opacity:1; pointer-events:auto; }
+.doc-curtain {
+  position:absolute; inset:0;
+  background:white; z-index:1;
+}
+.doc-progress-bar { position:absolute; top:0; left:0; right:0; height:3px; z-index:3; }
+.doc-progress-fill {
+  height:100%;
+  background:var(--gradient-ai);
+  width:0%; border-radius:2px;
+  transition:width 700ms cubic-bezier(0.4,0,0.8,1);
+}
+.doc-iframe-wrap {
+  position:absolute; inset:0; z-index:0;
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity 320ms ease, transform 320ms ease;
+}
+.doc-iframe-wrap.show { opacity:1; transform:translateY(0); }
+.doc-iframe {
+  width:100%; height:100%; border:none; display:block;
+}
+
+/* ── IN-CHAT STEP TRACKER ── */
+.tap-steps-card {
+  background: white; border: 1px solid #e2e8f0;
+  border-radius: 8px; padding: 11px 12px;
+  margin-top: 8px; display: flex; flex-direction: column; gap: 7px;
+}
+.tap-step-row {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 12px; color: #94a3b8; font-weight: 500;
+  transition: color 240ms;
+}
+.tap-step-row.done   { color: #10b981; }
+.tap-step-row.active { color: #FFA426; font-weight: 600; }
+.tap-step-icon {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  border: 1.5px solid #e2e8f0; background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; transition: all 240ms;
+}
+.tap-step-row.done .tap-step-icon {
+  background: #10b981; border-color: #10b981; color: white;
+}
+.tap-step-row.active .tap-step-icon {
+  border-color: #FFA426; background: #FFF8F0;
+  animation: stepPulse 0.9s ease-in-out infinite;
+}
+@keyframes stepPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,164,38,0.3); }
+  50%      { box-shadow: 0 0 0 4px rgba(255,164,38,0); }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="top-bar">
+  <div class="top-bar__logo">T</div>
+  <nav class="top-bar__breadcrumb">
+    <span>Workspace</span><span class="top-bar__breadcrumb-sep">›</span>
+    <span>BHP WAIO</span><span class="top-bar__breadcrumb-sep">›</span>
+    <span class="top-bar__breadcrumb-current">Q1 Strategic Investment</span>
+    <span class="top-bar__status-chip"><span class="top-bar__status-dot"></span>Active</span>
+  </nav>
+  <div class="top-bar__center">
+    <div class="view-toggle">
+      <button class="view-toggle__btn active">My Hub</button>
+      <button class="view-toggle__btn">Tango</button>
+    </div>
+  </div>
+  <div class="top-bar__right">
+    <button class="top-bar__icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+    <button class="top-bar__icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+    <button class="top-bar__icon-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <div class="top-bar__avatar">KV</div>
+  </div>
+</header>
+
+<!-- APP SHELL -->
+<div class="app-shell">
+
+  <!-- INNER NAV -->
+  <nav class="inner-nav" id="innerNav">
+    <button class="inner-nav__toggle" onclick="document.getElementById('innerNav').classList.toggle('collapsed')">
+      <div class="inner-nav__toggle-icon"><span></span><span></span><span></span></div>
+      <span class="inner-nav__toggle-label">Collapse</span>
+    </button>
+    <div class="inner-nav__section-label">WORKSPACE VIEWS</div>
+    <button class="inner-nav__item">
+      <div class="inner-nav__item-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+      <span class="inner-nav__item-label">Overview</span>
+    </button>
+    <button class="inner-nav__item">
+      <div class="inner-nav__item-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <span class="inner-nav__item-label">Scope &amp; Business case</span>
+    </button>
+    <button class="inner-nav__item active">
+      <div class="inner-nav__item-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg></div>
+      <span class="inner-nav__item-label">Solution</span>
+    </button>
+    <button class="inner-nav__item">
+      <div class="inner-nav__item-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="2"/><rect x="3" y="11" width="7" height="4" rx="1"/><rect x="14" y="11" width="7" height="4" rx="1"/></svg></div>
+      <span class="inner-nav__item-label">Structure</span>
+    </button>
+    <button class="inner-nav__item">
+      <div class="inner-nav__item-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+      <span class="inner-nav__item-label">Live</span>
+      <span class="inner-nav__notif"></span>
+    </button>
+  </nav>
+
+  <!-- MAIN CANVAS -->
+  <div class="doc-canvas-bg">
+    <div class="template-page">
+
+      <!-- GRID VIEW -->
+      <div class="grid-view" id="gridView">
+        <div class="tpl-eyebrow"><div class="tpl-eyebrow-dot"></div>Solution · New document</div>
+        <div class="tpl-title">Choose a framework</div>
+        <div class="tpl-sub">Pick a template — <em>Tango</em> will open on the right and walk you through what's inside.</div>
+
+        <!-- ── SECTION 1: TANGO SUGGESTED ── -->
+        <div class="tmpl-grid">
+
+          <!-- UPLOAD / FRESH TEMPLATE SPLIT CARD -->
+          <div class="tc-upload-split">
+            <div class="tc-upload-half" onclick="pick('custom')" title="Upload your own playbook">
+              <div class="tc-upload-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+              </div>
+              <div class="tc-upload-label">Upload Playbook</div>
+              <div class="tc-upload-sub">Import your own framework</div>
+            </div>
+            <div class="tc-upload-divider"></div>
+            <div class="tc-upload-half" onclick="pick('fresh')" title="Build from scratch">
+              <div class="tc-upload-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
+              <div class="tc-upload-label">Build a template</div>
+              <div class="tc-upload-sub">Co-build sections with Tango</div>
+            </div>
+          </div>
+
+          <!-- TANGO CUSTOM -->
+          <div class="tc tc-tango" id="tc-tango" onclick="pick('tango')">
+            <div class="tc-tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="tc-thumb"><div class="tc-paper">
+              <div class="sl acc" style="width:36%;margin-bottom:5px;"></div>
+              <div class="sl dark h" style="width:80%;margin-bottom:2px;"></div>
+              <div class="sl dark h" style="width:54%;margin-bottom:7px;"></div>
+              <div class="sbox" style="border-left:2.5px solid var(--purple);background:#faf7ff;margin-bottom:3px;"><div class="sl pur" style="width:100%;"></div><div class="sl" style="width:74%;"></div></div>
+              <div class="skpis"><div class="skpi" style="background:rgba(139,92,246,.07);border-color:rgba(139,92,246,.2);"></div><div class="skpi" style="background:rgba(255,164,38,.07);border-color:rgba(255,164,38,.2);"></div><div class="skpi" style="background:rgba(16,185,129,.07);border-color:rgba(16,185,129,.2);"></div></div>
+              <div class="sdiv"></div>
+              <div class="sl" style="width:100%;"></div><div class="sl" style="width:80%;"></div><div class="sl" style="width:60%;"></div>
+            </div></div>
+            <div class="tc-info">
+              <div class="tc-badge b-tango">✦ Tango Custom</div>
+              <div class="tc-name">Tango Solution Brief</div>
+              <div class="tc-desc">AI-shaped to your idea. Sections adapt to project context, pre-filled from your input.</div>
+            </div>
+          </div>
+
+        </div><!-- /tmpl-grid suggested -->
+
+        <!-- ── DIVIDER ── -->
+        <div class="grid-divider">Previously used templates</div>
+
+        <!-- ── SECTION 2: PREVIOUSLY USED ── -->
+        <div class="tmpl-grid">
+
+          <!-- MCKINSEY -->
+          <div class="tc" id="tc-pyramid" onclick="pick('pyramid')">
+            <div class="tc-tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="tc-thumb"><div class="tc-paper">
+              <div class="sl acc" style="width:32%;margin-bottom:5px;"></div>
+              <div class="sl dark h" style="width:68%;margin-bottom:7px;"></div>
+              <div class="spyr"><div class="sprow" style="width:36%;background:#0f0f0f;"></div><div class="sprow" style="width:56%;background:#555;"></div><div class="sprow" style="width:76%;background:#999;"></div><div class="sprow" style="width:100%;background:#e5e5e5;"></div></div>
+              <div class="sdiv"></div>
+              <div class="srow"><div class="scol"><div class="sl" style="width:100%;"></div><div class="sl" style="width:72%;"></div></div><div class="scol"><div class="sl" style="width:100%;"></div><div class="sl" style="width:60%;"></div></div><div class="scol"><div class="sl" style="width:100%;"></div><div class="sl" style="width:52%;"></div></div></div>
+            </div></div>
+            <div class="tc-info">
+              <div class="tc-badge b-mck">McKinsey</div>
+              <div class="tc-name">Pyramid Principle</div>
+              <div class="tc-desc">Lead with the answer. Top-down SCQA structure — governing thought on page one.</div>
+            </div>
+          </div>
+
+          <!-- BCG -->
+          <div class="tc" id="tc-bcg" onclick="pick('bcg')">
+            <div class="tc-tick"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="tc-thumb"><div class="tc-paper">
+              <div class="sl acc" style="width:28%;margin-bottom:5px;"></div>
+              <div class="sl dark h" style="width:64%;margin-bottom:7px;"></div>
+              <div class="skpis" style="margin-bottom:5px;"><div class="skpi" style="height:22px;background:#f0fdf4;border-color:#bbf7d0;"></div><div class="skpi" style="height:22px;background:#eff6ff;border-color:#bfdbfe;"></div><div class="skpi" style="height:22px;background:#fefce8;border-color:#fde68a;"></div></div>
+              <div class="sbars"><div class="sbar" style="height:50%;background:#10b981;"></div><div class="sbar" style="height:80%;background:#3b82f6;"></div><div class="sbar" style="height:38%;background:#f59e0b;"></div><div class="sbar" style="height:66%;background:#10b981;"></div><div class="sbar" style="height:90%;background:#3b82f6;"></div></div>
+              <div class="sl" style="width:100%;"></div><div class="sl" style="width:70%;"></div>
+            </div></div>
+            <div class="tc-info">
+              <div class="tc-badge b-bcg">BCG</div>
+              <div class="tc-name">Strategic Case</div>
+              <div class="tc-desc">Situation → Complication → Options → Recommendation with impact model.</div>
+            </div>
+          </div>
+
+        </div><!-- /tmpl-grid previously used -->
+      </div><!-- /grid-view -->
+
+      <!-- WORKSPACE VIEW -->
+      <div class="workspace-view" id="workspaceView">
+
+        <div class="workspace-header">
+          <button class="ws-back-btn" onclick="goBack()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to templates
+          </button>
+          <div class="workspace-title-group">
+            <div class="workspace-title" id="wsTitle">—</div>
+            <div class="workspace-sub" id="wsSub">—</div>
+          </div>
+          <div id="wsBadge" style="flex-shrink:0;"></div>
+          <div class="ws-score-chip" id="wsScoreChip" style="display:none;">
+            <div class="ws-score-chip-dot" id="wsScoreChipDot"></div>
+            <span class="ws-score-chip-label">Fit</span>
+            <span class="ws-score-chip-val" id="wsScoreChipVal">—</span>
+            <!-- Hover card -->
+            <div class="ws-score-chip-card" id="wsScoreChipCard">
+              <div class="ws-score-chip-card-label">Fit for BHP WAIO Q1 project</div>
+              <div id="wsScoreChipRows"></div>
+              <div class="tap-score-total">
+                <div class="tap-score-total-lbl">Overall fit</div>
+                <div class="tap-score-total-val" id="wsScoreChipTotal">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- A4 Document Canvas -->
+        <div class="ws-a4" id="wsA4">
+          <div class="ws-a4-eyebrow">BHP WAIO · Q1 Strategic Investment</div>
+          <div class="ws-a4-title" id="wsA4Title">—</div>
+          <div class="ws-a4-sub">Solution Document · Configure sections below</div>
+          <div class="ws-a4-meta">
+            <div class="ws-a4-meta-item" id="wsMetaSections">Sections <strong>—</strong></div>
+            <div class="ws-a4-meta-item" id="wsMetaAI">Tango pre-fills <strong style="color:#8b5cf6;">— sections</strong></div>
+          </div>
+          <div class="ws-sections" id="wsSections"></div>
+
+          <!-- Ghost "Add section" row — appears at bottom of sections list -->
+          <div class="ws-add-ghost-row" id="wsAddGhostRow" onclick="openInlineAdd()">
+            <div style="width:16px;height:16px;flex-shrink:0;"></div><!-- drag handle spacer -->
+            <div class="ws-add-ghost-num">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="ws-add-ghost-text">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add a section
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Workspace Footer -->
+        <div class="ws-footer">
+          <div class="ws-footer-left">
+            <div class="ws-sections-count" id="wsSectionsCount"><strong>0</strong> of <strong>0</strong> sections included</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button class="scta-btn-ghost" onclick="goBack()">Change template</button>
+            <button class="ws-generate-btn" id="wsGenerateBtn" onclick="openDoc()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Generate document
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /workspace-view -->
+
+    </div><!-- /template-page -->
+  </div><!-- /doc-canvas-bg -->
+
+  <!-- TANGO AGENT PANEL -->
+  <aside class="tango-agent-panel" id="tangoAgentPanel">
+    <div class="tap-header">
+      <div class="tap-header-left">
+        <div class="tap-icon">✦</div>
+        <div>
+          <div class="tap-title">Tango Agent</div>
+          <div class="tap-subtitle" id="tapSubtitle">Template briefing</div>
+        </div>
+      </div>
+      <button class="tap-close" onclick="closeAgent()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="tap-context-bar" id="tapContextBar" style="display:none;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span id="tapContextLabel">Template</span>
+    </div>
+    <div class="tap-messages" id="tapMessages"></div>
+    <div class="tap-input-area">
+      <textarea class="tap-input" id="tapInput" placeholder="Ask Tango about this template…" rows="2" onkeydown="handleKey(event)"></textarea>
+      <button class="tap-send-btn" onclick="sendMsg()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- RIGHT NAV -->
+  <nav class="right-nav">
+    <button class="right-nav__tango-btn" id="tangoNavBtn" title="Tango Agent" onclick="toggleAgent()">
+      <span class="right-nav__tango-icon">✦</span>
+      <span class="right-nav__tango-label">Agent</span>
+      <span class="tango-notif-dot" id="tangoNotifDot"></span>
+    </button>
+    <div class="right-nav__divider"></div>
+    <button class="right-nav__btn active">
+      <span class="right-nav__btn-icon">💡</span>
+      <span class="right-nav__btn-label">Solution</span>
+    </button>
+    <button class="right-nav__btn">
+      <span class="right-nav__btn-icon">🗂️</span>
+      <span class="right-nav__btn-label">Diagrams</span>
+    </button>
+    <button class="right-nav__btn">
+      <span class="right-nav__btn-icon">🕐</span>
+      <span class="right-nav__btn-label">History</span>
+    </button>
+    <button class="right-nav__btn">
+      <span class="right-nav__btn-icon">💬</span>
+      <span class="right-nav__btn-label">Notes</span>
+    </button>
+  </nav>
+
+</div><!-- /app-shell -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-icon" id="toast-icon">✓</div>
+  <div class="toast-body">
+    <div class="toast-title" id="toast-title"></div>
+    <div class="toast-msg" id="toast-msg"></div>
+  </div>
+</div>
+
+<!-- DOC TRANSITION LAYER -->
+<div class="doc-transition" id="docTransition">
+  <div class="doc-progress-bar"><div class="doc-progress-fill" id="docProgress"></div></div>
+  <div class="doc-curtain" id="docCurtain"></div>
+  <div class="doc-iframe-wrap" id="docIframeWrap">
+    <iframe class="doc-iframe" id="docIframe" src="" title="Solution Document"></iframe>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+var DATA = {
+  custom: {
+    name: 'Custom Playbook',
+    subtitle: 'Blank Canvas',
+    intro: 'Starting fresh. You can shape this document from scratch — I\'ll assist as you add sections and context.',
+    insight: 'Your Custom Playbook gives you full authoring control over what goes in — but I\'d push back gently here: BHP WAIO\'s Q1 investment is a well-scoped demand. A blank start risks re-inventing structure that already has a proven fit. That said, if you have a governance template or internal standard you\'re working against, importing it here is the right call.',
+    sections: [
+      { n:'Problem Statement',  s:'Define the challenge, current state, and why it matters.',   ai:false },
+      { n:'Proposed Solution',  s:'What you\'re building and the core approach.',                ai:false },
+      { n:'Success Metrics',    s:'How you\'ll measure outcomes — leading and lagging.',         ai:true  },
+      { n:'Resource Plan',      s:'Team, spend, vendors, timeline.',                             ai:false }
+    ],
+    scores:[{l:'Flexibility',v:100,c:'#10b981'},{l:'AI pre-fill',v:40,c:'#8b5cf6'},{l:'Coverage',v:60,c:'#FFA426'},{l:'Exec clarity',v:70,c:'#3b82f6'}],
+    total:68, totalColor:'#FFA426',
+    followUp: ['How do I add sections?', 'Can Tango fill anything?', 'Generate with 4 sections']
+  },
+  fresh: {
+    name: 'Build a template',
+    subtitle: 'Co-build with Tango',
+    intro: "Totally blank — your document, your structure. Give it a title, add your sections, and I'll help you fill them in.",
+    insight: "This is the right choice if you want to own the narrative from the ground up. For BHP WAIO, I'd suggest we start with the business problem, move into a solution layer, then evidence. I'll prompt you as you build — think of it as scaffolding a brief together rather than filling a form.",
+    sections: [],
+    scores:[{l:'Flexibility',v:100,c:'#10b981'},{l:'AI pre-fill',v:30,c:'#8b5cf6'},{l:'Coverage',v:0,c:'#FFA426'},{l:'Exec clarity',v:0,c:'#3b82f6'}],
+    total:100, totalColor:'#10b981',
+    followUp: ['What sections should I add?', 'How do I structure this?', 'Generate document']
+  },
+  tango: {
+    name: 'Tango Solution Brief',
+    subtitle: 'Tango Custom Template',
+    intro: 'This one is built around your idea. I\'ll shape each section from your project context — nothing generic.',
+    insight: 'This is the strongest fit for BHP WAIO right now. I already have your demand context — the WAIO resource constraints, the Q1 timeline pressure, and the EY stakeholder visibility requirement. I can pre-fill the Strategic Context and Decision Log sections directly from that. The structure is designed to produce a document that works both as an internal brief and as an exec-facing one-pager if needed.',
+    sections: [
+      { n:'Problem Statement',  s:'The challenge, current state, and why it matters now.',        ai:false },
+      { n:'Strategic Context',  s:'Business drivers, stakeholder landscape, constraints.',         ai:false, callout:'I\'ll pre-fill this from BHP WAIO workspace context.' },
+      { n:'Proposed Solution',  s:'What we\'re building and the core approach.',                   ai:false },
+      { n:'Key Metrics & KPIs', s:'How success is measured — lagging and leading indicators.',     ai:true  },
+      { n:'Resource Plan',      s:'Team, cloud spend, vendor commitments, timeline.',              ai:false },
+      { n:'Risk Register',      s:'Top risks, likelihood, impact, and mitigations.',               ai:false },
+      { n:'Decision Log',       s:'Architectural and strategic decisions, locked with owners.',    ai:true  }
+    ],
+    scores:[{l:'Project fit',v:94,c:'#10b981'},{l:'Coverage',v:88,c:'#FFA426'},{l:'AI pre-fill',v:96,c:'#8b5cf6'},{l:'Exec clarity',v:85,c:'#3b82f6'}],
+    total:91, totalColor:'#10b981',
+    followUp: ['What makes this different?', 'How much does Tango pre-fill?', 'Generate document']
+  },
+  pyramid: {
+    name: 'Pyramid Principle',
+    subtitle: 'McKinsey Framework',
+    intro: 'Answer first, everything else is proof. The governing thought lands on page one — no build-up.',
+    insight: "Good choice if your audience is leadership and you have a clear governing recommendation already. For BHP WAIO, the risk is that you might not yet have a single locked answer — this structure works best when the decision is made and you\'re communicating it, not still exploring. If you\'re still in the alignment phase, BCG or Tango might serve you better.",
+    sections: [
+      { n:'Situation',                   s:'What is true right now — agreed-upon facts only.',              ai:false },
+      { n:'Complication',                s:'What has changed or created tension that demands action.',       ai:false, callout:'This gap must be unmistakable — it drives everything below.' },
+      { n:'Question',                    s:'The implied question your audience needs answered.',             ai:false },
+      { n:'Answer (Governing Thought)',  s:'Your single, complete answer — stated up front.',               ai:true  },
+      { n:'Supporting Argument A',       s:'First pillar of evidence. One idea, fully proven.',             ai:false },
+      { n:'Supporting Argument B',       s:'Second pillar — mutually exclusive from A.',                   ai:false },
+      { n:'Supporting Argument C',       s:'Third pillar — A + B + C are collectively exhaustive.',        ai:false }
+    ],
+    scores:[{l:'Exec clarity',v:96,c:'#10b981'},{l:'Logic flow',v:93,c:'#1d4ed8'},{l:'Structure',v:97,c:'#8b5cf6'},{l:'Brevity',v:89,c:'#FFA426'}],
+    total:94, totalColor:'#10b981',
+    followUp: ['Is SCQA right for BHP?', 'How many pages typically?', 'Generate document']
+  },
+  bcg: {
+    name: 'BCG Strategic Case',
+    subtitle: 'BCG Framework',
+    intro: 'Three distinct options, one clear recommendation. Strong when leadership wants to see alternatives before committing.',
+    insight: "Solid for a multi-option investment review — which BHP WAIO\'s Q1 briefing format usually calls for. The impact model section will require numbers though: cost, payback, risk-adjusted returns. If you don\'t have those ready yet, this template will expose the gaps fast — which might actually be the point.",
+    sections: [
+      { n:'Executive Summary',           s:'Situation, recommendation, call-to-action in five lines.',       ai:false },
+      { n:'Situation Analysis',          s:'Market context, internal capability, data diagnosis.',            ai:false, callout:'Every claim must be quantified — BCG standard.' },
+      { n:'Complication & Opportunity',  s:'The gap between current state and what\'s possible.',            ai:false },
+      { n:'Strategic Options',           s:'Three distinct paths — no straw men allowed.',                   ai:true  },
+      { n:'Recommended Path',            s:'Preferred option with airtight rationale.',                      ai:false },
+      { n:'Impact Model',                s:'Quantified upside, investment required, payback period.',         ai:true  },
+      { n:'Implementation Roadmap',      s:'Phases, milestones, owners, governance model.',                  ai:false }
+    ],
+    scores:[{l:'Strategic fit',v:89,c:'#10b981'},{l:'Options depth',v:85,c:'#15803d'},{l:'Impact model',v:87,c:'#FFA426'},{l:'Exec clarity',v:82,c:'#3b82f6'}],
+    total:86, totalColor:'#FFA426',
+    followUp: ['How many options do I need?', 'Does this fit BHP investment reviews?', 'Generate document']
+  },
+};
+
+var CTA_BADGE_MAP = {
+  custom:  { cls:'b-tech',  label:'Custom' },
+  fresh:   { cls:'b-tech',  label:'Fresh' },
+  tango:   { cls:'b-tango', label:'✦ Tango Custom' },
+  pyramid: { cls:'b-mck',   label:'McKinsey' },
+  bcg:     { cls:'b-bcg',   label:'BCG' }
+};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+var _active = null;
+var _sectionToggles = {}; // { sectionName: true/false }
+var _currentScoreEl = null; // reference to live score card in chat
+
+// ─── PICK FLOW ───────────────────────────────────────────────────────────────
+function pick(id) {
+  _active = id;
+  _sectionToggles = {};
+
+  var meta = DATA[id];
+  meta.sections.forEach(function(s) {
+    _sectionToggles[s.n] = true; // all on by default
+  });
+
+  // 1. Fade out grid
+  var gridView = document.getElementById('gridView');
+  gridView.classList.add('hidden');
+
+  // 2. After grid fades, show workspace
+  setTimeout(function() {
+    gridView.style.display = 'none';
+    buildWorkspace(id);
+    var wsView = document.getElementById('workspaceView');
+    wsView.style.display = 'block';
+    // Force reflow
+    wsView.offsetHeight;
+    wsView.classList.add('visible');
+  }, 280);
+
+  // 3. Open Tango
+  setTimeout(function() {
+    openAgentForTemplate(id);
+  }, 200);
+
+  // Show notif dot
+  document.getElementById('tangoNotifDot').style.display = 'block';
+}
+
+function goBack() {
+  _active = null;
+  _sectionToggles = {};
+  _currentScoreEl = null;
+  _customSectionCount = 0;
+  closeAddForm();
+  // Hide score chip in header
+  var chip = document.getElementById('wsScoreChip');
+  if (chip) chip.style.display = 'none';
+
+  // Hide workspace
+  var wsView = document.getElementById('workspaceView');
+  wsView.classList.remove('visible');
+
+  setTimeout(function() {
+    wsView.style.display = 'none';
+
+    // Show & fade in grid
+    var gridView = document.getElementById('gridView');
+    gridView.style.display = 'block';
+    gridView.offsetHeight;
+    gridView.classList.remove('hidden');
+  }, 280);
+
+  // Close agent
+  closeAgent();
+  document.getElementById('tangoNotifDot').style.display = 'none';
+}
+
+// ─── WORKSPACE BUILDER ───────────────────────────────────────────────────────
+function buildWorkspace(id) {
+  var meta = DATA[id];
+  var bd   = CTA_BADGE_MAP[id];
+  var d = new Date().toLocaleDateString('en-AU', {day:'numeric', month:'short', year:'numeric'});
+  var aiCount = meta.sections.filter(function(s){return s.ai;}).length;
+
+  // Header
+  document.getElementById('wsTitle').textContent = meta.name;
+  document.getElementById('wsSub').textContent = meta.subtitle + ' · ' + d;
+
+  var badgeEl = document.getElementById('wsBadge');
+  badgeEl.innerHTML = '<div class="tc-badge ' + bd.cls + '">' + bd.label + '</div>';
+
+  // A4 meta — fresh mode gets an editable title input
+  var a4TitleEl = document.getElementById('wsA4Title');
+  if (id === 'fresh') {
+    var inp = document.createElement('input');
+    inp.className = 'ws-a4-title-input';
+    inp.type = 'text';
+    inp.placeholder = 'Document title…';
+    inp.value = '';
+    inp.maxLength = 80;
+    a4TitleEl.parentNode.replaceChild(inp, a4TitleEl);
+    inp.id = 'wsA4Title';
+    setTimeout(function(){ inp.focus(); }, 350);
+  } else {
+    // Restore to div if coming from fresh
+    if (a4TitleEl.tagName === 'INPUT') {
+      var div = document.createElement('div');
+      div.className = 'ws-a4-title';
+      div.id = 'wsA4Title';
+      a4TitleEl.parentNode.replaceChild(div, a4TitleEl);
+    }
+    document.getElementById('wsA4Title').textContent = meta.name;
+  }
+  document.getElementById('wsMetaSections').innerHTML = 'Sections <strong>' + meta.sections.length + '</strong>';
+  document.getElementById('wsMetaAI').innerHTML = 'Tango pre-fills <strong style="color:#8b5cf6;">' + aiCount + ' sections</strong>';
+
+  // Reset add form
+  closeAddForm();
+  _customSectionCount = 0;
+
+  // Sections
+  var container = document.getElementById('wsSections');
+  container.innerHTML = '';
+
+  meta.sections.forEach(function(s, i) {
+    var row = document.createElement('div');
+    row.className = 'ws-section-row';
+    row.dataset.section = s.n;
+
+    var dragHandle = document.createElement('div');
+    dragHandle.className = 'ws-drag-handle';
+    dragHandle.title = 'Drag to reorder';
+    dragHandle.innerHTML = '<span></span><span></span><span></span>';
+
+    var numEl = document.createElement('div');
+    numEl.className = 'ws-section-num';
+    numEl.textContent = i + 1;
+
+    var contentEl = document.createElement('div');
+    contentEl.className = 'ws-section-content';
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'ws-section-name';
+    nameEl.textContent = s.n;
+
+    var descEl = document.createElement('div');
+    descEl.className = 'ws-section-desc';
+    descEl.textContent = s.s;
+
+    contentEl.appendChild(nameEl);
+    contentEl.appendChild(descEl);
+
+    // Consolidated AI tag: show if section has callout OR ai flag
+    if (s.callout || s.ai) {
+      var aiTag = document.createElement('div');
+      aiTag.className = 'ws-section-ai-tag';
+      var calloutText = s.callout ? s.callout : 'Using workspace context';
+      aiTag.innerHTML =
+        '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">' +
+        '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' +
+        ' Pre-filled by Tango • ' + calloutText;
+      contentEl.appendChild(aiTag);
+    }
+
+    // Custom prompt input per section
+    var promptInput = document.createElement('input');
+    promptInput.type = 'text';
+    promptInput.className = 'ws-custom-prompt-input';
+    promptInput.placeholder = '✦  Add custom instructions for this section (optional)…';
+    contentEl.appendChild(promptInput);
+
+    // Toggle
+    var toggleWrap = document.createElement('div');
+    toggleWrap.className = 'ws-toggle';
+
+    var toggleId = 'toggle-' + i;
+    var toggleInput = document.createElement('input');
+    toggleInput.type = 'checkbox';
+    toggleInput.className = 'ws-toggle-input';
+    toggleInput.id = toggleId;
+    toggleInput.checked = true;
+    toggleInput.dataset.section = s.n;
+
+    var toggleTrack = document.createElement('label');
+    toggleTrack.className = 'ws-toggle-track';
+    toggleTrack.setAttribute('for', toggleId);
+    toggleTrack.title = 'Include/exclude this section';
+
+    toggleInput.addEventListener('change', function(e) {
+      var secName = e.target.dataset.section;
+      var included = e.target.checked;
+      _sectionToggles[secName] = included;
+      var parentRow = e.target.closest('.ws-section-row');
+      if (included) {
+        parentRow.classList.remove('excluded');
+      } else {
+        parentRow.classList.add('excluded');
+      }
+      onSectionToggle(secName, included);
+    });
+
+    toggleWrap.appendChild(toggleInput);
+    toggleWrap.appendChild(toggleTrack);
+
+    row.appendChild(dragHandle);
+    row.appendChild(numEl);
+    row.appendChild(contentEl);
+    row.appendChild(toggleWrap);
+
+    // Animate in
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(-8px)';
+    row.style.transition = 'opacity 220ms ease ' + (i * 50) + 'ms, transform 220ms ease ' + (i * 50) + 'ms';
+    container.appendChild(row);
+
+    setTimeout(function(r){ r.style.opacity='1'; r.style.transform='translateX(0)'; }.bind(null, row), 60);
+  });
+
+  // Fresh mode empty state
+  if (id === 'fresh' && meta.sections.length === 0) {
+    var emptyEl = document.createElement('div');
+    emptyEl.className = 'ws-fresh-empty';
+    emptyEl.id = 'wsFreshEmpty';
+    emptyEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>No sections yet — click <strong>Add a section</strong> below to start building.';
+    container.appendChild(emptyEl);
+  }
+
+  // Tango button style
+  var genBtn = document.getElementById('wsGenerateBtn');
+  if (id === 'tango') {
+    genBtn.classList.add('ai-mode');
+  } else {
+    genBtn.classList.remove('ai-mode');
+  }
+
+  updateSectionsCount();
+}
+
+function updateSectionsCount() {
+  if (!_active) return;
+  var meta = DATA[_active];
+  // Count both template sections and custom-added sections
+  var allRows = document.querySelectorAll('#wsSections .ws-section-row');
+  var total = allRows.length;
+  var included = 0;
+  allRows.forEach(function(row) {
+    if (!row.classList.contains('excluded')) included++;
+  });
+  document.getElementById('wsSectionsCount').innerHTML =
+    '<strong>' + included + '</strong> of <strong>' + total + '</strong> sections included';
+}
+
+// ─── ADD SECTION — INLINE IN-ROW ──────────────────────────────────────────────
+var _customSectionCount = 0;
+var _inlineAddRow = null; // the temporary editing row
+
+function openInlineAdd() {
+  if (_inlineAddRow) return; // already open
+
+  var container = document.getElementById('wsSections');
+  var ghost = document.getElementById('wsAddGhostRow');
+  var existingRows = container.querySelectorAll('.ws-section-row');
+  var newIndex = existingRows.length + 1;
+
+  // Build an editing row that looks exactly like a section row
+  var row = document.createElement('div');
+  row.className = 'ws-section-row editing';
+  row.style.cssText = 'opacity:0;transform:translateY(6px);transition:opacity 180ms ease,transform 180ms ease;';
+
+  // Drag handle spacer
+  var dragHandle = document.createElement('div');
+  dragHandle.className = 'ws-drag-handle';
+  dragHandle.innerHTML = '<span></span><span></span><span></span>';
+  dragHandle.style.opacity = '0.3';
+
+  // Number badge
+  var numEl = document.createElement('div');
+  numEl.className = 'ws-section-num';
+  numEl.textContent = newIndex;
+
+  // Content area with inline inputs
+  var contentEl = document.createElement('div');
+  contentEl.className = 'ws-section-content';
+
+  var nameInput = document.createElement('input');
+  nameInput.className = 'ws-inline-name';
+  nameInput.type = 'text';
+  nameInput.placeholder = 'Section title…';
+  nameInput.maxLength = 60;
+
+  var descInput = document.createElement('input');
+  descInput.className = 'ws-inline-desc';
+  descInput.type = 'text';
+  descInput.placeholder = 'Brief description — optional';
+  descInput.maxLength = 120;
+
+  var actionsEl = document.createElement('div');
+  actionsEl.className = 'ws-inline-actions';
+
+  var confirmBtn = document.createElement('button');
+  confirmBtn.className = 'ws-inline-confirm';
+  confirmBtn.textContent = 'Add';
+
+  var cancelBtn = document.createElement('button');
+  cancelBtn.className = 'ws-inline-cancel';
+  cancelBtn.textContent = 'Cancel';
+
+  var hintEl = document.createElement('span');
+  hintEl.className = 'ws-inline-hint';
+  hintEl.textContent = '↵ to add · Esc to cancel';
+
+  actionsEl.appendChild(confirmBtn);
+  actionsEl.appendChild(cancelBtn);
+  actionsEl.appendChild(hintEl);
+
+  contentEl.appendChild(nameInput);
+  contentEl.appendChild(descInput);
+  contentEl.appendChild(actionsEl);
+
+  // Toggle placeholder (disabled while editing)
+  var toggleWrap = document.createElement('div');
+  toggleWrap.className = 'ws-toggle';
+  toggleWrap.style.opacity = '0.3';
+  var dummyTrack = document.createElement('div');
+  dummyTrack.className = 'ws-toggle-track';
+  dummyTrack.style.pointerEvents = 'none';
+  toggleWrap.appendChild(dummyTrack);
+
+  row.appendChild(dragHandle);
+  row.appendChild(numEl);
+  row.appendChild(contentEl);
+  row.appendChild(toggleWrap);
+
+  // Insert BEFORE the ghost row
+  container.insertBefore(row, ghost.parentNode === container ? null : null);
+  container.appendChild(row);
+
+  _inlineAddRow = row;
+
+  // Fade in
+  requestAnimationFrame(function() {
+    setTimeout(function() {
+      row.style.opacity = '1';
+      row.style.transform = 'translateY(0)';
+      nameInput.focus();
+    }, 20);
+  });
+
+  // Hide ghost while editing
+  ghost.style.visibility = 'hidden';
+
+  // Key handlers
+  function doConfirm() { commitInlineAdd(nameInput.value, descInput.value, row, numEl.textContent); }
+  function doCancel()  { cancelInlineAdd(row); }
+
+  nameInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); if (nameInput.value.trim()) { descInput.focus(); } }
+    if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
+  });
+  descInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); doConfirm(); }
+    if (e.key === 'Escape') { e.preventDefault(); doCancel(); }
+  });
+  confirmBtn.addEventListener('click', doConfirm);
+  cancelBtn.addEventListener('click', doCancel);
+}
+
+function commitInlineAdd(nameVal, descVal, editingRow, indexStr) {
+  nameVal = nameVal ? nameVal.trim() : '';
+  if (!nameVal) {
+    var ni = editingRow.querySelector('.ws-inline-name');
+    if (ni) {
+      ni.style.borderBottomColor = '#ef4444';
+      ni.focus();
+      setTimeout(function(){ ni.style.borderBottomColor = ''; }, 1200);
+    }
+    return;
+  }
+  descVal = descVal ? descVal.trim() : '';
+
+  _customSectionCount++;
+  var secKey = '__custom_' + _customSectionCount + '__' + nameVal;
+  _sectionToggles[secKey] = true;
+
+  // Morph the editing row into a real section row
+  editingRow.classList.remove('editing');
+  editingRow.dataset.section = secKey;
+  editingRow.style.transition = 'box-shadow 200ms ease, background 200ms ease';
+  editingRow.style.background = '';
+
+  // Replace content with static display
+  var contentEl = editingRow.querySelector('.ws-section-content');
+  contentEl.innerHTML = '';
+
+  var nameEl = document.createElement('div');
+  nameEl.className = 'ws-section-name';
+  nameEl.textContent = nameVal;
+  contentEl.appendChild(nameEl);
+
+  if (descVal) {
+    var descEl = document.createElement('div');
+    descEl.className = 'ws-section-desc';
+    descEl.textContent = descVal;
+    contentEl.appendChild(descEl);
+  }
+
+  var customTag = document.createElement('div');
+  customTag.className = 'ws-section-ai-tag';
+  customTag.style.cssText = 'color:#64748b;';
+  customTag.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Custom';
+  contentEl.appendChild(customTag);
+
+  // Fix the drag handle
+  var dh = editingRow.querySelector('.ws-drag-handle');
+  if (dh) dh.style.opacity = '';
+
+  // Replace dummy toggle with real one
+  var oldToggle = editingRow.querySelector('.ws-toggle');
+  if (oldToggle) oldToggle.remove();
+
+  var toggleWrap = document.createElement('div');
+  toggleWrap.className = 'ws-toggle';
+  var toggleId = 'toggle-custom-' + _customSectionCount;
+  var toggleInput = document.createElement('input');
+  toggleInput.type = 'checkbox';
+  toggleInput.className = 'ws-toggle-input';
+  toggleInput.id = toggleId;
+  toggleInput.checked = true;
+  toggleInput.dataset.section = secKey;
+  toggleInput.addEventListener('change', function(e) {
+    var sk = e.target.dataset.section;
+    var inc = e.target.checked;
+    _sectionToggles[sk] = inc;
+    var pr = e.target.closest('.ws-section-row');
+    pr.classList.toggle('excluded', !inc);
+    onSectionToggle(nameVal, inc);
+  });
+  var toggleTrack = document.createElement('label');
+  toggleTrack.className = 'ws-toggle-track';
+  toggleTrack.setAttribute('for', toggleId);
+  editingRow.appendChild(toggleWrap);
+  toggleWrap.appendChild(toggleInput);
+  toggleWrap.appendChild(toggleTrack);
+
+  _inlineAddRow = null;
+  document.getElementById('wsAddGhostRow').style.visibility = '';
+
+  // Remove fresh empty state if present
+  var emptyEl = document.getElementById('wsFreshEmpty');
+  if (emptyEl) emptyEl.remove();
+
+  updateSectionsCount();
+  renumberSections();
+  addAgentMsg('Added <strong>' + nameVal + '</strong>. Toggle it on or off using the switch.', false, null);
+}
+
+function cancelInlineAdd(row) {
+  row.style.opacity = '0';
+  row.style.transform = 'translateY(4px)';
+  setTimeout(function() { if (row.parentNode) row.parentNode.removeChild(row); }, 180);
+  _inlineAddRow = null;
+  document.getElementById('wsAddGhostRow').style.visibility = '';
+  renumberSections();
+}
+
+function closeAddForm() {
+  if (_inlineAddRow) cancelInlineAdd(_inlineAddRow);
+}
+
+function renumberSections() {
+  var rows = document.querySelectorAll('#wsSections .ws-section-row');
+  rows.forEach(function(row, i) {
+    var numEl = row.querySelector('.ws-section-num');
+    if (numEl) numEl.textContent = i + 1;
+  });
+  // also update ghost row number
+  var ghost = document.getElementById('wsAddGhostRow');
+  if (ghost) {
+    var total = rows.length + 1;
+    var gNum = ghost.querySelector('.ws-add-ghost-num');
+    if (gNum) gNum.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
+  }
+}
+
+// ─── SECTION TOGGLE HANDLER ──────────────────────────────────────────────────
+function onSectionToggle(secName, included) {
+  updateSectionsCount();
+
+  var meta = DATA[_active];
+  // Recalculate score: -5 per excluded section (floor 0)
+  var excluded = 0;
+  meta.sections.forEach(function(s) {
+    if (_sectionToggles[s.n] === false) excluded++;
+  });
+  var newTotal = Math.max(0, meta.total - (excluded * 5));
+
+  // Update the header score chip live
+  if (_currentScoreEl) {
+    var colour = newTotal >= 85 ? '#10b981' : newTotal >= 70 ? '#FFA426' : '#ef4444';
+    var chipDot = document.getElementById('wsScoreChipDot');
+    var chipVal = document.getElementById('wsScoreChipVal');
+    var chipTotal = document.getElementById('wsScoreChipTotal');
+    if (chipDot) chipDot.style.background = colour;
+    if (chipVal) { chipVal.textContent = newTotal + '/100'; chipVal.style.color = colour; }
+    if (chipTotal) { chipTotal.innerHTML = newTotal + '<span style="font-size:11px;font-weight:500;color:#94a3b8;"> /100</span>'; chipTotal.style.color = colour; }
+    // Update row bars proportionally
+    var factor = meta.total > 0 ? newTotal / meta.total : 0;
+    var chipRows = document.getElementById('wsScoreChipRows');
+    if (chipRows) {
+      chipRows.querySelectorAll('.tap-score-fill').forEach(function(bar, i) {
+        var origVal = meta.scores[i] ? meta.scores[i].v : 0;
+        bar.style.width = Math.round(origVal * factor) + '%';
+        var numEl = bar.closest('.tap-score-row') ? bar.closest('.tap-score-row').querySelector('.tap-score-num') : null;
+        if (numEl) numEl.textContent = Math.round(origVal * factor);
+      });
+    }
+  }
+
+  // Push message to Tango
+  var action = included ? 'added back' : 'removed';
+  var verb   = included ? 'added' : 'updated';
+  addAgentMsg(
+    'I noticed you ' + action + ' <strong>' + secName + '</strong>. ' +
+    'I\'ve ' + verb + ' the completeness score to <strong>' + newTotal + '/100</strong>.',
+    false, null
+  );
+}
+
+// ─── AGENT LOGIC ─────────────────────────────────────────────────────────────
+function openAgentForTemplate(id) {
+  var panel = document.getElementById('tangoAgentPanel');
+  var meta = DATA[id];
+
+  document.getElementById('tapMessages').innerHTML = '';
+  document.getElementById('tapInput').value = '';
+  removeQuickReplies();
+  _currentScoreEl = null;
+  // Reset score chip for this template
+  var chip = document.getElementById('wsScoreChip');
+  if (chip) chip.style.display = 'none';
+
+  var ctx = document.getElementById('tapContextBar');
+  document.getElementById('tapContextLabel').textContent = meta.name;
+  ctx.style.display = 'flex';
+  document.getElementById('tapSubtitle').textContent = meta.subtitle;
+  document.getElementById('tangoNotifDot').style.display = 'none';
+
+  panel.classList.add('open');
+
+  setTimeout(function() {
+    addAgentMsg(meta.intro, true, function() {
+      setTimeout(function() {
+        addSectionListMsg(meta, function() {
+          // Score is pinned instantly — no typing delay
+          addScoreMsg(meta, null);
+          setTimeout(function() {
+            showQuickReplies(meta.followUp);
+          }, 400);
+        });
+      }, 500);
+    });
+  }, 200);
+}
+
+function addAgentMsg(text, withTyping, cb) {
+  var msgs = document.getElementById('tapMessages');
+  removeQuickReplies();
+  if (withTyping) {
+    var typingEl = document.createElement('div');
+    typingEl.className = 'tap-msg agent';
+    typingEl.innerHTML = '<div class="tap-typing"><div class="tap-typing-dot"></div><div class="tap-typing-dot"></div><div class="tap-typing-dot"></div></div>';
+    msgs.appendChild(typingEl);
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(function() {
+      typingEl.remove();
+      appendBubble(msgs, 'agent', text);
+      if (cb) cb();
+    }, 900);
+  } else {
+    appendBubble(msgs, 'agent', text);
+    if (cb) cb();
+  }
+}
+
+function addSectionListMsg(meta, cb) {
+  // Now sends a project-specific insight rather than a section list
+  var insightText = meta.insight || meta.intro;
+  addAgentMsg(insightText, true, cb);
+}
+
+function addScoreMsg(meta, cb) {
+  renderScoreChip(meta, meta.total);
+  if (cb) cb();
+}
+
+function renderScoreChip(meta, total) {
+  var chip    = document.getElementById('wsScoreChip');
+  var chipVal = document.getElementById('wsScoreChipVal');
+  var chipDot = document.getElementById('wsScoreChipDot');
+  var chipRows   = document.getElementById('wsScoreChipRows');
+  var chipTotal  = document.getElementById('wsScoreChipTotal');
+  if (!chip) return;
+
+  // Dot + value colour based on score
+  var colour = total >= 85 ? '#10b981' : total >= 70 ? '#FFA426' : '#ef4444';
+  chipDot.style.background = colour;
+  chipVal.textContent = total + '/100';
+  chipVal.style.color = colour;
+
+  // Breakdown rows inside hover card
+  chipRows.innerHTML = '';
+  meta.scores.forEach(function(s) {
+    var row = document.createElement('div');
+    row.className = 'tap-score-row';
+    row.innerHTML =
+      '<div class="tap-score-name">' + s.l + '</div>' +
+      '<div class="tap-score-track"><div class="tap-score-fill" style="background:' + s.c + ';width:0" data-val="' + s.v + '"></div></div>' +
+      '<div class="tap-score-num">' + s.v + '</div>';
+    chipRows.appendChild(row);
+  });
+
+  // Total line
+  chipTotal.innerHTML = total + '<span style="font-size:11px;font-weight:500;color:#94a3b8;"> /100</span>';
+  chipTotal.style.color = colour;
+
+  chip.style.display = 'inline-flex';
+
+  // Store the card container as the live-update reference
+  _currentScoreEl = chip;
+
+  // Animate bars
+  setTimeout(function() {
+    chipRows.querySelectorAll('.tap-score-fill').forEach(function(bar) {
+      bar.style.transition = 'width 700ms cubic-bezier(0.34,1.2,0.64,1)';
+      bar.style.width = bar.dataset.val + '%';
+    });
+  }, 60);
+}
+
+function appendBubble(container, role, text) {
+  var now = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  var wrap = document.createElement('div');
+  wrap.className = 'tap-msg ' + role;
+  var bubble = document.createElement('div');
+  bubble.className = 'tap-bubble';
+  bubble.innerHTML = text;
+  var time = document.createElement('div');
+  time.className = 'tap-msg-time';
+  time.textContent = now;
+  wrap.appendChild(bubble);
+  wrap.appendChild(time);
+  container.appendChild(wrap);
+  container.scrollTop = container.scrollHeight;
+}
+
+function showQuickReplies(replies) {
+  var msgs = document.getElementById('tapMessages');
+  var strip = document.createElement('div');
+  strip.className = 'tap-quick-replies';
+  replies.forEach(function(r) {
+    var chip = document.createElement('button');
+    chip.className = 'tap-qr-chip';
+    chip.textContent = r;
+    chip.onclick = function() {
+      if (r === 'Generate document' || r === 'Open this template' || r.indexOf('Generate with') === 0) {
+        openDoc();
+      } else {
+        document.getElementById('tapInput').value = r;
+        sendMsg();
+      }
+    };
+    strip.appendChild(chip);
+  });
+  msgs.parentNode.insertBefore(strip, msgs.nextSibling);
+}
+
+function removeQuickReplies() {
+  document.querySelectorAll('.tap-quick-replies').forEach(function(el){ el.remove(); });
+}
+
+function sendMsg() {
+  var input = document.getElementById('tapInput');
+  var text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  removeQuickReplies();
+  appendBubble(document.getElementById('tapMessages'), 'user', text);
+
+  setTimeout(function() {
+    if (text.toLowerCase().indexOf('generate') >= 0 || text.toLowerCase().indexOf('open') >= 0) {
+      openDoc();
+    } else {
+      addAgentMsg('Good question. ' + (text.length > 30 ? 'Let me think about that in the context of BHP WAIO.' : 'This template handles that well — you can toggle individual sections off if they\'re not relevant.'), true, function() {
+        if (_active) showQuickReplies(DATA[_active].followUp);
+      });
+    }
+  }, 300);
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+function toggleAgent() {
+  var panel = document.getElementById('tangoAgentPanel');
+  if (panel.classList.contains('open')) {
+    closeAgent();
+  } else {
+    if (_active) {
+      openAgentForTemplate(_active);
+    } else {
+      panel.classList.add('open');
+      document.getElementById('tapSubtitle').textContent = 'Select a template to begin';
+      document.getElementById('tapContextBar').style.display = 'none';
+      setTimeout(function() {
+        addAgentMsg('Select a template from the grid and I\'ll walk you through what\'s inside — sections, subheadings, fit scores, everything.', true, null);
+      }, 200);
+    }
+  }
+}
+
+function closeAgent() {
+  document.getElementById('tangoAgentPanel').classList.remove('open');
+}
+
+// ─── OPEN DOC ─────────────────────────────────────────────────────────────────
+var _revealDone = false;
+
+function openDoc() {
+  var id = _active;
+  if (!id) return;
+  var meta = DATA[id];
+  _revealDone = false;
+
+  var panel = document.getElementById('tangoAgentPanel');
+  if (!panel.classList.contains('open')) {
+    panel.classList.add('open');
+    document.getElementById('tapSubtitle').textContent = meta.subtitle;
+    var ctx = document.getElementById('tapContextBar');
+    document.getElementById('tapContextLabel').textContent = meta.name;
+    ctx.style.display = 'flex';
+  }
+
+  var msgs = document.getElementById('tapMessages');
+  removeQuickReplies();
+
+  appendBubble(msgs, 'user', 'Generate ' + meta.name);
+
+  setTimeout(function() {
+    var typingEl = document.createElement('div');
+    typingEl.className = 'tap-msg agent';
+    typingEl.id = 'tapBuildTyping';
+    typingEl.innerHTML = '<div class="tap-typing"><div class="tap-typing-dot"></div><div class="tap-typing-dot"></div><div class="tap-typing-dot"></div></div>';
+    msgs.appendChild(typingEl);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    setTimeout(function() {
+      typingEl.remove();
+
+      var wrap = document.createElement('div');
+      wrap.className = 'tap-msg agent';
+      wrap.id = 'tapBuildMsg';
+
+      var bubble = document.createElement('div');
+      bubble.className = 'tap-bubble';
+      bubble.style.cssText = 'border-radius:2px 10px 10px 10px; padding:11px 13px; min-width:220px;';
+      bubble.innerHTML = 'On it. Building your document now.';
+
+      var STEPS = [
+        { id:'ts1', label:'Applying template structure' },
+        { id:'ts2', label:'Pulling BHP WAIO context'   },
+        { id:'ts3', label:'Pre-filling key sections'    },
+        { id:'ts4', label:'Opening document'            }
+      ];
+
+      var card = document.createElement('div');
+      card.className = 'tap-steps-card';
+
+      STEPS.forEach(function(s, i) {
+        var row = document.createElement('div');
+        row.className = 'tap-step-row' + (i === 0 ? ' active' : '');
+        row.id = s.id;
+        row.innerHTML =
+          '<div class="tap-step-icon">' + (i === 0 ? '●' : '') + '</div>' +
+          '<div class="tap-step-label">' + s.label + '</div>';
+        card.appendChild(row);
+      });
+
+      bubble.appendChild(card);
+      wrap.appendChild(bubble);
+
+      var time = document.createElement('div');
+      time.className = 'tap-msg-time';
+      time.textContent = 'Just now';
+      wrap.appendChild(time);
+
+      msgs.appendChild(wrap);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      var bar = document.getElementById('docProgress');
+      bar.style.transition = 'none'; bar.style.width = '0%';
+      setTimeout(function(){
+        bar.style.transition = 'width 700ms cubic-bezier(0.4,0,0.8,1)';
+        bar.style.width = '20%';
+      }, 60);
+
+      var delays = [600, 1200, 1900, 2700];
+      var stepIds = ['ts1','ts2','ts3','ts4'];
+      var barWidths = [35, 60, 80, 95];
+
+      delays.forEach(function(delay, i) {
+        setTimeout(function() {
+          if (i > 0) {
+            var prev = document.getElementById(stepIds[i-1]);
+            if (prev) {
+              prev.classList.remove('active');
+              prev.classList.add('done');
+              prev.querySelector('.tap-step-icon').innerHTML = '✓';
+            }
+          }
+          var cur = document.getElementById(stepIds[i]);
+          if (cur) {
+            cur.classList.add('active');
+            cur.querySelector('.tap-step-icon').innerHTML = '●';
+          }
+          bar.style.width = barWidths[i] + '%';
+          msgs.scrollTop = msgs.scrollHeight;
+        }, delay);
+      });
+
+      setTimeout(function() {
+        var last = document.getElementById('ts4');
+        if (last) { last.classList.remove('active'); last.classList.add('done'); last.querySelector('.tap-step-icon').innerHTML = '✓'; }
+        bar.style.width = '100%';
+
+        var finalWrap = document.createElement('div');
+        finalWrap.className = 'tap-msg agent';
+        finalWrap.innerHTML =
+          '<div class="tap-bubble" style="border-radius:2px 10px 10px 10px;">Done. Opening your document now.</div>' +
+          '<div class="tap-msg-time">Just now</div>';
+        msgs.appendChild(finalWrap);
+        msgs.scrollTop = msgs.scrollHeight;
+
+        document.getElementById('docTransition').classList.add('active');
+
+        setTimeout(function() {
+          var iframe = document.getElementById('docIframe');
+          iframe.src = 'trmeric-solution.html';
+          iframe.onload = revealDoc;
+          setTimeout(revealDoc, 3500);
+        }, 400);
+      }, 3500);
+
+    }, 900);
+  }, 300);
+}
+
+function revealDoc() {
+  if (_revealDone) return;
+  _revealDone = true;
+  var curtain = document.getElementById('docCurtain');
+  curtain.style.transition = 'opacity 300ms ease';
+  setTimeout(function() {
+    document.getElementById('docIframeWrap').classList.add('show');
+    curtain.style.opacity = '0';
+  }, 200);
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+var _toastTimer;
+function showToast(icon, title, msg, color) {
+  var t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-title').textContent = title;
+  document.getElementById('toast-msg').textContent = msg || '';
+  t.style.borderLeftColor = color || '#FFA426';
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    if (_active) {
+      goBack();
+    } else {
+      closeAgent();
+    }
+  }
+});
+</script>
+
+</body>
+</html>

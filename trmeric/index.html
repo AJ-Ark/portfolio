@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trmeric — Designing the platform that runs enterprise transformation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF7F1; --cream-2:#F1EADC; --paper:#ffffff;
+  --ink:#17150F; --ink-soft:#3b362c; --muted:#6f6a5e; --faint:#9b9488;
+  --orange:#FFA426; --orange-deep:#E8730E; --orange-ink:#C25F08; --orange-wash:#FFF3E2;
+  --dark:#161009; --dark-2:#1e1509; --dark-soft:#cabfae; --dark-faint:#8a8170;
+  --dline:rgba(255,255,255,.10); --dline-2:rgba(255,255,255,.16);
+  --green:#34c759;
+  --line:#E8E1D2; --line-2:#ddd4c2;
+  --r:16px; --r-lg:22px; --r-xl:28px;
+  --shadow-card:0 1px 2px rgba(20,16,8,.04),0 14px 40px -18px rgba(20,16,8,.18);
+  --shadow-float:0 30px 70px -30px rgba(20,16,8,.34);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+::selection{background:var(--orange-wash);color:var(--orange-ink)}
+body{font-family:'General Sans',system-ui,sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{max-width:1240px;margin:0 auto;padding:0 40px}
+@media(max-width:680px){.wrap{padding:0 22px}}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange-deep);font-weight:500}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;line-height:1.02}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}
+
+/* ===== NAV ===== */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;
+  padding:18px 40px;transition:padding .4s var(--ease),background .4s,border-color .4s,box-shadow .4s;border-bottom:1px solid transparent}
+nav.solid{padding:12px 40px;background:rgba(250,247,241,.82);backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(0,0,0,.01)}
+@media(max-width:680px){nav,nav.solid{padding:12px 22px}}
+.brand{display:flex;align-items:center;gap:9px}
+.brand img{height:26px;width:auto;display:block}
+.brand .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);border-left:1px solid var(--line-2);padding-left:10px;margin-left:4px}
+.nav-links{display:flex;align-items:center;gap:32px;font-size:15px;color:var(--ink-soft);font-weight:500}
+.nav-links a{transition:color .25s}.nav-links a:hover{color:var(--orange-deep)}
+@media(max-width:860px){.nav-links{display:none}}
+.btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;border-radius:100px;transition:transform .3s var(--ease),box-shadow .35s,background .25s,color .25s,border-color .25s;cursor:pointer;border:1px solid transparent}
+.btn svg{transition:transform .3s var(--ease)}
+.btn:hover svg{transform:translateX(3px)}
+.btn-orange{background:var(--orange);color:#231304;padding:11px 20px;box-shadow:0 10px 24px -10px rgba(255,140,30,.7)}
+.btn-orange:hover{background:var(--orange-deep);color:#fff;transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2);padding:11px 20px}
+.btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px)}
+.btn-lg{padding:15px 26px;font-size:16px}
+
+/* ===== HERO ===== */
+.hero{padding:150px 0 70px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;top:-200px;right:-120px;width:780px;height:780px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,164,38,.20),rgba(255,164,38,.06) 42%,transparent 66%);pointer-events:none;z-index:0}
+.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.04fr 1.1fr;gap:60px;align-items:center}
+@media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:44px}}
+.hero h1{font-size:clamp(40px,5.6vw,74px);margin:22px 0 0}
+.hero h1 .pl{color:var(--orange-deep)}
+.hero-sub{margin-top:24px;font-size:clamp(17px,1.5vw,20px);color:var(--muted);max-width:48ch;font-weight:500}
+.hero-actions{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+.hero-trust{margin-top:30px;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px;font-weight:500}
+.hero-trust .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 4px var(--orange-wash)}
+
+/* product card (hero right) */
+.shot{position:relative;border-radius:var(--r-lg);background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow-float);overflow:hidden}
+.shot-bar{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);background:#fff}
+.shot-bar .d{width:11px;height:11px;border-radius:50%;background:#e7ded0}
+.shot-bar .u{margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);display:flex;align-items:center;gap:8px;flex:1}
+.shot-bar .live{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--orange-deep);background:var(--orange-wash);border:1px solid #f7dcb4;padding:4px 10px;border-radius:100px}
+.shot-bar .live .lp{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.shot-img{display:block;width:100%;height:auto}
+.shot-cta{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:22px;
+  background:linear-gradient(180deg,transparent 62%,rgba(20,16,8,.30));opacity:0;transition:opacity .4s}
+.shot:hover .shot-cta{opacity:1}
+.shot-cta .pill{background:#fff;color:var(--ink);font-weight:600;font-size:14px;padding:11px 18px;border-radius:100px;box-shadow:var(--shadow-card);display:inline-flex;gap:8px;align-items:center}
+.shot.clickable{cursor:pointer}
+.hero-float{position:absolute;z-index:2;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-card);padding:12px 15px;display:flex;align-items:center;gap:11px;animation:floaty 5s ease-in-out infinite}
+.hero-float .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:16px}
+.hero-float .t{font-size:12.5px;line-height:1.3}.hero-float .t b{font-weight:600}.hero-float .t span{color:var(--faint);font-size:11px}
+.hf-1{top:-22px;left:-26px}.hf-2{bottom:-20px;right:-22px;animation-delay:1.6s}
+@media(max-width:980px){.hf-1{left:0}.hf-2{right:0}}
+@media(max-width:560px){.hero-float{display:none}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+/* ===== LOGO STRIP ===== */
+.strip{background:var(--cream-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.strip .wrap{display:flex;align-items:center;gap:38px;padding-top:24px;padding-bottom:24px;flex-wrap:wrap}
+.strip .lbl{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.strip .logos{display:flex;align-items:center;gap:40px;flex-wrap:wrap;flex:1;justify-content:space-between}
+.strip .logos span{font-weight:600;font-size:21px;color:var(--ink-soft);opacity:.62;letter-spacing:-.01em}
+@media(max-width:680px){.strip .logos span{font-size:17px}}
+
+/* ===== SECTION HEAD ===== */
+.sec{padding:120px 0}
+.sec-head{max-width:760px;margin-bottom:60px}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+.sec-head h2{font-size:clamp(32px,4.4vw,54px);margin-top:18px}
+.sec-head p{margin-top:20px;font-size:18px;color:var(--muted);font-weight:500;max-width:54ch}
+.sec-head.center p{margin-left:auto;margin-right:auto}
+
+/* ===== WORK ROWS ===== */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-bottom:120px}
+.row:last-child{margin-bottom:0}
+.row.flip .row-media{order:2}
+@media(max-width:920px){.row{grid-template-columns:1fr;gap:36px}.row.flip .row-media{order:0}}
+.row-kicker{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.row-kicker .n{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--orange-deep)}
+.row-kicker .ln{height:1px;width:34px;background:var(--line-2)}
+.row h3{font-size:clamp(26px,3vw,38px)}
+.row p{margin-top:18px;font-size:16.5px;color:var(--muted);font-weight:500;line-height:1.65;max-width:46ch}
+.row .tags{display:flex;flex-wrap:wrap;gap:9px;margin:22px 0 26px}
+.row .tags span{font-size:13px;color:var(--ink-soft);background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:100px;font-weight:500}
+.row .open{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;color:var(--orange-deep)}
+.row .open svg{transition:transform .3s var(--ease)}.row .open:hover svg{transform:translateX(4px)}
+.row-media{position:relative}
+.row-media .shot{transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.row-media:hover .shot{transform:translateY(-6px);box-shadow:0 40px 80px -34px rgba(20,16,8,.4)}
+
+/* gallery */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:14px}
+@media(max-width:860px){.gallery{grid-template-columns:1fr}}
+.gcard{border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow-card);cursor:pointer;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.gcard:hover{transform:translateY(-6px);box-shadow:0 34px 64px -34px rgba(20,16,8,.4)}
+.gcard .im{height:190px;overflow:hidden;border-bottom:1px solid var(--line);position:relative;background:#f6f1e8}
+.gcard .im img{width:100%;display:block}
+.gcard .meta{padding:18px 20px 20px}
+.gcard .meta .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+.gcard .meta h4{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.gcard .meta .o{margin-top:10px;font-size:13.5px;color:var(--orange-deep);font-weight:600;display:flex;align-items:center;gap:7px}
+.platform-intro{max-width:760px;margin:120px 0 8px}
+.platform-intro h2{font-size:clamp(30px,4vw,48px);margin-top:16px}
+.platform-intro p{margin-top:18px;font-size:18px;color:var(--muted);font-weight:500;max-width:52ch}
+.glabel{display:flex;align-items:center;gap:16px;margin:56px 0 26px}
+.glabel .gl-no{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--orange-deep);font-weight:500}
+.glabel h3{font-size:21px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.glabel .ln{flex:1;height:1px;background:var(--line)}
+.glabel .ct{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint)}
+
+/* ===== DARK: AGENTS AT WORK ===== */
+.dark{background:var(--dark);color:#f3ede2;position:relative;overflow:hidden}
+.dark-glow{position:absolute;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,30,.16),transparent 62%);pointer-events:none}
+.agents{padding:130px 0;position:relative}
+.agents-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:50px;align-items:center;position:relative;z-index:2}
+@media(max-width:980px){.agents-grid{grid-template-columns:1fr;gap:30px}}
+.agents .eyebrow{color:var(--orange)}
+.agents h2{font-size:clamp(34px,4.6vw,60px);margin-top:18px;color:#fff}
+.rot{display:inline-block;position:relative;min-width:5ch;color:var(--orange)}
+.rot span{position:absolute;left:0;top:0;white-space:nowrap;opacity:0;transform:translateY(14px);transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.rot span.on{opacity:1;transform:none;position:relative}
+.agents p{margin-top:26px;font-size:17px;color:var(--dark-soft);font-weight:500;max-width:42ch}
+.agents .hero-actions{margin-top:32px}
+.agents .btn-ghost{color:#fff;border-color:var(--dline-2)}.agents .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.05)}
+/* network */
+.net{position:relative;height:440px}
+@media(max-width:980px){.net{height:360px}}
+.node{position:absolute;display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.05);border:1px solid var(--dline-2);
+  border-radius:100px;padding:8px 14px 8px 8px;backdrop-filter:blur(6px);animation:floaty 6s ease-in-out infinite;font-size:13.5px;font-weight:500}
+.node .av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#FFA426);display:grid;place-items:center;font-size:12px;font-weight:600;color:#fff}
+.node.tag{padding:7px 14px;color:#cdeccd}
+.node.tag .av{display:none}
+.node.tag.orange{color:#ffd9a8}
+.node .em{font-size:16px}
+.center-orb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FFC56b,#E8730E);box-shadow:0 0 60px rgba(255,140,30,.6),inset 0 0 30px rgba(255,255,255,.25);animation:pulseorb 3.4s ease-in-out infinite;z-index:3}
+@keyframes pulseorb{0%,100%{box-shadow:0 0 50px rgba(255,140,30,.5),inset 0 0 30px rgba(255,255,255,.25)}50%{box-shadow:0 0 80px rgba(255,140,30,.8),inset 0 0 30px rgba(255,255,255,.35)}}
+.net svg.links{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+
+/* ===== DARK: HOW IT WORKS ===== */
+.how{padding:0 0 130px}
+.how .sec-head h2{color:#fff}.how .sec-head p{color:var(--dark-soft)}.how .eyebrow{color:var(--orange)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+@media(max-width:880px){.steps{grid-template-columns:1fr}}
+.stepc{border:1px solid var(--dline);border-radius:var(--r-lg);padding:30px 28px;background:rgba(255,255,255,.025);transition:border-color .4s,background .4s}
+.stepc:hover{border-color:var(--dline-2);background:rgba(255,255,255,.045)}
+.stepc .sn{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;color:var(--orange);margin-bottom:18px}
+.stepc h3{font-size:21px;color:#fff;margin-bottom:12px}
+.stepc p{font-size:14.5px;color:var(--dark-soft);font-weight:500;line-height:1.6}
+.viz{margin-top:24px;height:150px;border:1px solid var(--dline);border-radius:14px;background:rgba(0,0,0,.18);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.viz .chip{position:absolute;font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(255,255,255,.06);border:1px solid var(--dline-2);border-radius:100px;padding:5px 10px;color:#e7dcc9;display:flex;align-items:center;gap:6px}
+.viz .chip .dt{width:6px;height:6px;border-radius:50%;background:var(--orange)}
+.viz .orb{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFC56b,#E8730E);box-shadow:0 0 30px rgba(255,140,30,.6)}
+.bars{display:flex;align-items:flex-end;gap:10px;height:96px}
+.bars i{width:26px;border-radius:6px 6px 0 0;background:#5a4326;display:block}
+.bars i.up{background:linear-gradient(180deg,#FFB23e,#E8730E)}
+
+/* ===== IMPACT / TESTIMONIAL ===== */
+.impact{padding:120px 0}
+.impact-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:center}
+@media(max-width:920px){.impact-grid{grid-template-columns:1fr;gap:40px}}
+.quote .qm{font-size:54px;line-height:.5;color:var(--orange);font-weight:700}
+.quote blockquote{font-size:clamp(26px,3.2vw,40px);font-weight:600;letter-spacing:-.02em;line-height:1.18;margin-top:18px}
+.quote .by{margin-top:34px;display:flex;align-items:center;gap:14px}
+.quote .by .av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--orange-deep))}
+.quote .by .nm{font-weight:600}.quote .by .ttl{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--faint)}
+.statcard{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--shadow-card);padding:8px 34px}
+.statrow{padding:26px 0;border-bottom:1px solid var(--line)}
+.statrow:last-child{border-bottom:0}
+.statrow .n{font-size:40px;font-weight:700;color:var(--orange-deep);letter-spacing:-.02em}
+.statrow .l{margin-top:6px;color:var(--muted);font-weight:500;font-size:15px}
+
+/* ===== CTA ===== */
+.cta{padding:30px 0 130px}
+.cta-card{position:relative;overflow:hidden;border-radius:var(--r-xl);background:var(--dark);color:#fff;padding:80px 60px;text-align:center}
+@media(max-width:680px){.cta-card{padding:54px 26px}}
+.cta-card .glow{position:absolute;top:50%;left:50%;width:640px;height:640px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,140,30,.22),transparent 62%);pointer-events:none}
+.cta-card h2{position:relative;font-size:clamp(30px,4.4vw,54px);max-width:18ch;margin:0 auto}
+.cta-card p{position:relative;margin:22px auto 0;color:var(--dark-soft);font-weight:500;max-width:48ch;font-size:17px}
+.cta-card .hero-actions{position:relative;justify-content:center;margin-top:34px}
+.cta-card .btn-ghost{color:#fff;border-color:var(--dline-2)}.cta-card .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+
+/* ===== FOOTER ===== */
+footer{background:var(--cream-2);border-top:1px solid var(--line);padding:44px 0}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.foot .l{display:flex;align-items:center;gap:11px;color:var(--muted);font-size:14px;font-weight:500}
+.foot .l img{height:22px}
+.foot .r{display:flex;gap:26px;font-size:14px;color:var(--ink-soft);font-weight:500}
+.foot .r a:hover{color:var(--orange-deep)}
+
+/* ===== MODAL ===== */
+.modal{position:fixed;inset:0;z-index:2000;display:none;background:rgba(20,16,8,.6);backdrop-filter:blur(8px);padding:30px}
+.modal.on{display:flex;flex-direction:column}
+.modal-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;color:#fff}
+.modal-bar .t{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
+.modal-bar .t .lp{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.modal-close{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border:1px solid rgba(255,255,255,.3);border-radius:100px;color:#fff;font-size:14px;cursor:pointer;font-weight:500;transition:all .3s}
+.modal-close:hover{background:#fff;color:var(--ink)}
+.modal-frame{flex:1;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.2);background:#fff;box-shadow:0 40px 120px rgba(0,0,0,.5)}
+.modal-frame iframe{width:100%;height:100%;border:0;display:block}
+
+.scroll-bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--orange),var(--orange-deep));z-index:1000}
+</style>
+</head>
+<body>
+<div class="scroll-bar"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#top" class="brand"><img src="assets/trmeric-logo.svg" alt="trmeric"><span class="tag">Design Portfolio</span></a>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#agents">Platform</a>
+    <a href="#how">How it works</a>
+    <a href="#impact">Impact</a>
+  </div>
+  <a href="case-demand-manager.html" class="btn btn-orange">Open the case study <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow reveal in">Design Portfolio · Trmeric</span>
+      <h1 class="reveal in" data-d="1">Designing the platform that runs enterprise <span class="pl">transformation.</span></h1>
+      <p class="hero-sub reveal in" data-d="2">One environment for every function, phase, and persona — with an AI chief-of-staff that brings the work to you. This is the design story, and the real product is one click away.</p>
+      <div class="hero-actions reveal in" data-d="3">
+        <a href="case-demand-manager.html" class="btn btn-orange btn-lg">Read the living case study <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#work" class="btn btn-ghost btn-lg">Browse the work</a>
+      </div>
+      <div class="hero-trust reveal in" data-d="3"><span class="dot"></span> 59 prototypes · 1 coherent system · built end-to-end</div>
+    </div>
+    <div class="reveal in" data-d="2" style="position:relative">
+      <div class="shot clickable" data-src="sandboxes/my-hub.html" data-title="My Hub — the Demand Manager home">
+        <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span>
+          <span class="u">trmeric.app / my-hub</span><span class="live"><span class="lp"></span> LIVE</span></div>
+        <img class="shot-img" src="assets/grid.png" alt="Trmeric My Hub">
+        <div class="shot-cta"><span class="pill">Open live sandbox <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M9 7h8v8"/></svg></span></div>
+      </div>
+      <div class="hero-float hf-1"><span class="ic" style="background:var(--orange-wash)">🧭</span><span class="t"><b>Tango</b><br><span>brought 2 demands to you</span></span></div>
+      <div class="hero-float hf-2"><span class="ic" style="background:#eafaef">📈</span><span class="t"><b>1 at risk</b><br><span>flagged before slipping</span></span></div>
+    </div>
+  </div>
+</header>
+
+<!-- LOGO STRIP -->
+<div class="strip">
+  <div class="wrap">
+    <span class="lbl">Powering transformation at</span>
+    <div class="logos">
+      <span>EY</span><span>BHP</span><span>Seagate</span><span>ServiceTitan</span><span>Ampere</span><span>Veolia</span>
+    </div>
+  </div>
+</div>
+
+<!-- WORK -->
+<section class="sec" id="work">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow reveal">Selected work</span>
+      <h2 class="reveal" data-d="1">The surfaces, and the thinking behind them.</h2>
+      <p class="reveal" data-d="2">Each one is a real, running prototype. See the screen, read the decision — then open the live sandbox and use it yourself.</p>
+    </div>
+
+    <!-- ROW 1 -->
+    <div class="row reveal">
+      <div>
+        <div class="row-kicker"><span class="n">01</span><span class="ln"></span></div>
+        <h3>The Demand Canvas</h3>
+        <p>A single demand becomes a living document — the ask, the key results it moves, constraints, success criteria, financials and ownership, all on one calm canvas instead of scattered across tools.</p>
+        <div class="tags"><span>Information architecture</span><span>RAID / RACI</span><span>Financial viz</span></div>
+        <a class="open" data-src="sandboxes/canvas.html" data-title="The Demand Canvas">Open live sandbox <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+      </div>
+      <div class="row-media">
+        <div class="shot clickable" data-src="sandboxes/canvas.html" data-title="The Demand Canvas">
+          <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="u">trmeric.app / canvas</span><span class="live"><span class="lp"></span> LIVE</span></div>
+          <img class="shot-img" src="assets/canvas.png" alt="Demand Canvas">
+          <div class="shot-cta"><span class="pill">Open live sandbox →</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="row flip reveal">
+      <div>
+        <div class="row-kicker"><span class="n">02</span><span class="ln"></span></div>
+        <h3>Demand Live — execution in motion</h3>
+        <p>Where the plan meets reality: milestones, signals, and Tango's read on what's slipping. Designed so a leader can see status and act without opening five dashboards.</p>
+        <div class="tags"><span>Real-time status</span><span>Signals</span><span>Decision support</span></div>
+        <a class="open" data-src="sandboxes/demand-live.html" data-title="Demand Live">Open live sandbox <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+      </div>
+      <div class="row-media">
+        <div class="shot clickable" data-src="sandboxes/demand-live.html" data-title="Demand Live">
+          <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="u">trmeric.app / live</span><span class="live"><span class="lp"></span> LIVE</span></div>
+          <img class="shot-img" src="assets/live.png" alt="Demand Live">
+          <div class="shot-cta"><span class="pill">Open live sandbox →</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="row reveal">
+      <div>
+        <div class="row-kicker"><span class="n">03</span><span class="ln"></span></div>
+        <h3>One design system underneath</h3>
+        <p>Eight semantic palettes, a typographic scale, and an AI-gradient language that signals where Tango is thinking. The reason every surface above feels like one product, not a folder of screens.</p>
+        <div class="tags"><span>Design tokens</span><span>Components</span><span>AI language</span></div>
+        <a class="open" data-src="sandboxes/design-system.html" data-title="Trmeric Design System v3">Open live sandbox <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17L17 7M9 7h8v8"/></svg></a>
+      </div>
+      <div class="row-media">
+        <div class="shot clickable" data-src="sandboxes/design-system.html" data-title="Trmeric Design System v3">
+          <div class="shot-bar"><span class="d"></span><span class="d"></span><span class="d"></span><span class="u">trmeric.app / system</span><span class="live"><span class="lp"></span> LIVE</span></div>
+          <img class="shot-img" src="assets/designsystem.png" alt="Design System">
+          <div class="shot-cta"><span class="pill">Open live sandbox →</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULL PLATFORM -->
+    <div class="platform-intro reveal">
+      <span class="eyebrow">The full platform</span>
+      <h2>Every surface, across the demand lifecycle.</h2>
+      <p>One product spanning intake to outcome — 16 surfaces, one system. Open any of them live.</p>
+    </div>
+
+    <div class="glabel reveal"><span class="gl-no">A</span><h3>Shape the demand</h3><span class="ln"></span><span class="ct">05 surfaces</span></div>
+    <div class="gallery">
+      <div class="gcard reveal" data-src="sandboxes/ideation.html" data-title="Ideation Space">
+        <div class="im"><img src="assets/ideation.png" alt="Ideation Space"></div>
+        <div class="meta"><div class="k">Capture</div><h4>Ideation Space</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="1" data-src="sandboxes/potential-hub.html" data-title="Potential Hub">
+        <div class="im"><img src="assets/potentialhub.png" alt="Potential Hub"></div>
+        <div class="meta"><div class="k">Pipeline</div><h4>Potential Hub</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="2" data-src="sandboxes/template.html" data-title="Template & Framework picker">
+        <div class="im"><img src="assets/template.png" alt="Template selection"></div>
+        <div class="meta"><div class="k">Frameworks</div><h4>Template Selection</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-src="sandboxes/solution.html" data-title="Solution Design">
+        <div class="im"><img src="assets/solution.png" alt="Solution Design"></div>
+        <div class="meta"><div class="k">Architecture</div><h4>Solution Design</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="1" data-src="sandboxes/structure.html" data-title="Structure / Work Breakdown">
+        <div class="im"><img src="assets/structure.png" alt="Structure"></div>
+        <div class="meta"><div class="k">Breakdown</div><h4>Structure &amp; WBS</h4><div class="o">Open live sandbox →</div></div></div>
+    </div>
+
+    <div class="glabel reveal"><span class="gl-no">B</span><h3>Plan, cost &amp; resource</h3><span class="ln"></span><span class="ct">04 surfaces</span></div>
+    <div class="gallery">
+      <div class="gcard reveal" data-src="sandboxes/budget.html" data-title="Budget & Business Case">
+        <div class="im"><img src="assets/budget.png" alt="Budget"></div>
+        <div class="meta"><div class="k">Financials</div><h4>Budget &amp; Business Case</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="1" data-src="sandboxes/resource-hub.html" data-title="Resource Hub">
+        <div class="im"><img src="assets/resourcehub.png" alt="Resource Hub"></div>
+        <div class="meta"><div class="k">Capacity</div><h4>Resource Hub</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="2" data-src="sandboxes/resource-profile.html" data-title="Resource Profile">
+        <div class="im"><img src="assets/profile.png" alt="Resource Profile"></div>
+        <div class="meta"><div class="k">People</div><h4>Resource Profile</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-src="sandboxes/readiness.html" data-title="Day-1 Readiness Checklist">
+        <div class="im"><img src="assets/readiness.png" alt="Readiness Checklist"></div>
+        <div class="meta"><div class="k">Go-live</div><h4>Readiness Checklist</h4><div class="o">Open live sandbox →</div></div></div>
+    </div>
+
+    <div class="glabel reveal"><span class="gl-no">C</span><h3>Execute, track &amp; decide</h3><span class="ln"></span><span class="ct">05 surfaces</span></div>
+    <div class="gallery">
+      <div class="gcard reveal" data-src="sandboxes/my-hub.html" data-title="My Hub — the Demand Manager home">
+        <div class="im"><img src="assets/grid.png" alt="My Hub"></div>
+        <div class="meta"><div class="k">Home</div><h4>My Hub</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="1" data-src="sandboxes/action-hub.html" data-title="Action Hub">
+        <div class="im"><img src="assets/actionhub.png" alt="Action Hub"></div>
+        <div class="meta"><div class="k">Workflow</div><h4>Action Hub</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="2" data-src="sandboxes/demand-live.html" data-title="Demand Live">
+        <div class="im"><img src="assets/live.png" alt="Demand Live"></div>
+        <div class="meta"><div class="k">Execution</div><h4>Demand Live</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-src="sandboxes/raid.html" data-title="Execution & RAID">
+        <div class="im"><img src="assets/raid8.png" alt="RAID"></div>
+        <div class="meta"><div class="k">Risk</div><h4>Execution &amp; RAID</h4><div class="o">Open live sandbox →</div></div></div>
+      <div class="gcard reveal" data-d="1" data-src="sandboxes/cockpit.html" data-title="Demand Cockpit — executive view">
+        <div class="im"><img src="assets/cockpit.png" alt="Demand Cockpit"></div>
+        <div class="meta"><div class="k">Leadership</div><h4>Demand Cockpit</h4><div class="o">Open live sandbox →</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DARK: AGENTS + HOW -->
+<div class="dark">
+  <div class="dark-glow" style="top:-200px;left:-160px"></div>
+  <section class="agents" id="agents">
+    <div class="wrap agents-grid">
+      <div>
+        <span class="eyebrow reveal">The platform</span>
+        <h2 class="reveal" data-d="1">Transform your enterprise with<br><span class="rot" id="rot"><span class="on">impact.</span><span>agents.</span><span>confidence.</span><span>speed.</span></span></h2>
+        <p class="reveal" data-d="2">Trmeric connects every function, phase, and persona into one intelligent system — agents that engage every role and bring the work where it's needed. Built for leaders who own the outcome.</p>
+        <div class="hero-actions reveal" data-d="2">
+          <a href="case-demand-manager.html" class="btn btn-orange">See it in action <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+      <div class="net reveal" data-d="1" id="net">
+        <svg class="links" id="links"></svg>
+        <div class="center-orb"></div>
+        <div class="node" style="top:6%;left:4%" data-x="4" data-y="6"><span class="av">CIO</span> CIO</div>
+        <div class="node tag orange" style="top:2%;right:24%">⚡ Build</div>
+        <div class="node tag" style="top:30%;left:0">&lt;/&gt; Operations</div>
+        <div class="node tag orange" style="top:40%;right:2%">🚀 Execute</div>
+        <div class="node" style="bottom:24%;left:6%"><span class="av">CTO</span> CTO</div>
+        <div class="node tag orange" style="bottom:30%;left:34%">🧭 Strategize</div>
+        <div class="node tag" style="bottom:8%;right:24%">&lt;/&gt; Logistics</div>
+        <div class="node" style="bottom:2%;right:2%"><span class="av">PM</span> Project Manager</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how">
+    <div class="wrap">
+      <div class="sec-head center">
+        <span class="eyebrow reveal">How it works</span>
+        <h2 class="reveal" data-d="1">From a blank slate to a thinking enterprise.</h2>
+        <p class="reveal" data-d="2">Three moves — build the brain, put agents to work, prove the value.</p>
+      </div>
+      <div class="steps">
+        <div class="stepc reveal">
+          <div class="sn">STEP 01</div>
+          <h3>Build the digital brain</h3>
+          <p>Connect tools, ingest documents, or just describe how the business runs — Trmeric assembles one reasoning brain.</p>
+          <div class="viz">
+            <div class="chip" style="top:24px;left:20px"><span class="dt"></span> Integrations</div>
+            <div class="chip" style="top:62px;left:20px"><span class="dt"></span> Docs</div>
+            <div class="chip" style="bottom:24px;left:20px"><span class="dt"></span> Your input</div>
+            <div class="orb" style="right:30px"></div>
+          </div>
+        </div>
+        <div class="stepc reveal" data-d="1">
+          <div class="sn">STEP 02</div>
+          <h3>Put agents to work</h3>
+          <p>Agents engage every function, move across every phase, and brief every persona — all from the same brain.</p>
+          <div class="viz">
+            <div class="orb" style="left:26px;width:42px;height:42px"></div>
+            <div class="chip" style="top:30px;right:20px"><span class="dt"></span> Functions</div>
+            <div class="chip" style="top:64px;right:20px"><span class="dt"></span> Phases</div>
+            <div class="chip" style="bottom:30px;right:20px"><span class="dt"></span> Personas</div>
+          </div>
+        </div>
+        <div class="stepc reveal" data-d="2">
+          <div class="sn">STEP 03</div>
+          <h3>Capture &amp; prove the ROI</h3>
+          <p>Track realized value in real time and show the board exactly what the transformation returned.</p>
+          <div class="viz">
+            <div class="bars"><i style="height:34%"></i><i style="height:46%"></i><i style="height:40%"></i><i class="up" style="height:74%"></i><i class="up" style="height:96%"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- IMPACT -->
+<section class="impact" id="impact">
+  <div class="wrap impact-grid">
+    <div class="quote reveal">
+      <div class="qm">“</div>
+      <blockquote>For the first time our whole transformation lived in one place — and we could prove the ROI.</blockquote>
+      <div class="by"><span class="av"></span><div><div class="nm">Placeholder Name</div><div class="ttl">Chief Transformation Officer</div></div></div>
+    </div>
+    <div class="statcard reveal" data-d="1">
+      <div class="statrow"><div class="n">−9 mos</div><div class="l">faster to first realized value</div></div>
+      <div class="statrow"><div class="n">1</div><div class="l">source of truth across 12 functions</div></div>
+      <div class="statrow"><div class="n">3.2×</div><div class="l">return on the transformation program</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="wrap">
+    <div class="cta-card reveal">
+      <div class="glow"></div>
+      <h2>The work is alive. Walk it end to end.</h2>
+      <p>Don't take screenshots' word for the craft — open the flagship case study and use the real product yourself.</p>
+      <div class="hero-actions">
+        <a href="case-demand-manager.html" class="btn btn-orange btn-lg">Enter the living case study <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a href="#work" class="btn btn-ghost btn-lg">Browse the work</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div class="l"><img src="assets/trmeric-logo.svg" alt="trmeric"> — Product &amp; Design</div>
+    <div class="r">
+      <a href="case-demand-manager.html">Living case study</a>
+      <a href="#work">Work</a>
+      <a href="#how">How it works</a>
+    </div>
+  </div>
+  <div class="wrap" style="margin-top:18px;color:var(--faint);font-size:13px">Every screen here is real, running code. © 2026</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-bar">
+    <div class="t"><span class="lp"></span> <span id="modalTitle">Live sandbox</span> — fully interactive</div>
+    <button class="modal-close" id="modalClose">Close ✕</button>
+  </div>
+  <div class="modal-frame"><iframe id="modalFrame" title="Live sandbox"></iframe></div>
+</div>
+
+<script>
+/* nav + scrollbar */
+const nav=document.getElementById('nav'),bar=document.querySelector('.scroll-bar');
+addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>30);
+  const h=document.documentElement.scrollHeight-innerHeight;bar.style.width=(scrollY/h*100)+'%';},{passive:true});
+
+/* reveal */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.14});
+document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+
+/* rotating words */
+(function(){const r=document.getElementById('rot');if(!r)return;const s=[...r.children];let i=0;
+  setInterval(()=>{s[i].classList.remove('on');i=(i+1)%s.length;s[i].classList.add('on');},2000);})();
+
+/* network links (draw lines from orb to nodes) */
+(function(){
+  const net=document.getElementById('net'),svg=document.getElementById('links');if(!net)return;
+  function draw(){
+    const r=net.getBoundingClientRect();const cx=r.width/2,cy=r.height/2;
+    svg.innerHTML='';
+    net.querySelectorAll('.node').forEach(n=>{
+      const b=n.getBoundingClientRect();const x=b.left-r.left+b.width/2,y=b.top-r.top+b.height/2;
+      const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1',cx);ln.setAttribute('y1',cy);ln.setAttribute('x2',x);ln.setAttribute('y2',y);
+      ln.setAttribute('stroke','rgba(255,160,60,.25)');ln.setAttribute('stroke-width','1');ln.setAttribute('stroke-dasharray','3 4');
+      svg.appendChild(ln);
+    });
+  }
+  draw();addEventListener('resize',draw);setTimeout(draw,400);
+})();
+
+/* modal sandbox */
+const modal=document.getElementById('modal'),mF=document.getElementById('modalFrame'),mT=document.getElementById('modalTitle');
+function open(src,title){mF.src=src;mT.textContent=title||'Live sandbox';modal.classList.add('on');document.body.style.overflow='hidden';}
+function close(){modal.classList.remove('on');mF.src='';document.body.style.overflow='';}
+document.getElementById('modalClose').addEventListener('click',close);
+addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+modal.addEventListener('click',e=>{if(e.target===modal)close();});
+document.querySelectorAll('[data-src]').forEach(el=>{
+  el.style.cursor='pointer';
+  el.addEventListener('click',ev=>{ev.preventDefault();open(el.dataset.src,el.dataset.title);});
+});
+</script>
+</body>
+</html>

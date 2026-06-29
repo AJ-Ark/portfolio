@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Demand Manager Journey — Trmeric Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF7F1; --cream-2:#F1EADC; --paper:#ffffff;
+  --ink:#17150F; --ink-soft:#3b362c; --muted:#6f6a5e; --faint:#9b9488;
+  --orange:#FFA426; --orange-deep:#E8730E; --orange-ink:#C25F08; --orange-wash:#FFF3E2;
+  --dark:#161009; --dark-soft:#cabfae;
+  --dline:rgba(255,255,255,.10); --dline-2:rgba(255,255,255,.16);
+  --green:#34c759; --line:#E8E1D2; --line-2:#ddd4c2;
+  --r:16px; --r-lg:22px; --r-xl:28px;
+  --shadow-card:0 1px 2px rgba(20,16,8,.04),0 14px 40px -18px rgba(20,16,8,.18);
+  --shadow-float:0 30px 70px -30px rgba(20,16,8,.34);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+::selection{background:var(--orange-wash);color:var(--orange-ink)}
+body{font-family:'General Sans',system-ui,sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 40px}
+.narrow{max-width:760px}
+@media(max-width:680px){.wrap{padding:0 22px}}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange-deep);font-weight:500}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;line-height:1.04}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}
+.scroll-bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--orange),var(--orange-deep));z-index:1000}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;
+  padding:13px 40px;background:rgba(250,247,241,.82);backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid var(--line)}
+@media(max-width:680px){nav{padding:12px 22px}}
+.brand{display:flex;align-items:center;gap:9px}.brand img{height:24px}
+.back{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;color:var(--muted);font-weight:500;transition:color .25s}
+.back:hover{color:var(--orange-deep)}.back svg{transition:transform .3s var(--ease)}.back:hover svg{transform:translateX(-3px)}
+.nav-right{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--faint)}
+@media(max-width:820px){.nav-right{display:none}}
+.btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;border-radius:100px;cursor:pointer;border:1px solid transparent;transition:transform .3s var(--ease),background .25s,color .25s,border-color .25s,box-shadow .35s}
+.btn svg{transition:transform .3s var(--ease)}.btn:hover svg{transform:translateX(3px)}
+.btn-orange{background:var(--orange);color:#231304;padding:14px 24px;box-shadow:0 10px 24px -10px rgba(255,140,30,.7)}
+.btn-orange:hover{background:var(--orange-deep);color:#fff;transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line-2);padding:14px 24px}
+.btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px)}
+
+/* CHAPTER RAIL */
+.rail{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:600;display:flex;flex-direction:column;gap:15px}
+@media(max-width:1240px){.rail{display:none}}
+.rail a{display:flex;align-items:center;gap:11px;justify-content:flex-end;color:var(--faint);font-size:11px;font-family:'JetBrains Mono',monospace;transition:color .3s}
+.rail a .dt{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line-2);transition:all .3s}
+.rail a .lb{opacity:0;transform:translateX(6px);transition:all .3s;white-space:nowrap}
+.rail a:hover .lb,.rail a.active .lb{opacity:1;transform:none}
+.rail a.active{color:var(--orange-deep)}.rail a.active .dt{background:var(--orange);border-color:var(--orange)}
+
+/* HERO */
+.c-hero{padding:160px 0 80px;position:relative;overflow:hidden}
+.c-hero-bg{position:absolute;top:-220px;right:-140px;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,rgba(255,164,38,.18),transparent 64%);pointer-events:none}
+.c-title{font-size:clamp(40px,6.2vw,84px);max-width:16ch;margin-top:24px}
+.c-title .o{color:var(--orange-deep)}
+.c-lede{margin-top:26px;font-size:clamp(17px,1.5vw,21px);color:var(--muted);max-width:62ch;font-weight:500}
+.c-lede b{color:var(--ink);font-weight:600}
+.meta{margin-top:52px;display:grid;grid-template-columns:repeat(4,auto);gap:46px;padding-top:30px;border-top:1px solid var(--line)}
+@media(max-width:680px){.meta{grid-template-columns:repeat(2,1fr);gap:26px}}
+.meta .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.meta .v{font-size:15.5px;font-weight:600}
+
+/* CHAPTER */
+.chap{padding:110px 0;position:relative}
+.chap.dark{background:var(--dark);color:#f3ede2}
+.chap.dark .chap-h{color:#fff}.chap.dark p{color:var(--dark-soft)}.chap.dark .eyebrow{color:var(--orange)}
+.chap-no{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--orange-deep);margin-bottom:16px}
+.chap.dark .chap-no{color:var(--orange)}
+.chap-h{font-size:clamp(30px,4.4vw,54px);max-width:18ch;margin-bottom:28px}
+.chap-h .o{color:var(--orange-deep)}.chap.dark .chap-h .o{color:var(--orange)}
+.chap p{font-size:17px;color:var(--muted);font-weight:500;line-height:1.7;max-width:64ch;margin-bottom:20px}
+.chap p b{color:var(--ink);font-weight:600}.chap.dark p b{color:#fff}
+
+/* MUDDY STREET */
+.street{display:flex;align-items:flex-end;gap:8px;height:130px;margin:44px 0 12px}
+.street .tile{flex:1;border-radius:8px 8px 0 0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px}
+.street .tile.good{background:#fff;border:1px solid var(--line-2);box-shadow:var(--shadow-card)}
+.street .tile.bad{background:repeating-linear-gradient(45deg,#f0e4d2,#f0e4d2 6px,#e7d7bf 6px,#e7d7bf 12px);border:1px dashed var(--orange)}
+.street .tile .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint)}
+.street .tile.bad .lbl{color:var(--orange-deep)}
+.pull{padding:64px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:30px 0}
+.pull q{font-size:clamp(26px,3.6vw,44px);font-weight:600;letter-spacing:-.02em;line-height:1.22;quotes:none;display:block;max-width:22ch}
+.pull q .hl{color:var(--orange-deep)}
+.pull .src{margin-top:24px;color:var(--faint);font-family:'JetBrains Mono',monospace;font-size:13px;display:flex;align-items:center;gap:12px}
+.pull .src .ln{width:30px;height:1px;background:var(--line-2)}
+
+/* SCROLLYTELLING */
+.scrolly{background:var(--cream-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.scrolly-head{max-width:1180px;margin:0 auto;padding:100px 40px 0}
+@media(max-width:680px){.scrolly-head{padding:80px 22px 0}}
+.scrolly-inner{max-width:1280px;margin:0 auto;padding:0 40px;display:grid;grid-template-columns:1fr 1.15fr;gap:60px;align-items:start}
+@media(max-width:980px){.scrolly-inner{grid-template-columns:1fr;gap:0}}
+@media(max-width:680px){.scrolly-inner{padding:0 22px}}
+.scrolly-steps{padding:14vh 0}
+.step{min-height:72vh;display:flex;flex-direction:column;justify-content:center;opacity:.34;transition:opacity .5s var(--ease)}
+.step.active{opacity:1}
+.step .sn{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--orange-deep);margin-bottom:14px}
+.step h3{font-size:clamp(23px,2.6vw,33px);margin-bottom:14px}
+.step p{font-size:16px;color:var(--muted);font-weight:500;line-height:1.66;max-width:42ch}
+.step .tag{display:inline-flex;margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line-2);padding:6px 12px;border-radius:100px}
+.step.active .tag{color:var(--orange-deep);border-color:#f1d3ab}
+.sticky-media{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:50px 0}
+@media(max-width:980px){.sticky-media{height:auto;padding:20px 0 50px;position:relative}}
+.device{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:var(--shadow-float);aspect-ratio:16/10;display:flex;flex-direction:column}
+.device-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#fff;border-bottom:1px solid var(--line)}
+.device-bar .d{width:11px;height:11px;border-radius:50%;background:#e7ded0}
+.device-bar .u{margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--faint);flex:1;display:flex;align-items:center;gap:8px}
+.device-bar .u .lp{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.device-frame{position:relative;flex:1;overflow:hidden;background:#fff}
+.device-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.device-cap{position:absolute;left:14px;bottom:14px;right:14px;z-index:5;display:flex;align-items:center;gap:12px;padding:13px 17px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-card);transition:opacity .4s}
+.device-cap .n{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--orange-deep));display:grid;place-items:center;font-weight:600;font-size:13px;color:#fff;flex-shrink:0}
+.device-cap .tx{font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.4}
+.device-take{position:absolute;top:13px;right:13px;z-index:6;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#231304;background:var(--orange);padding:9px 15px;border-radius:100px;cursor:pointer;transition:all .3s;box-shadow:0 8px 20px -8px rgba(255,140,30,.7)}
+.device-take:hover{background:var(--orange-deep);color:#fff}
+
+/* PRINCIPLES */
+.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:46px}
+@media(max-width:880px){.principles{grid-template-columns:1fr}}
+.pr{padding:30px 26px;border:1px solid var(--dline);border-radius:var(--r-lg);background:rgba(255,255,255,.03);transition:all .4s}
+.pr:hover{border-color:var(--dline-2);background:rgba(255,255,255,.05)}
+.pr .ic{width:46px;height:46px;border-radius:12px;background:rgba(255,164,38,.12);border:1px solid rgba(255,164,38,.28);display:grid;place-items:center;margin-bottom:20px}
+.pr h4{font-size:18px;color:#fff;margin-bottom:11px}
+.pr p{font-size:14px;color:var(--dark-soft);font-weight:500;line-height:1.6;margin:0;max-width:none}
+
+/* SEAM */
+.seam{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:26px;margin:46px 0 10px}
+@media(max-width:760px){.seam{grid-template-columns:1fr;gap:16px}}
+.seam-box{padding:26px 24px;border:1px solid var(--dline);border-radius:16px;background:rgba(255,255,255,.03)}
+.seam-box .t{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dark-soft);margin-bottom:12px}
+.seam-box .n{font-size:21px;color:#fff;margin-bottom:8px;font-weight:600}
+.seam-box .d{font-size:13.5px;color:var(--dark-soft);font-weight:500;line-height:1.55}
+.seam-link{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--orange)}
+.seam-link .ln{width:1px;height:38px;background:linear-gradient(var(--orange),transparent)}
+@media(max-width:760px){.seam-link{flex-direction:row}.seam-link .ln{width:38px;height:1px;background:linear-gradient(90deg,var(--orange),transparent)}}
+.seam-link .pm{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase}
+
+/* OUTCOME */
+.outcome-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:38px;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:#fff;box-shadow:var(--shadow-card)}
+@media(max-width:760px){.outcome-grid{grid-template-columns:1fr}}
+.oc{padding:36px 30px;border-left:1px solid var(--line)}
+.oc:first-child{border-left:0}
+@media(max-width:760px){.oc{border-left:0;border-top:1px solid var(--line)}.oc:first-child{border-top:0}}
+.oc .n{font-size:46px;font-weight:700;color:var(--orange-deep);letter-spacing:-.02em;line-height:1}
+.oc .l{margin-top:14px;font-size:14.5px;color:var(--muted);font-weight:500;line-height:1.55}
+
+/* NEXT CTA */
+.next{padding:30px 0 120px}
+.next-card{position:relative;overflow:hidden;border-radius:var(--r-xl);background:var(--dark);color:#fff;padding:76px 60px;text-align:center}
+@media(max-width:680px){.next-card{padding:50px 26px}}
+.next-card .glow{position:absolute;top:50%;left:50%;width:620px;height:620px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,140,30,.22),transparent 62%);pointer-events:none}
+.next-card h2{position:relative;font-size:clamp(30px,4.4vw,52px);max-width:18ch;margin:0 auto 28px}
+.next-card .acts{position:relative;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.next-card .btn-ghost{color:#fff;border-color:var(--dline-2)}.next-card .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+footer{background:var(--cream-2);border-top:1px solid var(--line);padding:40px 0}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:14px;font-weight:500}
+.foot a:hover{color:var(--orange-deep)}
+
+/* MODAL */
+.modal{position:fixed;inset:0;z-index:2000;display:none;background:rgba(20,16,8,.6);backdrop-filter:blur(8px);padding:30px}
+.modal.on{display:flex;flex-direction:column}
+.modal-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;color:#fff}
+.modal-bar .t{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500}
+.modal-bar .t .lp{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.modal-close{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border:1px solid rgba(255,255,255,.3);border-radius:100px;color:#fff;font-size:14px;cursor:pointer;font-weight:500;transition:all .3s}
+.modal-close:hover{background:#fff;color:var(--ink)}
+.modal-frame{flex:1;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.2);background:#fff}
+.modal-frame iframe{width:100%;height:100%;border:0;display:block}
+</style>
+</head>
+<body>
+<div class="scroll-bar"></div>
+
+<nav>
+  <a href="index.html" class="back"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg> All work</a>
+  <a href="index.html" class="brand"><img src="assets/trmeric-logo.svg" alt="trmeric"></a>
+  <div class="nav-right">CASE STUDY · DEMAND MANAGER JOURNEY</div>
+</nav>
+
+<div class="rail" id="rail">
+  <a href="#problem"><span class="lb">The problem</span><span class="dt"></span></a>
+  <a href="#persona"><span class="lb">The persona</span><span class="dt"></span></a>
+  <a href="#journey"><span class="lb">The journey</span><span class="dt"></span></a>
+  <a href="#tango"><span class="lb">Tango</span><span class="dt"></span></a>
+  <a href="#seam"><span class="lb">The seam</span><span class="dt"></span></a>
+  <a href="#outcome"><span class="lb">Outcome</span><span class="dt"></span></a>
+</div>
+
+<!-- HERO -->
+<header class="c-hero">
+  <div class="c-hero-bg"></div>
+  <div class="wrap">
+    <span class="eyebrow reveal in">Flagship case study</span>
+    <h1 class="c-title reveal in" data-d="1">The Demand Manager Journey — designed as <span class="o">one unbroken line.</span></h1>
+    <p class="c-lede reveal in" data-d="2">A senior leader said our prototypes felt like walking down a muddy street. This is how I turned a set of disconnected screens into <b>a single continuous journey</b> — sign-in, an AI chief-of-staff, and a data-dense workspace that never breaks. You'll walk the real product as you read.</p>
+    <div class="meta reveal in" data-d="3">
+      <div><div class="k">Role</div><div class="v">Product Design — end to end</div></div>
+      <div><div class="k">Surface</div><div class="v">Enterprise web app</div></div>
+      <div><div class="k">Personas</div><div class="v">Demand Manager · PM</div></div>
+      <div><div class="k">Status</div><div class="v">Live prototype</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- CH1 PROBLEM -->
+<section class="chap" id="problem">
+  <div class="wrap narrow">
+    <div class="chap-no reveal">01 — The problem</div>
+    <h2 class="chap-h reveal" data-d="1">Beautiful screens that didn't <span class="o">add up.</span></h2>
+    <p class="reveal" data-d="1">We had a library of polished prototypes — a hub, a grid, a canvas, a live view. Each looked sharp in isolation. But click from one to the next and the illusion broke: different chrome, different logic, a jolt at every seam. In a review, a senior leader put it bluntly.</p>
+  </div>
+  <div class="wrap narrow">
+    <div class="street reveal" data-d="1">
+      <div class="tile good" style="height:78%"><span class="lbl">Hub</span></div>
+      <div class="tile good" style="height:92%"><span class="lbl">Grid</span></div>
+      <div class="tile bad" style="height:40%"><span class="lbl">puddle</span></div>
+      <div class="tile good" style="height:85%"><span class="lbl">Canvas</span></div>
+      <div class="tile bad" style="height:36%"><span class="lbl">puddle</span></div>
+      <div class="tile good" style="height:96%"><span class="lbl">Live</span></div>
+    </div>
+  </div>
+  <div class="wrap narrow pull reveal">
+    <q>It's like walking down a <span class="hl">muddy street.</span> Nice tiles, then a puddle, then more tiles. You never trust the next step.</q>
+    <div class="src"><span class="ln"></span> Senior leadership, design review</div>
+  </div>
+  <div class="wrap narrow">
+    <p class="reveal">That reframed the entire brief. The problem wasn't the quality of any one screen — it was the <b>continuity between them</b>. So I changed the unit of design from the <span style="color:var(--orange-deep)">page</span> to the <span style="color:var(--orange-deep)">journey</span>: one flow, walked exactly as a Demand Manager would, with no puddles allowed.</p>
+  </div>
+</section>
+
+<!-- CH2 PERSONA (dark) -->
+<section class="chap dark" id="persona">
+  <div class="wrap narrow">
+    <div class="chap-no reveal">02 — The persona</div>
+    <h2 class="chap-h reveal" data-d="1">I treated a “day in the life” doc as the <span class="o">spec.</span></h2>
+    <p class="reveal" data-d="1">Before pushing a single pixel, the journey was written out line by line — the Demand Manager's first sign-in, Tango's first hello, the moment they see what needs attention, the demand they open, the action they take. That narrative became the holy grail: <b>every screen had to answer a specific moment in it.</b></p>
+    <p class="reveal" data-d="1">Where a moment needed a capability we don't have yet, it was marked in red and left honest — never faked for the demo. Designing against a real story is what kept the journey coherent instead of a tour of features.</p>
+  </div>
+</section>
+
+<!-- CH3 SCROLLYTELLING -->
+<section class="scrolly" id="journey">
+  <div class="scrolly-head">
+    <div class="chap-no reveal in">03 — The journey, running live</div>
+    <h2 class="chap-h reveal in" data-d="1" style="max-width:24ch">Scroll the story. The <span class="o">real product</span> moves with you — then take the controls.</h2>
+  </div>
+  <div class="scrolly-inner">
+    <div class="scrolly-steps">
+      <div class="step active" data-cap="Tango introduces itself as your chief-of-staff and offers a tour.">
+        <div class="sn">STEP 01 — Arrival</div>
+        <h3>A conversational front door</h3>
+        <p>No empty dashboard. The Demand Manager lands in a calm, conversational space where Tango introduces itself and offers to walk them in. The first thirty seconds are designed to feel like being met, not onboarded.</p>
+        <span class="tag">Onboarding · Conversational UI</span>
+      </div>
+      <div class="step" data-cap="Work, sorted by what needs you — not an inbox of everything.">
+        <div class="sn">STEP 02 — What needs me</div>
+        <h3>The demand grid, sorted by attention</h3>
+        <p>Instead of a wall of rows, the grid leads with what's slipping, what's mine, and what's next. A lean default set of columns, with an intuitive “Manage Columns” control so power users can opt into density — not drown in it.</p>
+        <span class="tag">Data-dense tables · Progressive disclosure</span>
+      </div>
+      <div class="step" data-cap="One row → a unified snapshot of work, insight and action.">
+        <div class="sn">STEP 03 — The snapshot</div>
+        <h3>Work, insight &amp; action in one drawer</h3>
+        <p>Click a demand and a snapshot slides in: a compact stage pill that expands on hover, a priority level-meter, “your move” for leads, a Tango insight, and the pending actions — the unified view leadership asked for, without leaving the grid.</p>
+        <span class="tag">Information hierarchy · Side drawer</span>
+      </div>
+      <div class="step" data-cap="The demand becomes a living canvas — strategy, risks, financials.">
+        <div class="sn">STEP 04 — Go deep</div>
+        <h3>Into the demand canvas</h3>
+        <p>When the moment calls for depth, the same demand opens as a canvas: overview and success criteria, strategy and key results, RAID risks with mitigation, a RACI of stakeholders, financials, and an SLA-aware journey — all one click from the grid.</p>
+        <span class="tag">IA · RAID / RACI · Financial viz</span>
+      </div>
+      <div class="step" data-cap="Hand the work to Tango — drafts stories, moves items, clears the queue.">
+        <div class="sn">STEP 05 — Hand it off</div>
+        <h3>“Let Tango do it”</h3>
+        <p>The journey closes the loop: from any action the Manager can hand work to Tango — draft the user stories, move the item, schedule the follow-up. Agentic help framed as delegation, with the human always in the lead.</p>
+        <span class="tag">Agentic AI · Delegation</span>
+      </div>
+    </div>
+    <div class="sticky-media">
+      <div class="device">
+        <div class="device-bar"><span class="d"></span><span class="d"></span><span class="d"></span>
+          <span class="u"><span class="lp"></span> trmeric.app — live prototype</span></div>
+        <button class="device-take" id="takeCtrl">Take control ↗</button>
+        <div class="device-frame">
+          <iframe id="journeyFrame" title="Demand Manager journey — live"></iframe>
+          <div class="device-cap" id="deviceCap">
+            <span class="n">T</span>
+            <span class="tx" id="capText">Tango introduces itself as your chief-of-staff and offers a tour.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CH4 TANGO (dark) -->
+<section class="chap dark" id="tango">
+  <div class="wrap narrow">
+    <div class="chap-no reveal">04 — Designing Tango</div>
+    <h2 class="chap-h reveal" data-d="1">An AI chief-of-staff has to earn <span class="o">trust,</span> not just attention.</h2>
+    <p class="reveal" data-d="1">Tango is the hardest design problem in the product: an agent that can act on enterprise work. Three principles kept it feeling like a trusted colleague rather than a black box.</p>
+  </div>
+  <div class="wrap">
+    <div class="principles">
+      <div class="pr reveal">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.7"><path d="M12 3l2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/></svg></div>
+        <h4>Work comes to you</h4>
+        <p>Tango's job is to surface the right demand, milestone, or action at the right moment — turning a passive tool into one that brings the work, sorted by what actually needs a human.</p>
+      </div>
+      <div class="pr reveal" data-d="1">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.7"><path d="M4 12h16M4 12l4-4M4 12l4 4"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/></svg></div>
+        <h4>Always show your reasoning</h4>
+        <p>Every Tango insight is paired with the “why” — the signal it noticed. An AI-gradient language marks exactly where Tango is thinking, so suggestions read as transparent, not magical.</p>
+      </div>
+      <div class="pr reveal" data-d="2">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.7"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <h4>The human stays in the lead</h4>
+        <p>Tango proposes and can execute, but every agentic action is framed as delegation the Manager chooses — “let Tango do it” — never an automation that happens to them.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CH5 SEAM (dark) -->
+<section class="chap dark" id="seam">
+  <div class="wrap narrow">
+    <div class="chap-no reveal">05 — The invisible seam</div>
+    <h2 class="chap-h reveal" data-d="1">A design decision that's really an <span class="o">engineering</span> one.</h2>
+    <p class="reveal" data-d="1">The journey stitches two large prototypes — the onboarding landing and the workspace — that were never built to live together. Inline-merging them meant colliding CSS and JavaScript: both defined the same class names and helper functions. The clean fix was architectural.</p>
+  </div>
+  <div class="wrap">
+    <div class="seam">
+      <div class="seam-box reveal"><div class="t">Screen 0</div><div class="n">Onboarding landing</div><div class="d">Embedded as an iframe — fully preserved, zero collisions with the workspace it lives inside.</div></div>
+      <div class="seam-link reveal" data-d="1"><span class="pm">postMessage</span><span class="ln"></span><span class="pm">handoff</span></div>
+      <div class="seam-box reveal" data-d="2"><div class="t">The shell</div><div class="n">Workspace app</div><div class="d">Listens for the handoff, fades the landing out, and routes straight into the demand grid — a transition that feels native.</div></div>
+    </div>
+    <div class="wrap narrow" style="padding-top:32px;padding-left:0;padding-right:0">
+      <p class="reveal">The result: the user crosses from a sign-in into a complex enterprise app and feels <b>one product</b>, not two prototypes taped together. The seam is invisible — which is exactly the point of the whole project.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CH6 OUTCOME -->
+<section class="chap" id="outcome">
+  <div class="wrap narrow">
+    <div class="chap-no reveal">06 — Where it landed</div>
+    <h2 class="chap-h reveal" data-d="1">From a critique to a journey that <span class="o">holds.</span></h2>
+    <p class="reveal" data-d="1">The muddy street is paved. What was a set of admired-but-disconnected screens is now a single walkable journey used to present the product to leadership — and the method (story-as-spec, continuity over polish, invisible seams) now sets the bar for everything that follows.</p>
+  </div>
+  <div class="wrap">
+    <div class="outcome-grid reveal" data-d="1">
+      <div class="oc"><div class="n">1</div><div class="l">Continuous journey replacing a folder of disconnected prototypes</div></div>
+      <div class="oc"><div class="n">12</div><div class="l">Persona steps designed against a real “day in the life” narrative</div></div>
+      <div class="oc"><div class="n">0</div><div class="l">Visible seams — onboarding to workspace feels like one product</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NEXT -->
+<section class="next">
+  <div class="wrap">
+    <div class="next-card reveal">
+      <div class="glow"></div>
+      <h2>You've read it. Now walk it end to end.</h2>
+      <div class="acts">
+        <button class="btn btn-orange" id="takeCtrl2">Take control of the live prototype <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        <a href="index.html" class="btn btn-ghost">← Back to all work</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>Trmeric — Product &amp; Design · Living case study</div>
+    <a href="index.html">← Back to all work</a>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-bar">
+    <div class="t"><span class="lp"></span> Demand Manager journey — fully interactive</div>
+    <button class="modal-close" id="modalClose">Close ✕</button>
+  </div>
+  <div class="modal-frame"><iframe id="modalFrame" title="Live prototype"></iframe></div>
+</div>
+
+<script>
+const JOURNEY_SRC='sandboxes/demand-manager-journey.html';
+const bar=document.querySelector('.scroll-bar'),railLinks=[...document.querySelectorAll('#rail a')];
+const sections=railLinks.map(a=>document.querySelector(a.getAttribute('href')));
+addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-innerHeight;bar.style.width=(scrollY/h*100)+'%';
+  let idx=0;sections.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<innerHeight*.4)idx=i;});
+  railLinks.forEach((a,i)=>a.classList.toggle('active',i===idx));
+},{passive:true});
+
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.14});
+document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+
+const jf=document.getElementById('journeyFrame');
+const jio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){if(!jf.src)jf.src=JOURNEY_SRC;jio.disconnect();}}),{rootMargin:'600px'});
+jio.observe(document.getElementById('journey'));
+
+const steps=[...document.querySelectorAll('.step')],cap=document.getElementById('capText'),capWrap=document.getElementById('deviceCap');
+const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){
+  steps.forEach(s=>s.classList.remove('active'));e.target.classList.add('active');
+  capWrap.style.opacity='0';setTimeout(()=>{cap.textContent=e.target.dataset.cap;capWrap.style.opacity='1';},220);
+}}),{threshold:.6});
+steps.forEach(s=>sio.observe(s));
+
+const modal=document.getElementById('modal'),mFrame=document.getElementById('modalFrame');
+function openModal(){mFrame.src=JOURNEY_SRC;modal.classList.add('on');document.body.style.overflow='hidden';}
+function closeModal(){modal.classList.remove('on');mFrame.src='';document.body.style.overflow='';}
+document.getElementById('takeCtrl').addEventListener('click',openModal);
+document.getElementById('takeCtrl2').addEventListener('click',openModal);
+document.getElementById('modalClose').addEventListener('click',closeModal);
+addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});
+</script>
+</body>
+</html>

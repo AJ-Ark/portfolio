@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aravind — Product Designer · Portfolio</title>
+<!-- ░░ EDIT ME: replace "Aravind", the role, the bio line, and the contact/social links below ░░ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FAF7F1; --cream-2:#F1EADC; --paper:#fff;
+  --ink:#17150F; --ink-soft:#3b362c; --muted:#6f6a5e; --faint:#9b9488;
+  --orange:#FFA426; --orange-deep:#E8730E; --orange-wash:#FFF3E2;
+  --dark:#161009; --dark-soft:#cabfae; --dline:rgba(255,255,255,.1); --dline-2:rgba(255,255,255,.16);
+  --green:#34c759; --line:#E8E1D2; --line-2:#ddd4c2;
+  --r:16px; --r-lg:22px; --r-xl:28px;
+  --shadow-card:0 1px 2px rgba(20,16,8,.04),0 14px 40px -18px rgba(20,16,8,.18);
+  --shadow-float:0 30px 70px -30px rgba(20,16,8,.34);
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+::selection{background:var(--orange-wash);color:var(--orange-deep)}
+body{font-family:'General Sans',system-ui,sans-serif;background:var(--cream);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 40px}
+@media(max-width:680px){.wrap{padding:0 22px}}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange-deep);font-weight:500}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;line-height:1.04}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}
+.scroll-bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--orange),var(--orange-deep));z-index:1000}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;
+  padding:18px 40px;transition:padding .4s var(--ease),background .4s,border-color .4s;border-bottom:1px solid transparent}
+nav.solid{padding:12px 40px;background:rgba(250,247,241,.82);backdrop-filter:blur(18px) saturate(140%);border-bottom:1px solid var(--line)}
+@media(max-width:680px){nav,nav.solid{padding:12px 22px}}
+.brand{display:flex;align-items:center;gap:11px;font-weight:600;font-size:16px}
+.mark{width:34px;height:34px;border-radius:10px;background:var(--ink);color:var(--cream);display:grid;place-items:center;font-weight:700;font-size:17px}
+.brand .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);border-left:1px solid var(--line-2);padding-left:10px;margin-left:2px;font-weight:500}
+.nav-links{display:flex;align-items:center;gap:30px;font-size:15px;color:var(--ink-soft);font-weight:500}
+.nav-links a:hover{color:var(--orange-deep)}
+@media(max-width:760px){.nav-links{display:none}}
+.btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15px;border-radius:100px;cursor:pointer;border:1px solid transparent;transition:transform .3s var(--ease),background .25s,color .25s,border-color .25s,box-shadow .35s;padding:11px 20px}
+.btn svg{transition:transform .3s var(--ease)}.btn:hover svg{transform:translateX(3px)}
+.btn-orange{background:var(--orange);color:#231304;box-shadow:0 10px 24px -10px rgba(255,140,30,.7)}
+.btn-orange:hover{background:var(--orange-deep);color:#fff;transform:translateY(-2px)}
+.btn-ink{background:var(--ink);color:var(--cream)}.btn-ink:hover{transform:translateY(-2px)}
+.btn-ghost{border-color:var(--line-2);color:var(--ink)}.btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px)}
+.btn-lg{padding:15px 26px;font-size:16px}
+
+/* HERO */
+.hero{padding:180px 0 90px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;top:-220px;right:-120px;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,rgba(255,164,38,.18),transparent 64%);pointer-events:none}
+.hero h1{font-size:clamp(44px,7vw,92px);max-width:15ch;margin-top:26px}
+.hero h1 .o{color:var(--orange-deep)}
+.hero-sub{margin-top:26px;font-size:clamp(17px,1.6vw,21px);color:var(--muted);max-width:54ch;font-weight:500}
+.hero-sub b{color:var(--ink);font-weight:600}
+.hero-actions{margin-top:38px;display:flex;gap:14px;flex-wrap:wrap}
+.hero-stats{margin-top:42px;display:flex;gap:40px;flex-wrap:wrap;padding-top:30px;border-top:1px solid var(--line)}
+.hero-stats .s .n{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.hero-stats .s .l{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+
+/* PROJECTS */
+.projects{padding:40px 0 120px}
+.sec-head{margin-bottom:54px}
+.sec-head h2{font-size:clamp(30px,4vw,50px);margin-top:16px}
+.sec-head p{margin-top:16px;font-size:17px;color:var(--muted);font-weight:500;max-width:50ch}
+.pcard{display:grid;grid-template-columns:1.05fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--r-xl);overflow:hidden;background:var(--paper);box-shadow:var(--shadow-card);margin-bottom:30px;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.pcard.live{cursor:pointer}
+.pcard.live:hover{transform:translateY(-6px);box-shadow:0 44px 90px -40px rgba(20,16,8,.42)}
+.pcard.flip .pcard-media{order:2}
+@media(max-width:900px){.pcard,.pcard.flip{grid-template-columns:1fr}.pcard.flip .pcard-media{order:0}}
+.pcard-body{padding:52px 48px;display:flex;flex-direction:column;justify-content:center}
+@media(max-width:680px){.pcard-body{padding:36px 26px}}
+.pcard-tag{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:100px;width:fit-content;margin-bottom:22px}
+.pcard-tag.on{color:var(--orange-deep);background:var(--orange-wash);border:1px solid #f7dcb4}
+.pcard-tag.on .lp{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.pcard-tag.soon{color:var(--muted);background:var(--cream-2);border:1px solid var(--line-2)}
+.pcard-body h3{font-size:clamp(26px,2.8vw,38px)}
+.pcard-body p{margin-top:16px;font-size:16px;color:var(--muted);font-weight:500;line-height:1.65;max-width:42ch}
+.pcard-meta{display:flex;flex-wrap:wrap;gap:9px;margin:24px 0 28px}
+.pcard-meta span{font-size:13px;color:var(--ink-soft);background:var(--cream);border:1px solid var(--line);padding:6px 12px;border-radius:100px;font-weight:500}
+.pcard-cta{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:15.5px;color:var(--orange-deep)}
+.pcard-cta.muted{color:var(--faint)}
+.pcard-cta svg{transition:transform .3s var(--ease)}.pcard.live:hover .pcard-cta svg{transform:translateX(4px)}
+.pcard-media{position:relative;min-height:340px;overflow:hidden;background:var(--cream-2);border-left:1px solid var(--line)}
+.pcard.flip .pcard-media{border-left:0;border-right:1px solid var(--line)}
+@media(max-width:900px){.pcard-media{border-left:0;border-top:1px solid var(--line);min-height:240px}.pcard.flip .pcard-media{border-right:0}}
+.pcard-media img{position:absolute;top:28px;left:28px;width:118%;border-radius:12px 0 0 0;box-shadow:var(--shadow-float);border:1px solid var(--line)}
+.pcard-media.placeholder{display:grid;place-items:center}
+.ph-orb{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFC56b,#E8730E);box-shadow:0 0 60px rgba(255,140,30,.4);opacity:.9}
+.pcard-media .ph-note{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--faint)}
+
+/* ABOUT / CONTACT */
+.about{background:var(--dark);color:#f3ede2;padding:110px 0;position:relative;overflow:hidden}
+.about .glow{position:absolute;top:50%;left:50%;width:680px;height:680px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,140,30,.16),transparent 62%);pointer-events:none}
+.about-grid{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+@media(max-width:860px){.about-grid{grid-template-columns:1fr;gap:34px}}
+.about .eyebrow{color:var(--orange)}
+.about h2{font-size:clamp(30px,4vw,50px);color:#fff;margin-top:16px}
+.about p{margin-top:22px;font-size:17px;color:var(--dark-soft);font-weight:500;line-height:1.7;max-width:46ch}
+.contact{display:flex;flex-direction:column;gap:14px}
+.contact a{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border:1px solid var(--dline);border-radius:16px;background:rgba(255,255,255,.03);transition:all .35s var(--ease)}
+.contact a:hover{border-color:var(--orange);background:rgba(255,164,38,.07);transform:translateX(4px)}
+.contact a .k{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.contact a .v{font-size:17px;font-weight:600;color:#fff;margin-top:4px}
+.contact a .ar{color:var(--orange)}
+
+footer{background:var(--cream-2);border-top:1px solid var(--line);padding:40px 0}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:14px;font-weight:500}
+.foot a:hover{color:var(--orange-deep)}
+</style>
+</head>
+<body>
+<div class="scroll-bar"></div>
+
+<nav id="nav">
+  <a href="#top" class="brand"><span class="mark">A</span> Aravind <span class="tag">Product Designer</span></a>
+  <div class="nav-links">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <a href="trmeric/index.html" class="btn btn-orange">Featured: Trmeric <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="hero-bg"></div>
+  <div class="wrap">
+    <span class="eyebrow reveal in">Product &amp; Platform Design</span>
+    <h1 class="reveal in" data-d="1">I design software that makes complex work feel <span class="o">effortless.</span></h1>
+    <p class="hero-sub reveal in" data-d="2">I'm <b>Aravind</b> — a product designer working at the surface where dense enterprise data meets AI. Below are the products I've designed and built, each one walkable as the real, running thing.</p>
+    <div class="hero-actions reveal in" data-d="3">
+      <a href="trmeric/index.html" class="btn btn-ink btn-lg">Explore Trmeric <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="#work" class="btn btn-ghost btn-lg">See all work</a>
+    </div>
+    <div class="hero-stats reveal in" data-d="3">
+      <div class="s"><div class="n">3</div><div class="l">Products</div></div>
+      <div class="s"><div class="n">16+</div><div class="l">Live surfaces</div></div>
+      <div class="s"><div class="n">End-to-end</div><div class="l">Design &amp; build</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- PROJECTS -->
+<section class="projects" id="work">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Selected projects</span>
+      <h2>Three products. One craft.</h2>
+      <p>Each opens into its own living portfolio — real interfaces you can use, not screenshots.</p>
+    </div>
+
+    <!-- TRMERIC (live) -->
+    <a href="trmeric/index.html" class="pcard live reveal">
+      <div class="pcard-body">
+        <span class="pcard-tag on"><span class="lp"></span> Live · Flagship</span>
+        <h3>Trmeric</h3>
+        <p>An enterprise demand &amp; portfolio platform with Tango, an AI chief-of-staff. 16 surfaces across the demand lifecycle, plus a living case study you can walk end to end.</p>
+        <div class="pcard-meta"><span>Agentic AI UX</span><span>Enterprise data-density</span><span>Design system</span><span>16 surfaces</span></div>
+        <span class="pcard-cta">Enter the Trmeric portfolio <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+      <div class="pcard-media"><img src="trmeric/assets/grid.png" alt="Trmeric My Hub"></div>
+    </a>
+
+    <!-- PROJECT TWO (coming) -->
+    <div class="pcard flip reveal" id="project-two">
+      <div class="pcard-body">
+        <span class="pcard-tag soon">◷ In progress</span>
+        <h3>Project Two</h3>
+        <p>A second product portfolio — being folded in. Send me the folder path and stack and this card links straight into it.</p>
+        <div class="pcard-meta"><span>To be added</span></div>
+        <span class="pcard-cta muted">Coming soon</span>
+      </div>
+      <div class="pcard-media placeholder"><div class="ph-orb"></div><div class="ph-note">awaiting source folder</div></div>
+    </div>
+
+    <!-- PREVIOUS SITE (coming) -->
+    <div class="pcard reveal" id="previous-site">
+      <div class="pcard-body">
+        <span class="pcard-tag soon">◷ In progress</span>
+        <h3>Previous Website</h3>
+        <p>My earlier portfolio site, rebuilt into this unified home so everything lives under one roof and one link.</p>
+        <div class="pcard-meta"><span>To be rebuilt</span></div>
+        <span class="pcard-cta muted">Coming soon</span>
+      </div>
+      <div class="pcard-media placeholder"><div class="ph-orb"></div><div class="ph-note">awaiting source</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT + CONTACT -->
+<section class="about" id="about">
+  <div class="glow"></div>
+  <div class="wrap about-grid">
+    <div>
+      <span class="eyebrow reveal">About</span>
+      <h2 class="reveal" data-d="1">Design that holds up when the work gets complex.</h2>
+      <p class="reveal" data-d="2">I work end-to-end — from the persona narrative and the systems thinking to the running prototype. My bias is continuity: products should feel like one unbroken journey, not a folder of beautiful screens. <em style="color:var(--faint)">(Edit this bio in index.html.)</em></p>
+    </div>
+    <div class="contact reveal" data-d="1" id="contact">
+      <a href="mailto:aravind@trmeric.com"><span><span class="k">Email</span><span class="v">aravind@trmeric.com</span></span><span class="ar">→</span></a>
+      <a href="#" target="_blank" rel="noopener"><span><span class="k">LinkedIn</span><span class="v">Add your profile</span></span><span class="ar">→</span></a>
+      <a href="#" target="_blank" rel="noopener"><span><span class="k">Resume</span><span class="v">Link your CV</span></span><span class="ar">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div>© 2026 Aravind — Product Designer</div>
+    <div><a href="trmeric/index.html">Trmeric</a></div>
+  </div>
+</footer>
+
+<script>
+const nav=document.getElementById('nav'),bar=document.querySelector('.scroll-bar');
+addEventListener('scroll',()=>{nav.classList.toggle('solid',scrollY>30);
+  const h=document.documentElement.scrollHeight-innerHeight;bar.style.width=(scrollY/h*100)+'%';},{passive:true});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.14});
+document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
