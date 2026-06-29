@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trmeric — Welcome</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #FFA426;
+  --orange-deep: #F89622;
+  --orange-dark: #E67E10;
+  --orange-subtle: #FFF8F0;
+  --orange-light: #FFF5E6;
+  --n900: #1a1a1a;
+  --n800: #333333;
+  --n600: #666666;
+  --n400: #999999;
+  --n200: #e5e5e5;
+  --n100: #f5f5f5;
+  --n50: #fafafa;
+  --white: #ffffff;
+  --success: #10b981;
+  --purple: #8b5cf6;
+  --gradient-ai: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-3: 0 4px 6px rgba(0,0,0,0.1);
+  --shadow-4: 0 10px 30px rgba(0,0,0,0.12);
+  --r-sm: 4px; --r-md: 6px; --r-base: 8px;
+  --r-lg: 12px; --r-xl: 16px; --r-full: 9999px;
+  --t-fast: 150ms cubic-bezier(0,0,0.2,1);
+  --t-normal: 250ms cubic-bezier(0,0,0.2,1);
+  --t-moderate: 350ms cubic-bezier(0,0,0.2,1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--n50);
+  color: var(--n900);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ─── APP SHELL ─── */
+.app-shell { display: flex; flex-direction: column; height: 100vh; }
+
+/* ─── TOPBAR ─── */
+.topbar {
+  height: 56px;
+  background: var(--white);
+  border-bottom: 1px solid var(--n200);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  position: relative;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.topbar.visible { opacity: 1; transform: translateY(0); }
+
+.logo {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-right: 8px;
+}
+.logo-mark { display: flex; align-items: center; }
+.logo-wordmark { color: var(--n900); font-size: 16px; font-weight: 700; }
+.logo-wordmark span { color: var(--orange); }
+
+.topbar { position: relative; }
+.tb-nav {
+  display: flex; gap: 4px;
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+}
+.tb-btn {
+  padding: 7px 16px;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Poppins', sans-serif;
+  transition: all var(--t-fast);
+}
+.tb-btn.ghost {
+  background: transparent;
+  color: var(--n600);
+  border: 1px solid var(--n200);
+}
+.tb-btn.ghost:hover { background: var(--n100); color: var(--n900); }
+.tb-btn.primary {
+  background: var(--orange);
+  color: var(--n900);
+  font-weight: 600;
+}
+.tb-btn.primary:hover { background: var(--orange-deep); }
+.tb-btn .btn-icon { font-size: 12px; }
+
+.tb-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.icon-wrap {
+  position: relative;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--n100);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  transition: background var(--t-fast);
+}
+.icon-wrap:hover { background: var(--n200); }
+.notif-count {
+  position: absolute; top: -2px; right: -2px;
+  background: #ef4444; color: white;
+  font-size: 8px; font-weight: 700;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--white);
+}
+.avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: var(--n900);
+  font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+
+/* ─── BODY ─── */
+.body-area {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── RIGHT RAIL ─── */
+.right-rail {
+  width: 68px;
+  background: var(--white);
+  border-left: 1px solid var(--n200);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0 12px;
+  gap: 0;
+  order: 2;
+  position: relative;
+  opacity: 0;
+  transform: translateX(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.right-rail.visible { opacity: 1; transform: translateX(0); }
+
+/* Vertical orange active indicator bar — sits on the right edge */
+.rail-active-bar {
+  position: absolute;
+  right: 0; top: 12px;
+  width: 3px; height: 52px;
+  background: var(--orange);
+  border-radius: 3px 0 0 3px;
+  transition: top 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+.rail-divider { width: 36px; height: 1px; background: var(--n200); margin: 4px 6px; }
+.rail-spacer { flex: 1; }
+
+.rail-item {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  padding: 9px 6px 7px;
+  border-radius: var(--r-base);
+  cursor: pointer; width: 56px;
+  transition: all var(--t-fast);
+  position: relative;
+}
+.rail-item:hover { background: var(--n100); }
+
+.rail-icon {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--n400);
+}
+.rail-icon svg { stroke: currentColor; }
+
+.rail-label {
+  font-size: 9px; font-weight: 500;
+  color: var(--n400);
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Active Tango item */
+.rail-item.ai-item.active .rail-icon { color: var(--orange); }
+.rail-item.ai-item.active .rail-label { color: var(--orange); }
+.rail-item.ai-item .rail-icon { color: var(--n400); }
+.rail-item.ai-item svg { fill: currentColor; stroke: none; }
+
+/* ─── MAIN CONTENT ─── */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background: var(--white);
+}
+
+/* Background ghost icons */
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ghost-icon {
+  position: absolute;
+  font-size: 36px;
+  opacity: 0;
+  color: var(--n400);
+  filter: grayscale(1);
+  transition: opacity 0.6s ease;
+}
+.ghost-icon.visible { opacity: 0.06; }
+
+/* ─── CENTER CONTENT ─── */
+.center-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 580px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Rocket */
+.rocket-wrap {
+  font-size: 44px;
+  margin-bottom: 12px;
+  display: block;
+  line-height: 1;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.rocket-emoji {
+  display: inline-block;
+  cursor: default;
+  user-select: none;
+  opacity: 0;
+  will-change: transform;
+  transition: opacity 0.15s ease;
+}
+/* Trail particles */
+.trail-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: trailFade 0.8s ease-out forwards;
+}
+@keyframes trailFade {
+  0% { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.2) translateY(8px); }
+}
+
+/* Greeting */
+.greeting {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--n900);
+  margin-bottom: 28px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.greeting.visible { opacity: 1; transform: translateY(0); }
+.greeting span { color: var(--orange); }
+
+/* Chat bar */
+.chat-bar {
+  width: 100%;
+  background: var(--white);
+  border: 1.5px solid var(--n200);
+  border-radius: var(--r-full);
+  padding: 12px 16px 12px 20px;
+  display: flex; align-items: center; gap: 10px;
+  cursor: text;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease, border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.chat-bar.visible { opacity: 1; transform: translateY(0); }
+.chat-bar:hover { border-color: var(--orange); }
+
+.chat-input-real {
+  flex: 1;
+  border: none; outline: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  color: var(--n900);
+  background: transparent;
+}
+.chat-input-real::placeholder { color: var(--n400); }
+
+.chat-attach {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--n100);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  transition: background var(--t-fast);
+}
+.chat-attach:hover { background: var(--n200); }
+
+.chat-send {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--orange);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; color: var(--n900);
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.chat-send:hover { background: var(--orange-deep); transform: scale(1.05); }
+
+/* ─── PERSONA CHIPS — uniform single line ─── */
+.chip-row {
+  display: flex; gap: 8px; align-items: center;
+  justify-content: center;
+  margin-top: 14px; flex-wrap: nowrap;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.chip-row.visible { opacity: 1; transform: translateY(0); }
+
+.chip {
+  position: relative;
+  padding: 8px 15px;
+  border-radius: var(--r-full);
+  font-size: 12px; font-weight: 500;
+  border: 1.5px solid var(--n200);
+  background: var(--white);
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  color: var(--n700, #555);
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+  transition: all var(--t-fast);
+  opacity: 0; transform: translateY(6px);
+}
+.chip.in { opacity: 1; transform: translateY(0); }
+.chip:hover { border-color: var(--orange); color: var(--n900); background: var(--orange-subtle); }
+.chip.has-dropdown { padding-right: 10px; }
+.chip-chevron {
+  width: 14px; height: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform var(--t-fast); opacity: 0.5;
+}
+.chip.open .chip-chevron { transform: rotate(180deg); }
+.chip-icon { display: flex; align-items: center; color: var(--n400); }
+.chip:hover .chip-icon { color: var(--orange); }
+.chip.grid-chip { padding: 8px 10px; }
+/* Focus flyout (hover the grid-chip → see your focus cards) */
+.focusmenu{position:fixed;z-index:6000;width:300px;max-width:92vw;background:#fff;border:1px solid #ececef;border-radius:16px;box-shadow:0 18px 50px rgba(20,20,40,.18);padding:12px;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .16s,transform .16s;}
+.focusmenu.open{opacity:1;transform:translateY(0);pointer-events:auto;}
+.focusmenu::before{content:'';position:absolute;top:-12px;left:0;right:0;height:12px;}
+.fm-head{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--n700);padding:4px 8px 10px;}
+.fm-spark{width:14px;height:14px;color:var(--purple);flex-shrink:0;}
+.fm-head .fm-sub{margin-left:auto;font-size:10px;font-weight:500;color:var(--n400);}
+.fm-list{display:flex;flex-direction:column;gap:2px;}
+.fm-item{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:none;border:none;cursor:pointer;padding:9px 8px;border-radius:10px;font-family:'Poppins',sans-serif;transition:background .12s;}
+.fm-item:hover{background:#f6f6f8;}
+.fm-ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0;}
+.fm-ic svg{width:17px;height:17px;}
+.fm-ic [data-fill]{fill:currentColor;stroke:none;}
+.fm-tx{flex:1;min-width:0;display:flex;flex-direction:column;}
+.fm-t{font-size:13px;font-weight:600;color:var(--n900);}
+.fm-s{font-size:11px;color:var(--n500);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fm-go{width:14px;height:14px;color:var(--n300);flex-shrink:0;}
+.fm-item:hover .fm-go{color:var(--orange);}
+
+/* Dropdown */
+.chip-dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0;
+  background: var(--white);
+  border: 1px solid var(--n200);
+  border-radius: var(--r-lg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  min-width: 200px; z-index: 50; overflow: hidden;
+  opacity: 0; transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.chip-dropdown.open { opacity: 1; transform: translateY(0); pointer-events: all; }
+.chip-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; font-size: 12px; font-weight: 500;
+  color: var(--n800); cursor: pointer;
+  transition: background var(--t-fast);
+}
+.chip-dropdown-item:hover { background: var(--n100); }
+.chip-dropdown-item svg { color: var(--n400); flex-shrink: 0; }
+
+/* Tooltip */
+.chip-tooltip {
+  position: absolute; bottom: calc(100% + 8px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--n900); color: white;
+  font-size: 11px; font-weight: 400;
+  padding: 7px 11px; border-radius: var(--r-md);
+  width: max-content; max-width: 220px; white-space: normal;
+  text-align: center; pointer-events: none;
+  opacity: 0; transition: opacity 0.15s ease;
+  z-index: 60; line-height: 1.4;
+}
+.chip-tooltip::after {
+  content: ''; position: absolute;
+  top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: var(--n900);
+}
+.chip:hover .chip-tooltip { opacity: 1; }
+
+/* Persona switcher on avatar */
+.persona-menu {
+  position: fixed;
+  top: 52px; right: 16px;
+  background: var(--white);
+  border: 1px solid var(--n200);
+  border-radius: var(--r-lg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  min-width: 220px; z-index: 300;
+  overflow: hidden;
+  opacity: 0; transform: translateY(-8px) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.persona-menu.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: all; }
+.persona-menu-header {
+  padding: 12px 14px 8px;
+  font-size: 10px; font-weight: 600;
+  color: var(--n400); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.persona-menu-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer; font-size: 13px; font-weight: 500;
+  color: var(--n800);
+  transition: background var(--t-fast);
+}
+.persona-menu-item:hover { background: var(--n100); }
+.persona-menu-item.active { background: var(--orange-subtle); color: var(--orange); }
+.persona-menu-item .persona-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--n200); flex-shrink: 0;
+}
+.persona-menu-item.active .persona-dot { background: var(--orange); }
+.persona-menu-divider { height: 1px; background: var(--n200); margin: 4px 0; }
+
+/* ─── ONBOARDING OVERLAY ─── */
+.onboarding-overlay {
+  position: fixed; inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Spotlight mask */
+.spotlight-mask {
+  position: fixed; inset: 0;
+  background: rgba(12,12,14,0.65);
+  z-index: 101;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.spotlight-mask.active { opacity: 1; pointer-events: all; }
+.spotlight-hole {
+  position: fixed;
+  border-radius: 12px;
+  background: transparent;
+  box-shadow: 0 0 0 9999px rgba(12,12,14,0.65);
+  z-index: 102;
+  transition: all 0.45s cubic-bezier(0.4,0,0.2,1);
+  pointer-events: none;
+  display: none;
+}
+.spotlight-hole.active { display: block; }
+/* Breathing pulse on spotlight */
+@keyframes spotBreath {
+  0%, 100% { box-shadow: 0 0 0 9999px rgba(12,12,14,0.65), 0 0 0 2px rgba(255,164,38,0.4); }
+  50% { box-shadow: 0 0 0 9999px rgba(12,12,14,0.65), 0 0 0 4px rgba(255,164,38,0.7); }
+}
+.spotlight-hole.breathing { animation: spotBreath 2s ease-in-out infinite; }
+
+.tango-intro {
+  position: fixed;
+  right: 76px;
+  top: 68px;
+  width: 300px;
+  background: #ffffff;
+  border-radius: 4px 18px 18px 18px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.07),
+    0 24px 48px rgba(0,0,0,0.12),
+    0 4px 12px rgba(0,0,0,0.06);
+  z-index: 200;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(16px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.34,1.1,0.64,1), transform 0.4s cubic-bezier(0.34,1.1,0.64,1);
+}
+.tango-intro.visible {
+  opacity: 1; transform: translateX(0) scale(1); pointer-events: all;
+}
+
+/* Subtle ambient glow strip at top */
+.tango-intro-glow {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.4) 30%, rgba(255,164,38,0.4) 70%, transparent 100%);
+}
+
+.tango-intro-header {
+  padding: 16px 18px 14px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--n100);
+}
+.tango-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: var(--orange-subtle);
+  border: 1.5px solid rgba(255,164,38,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #FFA426;
+  animation: tangoFloat 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes tangoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+.tango-intro-name h4 {
+  font-size: 13px; font-weight: 700;
+  color: var(--n900); margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+.tango-intro-name span {
+  font-size: 10px; color: var(--n400);
+  font-weight: 400;
+}
+
+.tango-intro-body { padding: 16px 18px 16px; }
+.tango-messages { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.tango-msg {
+  background: var(--n50);
+  border: 1px solid var(--n100);
+  border-radius: 10px 10px 10px 2px;
+  padding: 10px 13px;
+  font-size: 12px; color: var(--n700, #444);
+  line-height: 1.6;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.tango-msg.in { opacity: 1; transform: translateY(0); }
+.tango-msg strong { color: var(--n900); font-weight: 600; }
+.tango-msg.highlight {
+  background: var(--orange-subtle);
+  border-color: rgba(255,164,38,0.2);
+}
+
+.tango-intro-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 4px;
+}
+.tango-dismiss {
+  font-size: 11px; color: var(--n400);
+  background: none; border: none; cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: color var(--t-fast);
+}
+.tango-dismiss:hover { color: var(--n800); }
+.tango-take-tour {
+  padding: 8px 16px;
+  background: var(--n900);
+  color: white; border: none;
+  border-radius: var(--r-full);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: 'Poppins', sans-serif;
+  display: flex; align-items: center; gap: 6px;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.tango-take-tour:hover { background: var(--n800); transform: translateY(-1px); }
+
+/* ─── TOUR BUBBLE — comic speech bubble, no overlay ─── */
+.tour-card {
+  position: fixed;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px 18px 14px;
+  width: 256px;
+  z-index: 200;
+  display: none;
+  pointer-events: all;
+  box-shadow:
+    0 0 0 2px rgba(255,164,38,0.5),
+    0 8px 28px rgba(0,0,0,0.13),
+    0 2px 8px rgba(0,0,0,0.07);
+}
+.tour-card.active {
+  display: block;
+  animation: bubblePop 0.26s cubic-bezier(0.34,1.5,0.64,1) forwards;
+}
+@keyframes bubblePop {
+  0%   { opacity: 0; transform: scale(0.82); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Arrow — injected dynamically as a child element */
+.tour-arrow {
+  position: absolute;
+  width: 0; height: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.tour-arrow::before {
+  content: '';
+  position: absolute;
+  width: 0; height: 0;
+}
+/* SVG border timer */
+.tour-border-svg {
+  position: absolute; inset: -2px;
+  width: calc(100% + 4px); height: calc(100% + 4px);
+  pointer-events: none; overflow: visible; z-index: 0;
+}
+.tour-border-track { fill: none; stroke: rgba(0,0,0,0.06); stroke-width: 2; }
+.tour-border-run   { fill: none; stroke: url(#glowGrad); stroke-width: 2.5; stroke-linecap: round; }
+
+.tour-card-top {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 7px;
+}
+.tour-step-counter {
+  font-size: 10px; font-weight: 600;
+  color: var(--n400);
+  white-space: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.tour-card-title { font-size: 13px; font-weight: 700; color: var(--n900); letter-spacing: -0.01em; }
+.tour-card-desc {
+  position: relative; z-index: 1;
+  font-size: 11.5px; color: var(--n600); line-height: 1.6; margin-bottom: 13px;
+}
+.tour-footer {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tour-skip {
+  font-size: 10.5px; color: var(--n400); background: none; border: none;
+  cursor: pointer; font-family: 'Poppins', sans-serif; transition: color var(--t-fast);
+}
+.tour-skip:hover { color: var(--n900); }
+.tour-next {
+  padding: 6px 14px; background: var(--n900); border: none;
+  border-radius: var(--r-full); font-size: 11px; font-weight: 600;
+  cursor: pointer; font-family: 'Poppins', sans-serif; color: white;
+  transition: all var(--t-fast); display: flex; align-items: center; gap: 4px;
+}
+.tour-next:hover { background: var(--n800); transform: translateY(-1px); }
+.tour-next.finish { background: var(--orange); color: var(--n900); }
+.tour-next.finish:hover { background: var(--orange-deep); }
+
+/* Orange ring highlight on active element */
+.tour-highlight {
+  outline: 2.5px solid rgba(255,164,38,0.7) !important;
+  outline-offset: 4px !important;
+  border-radius: 8px !important;
+  transition: outline 0.2s ease !important;
+}
+
+/* ─── ROCKET INTRO ANIMATION ─── */
+.intro-rocket {
+  position: fixed;
+  font-size: 52px;
+  z-index: 200;
+  pointer-events: none;
+  line-height: 1;
+  display: none;
+  filter: drop-shadow(0 4px 12px rgba(255,164,38,0.4));
+}
+
+/* orbit trail */
+.orbit-trail {
+  position: fixed;
+  z-index: 199;
+  pointer-events: none;
+}
+.orbit-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--orange);
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+/* ─── CONFETTI ─── */
+.confetti-layer {
+  position: fixed; inset: 0;
+  z-index: 195;
+  pointer-events: none;
+  overflow: hidden;
+}
+.conf {
+  position: absolute;
+  animation: confFall linear forwards;
+}
+@keyframes confFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+/* ─── DONE STATE — celebratory ─── */
+.done-overlay {
+  position: fixed; inset: 0;
+  z-index: 110;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.5s ease;
+  overflow: hidden;
+}
+.done-overlay.visible { opacity: 1; pointer-events: all; }
+
+/* ── Chip → Tango illustrative answer (journey steps 4-5) ── */
+.chip.chip-active { border-color: var(--orange); background: var(--orange-subtle); color: var(--n900); }
+.tango-answer { width:100%; max-width:560px; margin:16px auto 0; background:#fff; border:1px solid var(--n200); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.12); padding:14px 16px; text-align:left; display:none; opacity:0; transform:translateY(8px); transition:opacity .3s ease, transform .3s ease; }
+.tango-answer.show { display:block; opacity:1; transform:translateY(0); }
+.ta-head { display:flex; align-items:center; gap:8px; margin-bottom:9px; }
+.ta-name { font-size:12px; font-weight:700; color:var(--n900); }
+.ta-q { font-size:11px; color:var(--n400); margin-left:auto; font-style:italic; }
+.ta-body { font-size:12.5px; color:var(--n800); line-height:1.6; }
+.ta-body p { margin:0; }
+.ta-links { display:flex; flex-direction:column; gap:7px; margin-top:11px; }
+.ta-link { display:flex; align-items:center; gap:9px; width:100%; padding:9px 12px; background:var(--orange-subtle); border:1px solid rgba(255,164,38,.28); border-radius:10px; font-family:'Poppins',sans-serif; font-size:12px; font-weight:600; color:var(--n900); cursor:pointer; text-align:left; transition:background .15s ease, transform .15s ease; }
+.ta-link:hover { background:var(--orange-light); transform:translateX(2px); }
+.ta-link.ghost { background:transparent; border-color:var(--n200); color:var(--n600); font-weight:500; }
+.ta-link.ghost:hover { background:var(--n100); }
+.ta-tag { font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:9999px; flex-shrink:0; }
+.ta-link-tx { flex:1; min-width:0; }
+.ta-arrow { color:var(--orange); flex-shrink:0; font-weight:700; }
+
+/* ── Unified progressive-reveal tour (matches the demand grid) ── */
+.lt-anim{transition:opacity .45s ease, box-shadow .35s ease;}
+.lt-dim{opacity:0 !important; pointer-events:none !important;}
+.lt-focus{position:relative;z-index:1200;box-shadow:0 0 0 3px rgba(255,164,38,.5),0 16px 46px rgba(255,164,38,.14);}
+.lt-coach{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:1800;width:400px;max-width:92vw;background:#fff;border:1px solid rgba(0,0,0,.05);border-radius:16px;box-shadow:0 18px 48px rgba(20,20,40,.20),0 2px 8px rgba(0,0,0,.05);padding:14px 16px;display:flex;gap:12px;font-family:'Poppins',sans-serif;overflow:hidden;animation:ltUp .42s cubic-bezier(.22,1,.36,1);}
+@keyframes ltUp{from{opacity:0;transform:translateX(-50%) translateY(14px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.lt-orb{width:32px;height:32px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 30%,#FFB24d,#FF8B0C);box-shadow:0 3px 10px rgba(255,138,12,.4);}
+.lt-orb svg{width:17px;height:17px;display:block;}
+.lt-body{flex:1;min-width:0;}
+.lt-ttl{font-size:13.5px;font-weight:700;color:#1a1a1a;letter-spacing:-.01em;}
+.lt-txt{font-size:12px;line-height:1.55;color:#666;margin-top:3px;}
+.lt-row{display:flex;align-items:center;justify-content:space-between;margin-top:13px;gap:10px;}
+.lt-dots{display:flex;gap:5px;align-items:center;} .lt-dot{width:6px;height:6px;border-radius:50%;background:#e2e2e6;transition:background .25s,width .25s;} .lt-dot.on{background:#FFA426;width:16px;border-radius:3px;}
+.lt-btns{display:flex;gap:4px;align-items:center;}
+.lt-skip{background:transparent;border:none;color:#999;font-size:12px;cursor:pointer;font-family:'Poppins',sans-serif;padding:6px 8px;border-radius:7px;}
+.lt-skip:hover{color:#444;background:#f5f5f5;}
+.lt-next{background:#FFA426;color:#1a1a1a;border:none;border-radius:9999px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:background .15s;}
+.lt-next:hover{background:#F89622;}
+.lt-prog{position:absolute;left:0;bottom:0;height:3px;width:100%;overflow:hidden;}
+.lt-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#FFB24d,#FF8B0C);}
+
+/* ── Dash: persona focus-card feed (scroll to reveal) + reels Focus mode ── */
+.main-content{justify-content:flex-start;overflow-y:auto;overflow-x:hidden;}
+.center-wrap{justify-content:center;min-height:calc(100vh - 56px);flex-shrink:0;}
+.dash-wrap{width:100%;max-width:1060px;margin:0 auto;padding:0 32px 64px;position:relative;z-index:2;flex-shrink:0;}
+.dash-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.dash-title{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;color:var(--n900);}
+.dash-title svg{width:18px;height:18px;color:var(--orange);}
+.dash-new{font-size:9px;font-weight:700;letter-spacing:.05em;color:#fff;background:var(--purple);padding:2px 7px;border-radius:9999px;text-transform:uppercase;}
+.dash-toggle{margin-left:auto;display:inline-flex;background:#f1f2f4;border-radius:9999px;padding:3px;}
+.dash-tg{border:none;background:transparent;font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;color:#7a7e85;padding:6px 16px;border-radius:9999px;cursor:pointer;transition:all .16s;}
+.dash-tg.on{background:#fff;color:var(--n900);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+.dash-feed{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;}
+.dash-feed::-webkit-scrollbar{height:6px;} .dash-feed::-webkit-scrollbar-thumb{background:var(--n200);border-radius:9999px;}
+/* Apple-style portrait widget card */
+.fcard{scroll-snap-align:start;flex:0 0 244px;min-height:336px;background:#fff;border:1px solid #eef0f2;border-radius:26px;box-shadow:0 1px 2px rgba(20,20,40,.04),0 12px 30px rgba(20,20,40,.07);padding:20px 18px 18px;display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .28s cubic-bezier(.22,1,.36,1),transform .28s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;}
+.fcard:hover{box-shadow:0 1px 2px rgba(20,20,40,.04),0 24px 54px rgba(20,20,40,.15);transform:translateY(-5px);}
+.fc-head{display:flex;align-items:center;gap:9px;margin-bottom:6px;flex-shrink:0;}
+.fc-ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--fcbg,#FFF8F0);color:var(--fc,#FFA426);flex-shrink:0;}
+.fc-ic svg{width:16px;height:16px;}
+.fc-ic [data-fill]{fill:currentColor;stroke:none;}
+.fc-name{font-size:13px;font-weight:700;color:var(--n900);letter-spacing:-.01em;}
+.fc-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;padding:8px 2px;text-align:center;}
+.fc-foot{margin-top:auto;flex-shrink:0;}
+.fc-cta{width:100%;border:none;background:#f4f5f7;color:var(--n900);border-radius:13px;padding:11px;font-family:'Poppins',sans-serif;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .15s,color .15s;}
+.fc-cta:hover{background:var(--fcbg,#FFF8F0);color:var(--fc,#FFA426);}
+.fc-cta svg{width:13px;height:13px;}
+/* ring / donut */
+.fc-ring-wrap{position:relative;width:130px;height:130px;}
+.fc-ring{width:130px;height:130px;transform:rotate(-90deg);}
+.fc-ring-bg{fill:none;stroke:#f0f1f3;stroke-width:9;}
+.fc-ring circle[data-arc]{fill:none;stroke-width:9;stroke-linecap:round;}
+.fc-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.fc-ring-num{font-size:34px;font-weight:800;color:var(--n900);letter-spacing:-1.5px;line-height:1;}
+.fc-ring-lbl{font-size:9.5px;color:var(--n500);font-weight:600;margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+/* big stat */
+.fc-stat{font-size:54px;font-weight:800;color:var(--n900);letter-spacing:-2.5px;line-height:.9;}
+.fc-stat .u{font-size:24px;font-weight:700;letter-spacing:-1px;}
+.fc-statsub{font-size:11.5px;color:var(--n600);font-weight:500;}
+.fc-trend{font-weight:700;display:inline-flex;align-items:center;gap:2px;}
+/* sparkline */
+.fc-spark{width:100%;height:58px;display:block;border-radius:8px;}
+/* segmented bar */
+.fc-seg{display:flex;width:100%;height:11px;border-radius:9999px;overflow:hidden;gap:2px;}
+.fc-seg span{display:block;}
+.fc-segl{display:flex;justify-content:center;gap:14px;width:100%;font-size:10.5px;color:var(--n600);font-weight:600;margin-top:8px;}
+.fc-segl .dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+.fc-legend{display:flex;align-items:center;justify-content:center;gap:12px;font-size:10.5px;color:var(--n600);font-weight:600;}
+.fc-legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
+/* alert hero */
+.fc-alert{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;background:var(--fcbg,#fef2f2);color:var(--fc,#ef4444);}
+.fc-alert svg{width:36px;height:36px;}
+.fc-bigname{font-size:13.5px;font-weight:700;color:var(--n900);line-height:1.3;}
+.fc-cap{font-size:11px;color:var(--n600);line-height:1.5;}
+.dash-dots{display:flex;gap:6px;justify-content:center;margin-top:8px;}
+.dash-dot{width:6px;height:6px;border-radius:50%;background:var(--n200);transition:all .25s;cursor:pointer;}
+.dash-dot.on{background:var(--orange);width:18px;border-radius:3px;}
+.reels{position:fixed;inset:0;z-index:5000;background:rgba(18,16,26,.62);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;}
+.reels.open{display:flex;animation:reelsIn .3s ease;}
+@keyframes reelsIn{from{opacity:0;}to{opacity:1;}}
+.reels-card{width:min(300px,86vw);}
+.reels-card .fcard{flex:none;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.42);cursor:default;animation:reelsPop .35s cubic-bezier(.34,1.4,.5,1);}
+@keyframes reelsPop{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:scale(1);}}
+.reels-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:none;background:rgba(255,255,255,.92);color:#1a1a1a;font-size:20px;cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.25);}
+.reels-nav:hover{background:#fff;}
+.reels-prev{left:max(20px,calc(50% - 290px));} .reels-next{right:max(20px,calc(50% - 290px));}
+.reels-close{position:absolute;top:24px;right:28px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.92);color:#1a1a1a;font-size:18px;cursor:pointer;display:grid;place-items:center;}
+.reels-dots{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;gap:7px;}
+.reels-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .25s;cursor:pointer;}
+.reels-dot.on{background:#fff;width:22px;border-radius:4px;}
+
+</style>
+</head>
+<body>
+
+<!-- ─── APP SHELL ─── -->
+<div class="app-shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar" id="topbar">
+    <!-- Logo: orange circle with grid icon + trmeric text -->
+    <div class="logo">
+      <div class="logo-mark">
+        <img src="trmeric-mark.svg" alt="trmeric" style="height:26px;width:auto;display:block;">
+      </div>
+      <span class="logo-wordmark">trmeric</span>
+    </div>
+
+    <!-- Center nav -->
+    <nav class="tb-nav">
+      <button class="tb-btn ghost" id="myHubBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        My Hub
+      </button>
+      <button class="tb-btn primary" id="tangoBtn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        Tango
+      </button>
+    </nav>
+
+    <!-- Right icons -->
+    <div class="tb-right">
+      <div class="icon-wrap" id="notifBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-count">99+</div>
+      </div>
+      <div class="icon-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <div class="icon-wrap">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <div class="avatar" id="avatarBtn" style="cursor:pointer;">A</div>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="body-area">
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+
+      <!-- Ghost background icons -->
+      <div class="bg-layer" id="bgLayer">
+        <span class="ghost-icon" style="top:9%;left:7%">📊</span>
+        <span class="ghost-icon" style="top:6%;left:28%">🏹</span>
+        <span class="ghost-icon" style="top:8%;right:18%">💰</span>
+        <span class="ghost-icon" style="top:8%;right:5%">📈</span>
+        <span class="ghost-icon" style="top:35%;left:4%">⏰</span>
+        <span class="ghost-icon" style="top:55%;left:6%">🗂</span>
+        <span class="ghost-icon" style="bottom:18%;left:8%">✉</span>
+        <span class="ghost-icon" style="bottom:8%;left:22%">📋</span>
+        <span class="ghost-icon" style="bottom:7%;left:48%">⚙</span>
+        <span class="ghost-icon" style="bottom:10%;right:20%">🎯</span>
+        <span class="ghost-icon" style="bottom:6%;right:6%">📌</span>
+        <span class="ghost-icon" style="top:40%;right:5%">💡</span>
+        <span class="ghost-icon" style="top:65%;right:7%">🔗</span>
+      </div>
+
+      <!-- Center content -->
+      <div class="center-wrap">
+        <div class="rocket-wrap" id="rocketWrap" style="margin-bottom:8px;">
+          <span class="rocket-emoji" id="rocketEmoji">🚀</span>
+        </div>
+        <div class="greeting" id="greeting">
+          Welcome to <span>Trmeric</span>, Aravind!
+        </div>
+        <div class="chat-bar" id="chatBar">
+          <input
+            class="chat-input-real"
+            id="chatInput"
+            placeholder="Sync me up on the recent updates"
+            autocomplete="off"
+          />
+          <button class="chat-attach">📎</button>
+          <button class="chat-send" id="chatSend">➤</button>
+        </div>
+        <!-- Persona chips — swapped per persona -->
+        <div class="chip-row" id="chipRow"></div>
+        <!-- Tango's illustrative answer when a chip is clicked (steps 4-5) -->
+        <div class="tango-answer" id="tangoAnswer"></div>
+      </div>
+
+      <!-- Dash: persona focus-card feed (scroll to reveal) -->
+      <section class="dash-wrap" id="dashWrap">
+        <div class="dash-head">
+          <div class="dash-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/></svg>Dash <span class="dash-new">New</span></div>
+          <div class="dash-toggle"><button class="dash-tg on" id="dashFeedBtn">Feed</button><button class="dash-tg" id="dashFocusBtn">Focus</button></div>
+        </div>
+        <div class="dash-feed" id="dashFeed"></div>
+        <div class="dash-dots" id="dashDots"></div>
+      </section>
+    </main>
+
+    <!-- Focus / reels overlay -->
+    <div class="reels" id="reels" aria-hidden="true">
+      <button class="reels-close" id="reelsClose" aria-label="Close">✕</button>
+      <button class="reels-nav reels-prev" id="reelsPrev" aria-label="Previous">‹</button>
+      <div class="reels-card" id="reelsCard"></div>
+      <button class="reels-nav reels-next" id="reelsNext" aria-label="Next">›</button>
+      <div class="reels-dots" id="reelsDots"></div>
+    </div>
+
+    <!-- RIGHT RAIL -->
+    <aside class="right-rail" id="rightRail">
+      <!-- Active orange bar indicator -->
+      <div class="rail-active-bar" id="railActiveBar"></div>
+
+      <div class="rail-item ai-item active" id="railTango">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        </div>
+        <div class="rail-label">Tango</div>
+      </div>
+      <div class="rail-item" id="railIdeas">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 6a6 6 0 0 1 6 6c0 2.5-1.5 4.5-3.5 5.5V19a1 1 0 0 1-1 1h-3a1 1 0 0 1-1-1v-1.5C7.5 16.5 6 14.5 6 12a6 6 0 0 1 6-6z"/><line x1="9" y1="21" x2="15" y2="21"/></svg>
+        </div>
+        <div class="rail-label">Ideas</div>
+      </div>
+      <div class="rail-item" id="railRoadmaps">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17l4-8 4 4 4-6 4 10"/><path d="M3 17h18"/></svg>
+        </div>
+        <div class="rail-label">Roadmaps</div>
+      </div>
+      <div class="rail-item" id="railProjects">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="rail-label">Projects</div>
+      </div>
+      <div class="rail-item" id="railPortfolios">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div class="rail-label">Portfolios</div>
+      </div>
+      <div class="rail-item" id="railPotential">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="rail-label">Potential</div>
+      </div>
+      <div class="rail-item" id="railActions">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="rail-label">Actions</div>
+      </div>
+      <div class="rail-item" id="railPinBoard">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="rail-label">Pin Board</div>
+      </div>
+
+      <div class="rail-spacer"></div>
+      <div class="rail-divider"></div>
+
+      <div class="rail-item">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="rail-label">More</div>
+      </div>
+      <div class="rail-item" id="railTour">
+        <div class="rail-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div class="rail-label">Tour</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ─── PERSONA MENU ─── -->
+<div class="persona-menu" id="personaMenu">
+  <div class="persona-menu-header">Switch Persona</div>
+  <div class="persona-menu-item active" data-persona="dm" id="pMenuDM">
+    <div class="persona-dot"></div>
+    Demand Manager
+  </div>
+  <div class="persona-menu-item" data-persona="pm" id="pMenuPM">
+    <div class="persona-dot"></div>
+    Project Manager
+  </div>
+  <div class="persona-menu-item" data-persona="portfolio" id="pMenuPortfolio">
+    <div class="persona-dot"></div>
+    Portfolio Leader
+  </div>
+  <div class="persona-menu-item" data-persona="org" id="pMenuOrg">
+    <div class="persona-dot"></div>
+    Org Leader
+  </div>
+  <div class="persona-menu-divider"></div>
+  <div class="persona-menu-item" style="color:var(--n400);font-size:11px;padding:8px 14px;">
+    Aravind Jegajeeva · Violia
+  </div>
+</div>
+
+<!-- ─── TANGO INTRO PANEL ─── -->
+<div class="tango-intro" id="tangoIntro">
+  <div class="tango-intro-glow"></div>
+  <div class="tango-intro-header">
+    <div class="tango-avatar">✦</div>
+    <div class="tango-intro-name">
+      <h4>Tango</h4>
+      <span>Your AI Chief of Staff · Violia</span>
+    </div>
+  </div>
+  <div class="tango-intro-body">
+    <div class="tango-messages" id="tangoMessages">
+      <div class="tango-msg" id="tMsg1">
+        👋 Welcome to <strong>Trmeric</strong>, Aravind! Great to have you here.
+      </div>
+      <div class="tango-msg" id="tMsg2">
+        I'm <strong>Tango</strong> — your AI Chief of Staff. I help you stay on top of demands, surface risks early, and get things done faster.
+      </div>
+      <div class="tango-msg highlight" id="tMsg3">
+        Let me show you around. It'll only take a minute. ✨
+      </div>
+    </div>
+    <div class="tango-intro-actions">
+      <button class="tango-dismiss" id="tangoDismiss">Maybe later</button>
+      <button class="tango-take-tour" id="tangoTakeTour">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Take the tour
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── LAYERS ─── -->
+<div class="confetti-layer" id="confettiLayer"></div>
+<div class="intro-rocket" id="introRocket">🚀</div>
+<div class="tour-card" id="tourCard"></div>
+
+<script>
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function el(id) { return document.getElementById(id); }
+
+function getRect(element) {
+  return element.getBoundingClientRect();
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+// ─── CONFETTI ────────────────────────────────────────────────────────────────
+const confColors = ['#FFA426','#F89622','#8b5cf6','#10b981','#3b82f6','#ec4899','#f59e0b','#FFF8F0'];
+
+function spawnConfetti(count = 55) {
+  const layer = el('confettiLayer');
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'conf';
+      const size = 6 + Math.random() * 7;
+      const isCircle = Math.random() > 0.5;
+      c.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: -10px;
+        width: ${size}px;
+        height: ${size}px;
+        background: ${confColors[Math.floor(Math.random() * confColors.length)]};
+        border-radius: ${isCircle ? '50%' : '2px'};
+        animation-duration: ${1.4 + Math.random() * 1.2}s;
+        animation-delay: ${Math.random() * 0.6}s;
+      `;
+      layer.appendChild(c);
+      setTimeout(() => c.remove(), 3200);
+    }, i * 18);
+  }
+}
+
+// ─── TRAIL PARTICLES ─────────────────────────────────────────────────────────
+function spawnTrail(x, y) {
+  const wrap = el('rocketWrap');
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'trail-particle';
+      const size = 4 + Math.random() * 4;
+      p.style.cssText = `
+        width: ${size}px; height: ${size}px;
+        background: ${Math.random() > 0.5 ? '#FFA426' : '#FBB03B'};
+        left: ${-4 + Math.random() * 10}px;
+        bottom: ${-4 + Math.random() * 8}px;
+        animation-duration: ${0.6 + Math.random() * 0.3}s;
+        animation-delay: ${Math.random() * 0.1}s;
+      `;
+      wrap.appendChild(p);
+      setTimeout(() => p.remove(), 1200);
+    }, i * 40);
+  }
+}
+
+// ─── INTRO ANIMATION ─────────────────────────────────────────────────────────
+//
+//  🚀 emoji default = nose pointing UP = rotate(0deg)
+//  So: nose down-left  = rotate(135deg)   [falling top-right → bottom-left]
+//       nose up-right   = rotate(-45deg)   [rising bottom-left → up toward center]
+//       nose up         = rotate(0deg)     [settled upright above greeting]
+//
+//  Phase 1 — DIVE:  Enters top-right corner, nose at 135° (down-left), 
+//                   cuts diagonally across, exits bottom-left. Accelerates.
+//  Phase 2 — CLIMB: Re-enters bottom-left at 3x scale, nose at -45° (up-right),
+//                   arcs toward center, decelerates, nose rotates to 0° (upright),
+//                   scale bleeds 3x → 1x, lands above greeting.
+
+function cubicOut(t)   { return 1 - Math.pow(1 - t, 3); }
+function cubicInOut(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+function easeInQuad(t) { return t * t; }
+function bezier2(t, p0, p1, p2) {
+  const mt = 1 - t;
+  return mt*mt*p0 + 2*mt*t*p1 + t*t*p2;
+}
+
+function runIntro() {
+  const introRocket = el('introRocket');
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  const greetRect = getRect(el('greeting'));
+  const finalX = greetRect.left + greetRect.width / 2 - 26;
+  const finalY = greetRect.top - 68;
+
+  el('rocketEmoji').style.opacity = '0';
+
+  // ── CLIMB: bottom-left → center, 3x → 1x scale ───────────────────────────
+  const p2x0 = -80, p2y0 = vh + 100;
+  const climbDuration = 1200;
+  let t2 = null;
+  const cpx = vw * 0.25;
+  const cpy = vh * 0.55;
+
+  introRocket.style.display   = 'block';
+  introRocket.style.left      = p2x0 + 'px';
+  introRocket.style.top       = p2y0 + 'px';
+  introRocket.style.transform = 'rotate(-45deg) scale(3)';
+
+  function phase2(ts) {
+    if (!t2) t2 = ts;
+    const p  = Math.min((ts - t2) / climbDuration, 1);
+    const ep = cubicInOut(p);
+
+    const x = bezier2(ep, p2x0, cpx, finalX);
+    const y = bezier2(ep, p2y0, cpy, finalY);
+
+    const bounce = p > 0.88 ? Math.sin(((p - 0.88) / 0.12) * Math.PI) * 0.05 : 0;
+    const scale  = lerp(3.0, 1.0, ep) + bounce;
+
+    const rotP   = cubicInOut(Math.min(p / 0.85, 1));
+    const rot    = lerp(-45, 0, rotP);
+    const wobble = Math.sin(p * Math.PI * 4) * 4 * (1 - p);
+
+    introRocket.style.left      = x + 'px';
+    introRocket.style.top       = y + 'px';
+    introRocket.style.transform = `rotate(${rot + wobble}deg) scale(${scale.toFixed(3)})`;
+
+    if (p < 1) {
+      requestAnimationFrame(phase2);
+    } else {
+      introRocket.style.transform = 'rotate(0deg) scale(1)';
+      el('rocketEmoji').style.opacity = '1';
+      el('rocketEmoji').style.animation = 'none';
+      requestAnimationFrame(() => {
+        introRocket.style.display = 'none';
+        revealUI();
+      });
+    }
+  }
+  requestAnimationFrame(phase2);
+}
+
+// ─── ICONS (reusable) ────────────────────────────────────────────────────────
+const IC = {
+  project:   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+  action:    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  pin:       `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+  help:      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  demand:    `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`,
+  portfolio: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
+  potential: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  plus:      `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+  tango:     `<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>`,
+};
+const IC12 = k => IC[k].replace(/width="13" height="13"/, 'width="12" height="12"');
+const helpDD = [
+  { label: 'Ask Tango', icon: IC.tango },
+  { label: 'Report an Issue', icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>` },
+  { label: 'Learn about Trmeric', icon: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>` }
+];
+
+// ─── PERSONA CHIP DATA ────────────────────────────────────────────────────────
+const PERSONAS = {
+  pm: {
+    label: 'Project Manager',
+    chips: [
+      { label: 'Update Projects',  tooltip: 'Go to the project grid and update your active projects', icon: IC.project },
+      { label: 'My Actions',       tooltip: 'View all actions assigned to you in the Actions Hub', icon: IC.action },
+      { label: 'My Pinboard',      tooltip: 'Jump to your pinboard for quick-access items', icon: IC.pin },
+      { label: 'Get Help',         tooltip: 'Tango acts as your customer success agent — ask anything', icon: IC.help, dropdown: helpDD },
+      { grid: true }
+    ]
+  },
+  portfolio: {
+    label: 'Portfolio Leader',
+    chips: [
+      { label: 'Create New Demand',   tooltip: 'Start the intake agent and raise a new demand', icon: IC.plus },
+      { label: 'Review My Portfolio', tooltip: 'Full visibility across your portfolio', icon: IC.portfolio,
+        dropdown: [
+          { label: 'View All Projects',  icon: IC12('project') },
+          { label: 'View All Demands',   icon: IC12('demand') },
+          { label: 'View My Portfolio',  icon: IC12('portfolio') },
+          { label: 'View Potential',     icon: IC12('potential') }
+        ]
+      },
+      { label: 'My Activity', tooltip: 'Quick access to your actions and pinboard', icon: IC.action,
+        dropdown: [
+          { label: 'My Actions',   icon: IC12('action') },
+          { label: 'My Pinboard',  icon: IC12('pin') }
+        ]
+      },
+      { label: 'Get Help', tooltip: 'Tango acts as your customer success agent — ask anything', icon: IC.help, dropdown: helpDD },
+      { grid: true }
+    ]
+  },
+  org: {
+    label: 'Org Leader',
+    chips: [
+      { label: 'Prioritise & Approve', tooltip: 'Go to the Demand grid to prioritise and approve demands', icon: IC.demand },
+      { label: 'Review All Portfolios', tooltip: 'Full portfolio view across the entire organisation', icon: IC.portfolio },
+      { label: 'View All Activities', tooltip: 'See all actions and pinboard items across the org', icon: IC.action,
+        dropdown: [
+          { label: 'All Actions',  icon: IC12('action') },
+          { label: 'My Pinboard', icon: IC12('pin') }
+        ]
+      },
+      { label: 'Get Help', tooltip: 'Tango acts as your customer success agent — ask anything', icon: IC.help, dropdown: helpDD },
+      { grid: true }
+    ]
+  },
+  dm: {
+    label: 'Demand Manager',
+    chips: [
+      { label: 'Needs attention', tooltip: 'See the demands waiting on you', icon: IC.action, answer: `<p>You've got <strong>3 demands</strong> waiting on you right now:</p>
+<div class="ta-links">
+  <button class="ta-link" onclick="handoffToApp('live')"><span class="ta-tag" style="background:#dbeafe;color:#2563eb;">Approve</span><span class="ta-link-tx">Veolia Smart Grid — awaiting your sign-off</span><span class="ta-arrow">→</span></button>
+  <button class="ta-link" onclick="handoffToApp('live')"><span class="ta-tag" style="background:#fef3c7;color:#b45309;">HLD</span><span class="ta-link-tx">BHP WAIO Cloud Upgrade — approve the revised design</span><span class="ta-arrow">→</span></button>
+  <button class="ta-link ghost" onclick="handoffToApp('grid')"><span class="ta-link-tx">See all 6 actions in your grid</span><span class="ta-arrow">→</span></button>
+</div>` },
+      { label: 'My demands', tooltip: 'A quick read on your demand book', icon: IC.demand, answer: `<p>You own <strong>12 demands</strong> across 5 stages — <strong>2</strong> need attention, <strong>1</strong> is at risk. Cycle time is down 6 days this quarter.</p>
+<div class="ta-links">
+  <button class="ta-link" onclick="handoffToApp('grid')"><span class="ta-link-tx">Open your demand grid</span><span class="ta-arrow">→</span></button>
+  <button class="ta-link ghost" onclick="handoffToApp('live')"><span class="ta-link-tx">Jump to your at-risk demand</span><span class="ta-arrow">→</span></button>
+</div>` },
+      { label: 'New demand', tooltip: 'Start the intake agent and raise a new demand', icon: IC.plus, action: 'create' },
+      { label: 'Get Help', tooltip: 'Tango acts as your customer success agent — ask anything', icon: IC.help, dropdown: helpDD },
+      { grid: true }
+    ]
+  }
+};
+
+let currentPersona = 'dm';
+
+function renderChips(persona) {
+  const chipRow = el('chipRow');
+  chipRow.innerHTML = '';
+  const data = PERSONAS[persona];
+
+  data.chips.forEach((chip, i) => {
+    if (chip.grid) {
+      const btn = document.createElement('button');
+      btn.className = 'chip grid-chip';
+      btn.title = 'Your focus cards';
+      btn.style.transitionDelay = (i * 60) + 'ms';
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>`;
+      btn.addEventListener('mouseenter', () => { if (window.openFocusMenu) window.openFocusMenu(btn); });
+      btn.addEventListener('mouseleave', () => { if (window.scheduleCloseFocusMenu) window.scheduleCloseFocusMenu(); });
+      btn.addEventListener('click', (e) => { e.stopPropagation(); if (window.openFocusMenu) window.openFocusMenu(btn); });
+      chipRow.appendChild(btn);
+      setTimeout(() => btn.classList.add('in'), 50 + i * 60);
+      return;
+    }
+
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (chip.dropdown ? ' has-dropdown' : '');
+
+    let inner = '';
+    if (chip.icon) inner += `<span class="chip-icon">${chip.icon}</span>`;
+    inner += `<span>${chip.label}</span>`;
+    if (chip.tooltip) inner += `<div class="chip-tooltip">${chip.tooltip}</div>`;
+
+    if (chip.dropdown) {
+      inner += `<span class="chip-chevron"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>`;
+      const dd = document.createElement('div');
+      dd.className = 'chip-dropdown';
+      dd.innerHTML = chip.dropdown.map(item =>
+        `<div class="chip-dropdown-item">${item.icon}<span>${item.label}</span></div>`
+      ).join('');
+      btn.appendChild(document.createRange().createContextualFragment(inner));
+      btn.appendChild(dd);
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = btn.classList.contains('open');
+        // Close all others
+        document.querySelectorAll('.chip.open').forEach(c => {
+          c.classList.remove('open');
+          c.querySelector('.chip-dropdown')?.classList.remove('open');
+        });
+        if (!isOpen) {
+          btn.classList.add('open');
+          dd.classList.add('open');
+        }
+      });
+    } else {
+      btn.innerHTML = inner;
+      if (chip.answer) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('#chipRow .chip').forEach(c => c.classList.remove('chip-active'));
+          btn.classList.add('chip-active');
+          showTangoAnswer(chip.answer, chip.label);
+        });
+      } else if (chip.action === 'create') {
+        btn.addEventListener('click', (e) => { e.stopPropagation(); if (inJourneyShell()) handoffToApp('create'); });
+      }
+    }
+
+    chipRow.appendChild(btn);
+    setTimeout(() => btn.classList.add('in'), 50 + i * 60);
+  });
+
+  chipRow.classList.add('visible');
+}
+
+// ─── Chip → illustrative Tango answer with links into a mission (journey steps 4-5) ───
+function showTangoAnswer(html, label) {
+  const a = el('tangoAnswer');
+  if (!a) return;
+  const orb = '<svg viewBox="0 0 40 40" fill="none" style="width:22px;height:22px;flex-shrink:0;"><circle cx="20" cy="20" r="3.5" fill="#FF8B0C"/><circle cx="20" cy="20" r="8" stroke="#FF8B0C" stroke-width="1.7"/><circle cx="20" cy="20" r="13" stroke="#FFB24d" stroke-width="1.3" opacity=".6"/></svg>';
+  a.innerHTML = '<div class="ta-head">' + orb + '<span class="ta-name">Tango</span><span class="ta-q">' + label + '</span></div><div class="ta-body">' + html + '</div>';
+  a.classList.add('show');
+}
+
+// ─── UI REVEAL ───────────────────────────────────────────────────────────────
+function revealUI() {
+  spawnConfetti(60);
+
+  // Reveal elements with comfortable stagger — rocket is already landed
+  el('topbar').classList.add('visible');
+
+  setTimeout(() => {
+    document.querySelectorAll('.ghost-icon').forEach((g, i) => {
+      setTimeout(() => g.classList.add('visible'), i * 55);
+    });
+  }, 150);
+
+  setTimeout(() => el('greeting').classList.add('visible'), 250);
+  setTimeout(() => el('chatBar').classList.add('visible'), 420);
+  setTimeout(() => renderChips(currentPersona), 560);
+  setTimeout(() => el('rightRail').classList.add('visible'), 650);
+
+  // Start idle float AFTER a beat — prevents the jerk on first frame
+  setTimeout(() => {
+    el('rocketEmoji').style.animation = 'rocketIdle 3s ease-in-out infinite';
+    startTrailLoop();
+  }, 800);
+
+  // Tango intro after everything is settled
+  setTimeout(() => showTangoIntro(), 1300);
+}
+
+// ─── TANGO INTRO ─────────────────────────────────────────────────────────────
+function showTangoIntro() {
+  const panel = el('tangoIntro');
+  panel.classList.add('visible');
+
+  // Stagger messages in like a conversation
+  ['tMsg1','tMsg2','tMsg3'].forEach((id, i) => {
+    setTimeout(() => el(id).classList.add('in'), 150 + i * 500);
+  });
+
+  el('tangoTakeTour').onclick = () => {
+    panel.classList.remove('visible');
+    setTimeout(() => startLandingReveal(), 350);
+  };
+  el('tangoDismiss').onclick = () => {
+    panel.classList.remove('visible');
+  };
+}
+
+// ─── PERSONA SWITCHER ────────────────────────────────────────────────────────
+el('avatarBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  el('personaMenu').classList.toggle('open');
+});
+
+document.querySelectorAll('.persona-menu-item[data-persona]').forEach(item => {
+  item.addEventListener('click', () => {
+    const persona = item.dataset.persona;
+    currentPersona = persona;
+    // Update active state
+    document.querySelectorAll('.persona-menu-item[data-persona]').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    // Re-render chips
+    renderChips(persona);
+    el('personaMenu').classList.remove('open');
+  });
+});
+
+// Close menus on outside click
+document.addEventListener('click', () => {
+  el('personaMenu').classList.remove('open');
+  document.querySelectorAll('.chip.open').forEach(c => {
+    c.classList.remove('open');
+    c.querySelector('.chip-dropdown')?.classList.remove('open');
+  });
+});
+
+// Rocket idle animation
+const rocketStyle = document.createElement('style');
+rocketStyle.textContent = `
+  @keyframes rocketIdle {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-4px) rotate(2deg); }
+    75% { transform: translateY(2px) rotate(-1deg); }
+  }
+  @keyframes rocketShake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(-3px); }
+    30% { transform: translateX(3px); }
+    45% { transform: translateX(-2px); }
+    60% { transform: translateX(2px); }
+  }
+  @keyframes rocketLaunchOff {
+    0%   { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(320px, -380px) scale(0.1); opacity: 0; }
+  }
+`;
+document.head.appendChild(rocketStyle);
+
+// Occasional trail particles while idling
+let trailInterval = null;
+function startTrailLoop() {
+  trailInterval = setInterval(() => spawnTrail(), 600);
+}
+
+// ─── TOUR ────────────────────────────────────────────────────────────────────
+const tourSteps = [
+  { targetId:'myHubBtn',      title:'My Hub',         arrow:'top',    position:'below-left', desc:'Your personal dashboard in Trmeric — key metrics, actions, and insights all in one place.' },
+  { targetId:'tangoBtn',      title:'Tango — Your AI', arrow:'top',   position:'below',      desc:'Trmeric\'s built-in AI. Ask it anything about your pipeline, risks, or priorities.' },
+  { targetId:'chatBar',       title:'Just ask',        arrow:'bottom', position:'above',     desc:'"Sync me up", "flag risks this week", "what needs my attention" — Tango handles it live.' },
+  { targetId:'chipRow',       title:'Quick actions',   arrow:'bottom', position:'above',     desc:'Role-specific shortcuts. Jump to your portfolio, raise a demand, or get support instantly.' },
+  { targetId:'railIdeas',     title:'Ideas',           arrow:'left',   position:'left',      desc:'Capture and submit ideas from anywhere in the org. The best ones flow into the demand pipeline.' },
+  { targetId:'railRoadmaps',  title:'Roadmaps',        arrow:'left',   position:'left',      desc:'See the strategic direction across portfolios — what\'s planned, in flight, and at risk.' },
+  { targetId:'railProjects',  title:'Projects',        arrow:'left',   position:'left',      desc:'Track delivery across all active projects — status, milestones, and resource health at a glance.' },
+  { targetId:'railPortfolios',title:'Portfolios',      arrow:'left',   position:'left',      desc:'Full visibility across every program and portfolio. Great for strategic alignment and spend review.' },
+  { targetId:'railPotential', title:'Potential',       arrow:'left',   position:'left',      desc:'Resource and capacity planning. See who\'s available, who\'s stretched, and where the gaps are.' },
+  { targetId:'railActions',   title:'Actions Hub',     arrow:'left',   position:'left',      desc:'Your prioritised to-do list, always live. Trmeric surfaces what needs you — not the other way around.' }
+];
+
+let currentStep = -1;
+let stepTimer   = null;
+const STEP_DURATION = 5000;
+
+function startTour() { currentStep = 0; renderStep(); }
+
+let highlightedEl = null;
+function clearStepTimer() { if (stepTimer) { clearTimeout(stepTimer); stepTimer = null; } }
+
+function renderStep() {
+  clearStepTimer();
+  if (currentStep >= tourSteps.length) { endTour(); return; }
+  const step   = tourSteps[currentStep];
+  const target = el(step.targetId);
+  if (!target) { currentStep++; renderStep(); return; }
+
+  if (highlightedEl) highlightedEl.classList.remove('tour-highlight');
+  highlightedEl = target;
+  highlightedEl.classList.add('tour-highlight');
+
+  const rect  = getRect(target);
+  const card  = el('tourCard');
+  const isLast = currentStep === tourSteps.length - 1;
+
+  card.setAttribute('data-arrow', step.arrow);
+
+  // Render content first without SVG so we can measure real height
+  card.innerHTML = `
+    <div class="tour-card-top">
+      <div class="tour-card-title">${step.title}</div>
+      <div class="tour-step-counter">${currentStep+1} / ${tourSteps.length}</div>
+    </div>
+    <div class="tour-card-desc">${step.desc}</div>
+    <div class="tour-footer">
+      <button class="tour-skip" id="tourSkip">End tour</button>
+      <button class="tour-next ${isLast?'finish':''}" id="tourNext">${isLast?'Done ✓':'Next →'}</button>
+    </div>
+  `;
+
+  positionBubble(rect, step.position);
+  card.style.display = 'block';
+  card.classList.remove('active');
+
+  // Measure AFTER layout is complete — next frame guarantees real dimensions
+  requestAnimationFrame(() => {
+    const cardRect = card.getBoundingClientRect();
+    const W = Math.round(cardRect.width);
+    const H = Math.round(cardRect.height);
+    const R = 12;
+    const perim  = Math.round(2*(W+H) - (8 - 2*Math.PI)*R);
+    const streak = Math.round(perim * 0.18);
+
+    const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svgEl.style.cssText = `position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0;`;
+    svgEl.innerHTML = `
+      <defs>
+        <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%"   stop-color="#FBB03B" stop-opacity="0"/>
+          <stop offset="50%"  stop-color="#FFA426" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#FFA426" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <rect fill="none" stroke="rgba(0,0,0,0.05)" stroke-width="1.5"
+        x="1" y="1" width="${W-2}" height="${H-2}" rx="${R}"/>
+      <rect fill="none" stroke="url(#glowGrad)" stroke-width="2.5" stroke-linecap="round"
+        id="borderRun"
+        x="1" y="1" width="${W-2}" height="${H-2}" rx="${R}"
+        stroke-dasharray="${streak} ${perim - streak}"
+        stroke-dashoffset="${streak}"/>
+    `;
+    card.insertBefore(svgEl, card.firstChild);
+
+    // ── DYNAMIC ARROW ──────────────────────────────────────────────────────
+    // Compute where the arrow tip should point on the target
+    const targetCX = rect.left + rect.width  / 2;
+    const targetCY = rect.top  + rect.height / 2;
+    const cardL = cardRect.left, cardT = cardRect.top;
+    const cardR = cardRect.right, cardB = cardRect.bottom;
+
+    const dir = step.arrow;
+    const outer = document.createElement('div');
+    const inner = document.createElement('div');
+    outer.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none;z-index:4;';
+    inner.style.cssText = 'position:absolute;width:0;height:0;pointer-events:none;z-index:4;';
+
+    const tail = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    tail.style.cssText = 'position:absolute;pointer-events:none;z-index:4;overflow:visible;';
+
+    if (dir === 'top' || dir === 'top-right') {
+      const ax = Math.max(14, Math.min(targetCX - cardL - 10, W - 30));
+      tail.setAttribute('width','20'); tail.setAttribute('height','16');
+      tail.setAttribute('viewBox','0 0 20 16');
+      tail.style.cssText += `top:-15px;left:${ax}px;`;
+      // Sharp tip at top, rounded shoulders at base
+      tail.innerHTML = `
+        <path d="M3,16 Q0,16 0,13 L10,0 L20,13 Q20,16 17,16 Z"
+          fill="white" stroke="rgba(255,164,38,0.7)" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="0" y="14" width="20" height="3" fill="white"/>
+      `;
+
+    } else if (dir === 'bottom') {
+      const ax = Math.max(14, Math.min(targetCX - cardL - 10, W - 30));
+      tail.setAttribute('width','20'); tail.setAttribute('height','16');
+      tail.setAttribute('viewBox','0 0 20 16');
+      tail.style.cssText += `bottom:-15px;left:${ax}px;`;
+      tail.innerHTML = `
+        <path d="M3,0 Q0,0 0,3 L10,16 L20,3 Q20,0 17,0 Z"
+          fill="white" stroke="rgba(255,164,38,0.7)" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="0" y="0" width="20" height="3" fill="white"/>
+      `;
+
+    } else if (dir === 'left') {
+      const ay = Math.max(14, Math.min(targetCY - cardT - 10, H - 30));
+      tail.setAttribute('width','16'); tail.setAttribute('height','20');
+      tail.setAttribute('viewBox','0 0 16 20');
+      tail.style.cssText += `right:-15px;top:${ay}px;`;
+      // Sharp tip at right, rounded shoulders at left base
+      tail.innerHTML = `
+        <path d="M0,3 Q0,0 3,0 L16,10 L3,20 Q0,20 0,17 Z"
+          fill="white" stroke="rgba(255,164,38,0.7)" stroke-width="1.5" stroke-linejoin="round"/>
+        <rect x="0" y="0" width="3" height="20" fill="white"/>
+      `;
+    }
+
+    card.appendChild(tail);
+
+    // Wire button handlers — must be inside rAF since buttons are created here
+    el('tourNext').onclick = () => { clearStepTimer(); currentStep++; renderStep(); };
+    el('tourSkip').onclick = () => { clearStepTimer(); endTour(); };
+
+    // Trigger pop animation
+    void card.offsetWidth;
+    card.classList.add('active');
+
+    // Start streak animation on next frame
+    requestAnimationFrame(() => {
+      const run = document.getElementById('borderRun');
+      if (run) {
+        run.style.transition = `stroke-dashoffset ${STEP_DURATION}ms linear`;
+        run.style.strokeDashoffset = `${-(perim - streak)}`;
+      }
+    });
+  });
+
+  stepTimer = setTimeout(() => { currentStep++; renderStep(); }, STEP_DURATION);
+}
+
+function positionBubble(r, position) {
+  const card = el('tourCard');
+  const cw = 256, ch = 150, gap = 14;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let top, left;
+  switch(position) {
+    case 'below': case 'below-left':
+      top = r.bottom + gap;
+      left = position==='below-left' ? r.left : r.left + r.width/2 - cw/2; break;
+    case 'above':
+      top = r.top - ch - gap; left = r.left + r.width/2 - cw/2; break;
+    case 'left':
+      top = r.top + r.height/2 - ch/2; left = r.left - cw - gap; break;
+    default:
+      top = r.bottom + gap; left = r.left;
+  }
+  top  = Math.max(8, Math.min(top,  vh-ch-8));
+  left = Math.max(8, Math.min(left, vw-cw-8));
+  card.style.top = top+'px'; card.style.left = left+'px';
+}
+
+function endTour() {
+  clearStepTimer();
+  if (highlightedEl) { highlightedEl.classList.remove('tour-highlight'); highlightedEl = null; }
+  el('tourCard').classList.remove('active');
+  el('tourCard').style.display = 'none';   // inline display was set in renderStep; clear it or the card hangs
+  setTimeout(() => showTangoSignoff(), 300);
+}
+
+// ─── TANGO SIGN-OFF ───────────────────────────────────────────────────────────
+function showTangoSignoff() {
+  spawnConfetti(70);
+  const panel = el('tangoIntro');
+
+  // Swap messages to sign-off content
+  document.getElementById('tangoMessages').innerHTML = `
+    <div class="tango-msg in">🎉 You're all set, <strong>Aravind!</strong></div>
+    <div class="tango-msg in" style="transition-delay:0.15s">This is your <strong>Demand Manager</strong> workspace — where you raise demands, track them through every stage, and see exactly what needs you.</div>
+    <div class="tango-msg highlight in" style="transition-delay:0.3s">Ready to dive in? Let's open your demand grid. 🚀</div>
+  `;
+
+  // Swap the actions — primary CTA enters the demand flow
+  document.querySelector('.tango-intro-actions').innerHTML = `
+    <button class="tango-take-tour" id="tangoClose" style="width:100%;justify-content:center;">
+      Go to my demands →
+    </button>
+  `;
+
+  panel.classList.add('visible');
+
+  document.getElementById('tangoClose').onclick = () => {
+    panel.classList.remove('visible');
+    // In the journey shell, hand off into the demand grid (the Demand Manager's workspace)
+    if (inJourneyShell()) { setTimeout(() => handoffToApp('grid'), 250); return; }
+    const emoji = el('rocketEmoji');
+    emoji.style.opacity = '1';
+    if (!trailInterval) startTrailLoop();
+    emoji.style.animation = 'rocketIdle 3s ease-in-out infinite';
+  };
+}
+
+// ─── JOURNEY HANDOFF (Phase 1) ───────────────────────────────────────────────
+// When this landing runs inside the demand-manager journey shell (an iframe),
+// tell the parent to transition into the Hub. Standalone behavior is unaffected.
+function inJourneyShell() {
+  try { return window.parent && window.parent !== window; } catch (e) { return false; }
+}
+function handoffToApp(target) {
+  if (!inJourneyShell()) return;
+  target = target || 'hub';
+  // Pass the chat bar's on-screen rect so the shell can morph it into the small Tango pill
+  var rect = null;
+  try { var cb = el('chatBar'); if (cb) { var r = cb.getBoundingClientRect(); rect = { left: r.left, top: r.top, width: r.width, height: r.height }; } } catch (e) {}
+  // Belt-and-suspenders: try a direct same-origin call first, fall back to postMessage.
+  // (file:// can block one or the other depending on the browser; one of these always lands.)
+  try { if (typeof window.parent.enterAppFromLanding === 'function') { window.parent.enterAppFromLanding(target, rect); return; } } catch (e) {}
+  try { window.parent.postMessage({ type: 'trmeric:enterApp', target: target, rect: rect }, '*'); } catch (e) {}
+}
+
+// ─── TOUR REPLAY ─────────────────────────────────────────────────────────────
+el('railTour').onclick = () => { startLandingReveal(); };
+
+// ─── DOCK → DEMAND GRID (journey) ────────────────────────────────────────────
+// Clicking any work item on the right dock takes the Demand Manager into the
+// demand grid (their "demand space"). Inert when running standalone.
+['railIdeas','railRoadmaps','railProjects','railPortfolios','railPotential','railActions','railPinBoard'].forEach((id) => {
+  const item = el(id);
+  if (item) item.addEventListener('click', () => { if (inJourneyShell()) handoffToApp('grid'); });
+});
+
+// ─── CHAT SEND → ROCKET FLIES OFF ────────────────────────────────────────────
+function rocketFlyOff() {
+  const emoji = el('rocketEmoji');
+  if (trailInterval) clearInterval(trailInterval);
+  emoji.style.animation = 'rocketShake 0.3s ease-in-out';
+  setTimeout(() => {
+    emoji.style.animation = 'rocketLaunchOff 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+  }, 300);
+  // After the launch animation, transition into the app (no-op when standalone)
+  if (inJourneyShell()) setTimeout(() => handoffToApp('hub'), 1150);
+}
+
+el('chatSend').onclick = rocketFlyOff;
+el('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') rocketFlyOff();
+});
+
+// ─── START ───────────────────────────────────────────────────────────────────
+// ─── Unified progressive-reveal tour (landing) — clears the page, then assembles
+//     each piece one at a time with Tango narrating, auto-advancing hands-free. ──
+(function(){
+  var L_SMALL='<div class="lt-orb"><svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="3.5" fill="#fff"/><circle cx="20" cy="20" r="8" stroke="#fff" stroke-width="1.7"/><circle cx="20" cy="20" r="13" stroke="#fff" stroke-width="1.3" opacity=".6"/></svg></div>';
+  var L_PIECES=['#chatBar','#chipRow','#rightRail','#dashWrap'];
+  var L_STEPS=[
+    {sel:'#chatBar', t:'Just ask', x:'This is your conversation bar — ask me to sync you up, flag risks, or open anything you need.'},
+    {sel:'#chipRow', t:'Quick actions', x:'Shortcuts tuned to your role — see what needs you, or raise a new demand in a tap.'},
+    {sel:'#rightRail', t:'Your dock', x:'Jump to Demands, Roadmaps, Portfolios and more. I’m always right here at the top.'},
+    {sel:'#dashWrap', t:'Your daily snapshot', x:'Scroll down and these focus cards surface what needs you — decisions, risk, cycle time and what Tango handled. Tap any to dive in.'}
+  ];
+  var L_FINAL={t:'Ready to dive in?', x:'Let’s open your demands — I’ll keep walking you through.', cta:'Go to my demands'};
+  var lidx=-1, lcoach=null, lt=null;
+  function lq(s){return document.querySelector(s);}
+  function lscroll(sel){ var mc=document.querySelector('.main-content'); if(sel==='#dashWrap'){ var d=lq('#dashWrap'); if(d) d.scrollIntoView({behavior:'smooth',block:'center'}); } else if(mc){ mc.scrollTo({top:0,behavior:'smooth'}); } }
+  function lclear(){ if(lt) clearTimeout(lt); lt=null; }
+  function ldots(){ var n=L_STEPS.length+1,h=''; for(var i=0;i<n;i++){h+='<span class="lt-dot'+(i===Math.min(lidx,n-1)?' on':'')+'"></span>';} return h; }
+  function lreveal(n){ L_PIECES.forEach(function(s,i){ var e=lq(s); if(!e) return; if(i<=n){ e.classList.remove('lt-dim'); if(i===n) e.classList.add('lt-focus'); else e.classList.remove('lt-focus'); } else { e.classList.add('lt-dim'); e.classList.remove('lt-focus'); } }); }
+  function lallVisible(){ L_PIECES.forEach(function(s){ var e=lq(s); if(e) e.classList.remove('lt-dim','lt-focus'); }); }
+  function lrender(){
+    lclear();
+    var ttl,txt,nextLabel,skipLabel,nextAct,last=lidx>=L_STEPS.length;
+    if(!last){ var s=L_STEPS[lidx]; lreveal(lidx); lscroll(s.sel); ttl=s.t; txt=s.x; nextLabel=(lidx===L_STEPS.length-1?'Finish':'Next'); skipLabel='Skip'; nextAct='window.__ltNext()'; }
+    else { lallVisible(); lscroll(null); ttl=L_FINAL.t; txt=L_FINAL.x; nextLabel=L_FINAL.cta; skipLabel='Maybe later'; nextAct='window.__ltEnd(true)'; }
+    lcoach.innerHTML=L_SMALL+'<div class="lt-body"><div class="lt-ttl">'+ttl+'</div><div class="lt-txt">'+txt+'</div><div class="lt-row"><div class="lt-dots">'+ldots()+'</div><div class="lt-btns"><button class="lt-skip" onclick="window.__ltEnd()">'+skipLabel+'</button><button class="lt-next" onclick="'+nextAct+'">'+nextLabel+'</button></div></div></div><div class="lt-prog"><i></i></div>';
+    if(!last){
+      var prog=lcoach.querySelector('.lt-prog i');
+      if(prog){ prog.style.transition='none'; prog.style.width='0'; requestAnimationFrame(function(){ prog.style.transition='width 3000ms linear'; prog.style.width='100%'; }); }
+      lt=setTimeout(function(){ window.__ltNext(); }, 3000);
+    }
+  }
+  window.__ltNext=function(){ lidx++; lrender(); };
+  window.__ltEnd=function(go){ lclear(); L_PIECES.forEach(function(s){var e=lq(s); if(e) e.classList.remove('lt-anim','lt-dim','lt-focus');}); if(lcoach&&lcoach.parentNode){lcoach.parentNode.removeChild(lcoach); lcoach=null;} lidx=-1; if(go && typeof handoffToApp==='function' && inJourneyShell()) handoffToApp('grid'); };
+  window.startLandingReveal=function(){ lidx=0; L_PIECES.forEach(function(s){var e=lq(s); if(e) e.classList.add('lt-anim');}); lcoach=document.createElement('div'); lcoach.className='lt-coach'; document.body.appendChild(lcoach); lrender(); };
+})();
+
+// ─── Dash: persona focus-card feed + Focus (reels) mode ──────────────────────
+(function(){
+  var feed = el('dashFeed'); if(!feed) return;
+  var dots = el('dashDots'), reels = el('reels'), reelsCard = el('reelsCard'), reelsDots = el('reelsDots');
+  function ic(p){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'; }
+  function spark(color, pts){ return '<svg class="fc-spark" viewBox="0 0 120 50" preserveAspectRatio="none">'
+    + '<g stroke="#ebecf0" stroke-width=".7">'
+    +   '<line x1="0" y1="12.5" x2="120" y2="12.5"/><line x1="0" y1="25" x2="120" y2="25"/><line x1="0" y1="37.5" x2="120" y2="37.5"/>'
+    +   '<line x1="24" y1="0" x2="24" y2="50"/><line x1="48" y1="0" x2="48" y2="50"/><line x1="72" y1="0" x2="72" y2="50"/><line x1="96" y1="0" x2="96" y2="50"/>'
+    + '</g>'
+    + '<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '</svg>'; }
+  var CARDS = [
+    { fc:'#ef4444', fcbg:'#fef2f2', icon:'<polyline points="20 6 9 17 4 12"/>', name:'Needs your decision', cta:'Review in grid', act:'grid',
+      hero:'<div class="fc-stat">3</div><div class="fc-statsub">awaiting your sign-off</div>'
+        +'<div style="width:100%;"><div class="fc-seg"><span style="flex:2;background:#ef4444"></span><span style="flex:1;background:#f59e0b"></span></div>'
+        +'<div class="fc-segl"><span><span class="dot" style="background:#ef4444"></span>2 urgent</span><span><span class="dot" style="background:#f59e0b"></span>1 review</span></div></div>' },
+    { fc:'#FFA426', fcbg:'#FFF8F0', icon:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>', name:'Demand book', cta:'Open grid', act:'grid',
+      hero:'<div class="fc-ring-wrap"><svg class="fc-ring" viewBox="0 0 100 100">'
+        +'<circle class="fc-ring-bg" cx="50" cy="50" r="42"/>'
+        +'<circle data-arc cx="50" cy="50" r="42" stroke="#10b981" stroke-dasharray="196 68" stroke-dashoffset="0"/>'
+        +'<circle data-arc cx="50" cy="50" r="42" stroke="#f59e0b" stroke-dasharray="42 222" stroke-dashoffset="-198"/>'
+        +'<circle data-arc cx="50" cy="50" r="42" stroke="#ef4444" stroke-dasharray="20 244" stroke-dashoffset="-242"/>'
+        +'</svg><div class="fc-ring-center"><span class="fc-ring-num">12</span><span class="fc-ring-lbl">demands</span></div></div>'
+        +'<div class="fc-legend"><span><span class="dot" style="background:#10b981"></span>9 healthy</span><span><span class="dot" style="background:#f59e0b"></span>2</span><span><span class="dot" style="background:#ef4444"></span>1</span></div>' },
+    { fc:'#ef4444', fcbg:'#fef2f2', icon:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>', name:'At risk', cta:'Review demand', act:'live',
+      hero:'<div class="fc-alert">'+ic('<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>')+'</div>'
+        +'<div class="fc-bigname">NAB Risk Data Platform</div><div class="fc-cap">A flagged risk needs your decision before this one slips.</div>' },
+    { fc:'#8b5cf6', fcbg:'#f5f3ff', icon:'<path data-fill d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>', name:'Tango’s been busy', cta:'See what Tango did', act:'toast:Tango has handled 43 actions for you this month — drafts, summaries &amp; nudges.',
+      hero:'<div class="fc-stat">43</div><div class="fc-statsub">actions handled this month</div>'+spark('#8b5cf6','2,40 24,32 46,34 68,22 90,17 118,7') },
+    { fc:'#10b981', fcbg:'#f0fdf4', icon:'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>', name:'Cycle time', cta:'See analytics', act:'grid',
+      hero:'<div class="fc-stat">47<span class="u">d</span></div><div class="fc-statsub">intake → execution · <span class="fc-trend" style="color:#10b981">▼ 6d</span></div>'+spark('#10b981','2,10 24,16 46,12 68,24 90,30 118,36') }
+  ];
+  function cardHTML(c, i){
+    return '<div class="fcard" style="--fc:'+c.fc+';--fcbg:'+c.fcbg+';" data-i="'+i+'">'
+      + '<div class="fc-head"><span class="fc-ic">'+ic(c.icon)+'</span><span class="fc-name">'+c.name+'</span></div>'
+      + '<div class="fc-hero">'+c.hero+'</div>'
+      + '<div class="fc-foot"><button class="fc-cta" data-act="'+c.act+'">'+c.cta+' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg></button></div>'
+      + '</div>';
+  }
+  feed.innerHTML = CARDS.map(cardHTML).join('');
+  dots.innerHTML = CARDS.map(function(_,i){ return '<span class="dash-dot'+(i===0?' on':'')+'" data-d="'+i+'"></span>'; }).join('');
+  function cw(){ return (feed.firstChild ? feed.firstChild.offsetWidth : 296) + 16; }
+  feed.addEventListener('scroll', function(){ if(feed.classList.contains('is-grid'))return; var i=Math.round(feed.scrollLeft/cw()); [].forEach.call(dots.children, function(d,j){ d.classList.toggle('on', j===i); }); });
+  dots.addEventListener('click', function(e){ var d=e.target.closest('[data-d]'); if(!d) return; feed.scrollTo({left:(+d.getAttribute('data-d'))*cw(), behavior:'smooth'}); });
+  function doAct(a){
+    if(!a) return;
+    if(a.indexOf('toast:')===0){ dashToast(a.slice(6)); return; }
+    if((a==='grid'||a==='live') && typeof handoffToApp==='function' && typeof inJourneyShell==='function' && inJourneyShell()){ closeReels(); handoffToApp(a); }
+  }
+  feed.addEventListener('click', function(e){
+    var b=e.target.closest('[data-act]'); if(b){ e.stopPropagation(); doAct(b.getAttribute('data-act')); return; }
+    var card=e.target.closest('.fcard'); if(card) openReels(+card.getAttribute('data-i'));
+  });
+  var fb=el('dashFeedBtn'), fo=el('dashFocusBtn');
+  if(fb) fb.onclick=function(){ fb.classList.add('on'); fo.classList.remove('on'); closeReels(); };
+  if(fo) fo.onclick=function(){ fo.classList.add('on'); fb.classList.remove('on'); openReels(0); };
+  var ridx=0;
+  function renderReels(){ reelsCard.innerHTML=cardHTML(CARDS[ridx], ridx); reelsDots.innerHTML=CARDS.map(function(_,i){ return '<span class="reels-dot'+(i===ridx?' on':'')+'" data-r="'+i+'"></span>'; }).join(''); }
+  function openReels(i){ ridx=i||0; renderReels(); reels.classList.add('open'); reels.setAttribute('aria-hidden','false'); }
+  function closeReels(){ reels.classList.remove('open'); reels.setAttribute('aria-hidden','true'); if(fo)fo.classList.remove('on'); if(fb)fb.classList.add('on'); }
+  el('reelsClose').onclick=closeReels;
+  el('reelsPrev').onclick=function(){ ridx=(ridx-1+CARDS.length)%CARDS.length; renderReels(); };
+  el('reelsNext').onclick=function(){ ridx=(ridx+1)%CARDS.length; renderReels(); };
+  reels.addEventListener('click', function(e){
+    if(e.target===reels){ closeReels(); return; }
+    var b=e.target.closest('[data-act]'); if(b){ doAct(b.getAttribute('data-act')); return; }
+    var d=e.target.closest('[data-r]'); if(d){ ridx=+d.getAttribute('data-r'); renderReels(); }
+  });
+  document.addEventListener('keydown', function(e){ if(!reels.classList.contains('open')) return; if(e.key==='Escape') closeReels(); else if(e.key==='ArrowRight') el('reelsNext').click(); else if(e.key==='ArrowLeft') el('reelsPrev').click(); });
+  function dashToast(msg){ var t=el('dashToast'); if(!t){ t=document.createElement('div'); t.id='dashToast'; t.style.cssText='position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(14px);background:#1a1a1a;color:#fff;padding:11px 20px;border-radius:9999px;font-size:12.5px;font-weight:600;font-family:Poppins,sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.22);'; document.body.appendChild(t); } t.innerHTML=msg; t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; clearTimeout(t._t); t._t=setTimeout(function(){ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(14px)'; }, 2600); }
+
+  // ── Focus flyout from the grid-chip: hover the grid icon → see your focus cards ──
+  var FSUB=['3 awaiting your sign-off','12 active · 1 at risk','Risk needs your decision','43 actions handled','47d · ▼ 6d this quarter'];
+  var fmenu=null, fmT=null;
+  function buildFocusMenu(){
+    if(fmenu) return fmenu;
+    fmenu=document.createElement('div'); fmenu.className='focusmenu'; fmenu.id='focusMenu';
+    fmenu.innerHTML='<div class="fm-head"><svg class="fm-spark" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.9L21 11l-6.8 2.1L12 20l-2.2-6.9L3 11l6.8-2.1z"/></svg>Your focus today<span class="fm-sub">tap to open a card</span></div><div class="fm-list">'
+      +CARDS.map(function(c,i){ return '<button class="fm-item" data-fi="'+i+'"><span class="fm-ic" style="background:'+c.fcbg+';color:'+c.fc+'">'+ic(c.icon)+'</span><span class="fm-tx"><span class="fm-t">'+c.name+'</span><span class="fm-s">'+(FSUB[i]||'')+'</span></span><svg class="fm-go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg></button>'; }).join('')
+      +'</div>';
+    document.body.appendChild(fmenu);
+    fmenu.addEventListener('mouseenter', function(){ if(fmT){ clearTimeout(fmT); fmT=null; } });
+    fmenu.addEventListener('mouseleave', scheduleCloseFocusMenu);
+    fmenu.addEventListener('click', function(e){ var it=e.target.closest('[data-fi]'); if(it){ closeFocusMenu(); openReels(+it.getAttribute('data-fi')); } });
+    return fmenu;
+  }
+  function openFocusMenu(anchor){
+    buildFocusMenu(); if(fmT){ clearTimeout(fmT); fmT=null; }
+    fmenu.style.display='block';
+    var r=anchor.getBoundingClientRect(), w=fmenu.offsetWidth||300;
+    var left=Math.max(12, Math.min(r.right-w, window.innerWidth-w-12));
+    fmenu.style.top=(r.bottom+10)+'px'; fmenu.style.left=left+'px';
+    requestAnimationFrame(function(){ fmenu.classList.add('open'); });
+  }
+  function scheduleCloseFocusMenu(){ if(fmT) clearTimeout(fmT); fmT=setTimeout(closeFocusMenu, 220); }
+  function closeFocusMenu(){ if(fmT){ clearTimeout(fmT); fmT=null; } if(!fmenu) return; fmenu.classList.remove('open'); setTimeout(function(){ if(fmenu && !fmenu.classList.contains('open')) fmenu.style.display='none'; }, 180); }
+  window.openFocusMenu=openFocusMenu; window.closeFocusMenu=closeFocusMenu; window.scheduleCloseFocusMenu=scheduleCloseFocusMenu;
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeFocusMenu(); });
+  document.addEventListener('click', function(e){ if(fmenu && fmenu.classList.contains('open') && !e.target.closest('#focusMenu') && !e.target.closest('.grid-chip')) closeFocusMenu(); });
+})();
+
+// ─── START ───────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(runIntro, 300);
+});
+</script>
+</body>
+</html>

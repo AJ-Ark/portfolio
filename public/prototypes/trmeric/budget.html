@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Estimation & Business Case — AI-Driven Safety Analytics Platform - Trmeric</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5; color: #1a1a1a; line-height: 1.6; overflow: hidden;
+        }
+
+        /* ════════════ TOP BAR ════════════ */
+        .top-bar {
+            position: fixed; top:0; left:0; right:0;
+            height: 52px; background: white;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; align-items: center;
+            padding: 0 16px; gap: 16px; z-index: 200;
+        }
+        .top-bar__logo {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: #FFA426; color: #1a1a1a;
+            font-size: 14px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .top-bar__breadcrumb {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12.5px; color: #888; flex-shrink: 0;
+        }
+        .top-bar__breadcrumb-sep { color: #ddd; }
+        .top-bar__breadcrumb-current { color: #1a1a1a; font-weight: 600; }
+        .top-bar__status-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border: 1.5px solid #22c55e;
+            border-radius: 99px; font-size: 11px; font-weight: 600; color: #16a34a;
+        }
+        .top-bar__status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+        .top-bar__center { flex: 1; display: flex; justify-content: center; }
+        .view-toggle { display: flex; background: #f5f5f5; border-radius: 10px; padding: 3px; gap: 2px; }
+        .view-toggle__btn {
+            padding: 5px 18px; border-radius: 7px; border: none; cursor: pointer;
+            font-size: 12px; font-weight: 500; font-family: 'Poppins', sans-serif;
+            color: #888; background: transparent; transition: all 150ms;
+        }
+        .view-toggle__btn.active {
+            background: white; color: #1a1a1a; font-weight: 600;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .top-bar__right { display: flex; align-items: center; gap: 4px; }
+        .top-bar__icon-btn {
+            width: 32px; height: 32px; border-radius: 8px; background: transparent;
+            border: none; cursor: pointer; color: #888;
+            display: flex; align-items: center; justify-content: center; transition: all 150ms;
+        }
+        .top-bar__icon-btn:hover { background: #f5f5f5; color: #333; }
+        .top-bar__avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-left: 4px;
+        }
+
+        /* ════════════ APP SHELL ════════════ */
+        .app-shell { display: flex; margin-top: 52px; height: calc(100vh - 52px); overflow: hidden; }
+
+        /* Inner Nav */
+        .inner-nav {
+            width: 220px; flex-shrink: 0; height: 100%;
+            background: white; border-right: 1px solid #f0f0f0;
+            display: flex; flex-direction: column;
+            transition: width 280ms cubic-bezier(0.4,0,0.2,1); overflow: hidden;
+        }
+        .inner-nav.collapsed { width: 52px; }
+        .inner-nav__toggle {
+            width: 100%; height: 44px; background: transparent; border: none;
+            display: flex; align-items: center; padding: 0 14px; gap: 10px;
+            cursor: pointer; border-bottom: 1px solid #f5f5f5; flex-shrink: 0; transition: background 150ms;
+        }
+        .inner-nav__toggle:hover { background: #fafafa; }
+        .inner-nav__toggle-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .inner-nav__toggle-icon span { display: block; width: 14px; height: 1.5px; background: #888; border-radius: 2px; }
+        .inner-nav__toggle-label { font-size: 11px; font-weight: 600; color: #888; white-space: nowrap; overflow: hidden; transition: opacity 200ms; }
+        .inner-nav.collapsed .inner-nav__toggle-label { opacity: 0; }
+        .inner-nav__section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #ccc; padding: 14px 14px 6px; white-space: nowrap; overflow: hidden; transition: opacity 200ms; }
+        .inner-nav.collapsed .inner-nav__section-label { opacity: 0; }
+        .inner-nav__item { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer; border-radius: 0; transition: background 150ms; white-space: nowrap; border: none; background: transparent; font-family: 'Poppins', sans-serif; width: 100%; text-align: left; }
+        .inner-nav__item:hover { background: #fafafa; }
+        .inner-nav__item.active { background: #FFF8F0; }
+        .inner-nav__item-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: background 150ms; }
+        .inner-nav__item.active .inner-nav__item-icon { background: #FFA426; }
+        .inner-nav__item-label { font-size: 13px; font-weight: 500; color: #666; overflow: hidden; transition: opacity 200ms; flex: 1; }
+        .inner-nav__item.active .inner-nav__item-label { color: #FFA426; font-weight: 600; }
+        .inner-nav.collapsed .inner-nav__item-label { opacity: 0; }
+        .inner-nav__notif { width: 7px; height: 7px; border-radius: 50%; background: #FFA426; flex-shrink: 0; }
+        .inner-nav.collapsed .inner-nav__notif { opacity: 0; }
+
+        /* Right Nav */
+        .right-nav { width: 52px; flex-shrink: 0; height: 100%; background: white; border-left: 1px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 4px; z-index: 50; }
+        .right-nav__tango-btn { width: 38px; padding: 8px 0 10px; background: linear-gradient(160deg, #8b5cf6, #FFA426); border: none; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; margin-bottom: 6px; transition: all 150ms; font-family: 'Poppins', sans-serif; }
+        .right-nav__tango-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+        .right-nav__tango-icon { font-size: 16px; color: white; }
+        .right-nav__tango-label { font-size: 8px; font-weight: 700; color: white; letter-spacing: 0.06em; text-transform: uppercase; }
+        .right-nav__btn { width: 36px; height: 36px; border-radius: 9px; background: transparent; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; transition: background 150ms; color: #bbb; }
+        .right-nav__btn:hover { background: #f5f5f5; color: #666; }
+        .right-nav__btn.active { background: #FFF8F0; color: #FFA426; }
+        .right-nav__btn-icon { font-size: 16px; }
+        .right-nav__btn-label { font-size: 8px; font-weight: 600; letter-spacing: 0.03em; }
+        .right-nav__divider { width: 24px; height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+        /* ════════════ BUDGET CANVAS ════════════ */
+        .budget-canvas {
+            flex: 1; min-width: 0; height: 100%;
+            overflow-y: auto; background: #f0f2f5;
+            padding: 28px 32px;
+        }
+
+        /* ── Page header ── */
+        .bud-page-header {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .bud-page-title {
+            font-size: 20px; font-weight: 700; color: #0f0f0f;
+            letter-spacing: -0.3px;
+        }
+        .bud-page-sub {
+            font-size: 12px; color: #888; margin-top: 1px;
+        }
+        .bud-header-actions { display: flex; align-items: center; gap: 10px; }
+        .bud-period-toggle {
+            display: flex; background: white; border: 1px solid #e5e5e5;
+            border-radius: 8px; padding: 2px; gap: 1px;
+        }
+        .bud-period-btn {
+            padding: 4px 12px; border-radius: 6px; border: none;
+            font-size: 11.5px; font-weight: 600; font-family: 'Poppins', sans-serif;
+            cursor: pointer; color: #888; background: transparent; transition: all 120ms;
+        }
+        .bud-period-btn.active { background: #1a1a1a; color: white; }
+        .bud-export-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 16px; border-radius: 8px;
+            font-size: 12px; font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            background: white; border: 1px solid #e5e5e5;
+            color: #444; cursor: pointer; transition: all 150ms;
+        }
+        .bud-export-btn:hover { background: #fafafa; border-color: #ccc; }
+        .bud-primary-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 16px; border-radius: 8px;
+            font-size: 12px; font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            background: #FFA426; border: none;
+            color: #1a1a1a; cursor: pointer; transition: all 150ms;
+        }
+        .bud-primary-btn:hover { background: #F89622; box-shadow: 0 4px 12px rgba(255,164,38,0.3); transform: translateY(-1px); }
+
+        /* ── Summary KPI row ── */
+        .bud-summary-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 12px; margin-bottom: 20px;
+        }
+        .bud-kpi {
+            background: white; border-radius: 12px;
+            padding: 18px 20px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.04);
+            position: relative; overflow: hidden;
+        }
+        .bud-kpi::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            border-radius: 12px 12px 0 0;
+        }
+        .bud-kpi.total::before    { background: linear-gradient(90deg, #1a1a1a, #444); }
+        .bud-kpi.capex::before    { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .bud-kpi.opex::before     { background: linear-gradient(90deg, #FFA426, #fbbf24); }
+        .bud-kpi.ncf::before      { background: linear-gradient(90deg, #10b981, #34d399); }
+        .bud-kpi-label {
+            font-size: 10px; font-weight: 700; color: #aaa;
+            text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px;
+        }
+        .bud-kpi-value {
+            font-size: 26px; font-weight: 800; color: #0f0f0f;
+            line-height: 1; letter-spacing: -0.5px;
+        }
+        .bud-kpi.ncf .bud-kpi-value { color: #10b981; }
+        .bud-kpi-sub { font-size: 11px; color: #aaa; margin-top: 5px; }
+        .bud-kpi-delta {
+            display: inline-flex; align-items: center; gap: 3px;
+            font-size: 11px; font-weight: 700; margin-top: 4px;
+        }
+        .bud-kpi-delta.up { color: #10b981; }
+        .bud-kpi-delta.down { color: #ef4444; }
+        .bud-kpi-delta.neutral { color: #888; }
+
+        /* ── Ledger card ── */
+        .ledger-card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 16px; overflow: hidden;
+        }
+        .ledger-card-header {
+            display: flex; align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .ledger-card-icon {
+            width: 34px; height: 34px; border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0; margin-right: 12px;
+        }
+        .ledger-card-icon.cost    { background: #eff6ff; }
+        .ledger-card-icon.revenue { background: #f0fdf4; }
+        .ledger-card-icon.savings { background: #fefce8; }
+        .ledger-card-title { font-size: 14px; font-weight: 700; color: #0f0f0f; }
+        .ledger-card-sub   { font-size: 11px; color: #999; margin-top: 1px; }
+        .ledger-card-total {
+            margin-left: auto; text-align: right;
+        }
+        .ledger-card-total-label { font-size: 10px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 0.06em; }
+        .ledger-card-total-value { font-size: 18px; font-weight: 800; color: #0f0f0f; letter-spacing: -0.3px; margin-top: 1px; }
+        .ledger-card-total-value.green { color: #10b981; }
+        .lch-add-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 12px; border-radius: 7px;
+            font-size: 11.5px; font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5; border: none; color: #444;
+            cursor: pointer; transition: all 120ms; margin-left: 16px;
+        }
+        .lch-add-btn:hover { background: #ebebeb; }
+
+        /* ── Sub-group header ── */
+        .ledger-subgroup-header {
+            display: flex; align-items: center;
+            padding: 9px 20px 9px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #f0f4f8;
+        }
+        .lsg-label {
+            font-size: 10px; font-weight: 800; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 0.09em; flex: 1;
+        }
+        .lsg-total { font-size: 11.5px; font-weight: 700; color: #475569; }
+
+        /* ── Grid header row ── */
+        .ledger-grid-header {
+            display: grid;
+            align-items: center;
+            padding: 7px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #f0f4f8;
+            font-size: 9.5px; font-weight: 700; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .ledger-grid-header.cols-cost    { grid-template-columns: 1fr 1.4fr 70px 100px 110px 64px; }
+        .ledger-grid-header.cols-revenue { grid-template-columns: 1fr 1.4fr 70px 100px 64px; }
+
+        /* ── Data row ── */
+        .ledger-row {
+            display: grid;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #f0f4f8;
+            min-height: 48px;
+            transition: background 120ms;
+        }
+        .ledger-row:last-of-type { border-bottom: none; }
+        .ledger-row:hover { background: #fafbff; }
+        .ledger-row.cols-cost    { grid-template-columns: 1fr 1.4fr 70px 100px 110px 64px; }
+        .ledger-row.cols-revenue { grid-template-columns: 1fr 1.4fr 70px 100px 64px; }
+        .ledger-row.tango-suggest {
+            background: rgba(139,92,246,0.03);
+            border-left: 3px solid rgba(139,92,246,0.3);
+            padding-left: 17px;
+        }
+        .ledger-row.tango-suggest:hover { background: rgba(139,92,246,0.06); }
+
+        /* ── Cell components ── */
+        .lc-name { font-size: 12.5px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 7px; }
+        .lc-name-sub { font-size: 11px; color: #94a3b8; font-weight: 400; display: block; margin-top: 1px; }
+        .lc-justification { font-size: 11.5px; color: #64748b; line-height: 1.5; padding-right: 8px; }
+        .lc-year {
+            font-size: 11.5px; font-weight: 600;
+            background: #f1f5f9; color: #475569;
+            padding: 3px 9px; border-radius: 6px;
+            display: inline-flex; align-items: center; width: fit-content;
+        }
+        .lc-amount { font-size: 13px; font-weight: 700; color: #0f0f0f; font-variant-numeric: tabular-nums; }
+        .lc-amount.green { color: #10b981; }
+        .lc-amount.red { color: #ef4444; }
+
+        /* ── Capex / Opex segmented toggle ── */
+        .seg-toggle {
+            display: inline-flex; background: #f1f5f9;
+            border-radius: 7px; padding: 2px; gap: 1px; width: fit-content;
+        }
+        .seg-btn {
+            padding: 3px 10px; border-radius: 5px; border: none;
+            font-size: 10px; font-weight: 700;
+            font-family: 'Poppins', sans-serif; cursor: pointer;
+            color: #94a3b8; background: transparent; transition: all 120ms;
+            letter-spacing: 0.02em;
+        }
+        .seg-btn.active-capex { background: #dbeafe; color: #1d4ed8; }
+        .seg-btn.active-opex  { background: #fef9c3; color: #854d0e; }
+
+        /* ── Row actions ── */
+        .lc-actions { display: flex; align-items: center; gap: 4px; justify-content: flex-end; opacity: 0; transition: opacity 120ms; }
+        .ledger-row:hover .lc-actions { opacity: 1; }
+        .lc-icon-btn {
+            width: 26px; height: 26px; border-radius: 6px;
+            background: transparent; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #94a3b8; transition: all 100ms;
+        }
+        .lc-icon-btn:hover { background: #f1f5f9; color: #1e293b; }
+        .lc-icon-btn.delete:hover { background: #fef2f2; color: #dc2626; }
+
+        /* ── Tango badge ── */
+        .tango-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 9.5px; font-weight: 800;
+            background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(255,164,38,0.12));
+            color: #7c3aed; padding: 2px 8px; border-radius: 99px;
+            letter-spacing: 0.04em; white-space: nowrap;
+        }
+        .tango-accept-btn {
+            padding: 4px 12px; border-radius: 6px;
+            background: #8b5cf6; border: none; color: white;
+            font-size: 10.5px; font-weight: 700;
+            font-family: 'Poppins', sans-serif; cursor: pointer; transition: all 120ms;
+        }
+        .tango-accept-btn:hover { background: #7c3aed; transform: translateY(-1px); }
+
+        /* ── Card footer total row ── */
+        .ledger-footer-row {
+            display: flex; align-items: center; justify-content: flex-end;
+            padding: 12px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #f0f4f8;
+            gap: 24px;
+        }
+        .ledger-footer-label { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.07em; }
+        .ledger-footer-value { font-size: 15px; font-weight: 800; color: #0f0f0f; letter-spacing: -0.2px; }
+        .ledger-footer-value.green { color: #10b981; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: white; border-radius: 10px; border-left: 3px solid #FFA426;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 12px 16px; min-width: 240px; max-width: 320px;
+            display: flex; gap: 12px; align-items: flex-start;
+            z-index: 9000; opacity: 0; transform: translateY(12px);
+            transition: all 250ms ease; pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .toast-body { flex: 1; }
+        .toast-title { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+        .toast-msg { font-size: 11px; color: #888; margin-top: 1px; }
+
+        /* ── Add row animation ── */
+        @keyframes rowSlideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .row-new { animation: rowSlideIn 220ms ease forwards; }
+    </style>
+</head>
+<body>
+
+<!-- ── Top Bar ── -->
+<header class="top-bar">
+    <div class="top-bar__logo">T</div>
+    <nav class="top-bar__breadcrumb">
+        <span>Workspace</span>
+        <span class="top-bar__breadcrumb-sep">›</span>
+        <span>BHP WAIO</span>
+        <span class="top-bar__breadcrumb-sep">›</span>
+        <span class="top-bar__breadcrumb-current">Q1 Strategic Investment</span>
+        <span class="top-bar__status-chip"><span class="top-bar__status-dot"></span>Active</span>
+    </nav>
+    <div class="top-bar__center">
+        <div class="view-toggle">
+            <button class="view-toggle__btn active">My Hub</button>
+            <button class="view-toggle__btn">Tango</button>
+        </div>
+    </div>
+    <div class="top-bar__right">
+        <button class="top-bar__icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button class="top-bar__icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <button class="top-bar__icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div class="top-bar__avatar">KV</div>
+    </div>
+</header>
+
+<!-- ── App Shell ── -->
+<div class="app-shell">
+
+    <!-- Inner Nav -->
+    <nav class="inner-nav" id="innerNav">
+        <button class="inner-nav__toggle" onclick="document.getElementById('innerNav').classList.toggle('collapsed')">
+            <div class="inner-nav__toggle-icon"><span></span><span></span><span></span></div>
+            <span class="inner-nav__toggle-label">Collapse</span>
+        </button>
+        <div class="inner-nav__section-label">WORKSPACE VIEWS</div>
+        <button class="inner-nav__item" onclick="window.location.href='trmeric-execution-raid-v3.html'">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+            <span class="inner-nav__item-label">Overview</span>
+        </button>
+        <button class="inner-nav__item" onclick="window.location.href='trmeric-scope.html'">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
+            <span class="inner-nav__item-label">Scope &amp; Business case</span>
+        </button>
+        <button class="inner-nav__item active">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <span class="inner-nav__item-label">Cost Estimation</span>
+        </button>
+        <button class="inner-nav__item" onclick="window.location.href='trmeric-structure.html'">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="2"/><rect x="3" y="11" width="7" height="4" rx="1"/><rect x="14" y="11" width="7" height="4" rx="1"/><rect x="3" y="19" width="7" height="2" rx="1"/><rect x="14" y="19" width="7" height="2" rx="1"/></svg></div>
+            <span class="inner-nav__item-label">Structure</span>
+        </button>
+        <button class="inner-nav__item" onclick="window.location.href='trmeric-execution-raid-v3.html'">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+            <span class="inner-nav__item-label">Live</span>
+            <span class="inner-nav__notif"></span>
+        </button>
+    </nav>
+
+    <!-- ══════════════════════════════════════════
+         BUDGET CANVAS
+    ══════════════════════════════════════════ -->
+    <div class="budget-canvas">
+
+        <!-- Page header -->
+        <div class="bud-page-header">
+            <div>
+                <div class="bud-page-title">Cost Estimation &amp; Business Case</div>
+                <div class="bud-page-sub">AI-Driven Safety Analytics Platform · BHP WAIO · EY Engagement</div>
+            </div>
+            <div class="bud-header-actions">
+                <div class="bud-period-toggle">
+                    <button class="bud-period-btn active">FY25</button>
+                    <button class="bud-period-btn" onclick="setPeriod(this)">FY26</button>
+                    <button class="bud-period-btn" onclick="setPeriod(this)">3-Year</button>
+                </div>
+                <button class="bud-export-btn" onclick="showToast('📊','Exporting…','Generating Excel export.')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Export
+                </button>
+                <button class="bud-primary-btn" onclick="showToast('✓','Saved','Cost model saved to project.')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Save model
+                </button>
+            </div>
+        </div>
+
+        <!-- ══ SUMMARY KPI ROW ══ -->
+        <div class="bud-summary-row">
+            <div class="bud-kpi total">
+                <div class="bud-kpi-label">Total Estimated Cost</div>
+                <div class="bud-kpi-value" id="kpiTotal">$2,390,000</div>
+                <div class="bud-kpi-sub">All categories combined</div>
+                <div class="bud-kpi-delta neutral">— Baseline</div>
+            </div>
+            <div class="bud-kpi capex">
+                <div class="bud-kpi-label">Total Capex</div>
+                <div class="bud-kpi-value">$820,000</div>
+                <div class="bud-kpi-sub">Infrastructure &amp; non-recurring</div>
+                <div class="bud-kpi-delta down">↓ 34.3% of total</div>
+            </div>
+            <div class="bud-kpi opex">
+                <div class="bud-kpi-label">Total Opex</div>
+                <div class="bud-kpi-value">$1,570,000</div>
+                <div class="bud-kpi-sub">Labor &amp; recurring costs</div>
+                <div class="bud-kpi-delta neutral">65.7% of total</div>
+            </div>
+            <div class="bud-kpi ncf">
+                <div class="bud-kpi-label">Net Cash Flow (3-yr)</div>
+                <div class="bud-kpi-value">+$4,850,000</div>
+                <div class="bud-kpi-sub">Revenue + Savings − Cost</div>
+                <div class="bud-kpi-delta up">↑ 340% ROI</div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             CARD 1 — ESTIMATED PROJECT COSTS
+        ══════════════════════════════════════ -->
+        <div class="ledger-card" id="costCard">
+            <div class="ledger-card-header">
+                <div class="ledger-card-icon cost">💸</div>
+                <div>
+                    <div class="ledger-card-title">Estimated Project Costs</div>
+                    <div class="ledger-card-sub">Labor and non-labor expenditures · FY25</div>
+                </div>
+                <div class="ledger-card-total">
+                    <div class="ledger-card-total-label">Total Cost</div>
+                    <div class="ledger-card-total-value" id="costCardTotal">$2,390,000</div>
+                </div>
+                <button class="lch-add-btn" onclick="addCostRow()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add item
+                </button>
+            </div>
+
+            <!-- Sub-group: Labor -->
+            <div class="ledger-subgroup-header">
+                <span class="lsg-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Labor Costs
+                </span>
+                <span class="lsg-total">$1,570,000</span>
+            </div>
+            <div class="ledger-grid-header cols-cost">
+                <div>Name / Role</div>
+                <div>Justification</div>
+                <div>Year</div>
+                <div>Amount</div>
+                <div>Classification</div>
+                <div></div>
+            </div>
+
+            <!-- Labor rows -->
+            <div class="ledger-row cols-cost" id="row-l1">
+                <div class="lc-name">
+                    <span>Senior Cloud Architect</span>
+                </div>
+                <div class="lc-justification">Infrastructure design, AWS/Azure provisioning &amp; oversight</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$240,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn active-opex" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing Senior Cloud Architect.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-l1')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-l2">
+                <div class="lc-name">IoT Data Engineer</div>
+                <div class="lc-justification">Sensor pipeline build, data ingestion layer &amp; ETL scripting</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$195,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn active-opex" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing IoT Data Engineer.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-l2')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-l3">
+                <div class="lc-name">Frontend Engineer <span class="lc-name-sub">2 × FTE</span></div>
+                <div class="lc-justification">Analytics dashboard UI, executive views &amp; component library</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$310,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn active-opex" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing Frontend Engineer.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-l3')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-l4">
+                <div class="lc-name">HIPAA Compliance Specialist</div>
+                <div class="lc-justification">Regulatory audit, compliance documentation &amp; sign-off</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$145,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn active-opex" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing Compliance Specialist.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-l4')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-l5">
+                <div class="lc-name">EY Project Management</div>
+                <div class="lc-justification">Engagement lead, delivery oversight &amp; steering committee liaison</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$280,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn active-opex" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing EY Project Management.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-l5')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <!-- Sub-group: Non-Labor -->
+            <div class="ledger-subgroup-header" style="margin-top:0;">
+                <span class="lsg-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:4px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    Non-Labor Costs
+                </span>
+                <span class="lsg-total">$820,000</span>
+            </div>
+            <div class="ledger-grid-header cols-cost">
+                <div>Item</div><div>Justification</div><div>Year</div><div>Amount</div><div>Classification</div><div></div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-nl1">
+                <div class="lc-name">Azure Cloud Infrastructure</div>
+                <div class="lc-justification">VM instances, storage, networking &amp; managed services (Phase 1)</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$320,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn active-capex" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing Azure Cloud Infrastructure.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-nl1')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-nl2">
+                <div class="lc-name">ML Model Training Compute</div>
+                <div class="lc-justification">GPU cluster hours for predictive risk model training</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$180,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn active-capex" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing ML Compute.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-nl2')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-nl3">
+                <div class="lc-name">Software Licences &amp; SaaS</div>
+                <div class="lc-justification">Trmeric platform, monitoring tools, security scanning (annual)</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$120,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn active-capex" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing Software Licences.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-nl3')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-cost" id="row-nl4">
+                <div class="lc-name">Training &amp; Change Management</div>
+                <div class="lc-justification">Site safety team training, adoption workshops &amp; materials</div>
+                <div><span class="lc-year">FY25</span></div>
+                <div class="lc-amount">$60,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn active-capex" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" title="Edit" onclick="showToast('✏️','Edit row','Editing Training.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" title="Delete" onclick="deleteRow('row-nl4')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <!-- ✦ Tango suggestion row -->
+            <div class="ledger-row cols-cost tango-suggest" id="tangoRow">
+                <div class="lc-name" style="gap:8px;">
+                    <span class="tango-badge">✦ Tango</span>
+                    Azure Cloud Infrastructure (additional)
+                </div>
+                <div class="lc-justification" style="color:#7c3aed;">Recommends $45,000 based on similar architecture patterns in 3 comparable projects</div>
+                <div><span class="lc-year" style="background:#f0e8ff;color:#7c3aed;">FY25</span></div>
+                <div class="lc-amount" style="color:#7c3aed;">$45,000</div>
+                <div>
+                    <div class="seg-toggle">
+                        <button class="seg-btn active-capex" onclick="setSeg(this,'capex')">Capex</button>
+                        <button class="seg-btn" onclick="setSeg(this,'opex')">Opex</button>
+                    </div>
+                </div>
+                <div class="lc-actions" style="opacity:1;">
+                    <button class="tango-accept-btn" onclick="acceptTangoRow()">Accept</button>
+                    <button class="lc-icon-btn delete" title="Dismiss" onclick="deleteRow('tangoRow')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-footer-row">
+                <span class="ledger-footer-label">Labor subtotal</span>
+                <span class="ledger-footer-value">$1,570,000</span>
+                <span style="width:1px;height:16px;background:#e5e5e5;"></span>
+                <span class="ledger-footer-label">Non-labor subtotal</span>
+                <span class="ledger-footer-value">$820,000</span>
+                <span style="width:1px;height:16px;background:#e5e5e5;"></span>
+                <span class="ledger-footer-label">Total</span>
+                <span class="ledger-footer-value">$2,390,000</span>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             CARD 2 — REVENUE UPLIFT
+        ══════════════════════════════════════ -->
+        <div class="ledger-card" id="revenueCard">
+            <div class="ledger-card-header">
+                <div class="ledger-card-icon revenue">📈</div>
+                <div>
+                    <div class="ledger-card-title">Revenue Uplift</div>
+                    <div class="ledger-card-sub">Projected incremental revenue enabled by the platform</div>
+                </div>
+                <div class="ledger-card-total">
+                    <div class="ledger-card-total-label">Total Uplift</div>
+                    <div class="ledger-card-total-value green">+$4,200,000</div>
+                </div>
+                <button class="lch-add-btn" onclick="addRevenueRow()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add item
+                </button>
+            </div>
+
+            <div class="ledger-grid-header cols-revenue">
+                <div>Category / Initiative</div><div>Justification</div><div>Year</div><div>Amount</div><div></div>
+            </div>
+
+            <div class="ledger-row cols-revenue" id="row-r1">
+                <div class="lc-name">Reduced safety incident downtime</div>
+                <div class="lc-justification">Proactive detection reduces Tier 2 incidents; saves 14 × $60K avg cost per event</div>
+                <div><span class="lc-year">FY26</span></div>
+                <div class="lc-amount green">+$820,000</div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" onclick="showToast('✏️','Edit','Editing row.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" onclick="deleteRow('row-r1')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-revenue" id="row-r2">
+                <div class="lc-name">Regulatory fine avoidance</div>
+                <div class="lc-justification">Automated compliance documentation prevents avg $400K fine per Tier 1 incident</div>
+                <div><span class="lc-year">FY26</span></div>
+                <div class="lc-amount green">+$1,200,000</div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" onclick="showToast('✏️','Edit','Editing row.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" onclick="deleteRow('row-r2')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-revenue" id="row-r3">
+                <div class="lc-name">Platform licensing (3rd-party sites)</div>
+                <div class="lc-justification">Revenue from licensing platform to 3 non-BHP WAIO mining operators at $420K/yr</div>
+                <div><span class="lc-year">FY27</span></div>
+                <div class="lc-amount green">+$2,180,000</div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" onclick="showToast('✏️','Edit','Editing row.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" onclick="deleteRow('row-r3')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-footer-row">
+                <span class="ledger-footer-label">Total Revenue Uplift</span>
+                <span class="ledger-footer-value green">+$4,200,000</span>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════
+             CARD 3 — OPERATIONAL EFFICIENCY GAINS
+        ══════════════════════════════════════ -->
+        <div class="ledger-card" id="savingsCard">
+            <div class="ledger-card-header">
+                <div class="ledger-card-icon savings">⚡</div>
+                <div>
+                    <div class="ledger-card-title">Operational Efficiency Gains</div>
+                    <div class="ledger-card-sub">Cost savings from automation and productivity improvements</div>
+                </div>
+                <div class="ledger-card-total">
+                    <div class="ledger-card-total-label">Total Savings</div>
+                    <div class="ledger-card-total-value green">+$3,040,000</div>
+                </div>
+                <button class="lch-add-btn" onclick="addSavingsRow()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Add item
+                </button>
+            </div>
+
+            <div class="ledger-grid-header cols-revenue">
+                <div>Category / Initiative</div><div>Justification</div><div>Year</div><div>Amount</div><div></div>
+            </div>
+
+            <div class="ledger-row cols-revenue" id="row-s1">
+                <div class="lc-name">Automated compliance reporting</div>
+                <div class="lc-justification">Removes 2 FTE-equivalent manual analyst workload ($180K/FTE/yr)</div>
+                <div><span class="lc-year">FY26</span></div>
+                <div class="lc-amount green">+$360,000</div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" onclick="showToast('✏️','Edit','Editing row.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" onclick="deleteRow('row-s1')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-revenue" id="row-s2">
+                <div class="lc-name">Analyst productivity (data prep time)</div>
+                <div class="lc-justification">Reduces analyst data prep from 60% → 15% of time; 4 analysts freed for value work</div>
+                <div><span class="lc-year">FY26</span></div>
+                <div class="lc-amount green">+$680,000</div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" onclick="showToast('✏️','Edit','Editing row.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" onclick="deleteRow('row-s2')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-row cols-revenue" id="row-s3">
+                <div class="lc-name">Insurance premium reduction</div>
+                <div class="lc-justification">Documented AI safety monitoring yields 8% reduction in liability premium (3-yr)</div>
+                <div><span class="lc-year">FY26–27</span></div>
+                <div class="lc-amount green">+$2,000,000</div>
+                <div class="lc-actions">
+                    <button class="lc-icon-btn" onclick="showToast('✏️','Edit','Editing row.')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="lc-icon-btn delete" onclick="deleteRow('row-s3')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                </div>
+            </div>
+
+            <div class="ledger-footer-row">
+                <span class="ledger-footer-label">Total Efficiency Gains</span>
+                <span class="ledger-footer-value green">+$3,040,000</span>
+            </div>
+        </div>
+
+        <!-- bottom spacer -->
+        <div style="height:32px;"></div>
+
+    </div><!-- /budget-canvas -->
+
+    <!-- Right Nav -->
+    <nav class="right-nav">
+        <button class="right-nav__tango-btn" title="Tango Agent" onclick="showToast('✦','Tango activated','AI cost modelling ready.')">
+            <span class="right-nav__tango-icon">✦</span>
+            <span class="right-nav__tango-label">Agent</span>
+        </button>
+        <div class="right-nav__divider"></div>
+        <button class="right-nav__btn active" title="Cost model">
+            <span class="right-nav__btn-icon">💰</span>
+            <span class="right-nav__btn-label">Costs</span>
+        </button>
+        <button class="right-nav__btn" title="Charts" onclick="showToast('📊','Charts','Visual breakdown coming soon.')">
+            <span class="right-nav__btn-icon">📊</span>
+            <span class="right-nav__btn-label">Charts</span>
+        </button>
+        <button class="right-nav__btn" title="History" onclick="showToast('🕐','Version history','3 versions saved.')">
+            <span class="right-nav__btn-icon">🕐</span>
+            <span class="right-nav__btn-label">History</span>
+        </button>
+        <button class="right-nav__btn" title="Export" onclick="showToast('📊','Exporting…','Generating Excel.')">
+            <span class="right-nav__btn-icon">📤</span>
+            <span class="right-nav__btn-label">Export</span>
+        </button>
+    </nav>
+
+</div><!-- /app-shell -->
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <div class="toast-icon" id="toast-icon">✓</div>
+    <div class="toast-body">
+        <div class="toast-title" id="toast-title"></div>
+        <div class="toast-msg" id="toast-msg"></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+
+    function showToast(icon, title, msg, color) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-icon').textContent  = icon;
+        document.getElementById('toast-title').textContent = title;
+        document.getElementById('toast-msg').textContent   = msg || '';
+        t.style.borderLeftColor = color || '#FFA426';
+        t.classList.add('show');
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    /* ── Segmented toggle ── */
+    function setSeg(btn, type) {
+        const toggle = btn.closest('.seg-toggle');
+        toggle.querySelectorAll('.seg-btn').forEach(b => {
+            b.classList.remove('active-capex', 'active-opex');
+        });
+        btn.classList.add(type === 'capex' ? 'active-capex' : 'active-opex');
+    }
+
+    /* ── Delete row ── */
+    function deleteRow(id) {
+        const row = document.getElementById(id);
+        if (!row) return;
+        row.style.transition = 'opacity 200ms, transform 200ms';
+        row.style.opacity = '0';
+        row.style.transform = 'translateX(12px)';
+        setTimeout(() => row.remove(), 200);
+        showToast('🗑️', 'Row removed', 'Item deleted from cost model.', '#ef4444');
+    }
+
+    /* ── Accept Tango suggestion ── */
+    function acceptTangoRow() {
+        const row = document.getElementById('tangoRow');
+        if (!row) return;
+        // Strip tango styling, convert to normal row
+        row.classList.remove('tango-suggest');
+        row.style.borderLeft = '';
+        row.style.paddingLeft = '';
+        const badge = row.querySelector('.tango-badge');
+        if (badge) badge.remove();
+        const nameEl = row.querySelector('.lc-name');
+        if (nameEl) nameEl.style.color = '';
+        const justEl = row.querySelector('.lc-justification');
+        if (justEl) justEl.style.color = '';
+        const amtEl = row.querySelector('.lc-amount');
+        if (amtEl) { amtEl.style.color = ''; }
+        const yearEl = row.querySelector('.lc-year');
+        if (yearEl) { yearEl.style.background = ''; yearEl.style.color = ''; }
+        const acceptBtn = row.querySelector('.tango-accept-btn');
+        if (acceptBtn) acceptBtn.remove();
+        showToast('✦', 'Tango suggestion accepted', '$45,000 Azure infra added to cost model.', '#8b5cf6');
+    }
+
+    /* ── Add rows ── */
+    let newRowCount = 0;
+    function addCostRow() {
+        newRowCount++;
+        const id = 'new-row-' + newRowCount;
+        const html = `<div class="ledger-row cols-cost row-new" id="${id}">
+            <div class="lc-name" contenteditable="true" style="outline:none;min-width:60px;" data-placeholder="New item…">New item</div>
+            <div class="lc-justification" contenteditable="true" style="outline:none;" data-placeholder="Add justification…">Add justification</div>
+            <div><span class="lc-year">FY25</span></div>
+            <div class="lc-amount" contenteditable="true" style="outline:none;">$0</div>
+            <div><div class="seg-toggle"><button class="seg-btn" onclick="setSeg(this,'capex')">Capex</button><button class="seg-btn active-opex" onclick="setSeg(this,'opex')">Opex</button></div></div>
+            <div class="lc-actions" style="opacity:1;">
+                <button class="lc-icon-btn delete" onclick="deleteRow('${id}')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+            </div>
+        </div>`;
+        const footer = document.querySelector('#costCard .ledger-footer-row');
+        footer.insertAdjacentHTML('beforebegin', html);
+        document.getElementById(id).querySelector('[contenteditable]').focus();
+        showToast('+', 'Row added', 'New cost item created.');
+    }
+
+    function addRevenueRow() {
+        newRowCount++;
+        const id = 'new-rev-' + newRowCount;
+        const html = `<div class="ledger-row cols-revenue row-new" id="${id}">
+            <div class="lc-name" contenteditable="true" style="outline:none;">New revenue item</div>
+            <div class="lc-justification" contenteditable="true" style="outline:none;">Add justification</div>
+            <div><span class="lc-year">FY26</span></div>
+            <div class="lc-amount green" contenteditable="true" style="outline:none;">+$0</div>
+            <div class="lc-actions" style="opacity:1;"><button class="lc-icon-btn delete" onclick="deleteRow('${id}')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>
+        </div>`;
+        document.querySelector('#revenueCard .ledger-footer-row').insertAdjacentHTML('beforebegin', html);
+        showToast('+', 'Row added', 'New revenue item created.', '#10b981');
+    }
+
+    function addSavingsRow() {
+        newRowCount++;
+        const id = 'new-sav-' + newRowCount;
+        const html = `<div class="ledger-row cols-revenue row-new" id="${id}">
+            <div class="lc-name" contenteditable="true" style="outline:none;">New savings item</div>
+            <div class="lc-justification" contenteditable="true" style="outline:none;">Add justification</div>
+            <div><span class="lc-year">FY26</span></div>
+            <div class="lc-amount green" contenteditable="true" style="outline:none;">+$0</div>
+            <div class="lc-actions" style="opacity:1;"><button class="lc-icon-btn delete" onclick="deleteRow('${id}')"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>
+        </div>`;
+        document.querySelector('#savingsCard .ledger-footer-row').insertAdjacentHTML('beforebegin', html);
+        showToast('+', 'Row added', 'New savings item created.', '#f59e0b');
+    }
+
+    /* ── Period toggle ── */
+    function setPeriod(btn) {
+        document.querySelectorAll('.bud-period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        showToast('📅', btn.textContent + ' view', 'Period filter updated.');
+    }
+
+    /* ── Ctrl+S ── */
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            showToast('✓', 'Saved', 'Cost model saved successfully.');
+        }
+    });
+</script>
+</body>
+</html>

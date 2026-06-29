@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<!-- saved from url=(0068)file:///C:/Users/Aravind's%20Legion/Downloads/trmeric-readiness.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Readiness Checklist — AI-Driven Safety Analytics Platform - Trmeric</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./Readiness Checklist — AI-Driven Safety Analytics Platform - Trmeric_files/css2" rel="stylesheet">
+    <script src="./Readiness Checklist — AI-Driven Safety Analytics Platform - Trmeric_files/lucide.min.js.download"></script>
+    <style>
+        /* ── Reset ── */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f0f2f5; color: #1a1a1a;
+            line-height: 1.6; overflow: hidden;
+        }
+
+        /* ══════════════════════════════════════
+           TOP BAR
+        ══════════════════════════════════════ */
+        .top-bar {
+            position: fixed; top:0; left:0; right:0;
+            height: 52px; background: white;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; align-items: center;
+            padding: 0 16px; gap: 16px; z-index: 200;
+        }
+        .top-bar__logo {
+            width: 30px; height: 30px; border-radius: 8px;
+            background: #FFA426; color: #1a1a1a;
+            font-size: 14px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .top-bar__breadcrumb {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 12.5px; color: #888; flex-shrink: 0;
+        }
+        .top-bar__breadcrumb-sep { color: #ddd; }
+        .top-bar__breadcrumb-current { color: #1a1a1a; font-weight: 600; }
+        .top-bar__status-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border: 1.5px solid #22c55e;
+            border-radius: 99px; font-size: 11px; font-weight: 600; color: #16a34a;
+        }
+        .top-bar__status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+        .top-bar__center { flex: 1; display: flex; justify-content: center; }
+        .view-toggle { display: flex; background: #f5f5f5; border-radius: 10px; padding: 3px; gap: 2px; }
+        .view-toggle__btn {
+            padding: 5px 18px; border-radius: 7px; border: none; cursor: pointer;
+            font-size: 12px; font-weight: 500; font-family: 'Poppins', sans-serif;
+            color: #888; background: transparent; transition: all 150ms;
+        }
+        .view-toggle__btn.active {
+            background: white; color: #1a1a1a; font-weight: 600;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+        .top-bar__right { display: flex; align-items: center; gap: 4px; }
+        .top-bar__icon-btn {
+            width: 32px; height: 32px; border-radius: 8px; background: transparent;
+            border: none; cursor: pointer; color: #888;
+            display: flex; align-items: center; justify-content: center; transition: all 150ms;
+        }
+        .top-bar__icon-btn:hover { background: #f5f5f5; color: #333; }
+        .top-bar__avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-left: 4px;
+        }
+
+        /* ══════════════════════════════════════
+           APP SHELL
+        ══════════════════════════════════════ */
+        .app-shell { display: flex; margin-top: 52px; height: calc(100vh - 52px); overflow: hidden; }
+
+        /* Inner Nav */
+        .inner-nav {
+            width: 220px; flex-shrink: 0; height: 100%;
+            background: white; border-right: 1px solid #f0f0f0;
+            display: flex; flex-direction: column;
+            transition: width 280ms cubic-bezier(0.4,0,0.2,1); overflow: hidden;
+        }
+        .inner-nav.collapsed { width: 52px; }
+        .inner-nav__toggle {
+            width: 100%; height: 44px; background: transparent; border: none;
+            display: flex; align-items: center; padding: 0 14px; gap: 10px;
+            cursor: pointer; border-bottom: 1px solid #f5f5f5; flex-shrink: 0; transition: background 150ms;
+        }
+        .inner-nav__toggle:hover { background: #fafafa; }
+        .inner-nav__toggle-icon { width: 24px; height: 24px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+        .inner-nav__toggle-icon span { display: block; width: 14px; height: 1.5px; background: #888; border-radius: 2px; }
+        .inner-nav__toggle-label { font-size: 11px; font-weight: 600; color: #888; white-space: nowrap; overflow: hidden; transition: opacity 200ms; }
+        .inner-nav.collapsed .inner-nav__toggle-label { opacity: 0; }
+        .inner-nav__section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #ccc; padding: 14px 14px 6px; white-space: nowrap; overflow: hidden; transition: opacity 200ms; }
+        .inner-nav.collapsed .inner-nav__section-label { opacity: 0; }
+        .inner-nav__item { display: flex; align-items: center; gap: 10px; padding: 9px 14px; cursor: pointer; transition: background 150ms; white-space: nowrap; border: none; background: transparent; font-family: 'Poppins', sans-serif; width: 100%; text-align: left; }
+        .inner-nav__item:hover { background: #fafafa; }
+        .inner-nav__item.active { background: #FFF8F0; }
+        .inner-nav__item-icon { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: background 150ms; }
+        .inner-nav__item.active .inner-nav__item-icon { background: #FFA426; }
+        .inner-nav__item-label { font-size: 13px; font-weight: 500; color: #666; overflow: hidden; transition: opacity 200ms; flex: 1; }
+        .inner-nav__item.active .inner-nav__item-label { color: #FFA426; font-weight: 600; }
+        .inner-nav.collapsed .inner-nav__item-label { opacity: 0; }
+        .inner-nav__notif { width: 7px; height: 7px; border-radius: 50%; background: #FFA426; flex-shrink: 0; }
+        .inner-nav.collapsed .inner-nav__notif { opacity: 0; }
+
+        /* Right Nav */
+        .right-nav { width: 52px; flex-shrink: 0; height: 100%; background: white; border-left: 1px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 4px; z-index: 50; }
+        .right-nav__tango-btn { width: 38px; padding: 8px 0 10px; background: linear-gradient(160deg, #8b5cf6, #FFA426); border: none; border-radius: 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; margin-bottom: 6px; transition: all 150ms; font-family: 'Poppins', sans-serif; position: relative; }
+        .right-nav__tango-btn:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(139,92,246,0.3); }
+        .right-nav__tango-icon { font-size: 16px; color: white; }
+        .right-nav__tango-label { font-size: 8px; font-weight: 700; color: white; letter-spacing: 0.06em; text-transform: uppercase; }
+        .right-nav__btn { width: 36px; height: 36px; border-radius: 9px; background: transparent; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; transition: background 150ms; color: #bbb; }
+        .right-nav__btn:hover { background: #f5f5f5; color: #666; }
+        .right-nav__btn.active { background: #FFF8F0; color: #FFA426; }
+        .right-nav__btn-icon { font-size: 16px; }
+        .right-nav__btn-label { font-size: 8px; font-weight: 600; letter-spacing: 0.03em; }
+        .right-nav__divider { width: 24px; height: 1px; background: #f0f0f0; margin: 4px 0; }
+
+        /* ══════════════════════════════════════
+           READINESS CANVAS
+        ══════════════════════════════════════ */
+        .readiness-canvas {
+            flex: 1; min-width: 0; height: 100%;
+            overflow-y: auto; background: #f0f2f5;
+            padding: 28px 28px 40px;
+        }
+
+        /* ── Split layout ── */
+        .readiness-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        /* ══════════════════════════════════════
+           LEFT COLUMN
+        ══════════════════════════════════════ */
+        .readiness-left {}
+
+        /* Page header */
+        .rd-header { margin-bottom: 16px; }
+        .rd-title { font-size: 22px; font-weight: 700; color: #0f0f0f; letter-spacing: -0.3px; margin-bottom: 3px; }
+        .rd-subtitle { font-size: 13px; color: #888; }
+
+        /* Tango banner */
+        .rd-tango-banner {
+            background: #faf5ff;
+            border: 1px solid #e4dcfd;
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex; align-items: flex-start; gap: 12px;
+            margin-bottom: 20px;
+        }
+        .rd-tango-icon {
+            width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+            background: linear-gradient(135deg, #8b5cf6, #FFA426);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+        }
+        .rd-tango-text { flex: 1; font-size: 12.5px; color: #5b21b6; line-height: 1.6; }
+        .rd-tango-text strong { color: #7c3aed; }
+        .rd-tango-dismiss {
+            background: transparent; border: none; cursor: pointer;
+            color: #c4b5fd; font-size: 16px; padding: 0 0 0 4px;
+            line-height: 1; transition: color 120ms; flex-shrink: 0;
+        }
+        .rd-tango-dismiss:hover { color: #7c3aed; }
+
+        /* ── Checklist card ── */
+        .rd-card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 16px; overflow: hidden;
+        }
+
+        /* Card header */
+        .rd-card-header {
+            display: flex; align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f5f7fa;
+            cursor: pointer; user-select: none;
+            transition: background 120ms;
+        }
+        .rd-card-header:hover { background: #fafbff; }
+        .rd-card-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0; margin-right: 12px;
+        }
+        .rd-card-icon.gov     { background: #eff6ff; }
+        .rd-card-icon.sec     { background: #fef2f2; }
+        .rd-card-icon.res     { background: #f0fdf4; }
+        .rd-card-title { font-size: 13.5px; font-weight: 700; color: #0f0f0f; flex: 1; }
+        .rd-card-progress {
+            font-size: 11.5px; font-weight: 600; color: #888;
+            background: #f8fafc; padding: 3px 10px;
+            border-radius: 99px; border: 1px solid #e2e8f0;
+            white-space: nowrap; margin-right: 10px;
+        }
+        .rd-card-progress .done-count { color: #10b981; font-weight: 800; }
+        .rd-add-btn {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 5px 11px; border-radius: 7px; border: none;
+            font-size: 11px; font-weight: 600; font-family: 'Poppins', sans-serif;
+            background: #f5f5f5; color: #555; cursor: pointer;
+            transition: all 120ms; margin-right: 10px;
+        }
+        .rd-add-btn:hover { background: #ebebeb; }
+        .rd-chevron {
+            width: 20px; height: 20px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            color: #bbb; font-size: 11px; transition: all 200ms;
+            flex-shrink: 0;
+        }
+        .rd-card.collapsed .rd-chevron { transform: rotate(-90deg); }
+
+        /* Card body */
+        .rd-card-body { padding: 4px 0 8px; }
+        .rd-card.collapsed .rd-card-body { display: none; }
+
+        /* ── Checklist item row ── */
+        .rd-item {
+            display: flex; align-items: center;
+            padding: 10px 20px;
+            gap: 14px;
+            border-bottom: 1px solid #f5f7fa;
+            transition: background 100ms;
+        }
+        .rd-item:last-child { border-bottom: none; }
+        .rd-item:hover { background: #fafbff; }
+        .rd-item.completed { opacity: 0.65; }
+
+        /* Custom checkbox */
+        .rd-check {
+            width: 18px; height: 18px; border-radius: 5px;
+            border: 2px solid #d1d5db; background: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0;
+            transition: all 150ms;
+            position: relative;
+        }
+        .rd-check:hover { border-color: #FFA426; }
+        .rd-check.checked {
+            background: #10b981; border-color: #10b981;
+        }
+        .rd-check.checked::after {
+            content: '';
+            display: block;
+            width: 5px; height: 9px;
+            border: 2px solid white;
+            border-top: none; border-left: none;
+            transform: rotate(45deg) translate(-1px, -1px);
+        }
+        .rd-check.blocked {
+            background: #fef2f2; border-color: #fca5a5;
+        }
+
+        /* Item content */
+        .rd-item-text {
+            flex: 1; font-size: 13px; font-weight: 500;
+            color: #1e293b; line-height: 1.4;
+        }
+        .rd-item.completed .rd-item-text {
+            text-decoration: line-through; color: #94a3b8;
+        }
+        .rd-item-sub {
+            font-size: 11px; color: #94a3b8; font-weight: 400;
+            display: block; margin-top: 1px;
+        }
+
+        /* Priority pills */
+        .rd-priority {
+            font-size: 10px; font-weight: 700; padding: 2px 9px;
+            border-radius: 99px; white-space: nowrap; flex-shrink: 0;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .rd-priority.high   { background: #fef2f2; color: #dc2626; }
+        .rd-priority.medium { background: #fff7ed; color: #c2410c; }
+        .rd-priority.low    { background: #f0fdf4; color: #15803d; }
+
+        /* Assignee avatar */
+        .rd-assignee {
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 800; color: white;
+            flex-shrink: 0; cursor: pointer;
+            transition: transform 120ms;
+        }
+        .rd-assignee:hover { transform: scale(1.12); }
+        .rd-assignee.unassigned {
+            background: #e2e8f0; color: #94a3b8;
+        }
+
+        /* Row action menu */
+        .rd-row-menu {
+            display: flex; gap: 2px; opacity: 0; transition: opacity 100ms;
+        }
+        .rd-item:hover .rd-row-menu { opacity: 1; }
+        .rd-menu-btn {
+            width: 24px; height: 24px; border-radius: 5px;
+            background: transparent; border: none; cursor: pointer;
+            color: #cbd5e1; display: flex; align-items: center;
+            justify-content: center; transition: all 100ms;
+        }
+        .rd-menu-btn:hover { background: #f1f5f9; color: #64748b; }
+
+        /* ══════════════════════════════════════
+           RIGHT COLUMN — HEALTH METER
+        ══════════════════════════════════════ */
+        .readiness-right { position: sticky; top: 0; }
+
+        .rd-health-card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.05);
+            padding: 24px; margin-bottom: 16px;
+        }
+
+        /* Card title */
+        .rd-health-title {
+            font-size: 13px; font-weight: 700; color: #0f0f0f;
+            margin-bottom: 20px; display: flex; align-items: center;
+            justify-content: space-between;
+        }
+        .rd-health-badge {
+            font-size: 10px; font-weight: 700; padding: 3px 9px;
+            border-radius: 99px; background: #fffbeb;
+            color: #d97706; border: 1px solid #fde68a;
+        }
+
+        /* Circular progress */
+        .rd-circle-wrap {
+            display: flex; justify-content: center;
+            margin-bottom: 20px; position: relative;
+        }
+        .rd-circle-svg { transform: rotate(-90deg); }
+        .rd-circle-bg   { fill: none; stroke: #f1f5f9; stroke-width: 10; }
+        .rd-circle-fill {
+            fill: none; stroke: #FFA426; stroke-width: 10;
+            stroke-linecap: round;
+            stroke-dasharray: 339.29; /* 2π × 54 */
+            stroke-dashoffset: 339.29;
+            transition: stroke-dashoffset 1200ms cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+        .rd-circle-fill.animated {
+            stroke-dashoffset: 118.75; /* 339.29 × (1 - 0.65) */
+        }
+        .rd-circle-center {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        .rd-pct-value {
+            font-size: 30px; font-weight: 800; color: #0f0f0f;
+            letter-spacing: -1px; line-height: 1;
+        }
+        .rd-pct-label { font-size: 10px; font-weight: 600; color: #94a3b8; margin-top: 2px; }
+
+        /* Stats row */
+        .rd-stats-row {
+            display: flex; gap: 0;
+            border: 1px solid #f1f5f9; border-radius: 8px;
+            overflow: hidden; margin-bottom: 20px;
+        }
+        .rd-stat {
+            flex: 1; padding: 10px 12px; text-align: center;
+            border-right: 1px solid #f1f5f9;
+        }
+        .rd-stat:last-child { border-right: none; }
+        .rd-stat-value { font-size: 18px; font-weight: 800; color: #0f0f0f; line-height: 1; }
+        .rd-stat-value.green { color: #10b981; }
+        .rd-stat-value.red   { color: #ef4444; }
+        .rd-stat-value.amber { color: #f59e0b; }
+        .rd-stat-label { font-size: 9.5px; font-weight: 600; color: #94a3b8; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        /* Category breakdown bars */
+        .rd-breakdown { margin-bottom: 20px; }
+        .rd-breakdown-title {
+            font-size: 10px; font-weight: 700; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+        .rd-breakdown-row { margin-bottom: 10px; }
+        .rd-breakdown-top {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .rd-breakdown-label { font-size: 11.5px; font-weight: 600; color: #475569; }
+        .rd-breakdown-frac  { font-size: 11px; color: #94a3b8; font-weight: 600; }
+        .rd-bar-track {
+            height: 5px; background: #f1f5f9;
+            border-radius: 99px; overflow: hidden;
+        }
+        .rd-bar-fill {
+            height: 100%; border-radius: 99px;
+            transition: width 900ms cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        /* Blockers section */
+        .rd-blockers-title {
+            font-size: 10px; font-weight: 700; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 10px;
+        }
+        .rd-blocker-item {
+            display: flex; align-items: flex-start; gap: 9px;
+            padding: 9px 12px; border-radius: 8px;
+            background: #fef2f2; margin-bottom: 7px;
+            border: 1px solid #fecaca;
+        }
+        .rd-blocker-item.warn {
+            background: #fffbeb; border-color: #fde68a;
+        }
+        .rd-blocker-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+        .rd-blocker-text { flex: 1; }
+        .rd-blocker-name { font-size: 11.5px; font-weight: 600; color: #991b1b; line-height: 1.35; }
+        .rd-blocker-item.warn .rd-blocker-name { color: #92400e; }
+        .rd-blocker-meta { font-size: 10.5px; color: #b45309; margin-top: 1px; }
+        .rd-blocker-item:not(.warn) .rd-blocker-meta { color: #dc2626; }
+
+        /* Export button */
+        .rd-export-btn {
+            width: 100%; padding: 11px;
+            background: #FFA426; border: none; border-radius: 9px;
+            font-size: 13px; font-weight: 700;
+            font-family: 'Poppins', sans-serif; color: #1a1a1a;
+            cursor: pointer; transition: all 150ms;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+        }
+        .rd-export-btn:hover {
+            background: #F89622;
+            box-shadow: 0 4px 14px rgba(255,164,38,0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px;
+            background: white; border-radius: 10px; border-left: 3px solid #FFA426;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 12px 16px; min-width: 240px; max-width: 320px;
+            display: flex; gap: 12px; align-items: flex-start;
+            z-index: 9000; opacity: 0; transform: translateY(12px);
+            transition: all 250ms ease; pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .toast-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .toast-body { flex: 1; }
+        .toast-title { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+        .toast-msg   { font-size: 11px; color: #888; margin-top: 1px; }
+
+        /* ── Row insert animation ── */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .row-new { animation: slideIn 220ms ease forwards; }
+    </style>
+</head>
+<body>
+
+<!-- ── Top Bar ── -->
+<header class="top-bar">
+    <img
+        src="trmericLogo.svg"
+        alt="trmeric logo"
+        style="height: 32px"
+        class="trmeric-logo"
+      />
+
+    <!-- <div class="top-bar__logo">T</div>
+    <nav class="top-bar__breadcrumb">
+        <span>Workspace</span>
+        <span class="top-bar__breadcrumb-sep">›</span>
+        <span>BHP WAIO</span>
+        <span class="top-bar__breadcrumb-sep">›</span>
+        <span class="top-bar__breadcrumb-current">Q1 Strategic Investment</span>
+        <span class="top-bar__status-chip"><span class="top-bar__status-dot"></span>Active</span>
+    </nav> -->
+    <div class="top-bar__center">
+        <div class="view-toggle">
+            <button class="view-toggle__btn active">My Hub</button>
+            <button class="view-toggle__btn">Tango</button>
+        </div>
+    </div>
+    <div class="top-bar__right">
+        <button class="top-bar__icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+        <button class="top-bar__icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        </button>
+        <button class="top-bar__icon-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+        <div class="top-bar__avatar">KV</div>
+    </div>
+</header>
+
+<!-- ── App Shell ── -->
+<div class="app-shell">
+
+    <!-- Inner Nav -->
+    <nav class="inner-nav" id="innerNav">
+        <button class="inner-nav__toggle" onclick="document.getElementById(&#39;innerNav&#39;).classList.toggle(&#39;collapsed&#39;)">
+            <div class="inner-nav__toggle-icon"><span></span><span></span><span></span></div>
+            <span class="inner-nav__toggle-label">Collapse</span>
+        </button>
+        <div class="inner-nav__section-label">WORKSPACE VIEWS</div>
+        <button class="inner-nav__item" onclick="window.location.href=&#39;trmeric-execution-raid-v3.html&#39;">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div>
+            <span class="inner-nav__item-label">Overview</span>
+        </button>
+        <button class="inner-nav__item" onclick="window.location.href=&#39;trmeric-scope.html&#39;">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+            <span class="inner-nav__item-label">Scope &amp; Business case</span>
+        </button>
+        <button class="inner-nav__item" onclick="window.location.href=&#39;trmeric-solution.html&#39;">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg></div>
+            <span class="inner-nav__item-label">Solution</span>
+        </button>
+        <button class="inner-nav__item" onclick="window.location.href=&#39;trmeric-structure.html&#39;">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="2"></rect><rect x="3" y="11" width="7" height="4" rx="1"></rect><rect x="14" y="11" width="7" height="4" rx="1"></rect><rect x="3" y="19" width="7" height="2" rx="1"></rect><rect x="14" y="19" width="7" height="2" rx="1"></rect></svg></div>
+            <span class="inner-nav__item-label">Structure</span>
+        </button>
+        <button class="inner-nav__item active" id="navReadiness">
+            <div class="inner-nav__item-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            </div>
+            <span class="inner-nav__item-label">Readiness</span>
+        </button>
+        <button class="inner-nav__item" onclick="window.location.href=&#39;trmeric-execution-raid-v3.html&#39;">
+            <div class="inner-nav__item-icon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+            <span class="inner-nav__item-label">Live</span>
+            <span class="inner-nav__notif"></span>
+        </button>
+    </nav>
+
+    <!-- ══════════════════════════════════════════
+         READINESS CANVAS
+    ══════════════════════════════════════════ -->
+    <div class="readiness-canvas">
+        <div class="readiness-layout">
+
+            <!-- ════════════════════════════════
+                 LEFT COLUMN
+            ════════════════════════════════ -->
+            <div class="readiness-left">
+
+                <!-- Page header -->
+                <div class="rd-header">
+                    <div class="rd-title">Day-1 Readiness Checklist</div>
+                    <div class="rd-subtitle">Mandatory gates to clear before project kick-off · BHP WAIO · Q1 Strategic Investment</div>
+                </div>
+
+                <!-- Tango banner -->
+                <div class="rd-tango-banner">
+                    <div class="rd-tango-icon">✦</div>
+                    <div class="rd-tango-text">
+                        <strong>Tango generated 15 readiness items</strong> based on your Scope and Solution architecture. 3 of 15 are complete. 2 critical blockers need resolution before kick-off.
+                    </div>
+                    <button class="rd-tango-dismiss" onclick="this.closest(&#39;.rd-tango-banner&#39;).style.display=&#39;none&#39;" title="Dismiss">×</button>
+                </div>
+
+                <!-- ════════════════════════════
+                     CARD 1 — Governance & Planning
+                ════════════════════════════ -->
+                <div class="rd-card" id="card-gov">
+                    <div class="rd-card-header" onclick="toggleCard(&#39;card-gov&#39;)">
+                        <div class="rd-card-icon gov">🏛️</div>
+                        <div class="rd-card-title">Governance &amp; Planning</div>
+                        <span class="rd-card-progress"><span class="done-count" id="gov-done">2</span> / 6 Completed</span>
+                        <button class="rd-add-btn" onclick="event.stopPropagation(); addItem(&#39;card-gov-body&#39;,&#39;gov&#39;)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add item
+                        </button>
+                        <div class="rd-chevron">▼</div>
+                    </div>
+                    <div class="rd-card-body" id="card-gov-body">
+
+                        <div class="rd-item completed" id="gi-1">
+                            <div class="rd-check checked" onclick="toggleCheck(this,&#39;gi-1&#39;,&#39;gov&#39;)"></div>
+                            <div class="rd-item-text">
+                                Project Charter approved by WAIO leadership
+                                <span class="rd-item-sub">Signed off Jan 14, 2025</span>
+                            </div>
+                            <span class="rd-priority low">Done</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#667eea,#764ba2);" title="Kevin V.">KV</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item completed" id="gi-2">
+                            <div class="rd-check checked" onclick="toggleCheck(this,&#39;gi-2&#39;,&#39;gov&#39;)"></div>
+                            <div class="rd-item-text">
+                                Stakeholder register finalised
+                                <span class="rd-item-sub">EY + BHP WAIO + EY digital team</span>
+                            </div>
+                            <span class="rd-priority low">Done</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#f093fb,#f5576c);" title="Arjun M.">AM</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="gi-3">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;gi-3&#39;,&#39;gov&#39;)"></div>
+                            <div class="rd-item-text">
+                                Define RACI Matrix for all workstreams
+                                <span class="rd-item-sub">Governance &amp; Delivery</span>
+                            </div>
+                            <span class="rd-priority high">High</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#667eea,#764ba2);" title="Kevin V.">KV</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="gi-4">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;gi-4&#39;,&#39;gov&#39;)"></div>
+                            <div class="rd-item-text">
+                                Kick-off meeting scheduled with all PMs
+                                <span class="rd-item-sub">Target: Feb 10, 2025</span>
+                            </div>
+                            <span class="rd-priority medium">Medium</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#11998e,#38ef7d);color:#1a1a1a;" title="Sarah C.">SC</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="gi-5">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;gi-5&#39;,&#39;gov&#39;)"></div>
+                            <div class="rd-item-text">
+                                Risk register seeded in Trmeric
+                                <span class="rd-item-sub">Imported from Scope &amp; Business Case</span>
+                            </div>
+                            <span class="rd-priority medium">Medium</span>
+                            <div class="rd-assignee unassigned" title="Unassigned">—</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                    <div class="rd-item row-new" id="new-item-1">
+            <div class="rd-check" onclick="toggleCheck(this,&#39;new-item-1&#39;,&#39;gov&#39;)"></div>
+            <div class="rd-item-text" contenteditable="true" style="outline:none;cursor:text;" onclick="event.stopPropagation()">New readiness item</div>
+            <span class="rd-priority medium">Medium</span>
+            <div class="rd-assignee unassigned" title="Unassigned">—</div>
+            <div class="rd-row-menu" style="opacity:1;">
+                <button class="rd-menu-btn" onclick="this.closest(&#39;.rd-item&#39;).remove(); totals[&#39;gov&#39;]--; updateUI(&#39;gov&#39;);" title="Remove">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+        </div></div>
+                </div>
+
+                <!-- ════════════════════════════
+                     CARD 2 — Security & Architecture
+                ════════════════════════════ -->
+                <div class="rd-card" id="card-sec">
+                    <div class="rd-card-header" onclick="toggleCard(&#39;card-sec&#39;)">
+                        <div class="rd-card-icon sec">🔐</div>
+                        <div class="rd-card-title">Security &amp; Architecture</div>
+                        <span class="rd-card-progress"><span class="done-count" id="sec-done">1</span> / 6 Completed</span>
+                        <button class="rd-add-btn" onclick="event.stopPropagation(); addItem(&#39;card-sec-body&#39;,&#39;sec&#39;)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add item
+                        </button>
+                        <div class="rd-chevron">▼</div>
+                    </div>
+                    <div class="rd-card-body" id="card-sec-body">
+
+                        <div class="rd-item" id="si-1">
+                            <div class="rd-check blocked" onclick="toggleCheck(this,&#39;si-1&#39;,&#39;sec&#39;)"></div>
+                            <div class="rd-item-text">
+                                InfoSec Architecture Sign-off
+                                <span class="rd-item-sub" style="color:#dc2626;">🔴 Blocked — awaiting CISO review (overdue 4 days)</span>
+                            </div>
+                            <span class="rd-priority high">High</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#667eea,#764ba2);" title="Kevin V.">KV</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="si-2">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;si-2&#39;,&#39;sec&#39;)"></div>
+                            <div class="rd-item-text">
+                                Azure subscription and IAM roles provisioned
+                                <span class="rd-item-sub">Dev, staging &amp; prod environments</span>
+                            </div>
+                            <span class="rd-priority high">High</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#f093fb,#f5576c);" title="Arjun M.">AM</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="si-3">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;si-3&#39;,&#39;sec&#39;)"></div>
+                            <div class="rd-item-text">
+                                Data classification policy agreed with BHP data governance
+                                <span class="rd-item-sub">Sensitivity tiers for IoT + ERP data</span>
+                            </div>
+                            <span class="rd-priority high">High</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#11998e,#38ef7d);color:#1a1a1a;" title="Sarah C.">SC</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item completed" id="si-4">
+                            <div class="rd-check checked" onclick="toggleCheck(this,&#39;si-4&#39;,&#39;sec&#39;)"></div>
+                            <div class="rd-item-text">
+                                Network connectivity to BHP WAIO VPN confirmed
+                                <span class="rd-item-sub">Tested Feb 1, 2025</span>
+                            </div>
+                            <span class="rd-priority low">Done</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#f093fb,#f5576c);" title="Arjun M.">AM</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="si-5">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;si-5&#39;,&#39;sec&#39;)"></div>
+                            <div class="rd-item-text">
+                                Penetration test scheduled for Phase 1 infrastructure
+                                <span class="rd-item-sub">Pre-go-live requirement</span>
+                            </div>
+                            <span class="rd-priority medium">Medium</span>
+                            <div class="rd-assignee unassigned" title="Unassigned">—</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                    <div class="rd-item row-new" id="new-item-2">
+            <div class="rd-check" onclick="toggleCheck(this,&#39;new-item-2&#39;,&#39;sec&#39;)"></div>
+            <div class="rd-item-text" contenteditable="true" style="outline:none;cursor:text;" onclick="event.stopPropagation()">New readiness item</div>
+            <span class="rd-priority medium">Medium</span>
+            <div class="rd-assignee unassigned" title="Unassigned">—</div>
+            <div class="rd-row-menu" style="opacity:1;">
+                <button class="rd-menu-btn" onclick="this.closest(&#39;.rd-item&#39;).remove(); totals[&#39;sec&#39;]--; updateUI(&#39;sec&#39;);" title="Remove">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+        </div></div>
+                </div>
+
+                <!-- ════════════════════════════
+                     CARD 3 — Resourcing
+                ════════════════════════════ -->
+                <div class="rd-card" id="card-res">
+                    <div class="rd-card-header" onclick="toggleCard(&#39;card-res&#39;)">
+                        <div class="rd-card-icon res">👥</div>
+                        <div class="rd-card-title">Resourcing</div>
+                        <span class="rd-card-progress"><span class="done-count" id="res-done">0</span> / 5 Completed</span>
+                        <button class="rd-add-btn" onclick="event.stopPropagation(); addItem(&#39;card-res-body&#39;,&#39;res&#39;)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add item
+                        </button>
+                        <div class="rd-chevron">▼</div>
+                    </div>
+                    <div class="rd-card-body" id="card-res-body">
+
+                        <div class="rd-item" id="ri-1">
+                            <div class="rd-check blocked" onclick="toggleCheck(this,&#39;ri-1&#39;,&#39;res&#39;)"></div>
+                            <div class="rd-item-text">
+                                Data Engineer role filled
+                                <span class="rd-item-sub" style="color:#dc2626;">🔴 Critical path — open role, target start Mar 3</span>
+                            </div>
+                            <span class="rd-priority high">High</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#667eea,#764ba2);" title="Kevin V.">KV</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="ri-2">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;ri-2&#39;,&#39;res&#39;)"></div>
+                            <div class="rd-item-text">
+                                All EY team members onboarded to Trmeric
+                                <span class="rd-item-sub">Access provisioning + walkthrough</span>
+                            </div>
+                            <span class="rd-priority high">High</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#f093fb,#f5576c);" title="Arjun M.">AM</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="ri-3">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;ri-3&#39;,&#39;res&#39;)"></div>
+                            <div class="rd-item-text">
+                                BHP site liaison assigned to each of 4 sites
+                                <span class="rd-item-sub">Pilbara North cluster</span>
+                            </div>
+                            <span class="rd-priority medium">Medium</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#11998e,#38ef7d);color:#1a1a1a;" title="Sarah C.">SC</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="ri-4">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;ri-4&#39;,&#39;res&#39;)"></div>
+                            <div class="rd-item-text">
+                                Vendor contracts for Databricks + Trmeric signed
+                                <span class="rd-item-sub">Legal review in progress</span>
+                            </div>
+                            <span class="rd-priority medium">Medium</span>
+                            <div class="rd-assignee" style="background:linear-gradient(135deg,#667eea,#764ba2);" title="Kevin V.">KV</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                        <div class="rd-item" id="ri-5">
+                            <div class="rd-check" onclick="toggleCheck(this,&#39;ri-5&#39;,&#39;res&#39;)"></div>
+                            <div class="rd-item-text">
+                                Training schedule for site safety teams confirmed
+                                <span class="rd-item-sub">Change management workstream</span>
+                            </div>
+                            <span class="rd-priority low">Low</span>
+                            <div class="rd-assignee unassigned" title="Unassigned">—</div>
+                            <div class="rd-row-menu">
+                                <button class="rd-menu-btn" onclick="showToast(&#39;✏️&#39;,&#39;Edit&#39;,&#39;Editing item.&#39;)"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div><!-- /readiness-left -->
+
+            <!-- ════════════════════════════════
+                 RIGHT COLUMN — HEALTH METER
+            ════════════════════════════════ -->
+            <div class="readiness-right">
+                <div class="rd-health-card">
+
+                    <!-- Title -->
+                    <div class="rd-health-title">
+                        Overall Readiness
+                        <span class="rd-health-badge">In Progress</span>
+                    </div>
+
+                    <!-- Circular progress (SVG) -->
+                    <div class="rd-circle-wrap">
+                        <svg class="rd-circle-svg" width="140" height="140" viewBox="0 0 140 140">
+                            <circle class="rd-circle-bg" cx="70" cy="70" r="54"></circle>
+                            <circle class="rd-circle-fill animated" id="circleProgress" cx="70" cy="70" r="54" style="stroke-dashoffset: 271.432;"></circle>
+                        </svg>
+                        <div class="rd-circle-center">
+                            <div class="rd-pct-value" id="pctValue">20%</div>
+                            <div class="rd-pct-label">READY</div>
+                        </div>
+                    </div>
+
+                    <!-- Stats row -->
+                    <div class="rd-stats-row">
+                        <div class="rd-stat">
+                            <div class="rd-stat-value green" id="statDone">3</div>
+                            <div class="rd-stat-label">Done</div>
+                        </div>
+                        <div class="rd-stat">
+                            <div class="rd-stat-value amber">9</div>
+                            <div class="rd-stat-label">Open</div>
+                        </div>
+                        <div class="rd-stat">
+                            <div class="rd-stat-value red">2</div>
+                            <div class="rd-stat-label">Blocked</div>
+                        </div>
+                    </div>
+
+                    <!-- Category breakdown -->
+                    <div class="rd-breakdown">
+                        <div class="rd-breakdown-title">By category</div>
+
+                        <div class="rd-breakdown-row">
+                            <div class="rd-breakdown-top">
+                                <span class="rd-breakdown-label">Governance &amp; Planning</span>
+                                <span class="rd-breakdown-frac" id="bf-gov">2 / 5</span>
+                            </div>
+                            <div class="rd-bar-track">
+                                <div class="rd-bar-fill" id="bb-gov" style="width: 40%; background: rgb(16, 185, 129);"></div>
+                            </div>
+                        </div>
+
+                        <div class="rd-breakdown-row">
+                            <div class="rd-breakdown-top">
+                                <span class="rd-breakdown-label">Security &amp; Architecture</span>
+                                <span class="rd-breakdown-frac" id="bf-sec">1 / 5</span>
+                            </div>
+                            <div class="rd-bar-track">
+                                <div class="rd-bar-fill" id="bb-sec" style="width: 20%; background: rgb(255, 164, 38);"></div>
+                            </div>
+                        </div>
+
+                        <div class="rd-breakdown-row">
+                            <div class="rd-breakdown-top">
+                                <span class="rd-breakdown-label">Resourcing</span>
+                                <span class="rd-breakdown-frac" id="bf-res">0 / 5</span>
+                            </div>
+                            <div class="rd-bar-track">
+                                <div class="rd-bar-fill" id="bb-res" style="width:0%;background:#ef4444;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Blockers -->
+                    <div class="rd-blockers-title">Critical Blockers</div>
+
+                    <div class="rd-blocker-item">
+                        <div class="rd-blocker-icon">🔴</div>
+                        <div class="rd-blocker-text">
+                            <div class="rd-blocker-name">InfoSec Architecture Sign-off</div>
+                            <div class="rd-blocker-meta">Overdue 4 days · Assigned to Kevin V.</div>
+                        </div>
+                    </div>
+
+                    <div class="rd-blocker-item">
+                        <div class="rd-blocker-icon">🔴</div>
+                        <div class="rd-blocker-text">
+                            <div class="rd-blocker-name">Data Engineer role unfilled</div>
+                            <div class="rd-blocker-meta">Critical path · Target start Mar 3, 2025</div>
+                        </div>
+                    </div>
+
+                    <div class="rd-blocker-item warn">
+                        <div class="rd-blocker-icon">⚠️</div>
+                        <div class="rd-blocker-text">
+                            <div class="rd-blocker-name">RACI Matrix not started</div>
+                            <div class="rd-blocker-meta">High priority · No owner assigned</div>
+                        </div>
+                    </div>
+
+                    <!-- Export button -->
+                    <button class="rd-export-btn" onclick="showToast(&#39;📊&#39;,&#39;Generating report&#39;,&#39;Readiness report is being compiled.&#39;)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Export Readiness Report
+                    </button>
+
+                </div><!-- /rd-health-card -->
+            </div><!-- /readiness-right -->
+
+        </div><!-- /readiness-layout -->
+    </div><!-- /readiness-canvas -->
+
+    <!-- Right Nav -->
+    <nav class="right-nav">
+        <button class="right-nav__tango-btn" title="Tango Agent" onclick="showToast(&#39;✦&#39;,&#39;Tango activated&#39;,&#39;AI is ready to review your readiness items.&#39;)">
+            <span class="right-nav__tango-icon">✦</span>
+            <span class="right-nav__tango-label">Agent</span>
+        </button>
+        <div class="right-nav__divider"></div>
+        <button class="right-nav__btn active" title="Readiness">
+            <span class="right-nav__btn-icon">✅</span>
+            <span class="right-nav__btn-label">Gates</span>
+        </button>
+        <button class="right-nav__btn" title="History" onclick="showToast(&#39;📋&#39;,&#39;History&#39;,&#39;Version history loading.&#39;)">
+            <span class="right-nav__btn-icon">🕐</span>
+            <span class="right-nav__btn-label">History</span>
+        </button>
+        <button class="right-nav__btn" title="Export" onclick="showToast(&#39;📊&#39;,&#39;Export&#39;,&#39;Generating PDF export.&#39;)">
+            <span class="right-nav__btn-icon">📤</span>
+            <span class="right-nav__btn-label">Export</span>
+        </button>
+    </nav>
+
+</div><!-- /app-shell -->
+
+<!-- Toast -->
+<div class="toast" id="toast" style="border-left-color: rgb(255, 164, 38);">
+    <div class="toast-icon" id="toast-icon">✏️</div>
+    <div class="toast-body">
+        <div class="toast-title" id="toast-title">Edit</div>
+        <div class="toast-msg" id="toast-msg">Editing item.</div>
+    </div>
+</div>
+
+<script>
+    /* ─────────────────────────────────────────────
+       State
+    ───────────────────────────────────────────── */
+    const counts = { gov: 2, sec: 1, res: 0 };
+    const totals = { gov: 5, sec: 5, res: 5 };
+    const TOTAL = 15;
+
+    /* ─────────────────────────────────────────────
+       Init: animate progress on load
+    ───────────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        setTimeout(animateProgress, 350);
+    });
+
+    function animateProgress() {
+        // Animate category bars
+        animateBar('bb-gov', (counts.gov / totals.gov) * 100);
+        animateBar('bb-sec', (counts.sec / totals.sec) * 100);
+        animateBar('bb-res', (counts.res / totals.res) * 100);
+        // Animate circle
+        animateCircle();
+    }
+
+    function animateBar(id, pct) {
+        const el = document.getElementById(id);
+        if (el) setTimeout(() => el.style.width = pct + '%', 100);
+    }
+
+    function animateCircle() {
+        const totalDone = counts.gov + counts.sec + counts.res;
+        const pct = Math.round((totalDone / TOTAL) * 100);
+        const circ = 339.29; // 2π × 54
+        const offset = circ * (1 - pct / 100);
+
+        const fill = document.getElementById('circleProgress');
+        const pctEl = document.getElementById('pctValue');
+
+        if (fill) {
+            fill.classList.add('animated');
+            // Override the CSS with the actual value
+            fill.style.strokeDashoffset = offset;
+        }
+        // Count-up animation for percentage
+        if (pctEl) {
+            let current = 0;
+            const step = pct / 40;
+            const timer = setInterval(() => {
+                current = Math.min(current + step, pct);
+                pctEl.textContent = Math.round(current) + '%';
+                if (current >= pct) clearInterval(timer);
+            }, 25);
+        }
+    }
+
+    /* ─────────────────────────────────────────────
+       Toggle checkbox
+    ───────────────────────────────────────────── */
+    function toggleCheck(el, rowId, category) {
+        const row = document.getElementById(rowId);
+        if (!row) return;
+
+        if (el.classList.contains('checked')) {
+            el.classList.remove('checked');
+            row.classList.remove('completed');
+            counts[category] = Math.max(0, counts[category] - 1);
+        } else if (el.classList.contains('blocked')) {
+            showToast('🔴', 'Blocked item', 'Resolve the blocker before marking complete.', '#ef4444');
+            return;
+        } else {
+            el.classList.add('checked');
+            row.classList.add('completed');
+            counts[category]++;
+        }
+        updateUI(category);
+    }
+
+    function updateUI(category) {
+        // Update card header fraction
+        const doneEl = document.getElementById(category + '-done');
+        if (doneEl) doneEl.textContent = counts[category];
+
+        // Update sidebar fraction + bar
+        const fracEl = document.getElementById('bf-' + category);
+        if (fracEl) fracEl.textContent = counts[category] + ' / ' + totals[category];
+        animateBar('bb-' + category, (counts[category] / totals[category]) * 100);
+
+        // Update stat done count
+        const totalDone = counts.gov + counts.sec + counts.res;
+        const statDone = document.getElementById('statDone');
+        if (statDone) statDone.textContent = totalDone;
+
+        // Re-animate circle
+        const pct = Math.round((totalDone / TOTAL) * 100);
+        const circ = 339.29;
+        const fill = document.getElementById('circleProgress');
+        const pctEl = document.getElementById('pctValue');
+        if (fill) fill.style.strokeDashoffset = circ * (1 - pct / 100);
+        if (pctEl) pctEl.textContent = pct + '%';
+
+        if (totalDone === TOTAL) {
+            showToast('🎉', 'All items complete!', 'Project is ready for kick-off.', '#10b981');
+        }
+    }
+
+    /* ─────────────────────────────────────────────
+       Toggle card accordion
+    ───────────────────────────────────────────── */
+    function toggleCard(cardId) {
+        const card = document.getElementById(cardId);
+        if (card) card.classList.toggle('collapsed');
+    }
+
+    /* ─────────────────────────────────────────────
+       Add new checklist item
+    ───────────────────────────────────────────── */
+    let newItemCount = 0;
+    function addItem(bodyId, category) {
+        newItemCount++;
+        totals[category]++;
+        const id = 'new-item-' + newItemCount;
+        const body = document.getElementById(bodyId);
+        if (!body) return;
+
+        const html = `<div class="rd-item row-new" id="${id}">
+            <div class="rd-check" onclick="toggleCheck(this,'${id}','${category}')"></div>
+            <div class="rd-item-text" contenteditable="true" style="outline:none;cursor:text;" onclick="event.stopPropagation()">New readiness item</div>
+            <span class="rd-priority medium">Medium</span>
+            <div class="rd-assignee unassigned" title="Unassigned">—</div>
+            <div class="rd-row-menu" style="opacity:1;">
+                <button class="rd-menu-btn" onclick="this.closest('.rd-item').remove(); totals['${category}']--; updateUI('${category}');" title="Remove">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>`;
+        body.insertAdjacentHTML('beforeend', html);
+        document.getElementById(id).querySelector('[contenteditable]').focus();
+
+        // Update fraction display
+        const doneEl = document.getElementById(category + '-done');
+        const header = document.querySelector(`#card-${category === 'gov' ? 'gov' : category === 'sec' ? 'sec' : 'res'} .rd-card-progress`);
+        if (header) {
+            const doneCount = header.querySelector('.done-count').textContent;
+            header.innerHTML = `<span class="done-count" id="${category}-done">${doneCount}</span> / ${totals[category]} Completed`;
+        }
+        showToast('+', 'Item added', 'New readiness item created.', '#FFA426');
+    }
+
+    /* ─────────────────────────────────────────────
+       Toast
+    ───────────────────────────────────────────── */
+    function showToast(icon, title, msg, color) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-icon').textContent  = icon;
+        document.getElementById('toast-title').textContent = title;
+        document.getElementById('toast-msg').textContent   = msg || '';
+        t.style.borderLeftColor = color || '#FFA426';
+        t.classList.add('show');
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    /* Ctrl+S */
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault();
+            showToast('✓', 'Saved', 'Readiness checklist saved.');
+        }
+    });
+</script>
+
+
+</body></html>

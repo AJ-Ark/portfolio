@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+/* ─── Design tokens — drafting table at dusk ─── */
+@theme {
+  /* Palette */
+  --color-ground: #14110E;
+  --color-paper: #F2ECE0;
+  --color-graphite: #3A352E;
+  --color-graphite-light: #6B6157;
+  --color-ink: #1C1712;
+
+  /* Domain accents */
+  --color-rippl: #78B9C5;
+  --color-realm: #4A9E8E;
+  --color-trmeric: #FFA426;
+
+  /* Typography */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "General Sans", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+
+  /* Spacing */
+  --spacing-page: clamp(1.5rem, 5vw, 4rem);
+
+  /* Easing */
+  --ease-architectural: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-plot: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ─── Base ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  color-scheme: dark;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ground);
+  color: var(--color-paper);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  /* Smooth domain palette transitions */
+  transition: background-color 0.8s var(--ease-architectural), color 0.6s ease;
+}
+
+/* ─── Fonts ─── */
+@font-face {
+  font-family: "General Sans";
+  src: url("https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap");
+  font-display: swap;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: color-mix(in srgb, var(--color-trmeric) 30%, transparent);
+  color: var(--color-paper);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--color-ground); }
+::-webkit-scrollbar-thumb { background: var(--color-graphite); border-radius: 2px; }
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── Architectural drafting type utilities ─── */
+.label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-graphite-light);
+}
+
+.display-serif {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+/* ─── Domain palette overrides ─────────────────────────────────── */
+/* Applied via data-domain="realm|rippl|trmeric" on <html>          */
+
+[data-domain="realm"] {
+  --color-ground: #09120a;
+  --color-paper: #e4ddc8;
+  --color-graphite: #2d3d2e;
+  --color-graphite-light: #5a7a5c;
+  --color-ink: #0d1a0e;
+  --color-accent: #4A9E8E;
+}
+
+[data-domain="rippl"] {
+  --color-ground: #0c1316;
+  --color-paper: #deeaed;
+  --color-graphite: #233038;
+  --color-graphite-light: #4d7380;
+  --color-ink: #0e1a1f;
+  --color-accent: #78B9C5;
+}
+
+[data-domain="trmeric"] {
+  --color-ground: #14110E;
+  --color-paper: #F2ECE0;
+  --color-graphite: #3A352E;
+  --color-graphite-light: #6B6157;
+  --color-ink: #1C1712;
+  --color-accent: #FFA426;
+}
+
+/* ─── Atmospheric grain overlay ─── */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 900;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+/* ─── Skip link ─── */
+.skip-link {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  border-radius: 4px;
+  transform: translateY(-200%);
+  transition: transform 0.2s ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ─── Datum line ─── */
+.datum-line {
+  position: relative;
+}
+.datum-line::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-graphite) 40%, transparent);
+}

@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///L:/Portfolio/src/components/layout/SmoothScroll.tsx"],"sourcesContent":["\"use client\";\n\nimport { useEffect, useRef } from \"react\";\nimport Lenis from \"lenis\";\n\nexport default function SmoothScroll({ children }: { children: React.ReactNode }) {\n  const lenisRef = useRef<Lenis | null>(null);\n\n  useEffect(() => {\n    const lenis = new Lenis({\n      lerp: 0.08,\n      smoothWheel: true,\n      touchMultiplier: 1.5,\n    });\n\n    lenisRef.current = lenis;\n\n    let raf: number;\n    function tick(time: number) {\n      lenis.raf(time);\n      raf = requestAnimationFrame(tick);\n    }\n    raf = requestAnimationFrame(tick);\n\n    return () => {\n      cancelAnimationFrame(raf);\n      lenis.destroy();\n    };\n  }, []);\n\n  return <>{children}</>;\n}\n"],"names":[],"mappings":";;;;;AAEA;AACA;;;AAHA;;;AAKe,SAAS,aAAa,KAA2C;QAA3C,EAAE,QAAQ,EAAiC,GAA3C;;IACnC,MAAM,WAAW,IAAA,uKAAM,EAAe;IAEtC,IAAA,0KAAS;kCAAC;YACR,MAAM,QAAQ,IAAI,qJAAK,CAAC;gBACtB,MAAM;gBACN,aAAa;gBACb,iBAAiB;YACnB;YAEA,SAAS,OAAO,GAAG;YAEnB,IAAI;YACJ,SAAS,KAAK,IAAY;gBACxB,MAAM,GAAG,CAAC;gBACV,MAAM,sBAAsB;YAC9B;YACA,MAAM,sBAAsB;YAE5B;0CAAO;oBACL,qBAAqB;oBACrB,MAAM,OAAO;gBACf;;QACF;iCAAG,EAAE;IAEL,qBAAO;kBAAG;;AACZ;GA1BwB;KAAA","debugId":null}}]
+}

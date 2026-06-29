@@ -1,0 +1,5163 @@
+<!DOCTYPE html>
+<!--
+  DEMAND LIVE v4 — STEP 2: Metrics & Banners
+  ============================================
+  Step 1 changes retained. Step 2 adds:
+  1. .stat-row-wrap (ph-stats) DELETED — no bulky dashboard widgets
+  2. .hero-nudge banner DELETED — no redundant Tango insight strip
+  3. "Days in Flight" metric embedded elegantly inside .stage-stepper:
+     - Subtle "Day 12 · 60% complete" text label on far right
+     - Compact 4px-tall inline progress bar track
+     - Active-blockers and open-actions micro-pills alongside
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Demand Live v4 — Step 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  /* ─── RESET & BASE ─────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: #1a1a1a;
+    background: #fafafa;
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ─── TOP BAR (global) ─────────────────────────────────────────────── */
+  /*
+    The 52px global nav sidebar is GONE.
+    The top bar now spans the full viewport width.
+  */
+  .top-bar {
+    height: 52px;
+    min-height: 52px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 12px;
+    gap: 10px;
+    z-index: 100;
+    position: relative;
+  }
+
+  /* Logo mark — replaces old sidebar T badge */
+  .top-bar__logo {
+    width: 32px;
+    height: 32px;
+    background: #FFA426;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: #1a1a1a;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 150ms;
+  }
+  .top-bar__logo:hover { background: #F89622; }
+
+  /* Breadcrumb */
+  .top-bar__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #999;
+  }
+  .top-bar__breadcrumb a {
+    color: #666;
+    text-decoration: none;
+    transition: color 150ms;
+  }
+  .top-bar__breadcrumb a:hover { color: #FFA426; }
+  .top-bar__breadcrumb .sep { color: #ccc; font-size: 12px; }
+  .top-bar__breadcrumb .current {
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+  .top-bar__breadcrumb .status-chip {
+    background: #f0fdf4;
+    color: #10b981;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-left: 4px;
+  }
+
+  /* Top-bar right icons */
+  .top-bar__actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  /* ── Top-bar centre view toggle pill ───────────────────────────── */
+  .tb-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none; /* children re-enable */
+  }
+  .tb-view-pill {
+    display: flex;
+    align-items: center;
+    background: #f3f4f6;
+    border-radius: 9999px;
+    padding: 3px;
+    gap: 2px;
+    pointer-events: all;
+  }
+  .tbvp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    border: none;
+    background: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    transition: background 160ms, color 160ms, box-shadow 160ms;
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .tbvp-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .tbvp-btn.active {
+    background: #ffffff;
+    color: #1a1a1a;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+  }
+  .tbvp-btn:not(.active):hover { background: rgba(255,255,255,0.6); color: #444; }
+  /* Tango active state gets gradient tint */
+  #tbvpTango.active {
+    background: linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(255,164,38,0.10) 100%);
+    color: #7c3aed;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════
+     NEW ACTION SLIDE-OUT PANEL + BACKDROP
+  ════════════════════════════════════════════════════════════════════ */
+
+  /* Backdrop */
+  .asp-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(2px);
+    z-index: 400;
+    opacity: 0;
+    transition: opacity 260ms ease;
+    pointer-events: none;
+  }
+  .asp-backdrop.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Slide-out panel */
+  .action-slide-out {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 420px;
+    background: #ffffff;
+    box-shadow: -4px 0 32px rgba(0,0,0,0.12);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .action-slide-out.open {
+    transform: translateX(0);
+  }
+
+  /* Panel head */
+  .asp-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+  }
+  .asp-head-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .asp-icon {
+    width: 34px; height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .asp-icon svg { width: 16px; height: 16px; color: #fff; }
+  .asp-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+  }
+  .asp-subtitle {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 1px;
+  }
+  .asp-close {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #bbb;
+    transition: background 140ms, color 140ms;
+    flex-shrink: 0;
+  }
+  .asp-close:hover { background: #f5f5f5; color: #444; }
+  .asp-close svg { width: 16px; height: 16px; }
+
+  /* Scrollable body */
+  .asp-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .asp-body::-webkit-scrollbar { width: 4px; }
+  .asp-body::-webkit-scrollbar-thumb { background: #e5e5e5; border-radius: 4px; }
+
+  /* Field */
+  .asp-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .asp-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .asp-label .req { color: #ef4444; }
+
+  /* Input / select / textarea shared */
+  .asp-input,
+  .asp-select,
+  .asp-textarea {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    color: #222;
+    background: #fafafa;
+    border: 1.5px solid #e8e8e8;
+    border-radius: 9px;
+    padding: 9px 13px;
+    outline: none;
+    transition: border-color 150ms, background 150ms, box-shadow 150ms;
+    width: 100%;
+  }
+  .asp-input:focus,
+  .asp-select:focus,
+  .asp-textarea:focus {
+    border-color: #c4b5fd;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.08);
+  }
+  .asp-input::placeholder,
+  .asp-textarea::placeholder { color: #ccc; }
+  .asp-select { appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  .asp-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+  /* Context note under demand dropdown */
+  .asp-context-note {
+    font-size: 11px;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: -4px;
+    padding: 0 2px;
+  }
+  .asp-context-note svg { width: 11px; height: 11px; flex-shrink: 0; color: #8b5cf6; }
+
+  /* Side-by-side row */
+  .asp-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Footer */
+  .asp-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid #f0f0f0;
+    flex-shrink: 0;
+  }
+  .asp-btn-cancel {
+    padding: 8px 18px;
+    border-radius: 9999px;
+    border: 1.5px solid #e5e5e5;
+    background: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: border-color 140ms, color 140ms;
+  }
+  .asp-btn-cancel:hover { border-color: #aaa; color: #333; }
+  .asp-btn-create {
+    padding: 8px 20px;
+    border-radius: 9999px;
+    border: none;
+    background: #FFA426;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(255,164,38,0.30);
+    transition: background 140ms, transform 120ms, box-shadow 140ms;
+  }
+  .asp-btn-create:hover { background: #f59a1a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,164,38,0.36); }
+  .asp-btn-create svg { width: 13px; height: 13px; }
+  .tb-icon-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: background 150ms, color 150ms;
+    position: relative;
+  }
+  .tb-icon-btn:hover { background: #f5f5f5; color: #1a1a1a; }
+  .tb-icon-btn svg { width: 18px; height: 18px; }
+  .tb-icon-btn .notif-dot {
+    position: absolute;
+    top: 7px; right: 7px;
+    width: 7px; height: 7px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+  }
+
+  /* User avatar in top-bar */
+  .top-bar__user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #FFA426;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 4px;
+    flex-shrink: 0;
+  }
+
+  /* ─── APP SHELL ─────────────────────────────────────────────────────── */
+  /*
+    No global sidebar. Shell is simply: inner-nav | main content | tango panel
+  */
+  .app-shell {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ─── INNER NAV (collapsed by default) ─────────────────────────────── */
+  .inner-nav {
+    width: 52px; /* collapsed icon-rail width */
+    min-width: 52px;
+    background: #ffffff;
+    border-right: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: width 250ms cubic-bezier(0, 0, 0.2, 1),
+                min-width 250ms cubic-bezier(0, 0, 0.2, 1);
+    position: relative;
+    z-index: 50;
+  }
+  /* Expanded state toggled by JS */
+  .inner-nav.expanded {
+    width: 220px;
+    min-width: 220px;
+  }
+
+  /* Toggle button at top of inner-nav */
+  .inner-nav__toggle {
+    height: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #666;
+    border-bottom: 1px solid #f5f5f5;
+    transition: color 150ms;
+    width: 100%;
+  }
+  .inner-nav__toggle:hover { color: #FFA426; background: #FFF8F0; }
+  .inner-nav__toggle svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* Nav sections */
+  .inner-nav__section-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 16px 14px 6px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 200ms 50ms;
+  }
+  .inner-nav.expanded .inner-nav__section-label { opacity: 1; }
+
+  .inner-nav__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 14px;
+    cursor: pointer;
+    border-radius: 0;
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    position: relative;
+    transition: background 150ms, color 150ms;
+    text-decoration: none;
+  }
+  .inner-nav__item:hover { background: #f5f5f5; color: #1a1a1a; }
+  .inner-nav__item.active { background: #FFF8F0; color: #FFA426; }
+  .inner-nav__item svg {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+  }
+  .inner-nav__item .nav-dot {
+    width: 6px; height: 6px;
+    background: #FFA426;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  /* Label text fades in on expand */
+  .inner-nav__item-label {
+    opacity: 0;
+    transition: opacity 200ms 50ms;
+    pointer-events: none;
+  }
+  .inner-nav.expanded .inner-nav__item-label { opacity: 1; }
+
+  /* Collapsed tooltip on hover */
+  .inner-nav:not(.expanded) .inner-nav__item:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 200;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  }
+
+  /* ─── MAIN CONTENT ──────────────────────────────────────────────────── */
+  .main-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #f0f2f5;
+    min-width: 0;
+  }
+
+  /* ─── ZONE HEADER ───────────────────────────────────────────────────── */
+  /*
+    Cleaned up: icon-only Edit + Share buttons,
+    prominent Ask Tango + Submit for Approval,
+    stakeholder avatar cluster on the right.
+  */
+  .zone-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e8edf2;
+    padding: 14px 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* Row 1: demand label + live badge */
+  .zh-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #10b981;
+  }
+  .zh-eyebrow .live-dot {
+    width: 7px; height: 7px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: pulse-green 2s ease-in-out infinite;
+  }
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+    50% { opacity: 0.8; box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+  }
+  .zh-eyebrow .divider { color: #e5e5e5; }
+  .zh-eyebrow .org { color: #999; }
+
+  /* Row 2: title meta cluster */
+  .zh-title-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .zh-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.25;
+    margin-right: 4px;
+  }
+
+  /* Chips */
+  .zh-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .zh-chip.priority {
+    background: #fef2f2;
+    color: #ef4444;
+    border-color: #fecaca;
+  }
+  .zh-chip.category {
+    background: #eff6ff;
+    color: #3b82f6;
+    border-color: #bfdbfe;
+  }
+  .zh-chip.budget {
+    background: #f0fdf4;
+    color: #10b981;
+    border-color: #bbf7d0;
+  }
+
+  /* Spacer between chips and actions */
+  .zh-spacer { flex: 1; min-width: 12px; }
+
+  /* Items that hide when the header is collapsed */
+  .zh-collapsible {
+    display: contents; /* transparent to flex layout by default */
+  }
+  .zone-header.is-collapsed .zh-collapsible {
+    display: none;
+  }
+  /* Invite button can force-show the avatar cluster independently */
+  .zone-header.is-collapsed #zhAvatarWrap.avatars-open {
+    display: contents;
+  }
+  /* Slide-in animation for the avatar cluster */
+  @keyframes avatars-slide-in {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  #zhAvatarWrap.avatars-open .zh-avatars {
+    animation: avatars-slide-in 200ms cubic-bezier(0, 0, 0.2, 1) both;
+  }
+  /* Also hide the eyebrow row and shrink header padding when collapsed */
+  .zone-header.is-collapsed .zh-eyebrow {
+    display: none;
+  }
+  .zone-header.is-collapsed {
+    padding-bottom: 8px;
+  }
+
+  /* Stakeholder avatar cluster */
+  .zh-avatars {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+    position: relative;
+  }
+  .zh-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: transform 150ms, z-index 0ms;
+    margin-left: -8px;
+  }
+  .zh-avatar:first-child { margin-left: 0; }
+  .zh-avatar:hover { transform: translateY(-2px); z-index: 10; }
+  .zh-avatar[data-initials="AM"] { background: #3b82f6; }
+  .zh-avatar[data-initials="PK"] { background: #8b5cf6; }
+  .zh-avatar[data-initials="KB"] { background: #10b981; }
+  .zh-avatar[data-initials="AR"] { background: #FFA426; }
+  .zh-avatar-overflow {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: #f5f5f5;
+    color: #666;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: -8px;
+  }
+  .zh-avatar-overflow:hover { background: #ebebeb; }
+
+  /* Avatar tooltip */
+  .zh-avatar::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 150ms;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .zh-avatar:hover::after { opacity: 1; }
+
+  /* Icon-only action buttons (Edit, Share, More) */
+  .zh-icon-btn {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: background 150ms, border-color 150ms, color 150ms;
+    flex-shrink: 0;
+  }
+  .zh-icon-btn:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+    color: #1a1a1a;
+  }
+  .zh-icon-btn svg { width: 16px; height: 16px; }
+
+  /* Primary CTA group */
+  .zh-cta-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Ask Tango button — gradient */
+  .btn-tango {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity 150ms, transform 150ms;
+    white-space: nowrap;
+  }
+  .btn-tango:hover { opacity: 0.92; transform: translateY(-1px); }
+  .btn-tango svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* Submit for Approval button */
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 24px;
+    background: #FFA426;
+    color: #1a1a1a;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background 150ms, transform 150ms;
+    white-space: nowrap;
+  }
+  .btn-submit:hover { background: #F89622; transform: translateY(-1px); }
+  .btn-submit svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  /* Expand / collapse toggle button next to Submit */
+  .btn-expand-details {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 9999px;
+    border: 1.5px solid #e5e5e5;
+    background: #ffffff;
+    color: #666;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 140ms, border-color 140ms, color 140ms;
+  }
+  .btn-expand-details:hover { background: #f5f5f5; border-color: #ccc; color: #333; }
+  .btn-expand-details svg { width: 15px; height: 15px; transition: transform 260ms cubic-bezier(0,0,0.2,1); }
+  .btn-expand-details[aria-expanded="false"] svg { transform: rotate(180deg); }
+
+  /* Stage-stepper collapsed state */
+  /* stage-stepper collapse handled in full rule above */
+
+  /* ─── TANGO PANEL (right) — stub for structure ──────────────────────── */
+  .tango-panel {
+    width: 320px;
+    min-width: 320px;
+    background: #fff;
+    border-left: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ─── STAGE BAR (below zone-header, in main scroll) ────────────────── */
+  .stage-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 12px 20px;
+    background: #fff;
+    border-bottom: 1px solid #f0f0f0;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+
+  /* ─── STAGE STEPPER ────────────────────────────────────────────────── */
+  /*
+    Replaces old .stage-bar stub.
+    Stat row and hero-nudge are GONE.
+    Flight metrics embed directly inside this bar.
+  */
+  .stage-stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 20px;
+    background: #ffffff;
+    border: 1px solid #e8edf2;
+    border-radius: 12px;
+    height: 56px;
+    flex-shrink: 0;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    margin-bottom: 12px;
+    transition: height 280ms cubic-bezier(0,0,0.2,1),
+                opacity 220ms ease,
+                margin 280ms cubic-bezier(0,0,0.2,1);
+  }
+  .stage-stepper.is-collapsed {
+    height: 0 !important;
+    margin: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Individual stage step */
+  .stage-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-shrink: 0;
+  }
+
+  .stage-step__body {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 2px;
+    cursor: default;
+  }
+
+  /* State icon circle */
+  .stage-step__icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .stage-step__icon.done {
+    background: #10b981;
+    color: #fff;
+  }
+  .stage-step__icon.active {
+    background: #FFA426;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(255,164,38,0.18);
+  }
+  .stage-step__icon.pending {
+    background: #f5f5f5;
+    color: #ccc;
+    border: 1.5px solid #e5e5e5;
+  }
+  .stage-step__icon svg { width: 12px; height: 12px; }
+
+  /* Stage label block */
+  .stage-step__label {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .stage-step__name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .stage-step__name.pending { color: #999; }
+  .stage-step__sub {
+    font-size: 10px;
+    color: #999;
+    font-weight: 400;
+  }
+  .stage-step__sub.active-sub { color: #FFA426; font-weight: 500; }
+
+  /* Connector line between steps */
+  .stage-connector {
+    height: 2px;
+    flex: 1;
+    min-width: 16px;
+    max-width: 36px;
+    margin: 0 4px;
+    border-radius: 2px;
+    background: #e5e5e5;
+    position: relative;
+    overflow: hidden;
+  }
+  .stage-connector.done { background: #10b981; }
+  .stage-connector.active {
+    background: #e5e5e5;
+  }
+  .stage-connector.active::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 60%;
+    background: linear-gradient(90deg, #FFA426, #FBB03B);
+    border-radius: 2px;
+    animation: connector-pulse 2s ease-in-out infinite;
+  }
+  @keyframes connector-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  /* ── Embedded flight metrics (far right of stage bar) ──────────────── */
+  .stage-metrics {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    padding-left: 20px;
+    border-left: 1px solid #f0f0f0;
+  }
+
+  /* Micro status pills */
+  .stage-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+    cursor: default;
+  }
+  .stage-pill.blocker {
+    background: #fef2f2;
+    color: #ef4444;
+  }
+  .stage-pill.open-actions {
+    background: #fffbeb;
+    color: #f59e0b;
+  }
+  .stage-pill .pill-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .stage-pill.blocker .pill-dot   { background: #ef4444; }
+  .stage-pill.open-actions .pill-dot { background: #f59e0b; }
+
+  /* Day counter + mini progress track */
+  .stage-flight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .stage-flight__label {
+    font-size: 11px;
+    font-weight: 500;
+    color: #666;
+    white-space: nowrap;
+  }
+  .stage-flight__label strong {
+    color: #1a1a1a;
+    font-weight: 700;
+  }
+  /* 4px tall progress track */
+  .stage-flight__track {
+    width: 80px;
+    height: 4px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .stage-flight__fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #FFA426 0%, #FBB03B 100%);
+    transition: width 600ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  /* Percent label */
+  .stage-flight__pct {
+    font-size: 11px;
+    font-weight: 600;
+    color: #FFA426;
+    white-space: nowrap;
+  }
+
+  /* ─── DEMAND WORKSPACE GRID ─────────────────────────────────────────── */
+  /*
+    Master 3-column horizontal layout.
+    Flow (fixed) | Actions (fluid) | Insights (fixed)
+    Fills all remaining vertical space below stage-stepper.
+  */
+  .demand-workspace-grid {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background: transparent;
+    position: relative;
+  }
+
+  /* Needs Attention — fluid right column, must allow kanban to scroll */
+  .dwg-col--actions {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+  }
+
+  /* ── Column base ───────────────────────────────────────────────────── */
+  .dwg-col {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e8edf2;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+
+  /* Activity Flow — narrow left column (~26%) */
+  .dwg-col--flow {
+    width: 26%;
+    min-width: 220px;
+    flex-shrink: 0;
+    transition: width 260ms cubic-bezier(0,0,0.2,1),
+                min-width 260ms cubic-bezier(0,0,0.2,1),
+                opacity 200ms ease,
+                margin 260ms cubic-bezier(0,0,0.2,1);
+  }
+  .dwg-col--flow.collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+
+  /* Ghost rail — shown when Flow is collapsed */
+  .flow-ghost {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 36px;
+    min-width: 36px;
+    padding-top: 12px;
+    background: #ffffff;
+    border: 1px solid #e8edf2;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background 140ms;
+  }
+  .flow-ghost:hover { background: #f8fafc; }
+  .flow-ghost.visible { display: flex; }
+  .flow-ghost__label {
+    writing-mode: vertical-lr;
+    font-size: 10px;
+    font-weight: 600;
+    color: #ccc;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    user-select: none;
+    margin-top: 4px;
+  }
+
+  /* ── Column header ───────────────────────────────────────────────── */
+  .dwg-col-header {
+    height: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 0 14px;
+    border-bottom: 1px solid #f0f4f8;
+    gap: 8px;
+    flex-shrink: 0;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .dwg-col-header__left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .dwg-col-header__title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dwg-col-header__sub {
+    font-size: 11px;
+    color: #999;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dwg-col-header__right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── Header badges ───────────────────────────────────────────────── */
+  .dwg-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .dwg-badge--green {
+    background: #f0fdf4;
+    color: #10b981;
+  }
+  .dwg-badge--red {
+    background: #fef2f2;
+    color: #ef4444;
+  }
+  .dwg-badge--amber {
+    background: #fffbeb;
+    color: #f59e0b;
+  }
+  .dwg-badge__dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dwg-badge--red .dwg-badge__dot   { background: #ef4444; }
+  .dwg-badge--amber .dwg-badge__dot { background: #f59e0b; }
+
+  /* ── Header icon buttons ─────────────────────────────────────────── */
+  .dwg-icon-btn,
+  .dwg-collapse-btn,
+  .dwg-expand-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    transition: background 150ms, color 150ms;
+    flex-shrink: 0;
+  }
+  .dwg-icon-btn:hover,
+  .dwg-collapse-btn:hover,
+  .dwg-expand-btn:hover { background: #f5f5f5; color: #1a1a1a; }
+  .dwg-icon-btn svg,
+  .dwg-collapse-btn svg,
+  .dwg-expand-btn svg { width: 14px; height: 14px; }
+
+  /* ── Column scrollable body ──────────────────────────────────────── */
+  .dwg-col-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .dwg-col-body::-webkit-scrollbar { width: 4px; }
+  .dwg-col-body::-webkit-scrollbar-track { background: transparent; }
+  .dwg-col-body::-webkit-scrollbar-thumb { background: #e5e5e5; border-radius: 4px; }
+
+  /* ── DEMAND FLOW column internals ─────────────────────────────────── */
+  .flow-section { padding: 12px 14px 8px; }
+
+  .flow-stage {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    position: relative;
+  }
+  /* Vertical connector line between stage dots */
+  .flow-stage:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 24px;
+    width: 2px;
+    height: calc(100% - 10px);
+    background: #f0f0f0;
+    border-radius: 2px;
+  }
+  .flow-stage--done::after    { background: #10b981; opacity: 0.3; }
+  .flow-stage--active::after  { background: #FFA426; opacity: 0.3; }
+
+  .flow-stage__dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .flow-stage__dot--done    { background: #10b981; }
+  .flow-stage__dot--active  {
+    background: #FFA426;
+    box-shadow: 0 0 0 3px rgba(255,164,38,0.18);
+    animation: pulse-orange 2s ease-in-out infinite;
+  }
+  @keyframes pulse-orange {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(255,164,38,0.18); }
+    50%       { box-shadow: 0 0 0 6px rgba(255,164,38,0.06); }
+  }
+  .flow-stage__dot--pending {
+    background: #f5f5f5;
+    border: 2px solid #e5e5e5;
+  }
+
+  .flow-stage__info { display: flex; flex-direction: column; }
+  .flow-stage__name { font-size: 12px; font-weight: 600; color: #1a1a1a; line-height: 1.3; }
+  .flow-stage__name--pending { color: #bbb; }
+  .flow-stage__meta { font-size: 11px; color: #999; }
+  .flow-stage__meta--active { color: #FFA426; font-weight: 500; }
+
+  .flow-divider {
+    height: 1px;
+    background: #f0f0f0;
+    margin: 4px 14px 0;
+  }
+
+  .flow-stat-list { padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; }
+  .flow-stat {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .flow-stat__label { font-size: 11px; color: #999; font-weight: 500; flex-shrink: 0; }
+  .flow-stat__value { font-size: 12px; color: #1a1a1a; font-weight: 500; text-align: right; }
+  .flow-stat__value--red { color: #ef4444; }
+  .flow-stat__avatar-row { display: flex; align-items: center; gap: 5px; }
+
+  /* ── MINI AVATARS (shared) ───────────────────────────────────────── */
+  .mini-avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .mini-avatar--orange { background: #FFA426; color: #1a1a1a; }
+  .mini-avatar--blue   { background: #3b82f6; }
+  .mini-avatar--purple { background: #8b5cf6; }
+  .mini-avatar--green  { background: #10b981; }
+
+  /* ══════════════════════════════════════════════════════════════════ */
+  /* ── ACTION DETAIL OVERLAY — right slide-in panel                   */
+  /* ══════════════════════════════════════════════════════════════════ */
+
+  .actions-master-detail {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* View toggle bar — sits above the kanban/list */
+  .actions-view-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 4px 14px 0;
+    flex-shrink: 0;
+  }
+  .view-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 140ms;
+  }
+  .view-toggle-btn svg { width: 13px; height: 13px; }
+  .view-toggle-btn.active {
+    background: #f0f4f8;
+    color: #334155;
+    border-color: #e2e8f0;
+  }
+  .view-toggle-btn:not(.active):hover { color: #64748b; background: #f8fafc; }
+
+  /* Kanban board */
+  .actions-list {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px 14px 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    align-items: stretch;
+    background: #f8fafc;
+  }
+  .actions-list::-webkit-scrollbar { height: 5px; }
+  .actions-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  .actions-list::-webkit-scrollbar-track { background: transparent; }
+
+  /* List view — vertical stack */
+  /* ── List view — flat rows matching screenshot ──────────────────── */
+  .actions-list.list-view {
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    background: #ffffff;
+  }
+
+  /* Column becomes a flat section, no card */
+  .actions-list.list-view .action-group {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: #ffffff;
+    overflow: visible;
+    min-height: 0;
+  }
+
+  /* Section label row — plain, sticky */
+  .actions-list.list-view .action-group__header {
+    border-radius: 0;
+    border: none;
+    border-bottom: none;
+    padding: 16px 20px 6px;
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 2;
+  }
+
+  /* Each row — full-width flat horizontal row, no card box */
+  .actions-list.list-view .action-row {
+    flex-direction: row;
+    align-items: center;
+    margin: 0;
+    padding: 14px 20px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #f0f4f8;
+    box-shadow: none;
+    background: #ffffff;
+    gap: 12px;
+    width: 100%;
+  }
+  .actions-list.list-view .action-row:hover {
+    background: #fafafa;
+    border-color: #f0f4f8;
+    box-shadow: none;
+  }
+  .actions-list.list-view .action-row.active {
+    background: #FFF8F0;
+    border-left: 3px solid #FFA426;
+    padding-left: 17px;
+  }
+  .actions-list.list-view .action-row--overdue {
+    border-left: 3px solid #fca5a5;
+    padding-left: 17px;
+  }
+
+  /* Body row: checkbox + title takes all space */
+  .actions-list.list-view .action-row__body {
+    flex: 1;
+    min-width: 0;
+  }
+  .actions-list.list-view .action-row__title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Footer becomes a horizontal right-side cluster */
+  .actions-list.list-view .action-row__footer {
+    width: auto;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+  .actions-list.list-view .action-row__time {
+    min-width: 80px;
+    text-align: right;
+  }
+
+  /* Each group = a kanban column */
+  .action-group {
+    flex: 0 0 290px;
+    min-width: 290px;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #e8edf2;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 0;
+  }
+  .action-group::-webkit-scrollbar { width: 3px; }
+  .action-group::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+  .action-group__header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 12px 14px 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #f0f4f8;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border-radius: 10px 10px 0 0;
+    flex-shrink: 0;
+  }
+  .action-group__label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .action-group__label--overdue    { color: #dc2626; }
+  .action-group__label--inprogress { color: #2563eb; }
+  .action-group__label--todo       { color: #d97706; }
+  .action-group__label--done       { color: #059669; }
+  .action-group__count {
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 20px;
+    padding: 1px 7px;
+    min-width: 20px;
+    text-align: center;
+  }
+  .action-group__label--overdue   ~ .action-group__count { background: #dc2626; }
+  .action-group__label--inprogress ~ .action-group__count { background: #2563eb; }
+  .action-group__label--todo       ~ .action-group__count { background: #d97706; }
+  .action-group__label--done       ~ .action-group__count { background: #059669; }
+
+  .action-group .action-row { margin: 10px 10px 0; }
+  .action-group .action-row:last-child { margin-bottom: 10px; }
+
+  /* Tango column */
+  .action-group--tango { background: #fdfbff; border-color: #e9e1ff; }
+  .action-group--tango .action-group__header { background: #fdfbff; border-bottom-color: #ede9fe; }
+
+  /* Backdrop */
+  .detail-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 240ms ease;
+  }
+  .detail-backdrop.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* Slide-in panel — full height, right edge, 420px wide */
+  .detail-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 420px;
+    max-width: 100vw;
+    background: #ffffff;
+    box-shadow: -8px 0 40px rgba(0,0,0,0.12);
+    border-left: 1px solid #f0f0f0;
+    z-index: 501;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateX(100%);
+    transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1),
+                width 260ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .detail-panel.open {
+    transform: translateX(0);
+  }
+  .detail-panel.expanded {
+    width: 45vw;
+  }
+
+  /* ── dp = Detail Panel component classes ─────────────────────────── */
+
+  /* Header row: icon + title/status left, X right */
+  .dp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+    gap: 12px;
+  }
+  .dp-header__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+  .dp-header__icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .dp-header__icon svg { width: 16px; height: 16px; stroke: #fff; }
+  .dp-header__title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.3;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    max-width: 300px;
+  }
+  .dp-header__sub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 3px;
+    flex-wrap: wrap;
+  }
+
+  /* Stage chip — sits inline with status */
+  .dp-stage-chip {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: #eff6ff;
+    color: #3b82f6;
+    border: 1px solid #bfdbfe;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  /* Go to Demand — animated arrow link */
+  .dp-go-demand {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #FFA426;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+    margin-left: 2px;
+    transition: color 150ms;
+    white-space: nowrap;
+  }
+  .dp-go-demand svg {
+    width: 12px; height: 12px;
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .dp-go-demand:hover { color: #F89622; }
+  .dp-go-demand:hover svg { transform: translateX(4px); }
+
+  /* Comments section */
+  .dp-comments-section {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  /* Collapsible section toggle — shared by Activity and Comments */
+  .dp-section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 10px 16px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    transition: color 140ms, background 140ms;
+  }
+  .dp-section-toggle:hover { color: #666; background: #fafafa; }
+  .dp-section-chevron {
+    width: 13px; height: 13px;
+    color: #ccc;
+    transition: transform 220ms cubic-bezier(0,0,0.2,1), color 140ms;
+    flex-shrink: 0;
+  }
+  .dp-section-toggle[aria-expanded="true"] .dp-section-chevron { transform: rotate(180deg); color: #aaa; }
+
+  /* Collapsible body */
+  .dp-section-body {
+    overflow: hidden;
+    max-height: 400px;
+    opacity: 1;
+    transition: max-height 260ms cubic-bezier(0,0,0.2,1), opacity 200ms ease;
+  }
+  .dp-section-body.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+  .dp-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .dp-comment {
+    display: flex;
+    gap: 9px;
+    align-items: flex-start;
+  }
+  .dp-comment-avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 1px;
+  }
+  .dp-comment-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .dp-comment--tango .dp-comment-body {
+    background: #faf7ff;
+    border: 1px solid #ede9fe;
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .dp-comment-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dp-comment-author {
+    font-size: 11px;
+    font-weight: 700;
+    color: #333;
+  }
+  .dp-comment-time {
+    font-size: 10px;
+    color: #bbb;
+  }
+  .dp-comment-text {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.5;
+  }
+
+  /* Comment input row */
+  .dp-comment-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dp-comment-input-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #f5f5f5;
+    border: 1.5px solid #eee;
+    border-radius: 20px;
+    padding: 0 6px 0 12px;
+    gap: 4px;
+    transition: border-color 150ms, background 150ms;
+  }
+  .dp-comment-input-wrap:focus-within {
+    border-color: #c4b5fd;
+    background: #fff;
+  }
+  .dp-comment-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: #333;
+    padding: 8px 0;
+    outline: none;
+  }
+  .dp-comment-input::placeholder { color: #bbb; }
+  .dp-comment-send {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #8b5cf6;
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 150ms, transform 150ms;
+  }
+  .dp-comment-send:hover { background: #7c3aed; transform: scale(1.05); }
+  .dp-comment-send svg { width: 12px; height: 12px; }
+  .dp-status {
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    appearance: none;
+    outline: none;
+    border: none;
+    background: transparent;
+    padding-right: 18px;
+    /* chevron */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0px center;
+  }
+  .dp-status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-block;
+  }
+  .dp-status-dot--todo       { background: #aaa; }
+  .dp-status-dot--done       { background: #10b981; }
+  .dp-status-dot--inprogress { background: #3b82f6; }
+  .dp-status-dot--overdue    { background: #ef4444; }
+
+  /* Close X button */
+  .dp-close, .dp-expand {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #bbb;
+    transition: background 140ms, color 140ms;
+    flex-shrink: 0;
+  }
+  .dp-close:hover, .dp-expand:hover { background: #f2f2f2; color: #444; }
+  .dp-close svg, .dp-expand svg { width: 15px; height: 15px; }
+
+  /* Quick actions row */
+  .dp-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px 14px;
+    flex-shrink: 0;
+  }
+  .dp-qa {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-radius: 10px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 140ms, border-color 140ms, color 140ms, transform 120ms, box-shadow 140ms;
+    white-space: nowrap;
+  }
+  /* Mark Done — full width, orange filled */
+  .dp-qa--done {
+    flex: 1;
+    padding: 11px 16px;
+    background: #FFA426;
+    color: #1a1a1a;
+    border: none;
+    box-shadow: 0 2px 8px rgba(255,164,38,0.30);
+  }
+  .dp-qa--done:hover { background: #F89622; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,164,38,0.38); }
+  .dp-qa--done svg { width: 15px; height: 15px; }
+  /* Reassign — full width, outline */
+  .dp-qa--outline {
+    flex: 1;
+    padding: 11px 16px;
+    background: #fff;
+    color: #333;
+    border: 1.5px solid #e0e0e0;
+  }
+  .dp-qa--outline:hover { border-color: #bbb; color: #111; background: #fafafa; }
+  .dp-qa--outline svg { width: 15px; height: 15px; }
+  /* More ··· — small square icon button, no flex growth */
+  .dp-qa--more {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    padding: 0;
+    background: #fff;
+    color: #aaa;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .dp-qa--more:hover { border-color: #bbb; color: #555; }
+
+  /* Main title */
+  .dp-title-block {
+    padding: 0 16px 16px;
+    flex-shrink: 0;
+  }
+  .dp-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.35;
+  }
+
+  .dp-divider { height: 1px; background: #f0f0f0; flex-shrink: 0; }
+
+  /* Properties section */
+  .dp-props {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 12px;
+    flex-shrink: 0;
+  }
+  .dp-prop { display: flex; flex-direction: column; gap: 4px; }
+  .dp-prop--full { grid-column: 1 / -1; }
+
+  .dp-prop-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .dp-prop-value {
+    font-size: 13px;
+    color: #222;
+    font-weight: 500;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .dp-prop-value--link {
+    color: #FFA426;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .dp-prop-value--link svg { width: 12px; height: 12px; flex-shrink: 0; }
+  .dp-prop-value--red { color: #ef4444; font-weight: 600; }
+
+  /* Section origin chip */
+  .dp-section-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: #FFF8F0;
+    color: #FFA426;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #FFE4B5;
+  }
+  .dp-section-chip svg { width: 12px; height: 12px; }
+
+  /* Assignee/creator row */
+  .dp-person {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .dp-avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .dp-avatar--purple { background: #8b5cf6; }
+  .dp-avatar--orange { background: #FFA426; color: #1a1a1a; }
+  .dp-avatar--blue   { background: #3b82f6; }
+  .dp-person-name { font-size: 13px; font-weight: 500; color: #222; }
+
+  /* ── Tango context block ─────────────────────────────────────────── */
+  .dp-tango-block {
+    margin: 0 16px 0;
+    border-top: 1px solid #f0f0f0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    background: #faf7ff;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  /* Collapsible header — full-width clickable button */
+  .dp-tango-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #7c3aed;
+    width: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    transition: background 120ms;
+  }
+  .dp-tango-header:hover { background: rgba(139,92,246,0.04); }
+  .dp-tango-header__left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dp-tango-header svg { width: 14px; height: 14px; color: #8b5cf6; }
+  .dp-tango-chevron {
+    width: 14px; height: 14px;
+    color: #c4b5fd;
+    flex-shrink: 0;
+    transition: transform 220ms cubic-bezier(0,0,0.2,1);
+  }
+  .dp-tango-block.is-open .dp-tango-chevron { transform: rotate(180deg); }
+
+  /* Collapsible body */
+  .dp-tango-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 14px 14px;
+    overflow: hidden;
+    max-height: 200px;
+    transition: max-height 240ms cubic-bezier(0,0,0.2,1),
+                padding 200ms ease,
+                opacity 200ms ease;
+    opacity: 1;
+  }
+  .dp-tango-body.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+
+  .dp-tango-text {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.55;
+  }
+  .dp-tango-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dp-tango-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    border-radius: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 140ms, transform 120ms;
+    white-space: nowrap;
+    border: none;
+    background: linear-gradient(135deg, #8b5cf6, #FFA426);
+    color: #fff;
+  }
+  .dp-tango-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+  .dp-tango-cta svg { width: 11px; height: 11px; }
+  .dp-tango-cta--ghost {
+    background: transparent;
+    border: 1.5px solid #d8ccf5;
+    color: #7c3aed;
+  }
+  .dp-tango-cta--ghost:hover { background: #f3ecff; opacity: 1; }
+
+  /* Slim 2-col properties row */
+  .dp-props-slim {
+    display: flex;
+    gap: 0;
+    padding: 12px 16px;
+    flex-shrink: 0;
+  }
+  .dp-prop-slim {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .dp-prop-slim:not(:last-child) {
+    border-right: 1px solid #f0f0f0;
+    margin-right: 16px;
+    padding-right: 16px;
+  }
+
+  /* Activity section */
+  .dp-activity-section {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .dp-act-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+  .dp-act-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    position: relative;
+  }
+  /* Vertical connector line */
+  .dp-act-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 20px;
+    bottom: -6px;
+    width: 1px;
+    background: #f0f0f0;
+  }
+  .dp-act-dot {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 3px;
+    border: 2px solid;
+  }
+  .dp-act-dot--red    { background: #fef2f2; border-color: #ef4444; }
+  .dp-act-dot--grey   { background: #f5f5f5; border-color: #d1d5db; }
+  .dp-act-dot--purple { background: #f3ecff; border-color: #c4b5fd; }
+  .dp-act-dot--orange { background: #fff8f0; border-color: #FFA426; }
+  .dp-act-body { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+  .dp-act-title { font-size: 12px; font-weight: 600; color: #1a1a1a; line-height: 1.3; }
+  .dp-act-meta  { font-size: 11px; color: #aaa; line-height: 1.3; }
+
+  /* ── Activity timeline ───────────────────────────────────────────── */
+  .dp-section-title {
+    padding: 6px 16px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  .dp-activity {
+    padding: 0 16px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex-shrink: 0;
+  }
+  .dp-act-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    padding: 8px 0;
+    position: relative;
+  }
+  /* Vertical connector line */
+  .dp-act-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 28px;
+    bottom: -4px;
+    width: 1.5px;
+    background: #f0f0f0;
+  }
+  .dp-act-dot {
+    width: 23px; height: 23px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+  .dp-act-dot--red    { background: #fef2f2; border: 1.5px solid #ef4444; }
+  .dp-act-dot--grey   { background: #f5f5f5; border: 1.5px solid #ddd; }
+  .dp-act-dot--purple { background: #f3ecff; border: 1.5px solid #c4b5fd; }
+  .dp-act-dot--orange { background: #fff8f0; border: 1.5px solid #FFA426; }
+  .dp-act-dot svg     { width: 11px; height: 11px; }
+  .dp-act-dot--red svg    { color: #ef4444; }
+  .dp-act-dot--grey svg   { color: #999; }
+  .dp-act-dot--purple svg { color: #8b5cf6; }
+  .dp-act-dot--orange svg { color: #FFA426; }
+
+  .dp-act-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .dp-act-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.3; }
+  .dp-act-meta  { font-size: 11px; color: #aaa; line-height: 1.3; }
+
+  /* ── Comments thread ─────────────────────────────────────────────── */
+  .dp-comments {
+    padding: 4px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .dp-comment {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+  }
+  .dp-comment-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .dp-comment-avatar--purple { background: #8b5cf6; }
+  .dp-comment-avatar--tango  { background: linear-gradient(135deg,#8b5cf6,#FFA426); }
+  .dp-comment-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .dp-comment-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .dp-comment-author { font-size: 12px; font-weight: 700; color: #1a1a1a; }
+  .dp-comment-author--tango { color: #8b5cf6; }
+  .dp-comment-time  { font-size: 11px; color: #bbb; }
+  .dp-comment-text  { font-size: 12.5px; color: #444; line-height: 1.55; }
+
+  /* Add comment input */
+  .dp-comment-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px 16px;
+    flex-shrink: 0;
+    border-top: 1px solid #f5f5f5;
+  }
+  .dp-comment-input {
+    flex: 1;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: #333;
+    border: 1.5px solid #ebebeb;
+    border-radius: 20px;
+    padding: 7px 14px;
+    outline: none;
+    background: #fafafa;
+    transition: border-color 150ms, background 150ms;
+  }
+  .dp-comment-input::placeholder { color: #bbb; }
+  .dp-comment-input:focus { border-color: #c4b5fd; background: #fff; }
+
+  /* ── Action group ──────────────────────────────────────────────── */
+  /* ── Action group ───────────────────────────────────────────────── */
+  /* ── Action row — vertical card ─────────────────────────────────── */
+  .action-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 14px;
+    gap: 10px;
+    border-radius: 8px;
+    border: 1.5px solid #e8edf2;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: border-color 140ms, box-shadow 140ms;
+    box-sizing: border-box;
+  }
+  .action-row:hover { border-color: #b0bec5; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .action-row.active { background: #FFF8F0; border-color: #FFA426; }
+
+  .action-row--tango { background: #fdfcff; border-color: #e4dcfd; }
+  .action-row--tango:hover { border-color: #c4b5fd; }
+
+  .action-row--overdue { border-color: #fca5a5; background: #fffafa; }
+  .action-row--overdue:hover { border-color: #f87171; }
+
+  .action-row--completed { opacity: 0.5; }
+  .action-row--completed:hover { opacity: 0.72; }
+
+  /* Top row: checkbox + title */
+  .action-row__body {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+  .action-row__title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+    line-height: 1.45;
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+  }
+  .action-row__title--done { text-decoration: line-through; color: #94a3b8; }
+
+  /* Bottom footer: time left, chevron right */
+  .action-row__footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .action-row__tango-suffix {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8b5cf6;
+    flex-shrink: 0;
+  }
+  .action-row__time {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    white-space: nowrap;
+  }
+  .action-row__time--overdue { color: #dc2626; }
+  .action-row__time--done    { color: #059669; }
+  .action-row__time--tango   { color: #7c3aed; }
+
+  .action-row__chevron {
+    color: #cbd5e1;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    transition: color 150ms;
+  }
+  .action-row:hover .action-row__chevron { color: #94a3b8; }
+  .action-row.active .action-row__chevron { color: #FFA426; }
+  .action-row__chevron svg { width: 13px; height: 13px; }
+
+  /* Checkbox */
+  .action-row__checkbox {
+    position: relative;
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+    cursor: pointer;
+    margin-top: 2px;
+  }
+  .action-row__checkbox input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .action-row__checkmark {
+    position: absolute;
+    inset: 0;
+    border: 2px solid #94a3b8;
+    border-radius: 4px;
+    background: #fff;
+    transition: border-color 150ms, background 150ms;
+  }
+  .action-row__checkbox:hover .action-row__checkmark { border-color: #FFA426; }
+  .action-row__checkbox input:checked + .action-row__checkmark {
+    background: #059669; border-color: #059669;
+  }
+  .action-row__checkbox input:checked + .action-row__checkmark::after {
+    content: '';
+    position: absolute;
+    left: 4px; top: 1px;
+    width: 5px; height: 9px;
+    border: 2px solid #fff;
+    border-top: none; border-left: none;
+    transform: rotate(45deg);
+  }
+
+  /* ─── DEMO PLACEHOLDER CONTENT ──────────────────────────────────────── */
+
+  /* ═══════════════════════════════════════════════════════════════════
+     STEP 4 — Activity Feed, Insights Cards, Tango Chat Panel
+  ════════════════════════════════════════════════════════════════════ */
+
+  /* ── Activity Feed ───────────────────────────────────────────────── */
+  .feed-wrap {
+    padding: 10px 0 16px;
+  }
+
+  /* Date header */
+  .feed-date-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px 6px;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 2;
+  }
+  .feed-date-header__label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .feed-date-header__line {
+    flex: 1;
+    height: 1px;
+    background: #f0f0f0;
+  }
+
+  /* Human activity item */
+  .feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 14px;
+    transition: background 120ms;
+  }
+  .feed-item:hover { background: #fafafa; }
+
+  /* Human avatar */
+  .feed-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 1px;
+  }
+  .feed-avatar--blue   { background: #3b82f6; }
+  .feed-avatar--purple { background: #8b5cf6; }
+  .feed-avatar--green  { background: #10b981; }
+  .feed-avatar--orange { background: #FFA426; color: #1a1a1a; }
+  .feed-avatar--red    { background: #ef4444; }
+
+  /* Timeline icon (replaces avatar in Activity Flow) */
+  .tl-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .tl-icon svg { width: 13px; height: 13px; }
+  .tl-icon--check { background: #f0fdf4; color: #10b981; }
+  .tl-icon--check svg { stroke: #10b981; }
+  .tl-icon--alert { background: #fffbeb; color: #f59e0b; }
+  .tl-icon--alert svg { stroke: #f59e0b; }
+  .tl-icon--doc   { background: #eff6ff; color: #3b82f6; }
+  .tl-icon--doc   svg { stroke: #3b82f6; }
+  .tl-icon--stage { background: #fff8f0; color: #FFA426; }
+  .tl-icon--stage svg { stroke: #FFA426; }
+
+  /* Feed item body */
+  .feed-item__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .feed-item__text {
+    font-size: 12px;
+    color: #333;
+    line-height: 1.45;
+  }
+  .feed-item__text strong {
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  /* Highlighted object — orange underline treatment */
+  .feed-item__text .feed-highlight {
+    font-weight: 600;
+    color: #1a1a1a;
+    border-bottom: 1.5px solid #FFA426;
+    cursor: pointer;
+    transition: color 120ms;
+  }
+  .feed-item__text .feed-highlight:hover { color: #FFA426; }
+
+  /* Meta row: clock + time + role */
+  .feed-item__meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: #999;
+    line-height: 1;
+  }
+  .feed-item__meta svg { width: 10px; height: 10px; flex-shrink: 0; color: #ccc; }
+
+  /* Action-required badge */
+  .feed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 2px;
+    align-self: flex-start;
+  }
+  .feed-badge--action {
+    background: #fffbeb;
+    color: #f59e0b;
+    border: 1px solid #fde68a;
+  }
+  .feed-badge--action::before {
+    content: '⚠';
+    font-size: 9px;
+  }
+
+  /* ── Tango AI feed item — distinct card wrapper ──────────────────── */
+  .feed-item--tango {
+    background: #faf5ff;
+    border-radius: 10px;
+    margin: 4px 10px;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+  .feed-item--tango:hover { background: #f5eeff; }
+
+  /* Tango avatar: rounded square with sparkle */
+  .feed-tango-avatar {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    background: #ede9fe;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .feed-tango-avatar svg { width: 14px; height: 14px; color: #8b5cf6; }
+
+  /* Tango tag pills */
+  .feed-tango-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    background: #ede9fe;
+    color: #7c3aed;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  /* ── DEMAND INSIGHTS CARDS ───────────────────────────────────────── */
+  .insights-wrap {
+    padding: 12px 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Section label */
+  .insights-section-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ccc;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 2px 4px;
+  }
+
+  /* Insight card */
+  .insight-card {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    padding: 13px 13px 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    transition: box-shadow 150ms, border-color 150ms;
+    cursor: default;
+  }
+  .insight-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+    border-color: #e0e0e0;
+  }
+
+  /* Card header: source tag + confidence dot */
+  .insight-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .insight-card__source {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #8b5cf6;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .insight-card__source svg { width: 11px; height: 11px; }
+  .insight-card__confidence {
+    font-size: 10px;
+    font-weight: 600;
+    color: #10b981;
+    background: #f0fdf4;
+    border-radius: 20px;
+    padding: 1px 7px;
+  }
+
+  /* Card body text */
+  .insight-card__text {
+    font-size: 12px;
+    color: #333;
+    line-height: 1.55;
+  }
+  .insight-card__text strong { color: #1a1a1a; font-weight: 600; }
+
+  /* Card actions */
+  .insight-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  /* Primary: filled orange pill */
+  .ic-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 13px;
+    border-radius: 20px;
+    border: none;
+    background: #FFA426;
+    color: #1a1a1a;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms, transform 150ms;
+    white-space: nowrap;
+  }
+  .ic-btn-primary:hover { background: #F89622; transform: translateY(-1px); }
+  .ic-btn-primary svg { width: 11px; height: 11px; }
+
+  /* Secondary: outline ghost */
+  .ic-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1.5px solid #e5e5e5;
+    background: #fff;
+    color: #666;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 150ms, color 150ms;
+    white-space: nowrap;
+  }
+  .ic-btn-secondary:hover { border-color: #999; color: #333; }
+
+  /* Warning card variant */
+  .insight-card--warn {
+    border-color: #fde68a;
+    background: linear-gradient(160deg, #fffbeb 0%, #fff 60%);
+  }
+  .insight-card--warn .insight-card__source { color: #f59e0b; }
+  .insight-card--warn .insight-card__source svg { color: #f59e0b; }
+
+  /* Risk card variant */
+  .insight-card--risk {
+    border-color: #fecaca;
+    background: linear-gradient(160deg, #fff8f8 0%, #fff 60%);
+  }
+  .insight-card--risk .insight-card__source { color: #ef4444; }
+
+  /* ── TANGO AGENT CHAT PANEL ──────────────────────────────────────── */
+  /*
+    Fixed 320px panel. Lives OUTSIDE .demand-workspace-grid,
+    directly inside .app-shell as a 4th sibling.
+    Flex column: header (fixed) | chat history (scroll) | footer (fixed).
+  */
+  .tango-panel {
+    width: 320px;
+    min-width: 320px;
+    background: #ffffff;
+    border-left: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* Panel header */
+  .tango-panel__header {
+    height: 52px;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+    background: #fff;
+  }
+  .tango-panel__header-left {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  /* Tango gradient avatar square */
+  .tango-panel__avatar {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .tango-panel__avatar svg { width: 15px; height: 15px; color: #fff; }
+
+  .tango-panel__title-block {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .tango-panel__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .tango-panel__subtitle {
+    font-size: 10px;
+    color: #999;
+    font-weight: 400;
+  }
+
+  /* Header right: tab row + icons */
+  .tango-panel__tabs {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .tango-panel__tab {
+    font-size: 11px;
+    font-weight: 500;
+    color: #999;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: background 120ms, color 120ms;
+    white-space: nowrap;
+  }
+  .tango-panel__tab:hover { background: #f5f5f5; color: #333; }
+  .tango-panel__tab.active {
+    color: #FFA426;
+    background: #FFF8F0;
+    font-weight: 600;
+  }
+
+  /* Scrollable chat history */
+  .tango-panel__history {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 12px 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tango-panel__history::-webkit-scrollbar { width: 4px; }
+  .tango-panel__history::-webkit-scrollbar-thumb { background: #e5e5e5; border-radius: 4px; }
+
+  /* Date separator inside chat */
+  .chat-date-sep {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+  }
+  .chat-date-sep__line { flex: 1; height: 1px; background: #f0f0f0; }
+  .chat-date-sep__label {
+    font-size: 10px;
+    color: #ccc;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Chat activity entry (mirrors feed items but in chat style) */
+  .chat-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+  }
+  .chat-entry__avatar {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 1px;
+  }
+  .chat-entry__avatar--blue   { background: #3b82f6; }
+  .chat-entry__avatar--purple { background: #8b5cf6; }
+  .chat-entry__avatar--red    { background: #ef4444; }
+
+  .chat-entry__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .chat-entry__text {
+    font-size: 12px;
+    color: #333;
+    line-height: 1.45;
+  }
+  .chat-entry__text strong { font-weight: 600; color: #1a1a1a; }
+  .chat-entry__text .feed-highlight {
+    font-weight: 600;
+    color: #1a1a1a;
+    border-bottom: 1.5px solid #FFA426;
+  }
+  .chat-entry__meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: #bbb;
+  }
+  .chat-entry__meta svg { width: 9px; height: 9px; color: #ddd; }
+
+  /* Tango AI chat entry */
+  .chat-entry--tango {
+    background: #faf5ff;
+    border-radius: 10px;
+    padding: 10px 11px;
+    gap: 9px;
+  }
+  .chat-tango-sq {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: #ede9fe;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+  .chat-tango-sq svg { width: 12px; height: 12px; color: #8b5cf6; }
+
+  /* Action-required badge in chat */
+  .chat-badge--action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    background: #fffbeb;
+    color: #f59e0b;
+    border: 1px solid #fde68a;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+  .chat-tango-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    background: #ede9fe;
+    color: #7c3aed;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  /* ── Tango panel footer ───────────────────────────────────────────── */
+  .tango-panel__footer {
+    flex-shrink: 0;
+    border-top: 1px solid #f0f0f0;
+    padding: 8px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #fff;
+  }
+
+  /* Context hint line */
+  .tango-panel__hint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: #bbb;
+    font-weight: 500;
+    padding: 0 2px;
+  }
+  .tango-panel__hint svg { width: 11px; height: 11px; color: #c4b5fd; }
+
+  /* Chat input row */
+  .tango-panel__input-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: #fafafa;
+    border: 1.5px solid #e5e5e5;
+    border-radius: 24px;
+    padding: 0 6px 0 14px;
+    transition: border-color 200ms, box-shadow 200ms;
+  }
+  .tango-panel__input-row:focus-within {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139,92,246,0.1);
+    background: #fff;
+  }
+  .tango-panel__input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    color: #1a1a1a;
+    outline: none;
+    padding: 10px 0;
+    min-width: 0;
+  }
+  .tango-panel__input::placeholder { color: #bbb; }
+  .tango-panel__send {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 150ms, transform 150ms;
+  }
+  .tango-panel__send:hover { opacity: 0.88; transform: scale(1.06); }
+  .tango-panel__send svg { width: 13px; height: 13px; }
+  /* ═══════════════════════════════════════════════════════════════════
+     STEP 6 — Right global nav + collapsible Tango panel
+  ════════════════════════════════════════════════════════════════════ */
+
+  /* ── Right global nav bar ────────────────────────────────────────── */
+  .right-nav {
+    width: 52px;
+    min-width: 52px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border-left: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0 12px;
+    gap: 4px;
+    z-index: 10;
+  }
+
+  /* Tango trigger — gradient pill button */
+  .right-nav__tango-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 36px;
+    height: 44px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(160deg, #8b5cf6 0%, #FFA426 100%);
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 150ms, transform 150ms, box-shadow 150ms;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+    flex-shrink: 0;
+  }
+  .right-nav__tango-btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35);
+  }
+  .right-nav__tango-btn.active {
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+  }
+  .right-nav__tango-btn svg { width: 15px; height: 15px; }
+  .right-nav__tango-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .right-nav__divider {
+    width: 28px;
+    height: 1px;
+    background: #f0f0f0;
+    margin: 6px 0;
+    flex-shrink: 0;
+  }
+
+  /* Generic icon buttons in right nav */
+  .right-nav__icon-btn {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #bbb;
+    transition: background 140ms, color 140ms;
+    flex-shrink: 0;
+  }
+  .right-nav__icon-btn:hover { background: #f5f5f5; color: #555; }
+  .right-nav__icon-btn svg { width: 15px; height: 15px; }
+
+  /* ── Tango panel — collapsible ───────────────────────────────────── */
+  /*
+    Default (open): width 320px, opacity 1
+    Collapsed:      width 0, opacity 0, pointer-events none, no border
+    Transition is on width + opacity so the panel slides away cleanly.
+  */
+  .tango-panel {
+    width: 320px;
+    min-width: 320px;
+    background: #ffffff;
+    border-left: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    /* Smooth slide in/out */
+    transition: width 280ms cubic-bezier(0.4, 0, 0.2, 1),
+                min-width 280ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 200ms ease,
+                border-color 280ms ease;
+    opacity: 1;
+  }
+
+  .tango-panel--collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+    border-left-color: transparent;
+  }
+
+  /* Prevent panel contents from wrapping/overflowing during collapse */
+  .tango-panel__header,
+  .tango-panel__history,
+  .tango-panel__footer {
+    min-width: 320px; /* keeps content from reflowing during slide */
+  }
+
+  /* ── Agent chat bubbles ──────────────────────────────────────────── */
+  .agent-bubble {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* User message — right-aligned pill */
+  .agent-bubble--user {
+    flex-direction: row-reverse;
+  }
+  .agent-bubble--user .agent-bubble__body {
+    align-items: flex-end;
+  }
+  .agent-bubble--user .agent-bubble__text {
+    background: #FFF8F0;
+    border: 1px solid #FFE4B5;
+    border-radius: 12px 12px 0 12px;
+    color: #1a1a1a;
+  }
+
+  /* Tango message */
+  .agent-bubble__avatar {
+    width: 26px; height: 26px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+  }
+  .agent-bubble__avatar svg { width: 12px; height: 12px; color: #fff; }
+
+  .agent-bubble__body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .agent-bubble__text {
+    font-size: 12px;
+    color: #333;
+    line-height: 1.55;
+    background: #faf5ff;
+    border: 1px solid #ede9fe;
+    border-radius: 12px 12px 12px 0;
+    padding: 10px 12px;
+  }
+  .agent-bubble__text strong { color: #1a1a1a; font-weight: 600; }
+
+  /* Inline action buttons inside bubble */
+  .agent-bubble__actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .agent-bubble__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(135deg, #8b5cf6 0%, #FFA426 100%);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 150ms;
+    white-space: nowrap;
+  }
+  .agent-bubble__cta:hover { opacity: 0.88; }
+  .agent-bubble__cta--ghost {
+    background: transparent;
+    border: 1.5px solid #e5e5e5;
+    color: #666;
+  }
+  .agent-bubble__cta--ghost:hover { border-color: #8b5cf6; color: #8b5cf6; opacity: 1; }
+
+  /* Typing indicator bubble */
+  .agent-bubble--typing .agent-bubble__text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    width: 60px;
+  }
+  .typing-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #8b5cf6;
+    animation: typing-bounce 1.2s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typing-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  .agent-bubble__time {
+    font-size: 10px;
+    color: #ccc;
+    padding: 0 4px;
+  }
+
+  /* ── Canvas view layout ──────────────────────────────────────────── */
+  #canvasView {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* Canvas main area */
+  .dc-main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #fafafa;
+  }
+  .dc-main::-webkit-scrollbar { width: 4px; }
+  .dc-main::-webkit-scrollbar-thumb { background: #e5e5e5; border-radius: 4px; }
+
+  /* Canvas grid: 2-col on wider screens */
+  .dc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .dc-grid--full { grid-template-columns: 1fr; }
+
+  /* Canvas card */
+  .dc-card {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 18px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: box-shadow 150ms;
+  }
+  .dc-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+
+  /* Card header */
+  .dc-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .dc-card__title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .dc-card__title svg { width: 16px; height: 16px; color: #FFA426; flex-shrink: 0; }
+  .dc-card__edit {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #ccc;
+    transition: background 150ms, color 150ms;
+  }
+  .dc-card__edit:hover { background: #f5f5f5; color: #666; }
+  .dc-card__edit svg { width: 13px; height: 13px; }
+
+  /* Add Action button in canvas card headers */
+  .dc-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .dc-card__add {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    padding: 4px 6px;
+    border-radius: 20px;
+    border: 1.5px solid #e2e8f0;
+    background: #fff8f0;
+    color: #FFA426;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: background 200ms, border-color 200ms, color 200ms, padding 200ms cubic-bezier(0,0,0.2,1), gap 200ms cubic-bezier(0,0,0.2,1);
+  }
+  .dc-card__add:hover {
+    background: #FFA426;
+    color: #fff;
+    border-color: #FFA426;
+    padding: 4px 10px;
+    gap: 5px;
+  }
+  .dc-card__add svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .dc-card__add__label {
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-width 200ms cubic-bezier(0,0,0.2,1), opacity 160ms ease;
+    pointer-events: none;
+  }
+  .dc-card__add:hover .dc-card__add__label {
+    max-width: 80px;
+    opacity: 1;
+  }
+
+  /* Card field row */
+  .dc-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .dc-field__label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .dc-field__value {
+    font-size: 13px;
+    color: #1a1a1a;
+    line-height: 1.5;
+  }
+  .dc-field__value--muted { color: #999; font-style: italic; }
+
+  /* OKR item */
+  .dc-okr {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #fafafa;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+  }
+  .dc-okr__title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  .dc-okr__kr {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #666;
+  }
+  .dc-okr__kr-bar {
+    flex: 1;
+    height: 4px;
+    background: #e5e5e5;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .dc-okr__kr-fill {
+    height: 100%;
+    background: #FFA426;
+    border-radius: 4px;
+  }
+  .dc-okr__kr-pct { font-size: 10px; font-weight: 600; color: #FFA426; white-space: nowrap; }
+
+  /* Constraint chip */
+  .dc-constraint-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .dc-constraint {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+
+  /* Canvas sidebar */
+  .dc-sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: #fff;
+    border-left: 1px solid #f0f0f0;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .dc-sidebar__section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .dc-sidebar__prop { display: flex; flex-direction: column; gap: 2px; }
+  .dc-sidebar__prop-label { font-size: 10px; color: #bbb; font-weight: 500; }
+  .dc-sidebar__prop-value { font-size: 12px; color: #1a1a1a; font-weight: 500; }
+
+  /* ── liveView / canvasView toggle display ────────────────────────── */
+  #liveView {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+    background: #f0f2f5;
+    padding: 12px;
+  }
+  #liveView.hidden,
+  #canvasView.hidden {
+    display: none !important;
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       TOP BAR — full width, no sidebar offset
+  ════════════════════════════════════════════════════════════ -->
+  <header class="top-bar">
+    <img
+        src="trmericLogo.svg"
+        alt="trmeric logo"
+        style="height: 32px"
+        class="trmeric-logo"
+      />
+
+    <!-- Logo mark replaces old global sidebar T badge -->
+    <!-- <div class="top-bar__logo" title="Home">T</div> -->
+
+    <!-- Breadcrumb -->
+    <nav class="top-bar__breadcrumb" aria-label="Breadcrumb">
+      <!-- <a href="#">Home</a>
+      <span class="sep">›</span>
+      <a href="#">BHP Portfolio</a>
+      <span class="sep">›</span>
+      <span class="current">AI-Driven Safety Analytics Platform</span>
+      <span class="status-chip">Active</span>
+    </nav> -->
+
+    <!-- Centre view toggle — absolutely centred in top bar -->
+    <div class="tb-center">
+      <div class="tb-view-pill">
+        <button class="tbvp-btn active" id="tbvpHome" onclick="setTopbarView('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <span>My Hub</span>
+        </button>
+        <button class="tbvp-btn" id="tbvpTango" onclick="setTopbarView('tango')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/><path d="M19 3 L19.75 5.25 L22 6 L19.75 6.75 L19 9 L18.25 6.75 L16 6 L18.25 5.25 Z"/></svg>
+          <span>Tango</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Top-bar right actions -->
+    <!-- <div class="top-bar__actions"> -->
+      <!-- Search -->
+      <!-- <button class="tb-icon-btn" title="Search" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button> -->
+      <!-- Notifications -->
+      <!-- <button class="tb-icon-btn" title="Notifications" aria-label="Notifications">
+        <div class="notif-dot"></div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button> -->
+      <!-- Settings -->
+      <!-- <button class="tb-icon-btn" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button> -->
+      <!-- User avatar -->
+      <!-- <div class="top-bar__user-avatar" title="Aravind R">AR</div>
+    </div> -->
+
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════
+       APP SHELL — inner-nav + main + tango panel
+  ════════════════════════════════════════════════════════════ -->
+  <div class="app-shell">
+
+    <!-- ── INNER NAV — collapsed by default ───────────────── -->
+    <nav class="inner-nav" id="innerNav" aria-label="Demand navigation">
+
+      <!-- Toggle button -->
+      <button class="inner-nav__toggle" id="navToggle" title="Toggle navigation" aria-label="Toggle navigation" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+      <!-- Workspace section -->
+      <span class="inner-nav__section-label">Workspace</span>
+
+      <a class="inner-nav__item active" href="#" id="navLive" data-label="Demand Live">
+        <!-- Lightning bolt -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span class="inner-nav__item-label">Demand Live</span>
+        <span class="nav-dot" style="opacity:0; transition: opacity 200ms 50ms;" class="expanded-only"></span>
+      </a>
+
+      <a class="inner-nav__item" href="#" id="navCanvas" data-label="Demand Canvas">
+        <!-- Grid / canvas icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span class="inner-nav__item-label">Demand Canvas</span>
+      </a>
+
+      <!-- Canvas Zones -->
+      <span class="inner-nav__section-label">Canvas Zones</span>
+
+      <a class="inner-nav__item" href="#" data-label="Objectives & KRs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+        </svg>
+        <span class="inner-nav__item-label">Objectives & KRs</span>
+      </a>
+
+      <a class="inner-nav__item" href="#" data-label="Solutioning">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <span class="inner-nav__item-label">Solutioning</span>
+      </a>
+
+      <a class="inner-nav__item" href="#" data-label="Timeline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="inner-nav__item-label">Timeline</span>
+      </a>
+
+      <a class="inner-nav__item" href="#" data-label="SNOW Mapping">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+        <span class="inner-nav__item-label">SNOW Mapping</span>
+      </a>
+
+    </nav>
+    <!-- /inner-nav -->
+
+    <!-- ── MAIN CONTENT ──────────────────────────────────── -->
+    <main class="main-content" role="main">
+
+      <!-- ── ZONE HEADER ──────────────────────────────────── -->
+      <div class="zone-header">
+
+        <!-- Eyebrow: live indicator + org -->
+        <div class="zh-eyebrow">
+          <span class="live-dot" aria-hidden="true"></span>
+          DEMAND LIVE
+          <span class="divider">·</span>
+          <span class="org">BHP MINING</span>
+        </div>
+
+        <!-- Title + chips + actions -->
+        <div class="zh-title-meta">
+
+          <h1 class="zh-title">AI-Driven Safety Analytics Platform</h1>
+
+          <!-- Collapsible: chips, avatars, ellipsis — hidden when header collapses -->
+          <div class="zh-collapsible">
+            <span class="zh-chip priority">P1 · Critical</span>
+            <span class="zh-chip category">Infrastructure</span>
+            <span class="zh-chip budget">$2.4M</span>
+          </div>
+
+          <!-- Spacer pushes right-side controls to edge -->
+          <span class="zh-spacer"></span>
+
+          <!-- Collapsible: avatar cluster -->
+          <div class="zh-collapsible" id="zhAvatarWrap">
+            <div class="zh-avatars" role="group" aria-label="Active stakeholders">
+              <div class="zh-avatar" data-initials="AM" data-name="Arjun M · Tech Lead" title="Arjun M">AM</div>
+              <div class="zh-avatar" data-initials="PK" data-name="Priya K · Legal Lead" title="Priya K">PK</div>
+              <div class="zh-avatar" data-initials="KB" data-name="Kavita B · Procurement" title="Kavita B">KB</div>
+              <div class="zh-avatar" data-initials="AR" data-name="Aravind R · Designer" title="Aravind R">AR</div>
+              <div class="zh-avatar-overflow" title="3 more stakeholders" aria-label="3 more stakeholders">+3</div>
+            </div>
+          </div>
+
+          <!-- Always visible: Invite + Submit + Expand toggle -->
+          <button class="zh-icon-btn" id="btnInvite" title="Show stakeholders" aria-label="Show stakeholders">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="8.5" cy="7" r="4"/>
+              <line x1="20" y1="8" x2="20" y2="14"/>
+              <line x1="23" y1="11" x2="17" y2="11"/>
+            </svg>
+          </button>
+
+          <!-- Collapsible: ellipsis -->
+          <div class="zh-collapsible">
+            <button class="zh-icon-btn" title="More options" aria-label="More options">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- CTA Group — Submit + Expand/Collapse toggle -->
+          <div class="zh-cta-group">
+            <button class="btn-submit" aria-label="Submit for Final Review">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
+              Submit for Final Review
+            </button>
+            <button class="btn-expand-details" id="execExpandBtn" aria-expanded="true" aria-controls="stageStepper" title="Collapse demand header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+        <!-- /zh-title-meta -->
+
+      </div>
+      <!-- /zone-header -->
+
+      <!-- ══ LIVE VIEW — visible when Demand Live is active ══ -->
+      <div id="liveView">
+
+      <!-- ══════════════════════════════════════════════════════
+           STAGE STEPPER — with embedded flight metrics
+           (stat-row and hero-nudge blocks are gone entirely)
+      ═══════════════════════════════════════════════════════ -->
+      <div class="stage-stepper" id="stageStepper" role="navigation" aria-label="Demand stage progress">
+
+        <!-- Step 1: Draft (done) -->
+        <div class="stage-step">
+          <div class="stage-step__body">
+            <div class="stage-step__icon done" aria-label="Completed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="stage-step__label">
+              <span class="stage-step__name">Draft</span>
+              <span class="stage-step__sub">3 days</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-connector done" aria-hidden="true"></div>
+
+        <!-- Step 2: Evaluation (done) -->
+        <div class="stage-step">
+          <div class="stage-step__body">
+            <div class="stage-step__icon done" aria-label="Completed">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="stage-step__label">
+              <span class="stage-step__name">Evaluation</span>
+              <span class="stage-step__sub">12 days</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-connector active" aria-hidden="true"></div>
+
+        <!-- Step 3: Solutioning (active) -->
+        <div class="stage-step">
+          <div class="stage-step__body">
+            <div class="stage-step__icon active" aria-label="Active">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>
+            </div>
+            <div class="stage-step__label">
+              <span class="stage-step__name">Solutioning</span>
+              <span class="stage-step__sub active-sub">Active · Day 12</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-connector" aria-hidden="true"></div>
+
+        <!-- Step 4: Final Review (pending) -->
+        <div class="stage-step">
+          <div class="stage-step__body">
+            <div class="stage-step__icon pending" aria-label="Not started">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="stage-step__label">
+              <span class="stage-step__name pending">Final Review</span>
+              <span class="stage-step__sub">Not started</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-connector" aria-hidden="true"></div>
+
+        <!-- Step 5: Approved (pending) -->
+        <div class="stage-step">
+          <div class="stage-step__body">
+            <div class="stage-step__icon pending" aria-label="Not started">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="stage-step__label">
+              <span class="stage-step__name pending">Approved</span>
+              <span class="stage-step__sub">Not started</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-connector" aria-hidden="true"></div>
+
+        <!-- Step 6: Mobilization (pending) -->
+        <div class="stage-step">
+          <div class="stage-step__body">
+            <div class="stage-step__icon pending" aria-label="Not started">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="stage-step__label">
+              <span class="stage-step__name pending">Mobilization</span>
+              <span class="stage-step__sub">Not started</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-connector" aria-hidden="true"></div>
+
+        <!-- Step 7: Execution (pending) -->
+        <div class="stage-step">
+          <div class="stage-step__body">
+            <div class="stage-step__icon pending" aria-label="Not started">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="stage-step__label">
+              <span class="stage-step__name pending">Execution</span>
+              <span class="stage-step__sub">Not started</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Embedded flight metrics (far right) ───────────────────── -->
+        <div class="stage-metrics" aria-label="Demand health metrics">
+
+          <!-- Day counter + inline progress bar only -->
+          <div class="stage-flight" title="12 days in flight · 60% of stage complete">
+            <span class="stage-flight__label"><strong>Day 12</strong> of 20 target</span>
+            <div class="stage-flight__track" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" aria-label="Stage progress">
+              <div class="stage-flight__fill" style="width: 60%;"></div>
+            </div>
+            <span class="stage-flight__pct">60%</span>
+          </div>
+
+        </div>
+        <!-- /stage-metrics -->
+
+      </div>
+      <!-- /stage-stepper -->
+
+      <!-- ══════════════════════════════════════════════════════
+           DEMAND WORKSPACE GRID — Step 3
+           Three columns: Flow | Actions (fluid) | Insights
+      ═══════════════════════════════════════════════════════ -->
+      <div class="demand-workspace-grid" id="workspaceGrid">
+
+        <!-- ┌─────────────────────────────────────────────────┐ -->
+        <!-- │  LEFT COLUMN — Activity Flow (historical only)  │ -->
+        <!-- └─────────────────────────────────────────────────┘ -->
+        <div class="dwg-col dwg-col--flow" id="colFlow">
+          <div class="dwg-col-header">
+            <div class="dwg-col-header__left">
+              <span class="dwg-col-header__title">Activity Flow</span>
+            </div>
+            <div class="dwg-col-header__right">
+              <span class="dwg-badge dwg-badge--green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg>
+                1 Completed Today
+              </span>
+              <button class="dwg-collapse-btn" id="btnCollapseFlow" aria-label="Collapse Activity Flow" title="Collapse">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="dwg-col-body">
+            <div class="feed-wrap">
+
+              <!-- TODAY -->
+              <div class="feed-date-header">
+                <span class="feed-date-header__label">Today · Nov 12</span>
+                <span class="feed-date-header__line"></span>
+              </div>
+
+              <!-- Arjun submitted blueprint -->
+              <div class="feed-item">
+                <div class="tl-icon tl-icon--check">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="feed-item__body">
+                  <p class="feed-item__text">Technical Blueprint submitted by <strong>Arjun</strong></p>
+                  <div class="feed-item__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    2h ago · Tech Lead
+                  </div>
+                </div>
+              </div>
+
+              <!-- Priya escalated blocker -->
+              <div class="feed-item">
+                <div class="tl-icon tl-icon--alert">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="feed-item__body">
+                  <p class="feed-item__text">Data residency blocker raised by <strong>Priya</strong></p>
+                  <div class="feed-item__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    4h ago · Legal Lead
+                  </div>
+                </div>
+              </div>
+
+              <!-- YESTERDAY -->
+              <div class="feed-date-header" style="margin-top:4px;">
+                <span class="feed-date-header__label">Yesterday · Nov 11</span>
+                <span class="feed-date-header__line"></span>
+              </div>
+
+              <!-- Budget approved -->
+              <div class="feed-item">
+                <div class="tl-icon tl-icon--doc">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+                <div class="feed-item__body">
+                  <p class="feed-item__text">Budget approved for Q1 by <strong>Finance</strong></p>
+                  <div class="feed-item__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Yesterday · Finance
+                  </div>
+                </div>
+              </div>
+
+              <!-- Kavita submitted vendor shortlist -->
+              <div class="feed-item">
+                <div class="tl-icon tl-icon--check">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="feed-item__body">
+                  <p class="feed-item__text">Vendor shortlist submitted by <strong>Kavita</strong></p>
+                  <div class="feed-item__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Yesterday · Procurement
+                  </div>
+                </div>
+              </div>
+
+              <!-- NOV 11 -->
+              <div class="feed-date-header" style="margin-top:4px;">
+                <span class="feed-date-header__label">2 days ago · Nov 10</span>
+                <span class="feed-date-header__line"></span>
+              </div>
+
+              <!-- Aravind moved to Solutioning -->
+              <div class="feed-item">
+                <div class="tl-icon tl-icon--stage">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <div class="feed-item__body">
+                  <p class="feed-item__text">Demand advanced to <strong>Solutioning</strong> by Aravind</p>
+                  <div class="feed-item__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Nov 10 · Demand Owner
+                  </div>
+                </div>
+              </div>
+
+              <!-- Evaluation completed -->
+              <div class="feed-item">
+                <div class="tl-icon tl-icon--check">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="feed-item__body">
+                  <p class="feed-item__text">Evaluation stage closed — all criteria met</p>
+                  <div class="feed-item__meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Nov 10 · Stage Gate
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- /feed-wrap -->
+          </div>
+        </div>
+        <!-- /col-flow -->
+
+        <!-- Ghost rail — visible when Activity Flow is collapsed -->
+        <div class="flow-ghost" id="ghostFlow" title="Expand Activity Flow">
+          <button class="dwg-expand-btn" id="btnExpandFlow" aria-label="Expand Activity Flow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <span class="flow-ghost__label">Flow</span>
+        </div>
+
+        <!-- ┌─────────────────────────────────────────────────┐ -->
+        <!-- │  RIGHT COLUMN — Needs Attention                 │ -->
+        <!-- └─────────────────────────────────────────────────┘ -->
+        <div class="dwg-col dwg-col--actions" id="colActions">
+          <div class="dwg-col-header">
+            <div class="dwg-col-header__left">
+              <span class="dwg-col-header__title">Needs Attention</span>
+              <span class="dwg-col-header__sub">Stage 3 of 5 · Solutioning</span>
+            </div>
+            <div class="dwg-col-header__right">
+              <span class="dwg-badge dwg-badge--red">
+                <span class="dwg-badge__dot"></span>1 Blocker
+              </span>
+              <span class="dwg-badge dwg-badge--amber">
+                <span class="dwg-badge__dot"></span>5 Open
+              </span>
+              <button class="dc-card__add" onclick="openNewActionPanel()" title="Add Action">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                <span class="dc-card__add__label">Add Action</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Master-detail shell: list shrinks, detail slides in -->
+          <div class="actions-master-detail" id="actionsMD">
+
+            <!-- View toggle bar -->
+            <div class="actions-view-bar">
+              <button class="view-toggle-btn" id="btnListView" title="List view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                List
+              </button>
+              <button class="view-toggle-btn active" id="btnKanbanView" title="Kanban view">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="11" rx="1"/></svg>
+                Board
+              </button>
+            </div>
+
+            <!-- ── ACTION LIST ─────────────────────────────── -->
+            <div class="actions-list" id="actionsList">
+
+              <!-- GROUP: Overdue -->
+              <div class="action-group">
+                <div class="action-group__header">
+                  <span class="action-group__label action-group__label--overdue">Overdue</span>
+                  <span class="action-group__count">1</span>
+                </div>
+                <div class="action-row action-row--overdue" id="row-001" data-action-id="001" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Resolve data residency compliance issue with Legal</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time action-row__time--overdue">Due Nov 10</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GROUP: ✦ Tango -->
+              <div class="action-group action-group--tango">
+                <div class="action-group__header">
+                  <span class="action-group__label" style="background:rgba(139,92,246,0.08);color:#7c3aed;border-color:rgba(139,92,246,0.15);">✦ Tango</span>
+                  <span class="action-group__count">3</span>
+                </div>
+                <div class="action-row action-row--tango" id="row-t01" data-action-id="t01" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Review Resource Match: David Chen (95% fit)</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__tango-suffix">✦</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time action-row__time--tango">High Priority</span><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+                <div class="action-row action-row--tango" id="row-t02" data-action-id="t02" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Consider skipping to Approvals — save ~6 days</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__tango-suffix">✦</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time">High confidence</span><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+                <div class="action-row action-row--tango" id="row-t03" data-action-id="t03" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Resolve conflicts for Cloud Architect &amp; Data Engineer roles</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__tango-suffix">✦</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time action-row__time--overdue">Blocks Resourcing</span><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GROUP: In Progress -->
+              <div class="action-group">
+                <div class="action-group__header">
+                  <span class="action-group__label action-group__label--inprogress">In Progress</span>
+                  <span class="action-group__count">2</span>
+                </div>
+                <div class="action-row action-row--tango" id="row-002" data-action-id="002" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Schedule cost model review with Finance &amp; PMO</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__tango-suffix">✦</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time">Due Nov 16</span><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+                <div class="action-row" id="row-003" data-action-id="003" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Finalise architecture blueprint with Tech Lead</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time">Due Nov 14</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GROUP: To Do -->
+              <div class="action-group">
+                <div class="action-group__header">
+                  <span class="action-group__label action-group__label--todo">To Do</span>
+                  <span class="action-group__count">2</span>
+                </div>
+                <div class="action-row" id="row-004" data-action-id="004" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Present solutioning to Steering Committee</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time">Due Nov 18</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+                <div class="action-row action-row--tango" id="row-005" data-action-id="005" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox"/><span class="action-row__checkmark"></span></label>
+                    <span class="action-row__title">Initiate Resourcing pre-check — 2 critical roles at risk</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__tango-suffix">✦</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time">Due Nov 20</span><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- GROUP: Completed -->
+              <div class="action-group">
+                <div class="action-group__header">
+                  <span class="action-group__label action-group__label--done">Completed</span>
+                  <span class="action-group__count">1</span>
+                </div>
+                <div class="action-row action-row--completed" id="row-006" data-action-id="006" role="button" tabindex="0">
+                  <div class="action-row__body">
+                    <label class="action-row__checkbox" onclick="event.stopPropagation()"><input type="checkbox" checked/><span class="action-row__checkmark action-row__checkmark--done"></span></label>
+                    <span class="action-row__title action-row__title--done">Submit vendor shortlist to Procurement</span>
+                  </div>
+                  <div class="action-row__footer">
+                    <span style="display:flex;align-items:center;gap:6px;"><span class="action-row__time action-row__time--done">Nov 9</span></span>
+                    <span style="display:flex;align-items:center;gap:6px;"><div class="action-row__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div></span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- /actions-list -->
+
+            <!-- ═══════════════════════════════════════════════════
+                 DETAIL OVERLAY — backdrop + modal card
+            ════════════════════════════════════════════════════ -->
+            <!-- Backdrop -->
+            <div class="detail-backdrop" id="detailBackdrop"></div>
+
+            <!-- Modal card -->
+            <div class="detail-panel" id="detailPanel" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Action detail">
+
+              <!-- ── 1. Header: status pill + close ───────────── -->
+              <div class="dp-header">
+                <div class="dp-header__left">
+                  <div class="dp-header__icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                  </div>
+                  <div>
+                    <div class="dp-header__title" id="dpTitle">Action Detail</div>
+                    <div class="dp-header__sub">
+                      <span class="dp-status-dot dp-status-dot--todo" id="dpStatusDot"></span>
+                      <select class="dp-status" id="dpStatus" aria-label="Action status">
+                        <option value="todo" selected>To Do</option>
+                        <option value="inprogress">In Progress</option>
+                        <option value="overdue">Overdue</option>
+                        <option value="done">Done</option>
+                      </select>
+                      <span class="dp-stage-chip">Solutioning</span>
+                      <button class="dp-go-demand" title="Go to Demand">
+                        Go to Demand
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                  <button class="dp-expand" id="btnExpandPanel" aria-label="Expand panel" title="Expand">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                      <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                    </svg>
+                  </button>
+                  <button class="dp-close" id="btnCloseDetail" aria-label="Close detail panel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- ── 2. Quick actions ──────────────────────────── -->
+              <div class="dp-quick-actions">
+                <button class="dp-qa dp-qa--done" id="dpMarkDone">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                  Mark Done
+                </button>
+                <button class="dp-qa dp-qa--outline">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                  Reassign
+                </button>
+                <button class="dp-qa dp-qa--more" aria-label="More options">···</button>
+              </div>
+
+              <!-- ── 3. Tango context — collapsible ───────────────── -->
+              <div class="dp-tango-block" id="dpTangoBlock">
+                <button class="dp-tango-header" id="dpTangoToggle" aria-expanded="false" aria-controls="dpTangoBody">
+                  <span class="dp-tango-header__left">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/>
+                      <path d="M19 3 L19.75 5.25 L22 6 L19.75 6.75 L19 9 L18.25 6.75 L16 6 L18.25 5.25 Z"/>
+                    </svg>
+                    ✦ Tango context
+                  </span>
+                  <svg class="dp-tango-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </button>
+                <div class="dp-tango-body collapsed" id="dpTangoBody">
+                  <p class="dp-tango-text">Overdue 3 days. 4 similar demands saw a 12-day delay when SME sign-off stalled.</p>
+                  <div class="dp-tango-actions">
+                    <button class="dp-tango-cta">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="11" height="11">
+                        <path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/>
+                      </svg>
+                      ✦ Escalate via Tango
+                    </button>
+                    <button class="dp-tango-cta dp-tango-cta--ghost">Extend deadline</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dp-divider"></div>
+
+              <!-- ── 4. Key properties ──────────────────────────── -->
+              <div class="dp-props-slim">
+                <div class="dp-prop-slim">
+                  <span class="dp-prop-label">Assignee</span>
+                  <div class="dp-person">
+                    <div class="dp-avatar dp-avatar--purple">RP</div>
+                    <span class="dp-person-name">Raj Patel</span>
+                  </div>
+                </div>
+                <div class="dp-prop-slim">
+                  <span class="dp-prop-label">Due Date</span>
+                  <span class="dp-prop-value dp-prop-value--red">Feb 24 · Overdue</span>
+                </div>
+              </div>
+
+              <div class="dp-divider"></div>
+
+              <!-- ── 5. Activity timeline ───────────────────────── -->
+              <div class="dp-activity-section">
+                <button class="dp-section-toggle" id="btnToggleActivity" aria-expanded="false" aria-controls="dpActBody">
+                  <span>Activity</span>
+                  <svg class="dp-section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="dp-section-body collapsed" id="dpActBody">
+                  <div class="dp-act-list">
+
+                    <div class="dp-act-item">
+                      <div class="dp-act-dot dp-act-dot--red"></div>
+                      <div class="dp-act-body">
+                        <span class="dp-act-title">Action became overdue</span>
+                        <span class="dp-act-meta">Feb 24 · Tango notified both parties</span>
+                      </div>
+                    </div>
+
+                    <div class="dp-act-item">
+                      <div class="dp-act-dot dp-act-dot--grey"></div>
+                      <div class="dp-act-body">
+                        <span class="dp-act-title">Raj Patel added a comment</span>
+                        <span class="dp-act-meta">Feb 23 · "Need InfoSec approval first"</span>
+                      </div>
+                    </div>
+
+                    <div class="dp-act-item">
+                      <div class="dp-act-dot dp-act-dot--purple"></div>
+                      <div class="dp-act-body">
+                        <span class="dp-act-title">Created from Tango suggestion</span>
+                        <span class="dp-act-meta">Feb 21 · Accepted by Aravind J</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="dp-divider"></div>
+
+              <!-- ── 6. Comments ────────────────────────────────── -->
+              <div class="dp-comments-section">
+                <button class="dp-section-toggle" id="btnToggleComments" aria-expanded="false" aria-controls="dpCommentsBody">
+                  <span>Comments</span>
+                  <svg class="dp-section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="dp-section-body collapsed" id="dpCommentsBody">
+                  <div class="dp-comments-list" id="dpCommentsList">
+
+                    <div class="dp-comment">
+                      <div class="dp-comment-avatar" style="background:#8b5cf6;">RP</div>
+                      <div class="dp-comment-body">
+                        <div class="dp-comment-meta">
+                          <span class="dp-comment-author">Raj Patel</span>
+                          <span class="dp-comment-time">Feb 23</span>
+                        </div>
+                        <p class="dp-comment-text">Need InfoSec approval before I can get the data schema reviewed.</p>
+                      </div>
+                    </div>
+
+                    <div class="dp-comment dp-comment--tango">
+                      <div class="dp-comment-avatar" style="background:linear-gradient(135deg,#8b5cf6,#FFA426);">✦</div>
+                      <div class="dp-comment-body">
+                        <div class="dp-comment-meta">
+                          <span class="dp-comment-author" style="color:#7c3aed;">✦ Tango</span>
+                          <span class="dp-comment-time">Feb 24</span>
+                        </div>
+                        <p class="dp-comment-text">InfoSec typically responds in 2 days. Should unblock by Mar 1.</p>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <!-- Comment input -->
+                  <div class="dp-comment-input-row">
+                    <div class="dp-comment-avatar" style="background:#FFA426;color:#1a1a1a;flex-shrink:0;">AJ</div>
+                    <div class="dp-comment-input-wrap">
+                      <input class="dp-comment-input" id="dpCommentInput" type="text" placeholder="Add a comment…" autocomplete="off" />
+                      <button class="dp-comment-send" id="dpCommentSend" aria-label="Send comment">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <!-- /detail-panel -->
+
+          </div>
+          <!-- /actions-master-detail -->
+
+        </div>
+        <!-- /col-actions -->
+
+
+      </div>
+      <!-- /demand-workspace-grid -->
+
+      </div>
+      <!-- /liveView -->
+
+      <!-- ══ CANVAS VIEW — visible when Demand Canvas is active ══ -->
+      <div id="canvasView" style="display:none; flex:1; overflow:hidden;">
+
+        <!-- Canvas main scrollable area -->
+        <div class="dc-main">
+
+          <!-- Row 1: Description + Objectives & KRs (2-col) -->
+          <div class="dc-grid">
+
+            <!-- Description card -->
+            <div class="dc-card">
+              <div class="dc-card__header">
+                <span class="dc-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  Description
+                </span>
+                <div class="dc-card__actions"><button class="dc-card__add" onclick="openNewActionPanel()" title="Add Action">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                  <span class="dc-card__add__label">Add Action</span>
+                </button><button class="dc-card__edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+              </div>
+              <div class="dc-field">
+                <span class="dc-field__label">Problem Statement</span>
+                <span class="dc-field__value">BHP's current safety monitoring infrastructure lacks real-time AI-driven anomaly detection across mining sites, creating compliance risk and delayed incident response.</span>
+              </div>
+              <div class="dc-field">
+                <span class="dc-field__label">Proposed Solution</span>
+                <span class="dc-field__value">Deploy an AI analytics platform integrating IoT sensor data with ML-based predictive safety models, surfaced through a unified operator dashboard.</span>
+              </div>
+            </div>
+
+            <!-- Objectives & Key Results -->
+            <div class="dc-card">
+              <div class="dc-card__header">
+                <span class="dc-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                  Objectives & Key Results
+                </span>
+                <div class="dc-card__actions"><button class="dc-card__add" onclick="openNewActionPanel()" title="Add Action">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                  <span class="dc-card__add__label">Add Action</span>
+                </button><button class="dc-card__edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+              </div>
+              <div class="dc-okr">
+                <span class="dc-okr__title">Reduce safety incident response time by 40%</span>
+                <div class="dc-okr__kr">
+                  <span style="flex-shrink:0;width:160px;">Deploy real-time sensor pipeline</span>
+                  <div class="dc-okr__kr-bar"><div class="dc-okr__kr-fill" style="width:65%;"></div></div>
+                  <span class="dc-okr__kr-pct">65%</span>
+                </div>
+                <div class="dc-okr__kr">
+                  <span style="flex-shrink:0;width:160px;">ML model accuracy ≥ 92%</span>
+                  <div class="dc-okr__kr-bar"><div class="dc-okr__kr-fill" style="width:40%;"></div></div>
+                  <span class="dc-okr__kr-pct">40%</span>
+                </div>
+              </div>
+              <div class="dc-okr">
+                <span class="dc-okr__title">Achieve ISO 45001 compliance across 3 sites</span>
+                <div class="dc-okr__kr">
+                  <span style="flex-shrink:0;width:160px;">Gap analysis complete</span>
+                  <div class="dc-okr__kr-bar"><div class="dc-okr__kr-fill" style="width:100%;"></div></div>
+                  <span class="dc-okr__kr-pct">100%</span>
+                </div>
+                <div class="dc-okr__kr">
+                  <span style="flex-shrink:0;width:160px;">Remediation plan signed off</span>
+                  <div class="dc-okr__kr-bar"><div class="dc-okr__kr-fill" style="width:20%;"></div></div>
+                  <span class="dc-okr__kr-pct">20%</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Row 2: Solutioning + Timeline (2-col) -->
+          <div class="dc-grid">
+
+            <!-- Solutioning -->
+            <div class="dc-card">
+              <div class="dc-card__header">
+                <span class="dc-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  Solutioning
+                </span>
+                <div class="dc-card__actions"><button class="dc-card__add" onclick="openNewActionPanel()" title="Add Action">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                  <span class="dc-card__add__label">Add Action</span>
+                </button><button class="dc-card__edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+              </div>
+              <div class="dc-field">
+                <span class="dc-field__label">Approach</span>
+                <span class="dc-field__value">Phased rollout: Pilot at Olympic Dam site (Q1), expand to Newman and Bowen Basin (Q2–Q3).</span>
+              </div>
+              <div class="dc-field">
+                <span class="dc-field__label">Platform</span>
+                <span class="dc-field__value">Azure IoT Hub + Databricks ML + Power BI Embedded</span>
+              </div>
+              <div class="dc-field">
+                <span class="dc-field__label">Vendor Shortlist</span>
+                <span class="dc-field__value">Accenture, Avanade, Wipro (final review pending)</span>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="dc-card">
+              <div class="dc-card__header">
+                <span class="dc-card__title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Timeline
+                </span>
+                <div class="dc-card__actions"><button class="dc-card__add" onclick="openNewActionPanel()" title="Add Action">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                  <span class="dc-card__add__label">Add Action</span>
+                </button><button class="dc-card__edit" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+              </div>
+              <div class="dc-field"><span class="dc-field__label">Demand Submitted</span><span class="dc-field__value">Nov 1, 2024</span></div>
+              <div class="dc-field"><span class="dc-field__label">Solutioning Target</span><span class="dc-field__value">Nov 22, 2024</span></div>
+              <div class="dc-field"><span class="dc-field__label">Approval Target</span><span class="dc-field__value">Dec 5, 2024</span></div>
+              <div class="dc-field"><span class="dc-field__label">Project Kick-off</span><span class="dc-field__value">Jan 6, 2025</span></div>
+              <div class="dc-field"><span class="dc-field__label">Go-Live Target</span><span class="dc-field__value">Jun 30, 2025</span></div>
+            </div>
+
+          </div>
+
+          <!-- Row 3: Constraints (full-width) -->
+          <div class="dc-grid dc-grid--full">
+            <div class="dc-card">
+              <div class="dc-card__header">
+                <span class="dc-card__title" style="color:#1a1a1a;">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  Constraints & Risks
+                </span>
+                <div class="dc-card__actions"><button class="dc-card__add" onclick="openNewActionPanel()" title="Add Action">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/></svg>
+                  <span class="dc-card__add__label">Add Action</span>
+                </button><button class="dc-card__edit" title="Edit" style="color:#ef4444;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+              </div>
+              <div class="dc-constraint-list">
+                <span class="dc-constraint">Data residency — AU only</span>
+                <span class="dc-constraint">Legal sign-off pending</span>
+                <span class="dc-constraint">Budget cap $2.4M</span>
+                <span class="dc-constraint">METS-compliant vendors only</span>
+                <span class="dc-constraint">ISO 45001 mandatory</span>
+                <span class="dc-constraint">No legacy SCADA disruption</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- /dc-main -->
+
+        <!-- Canvas sidebar: properties & SNOW mapping -->
+        <div class="dc-sidebar">
+
+          <span class="dc-sidebar__section-title">Demand Properties</span>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">BU / Org</span><span class="dc-sidebar__prop-value">BHP Mining</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">Priority</span><span class="dc-sidebar__prop-value" style="color:#ef4444;">P1 · Critical</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">Budget</span><span class="dc-sidebar__prop-value">$2.4M</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">Category</span><span class="dc-sidebar__prop-value">Infrastructure</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">Demand Owner</span><span class="dc-sidebar__prop-value">Aravind R.</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">Business Sponsor</span><span class="dc-sidebar__prop-value">Rajan P. · VP Mining Ops</span></div>
+
+          <span class="dc-sidebar__section-title" style="margin-top:4px;">SNOW Mapping</span>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">SNOW Ticket</span><span class="dc-sidebar__prop-value" style="color:#3b82f6;">INC-00284719</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">Change Record</span><span class="dc-sidebar__prop-value" style="color:#3b82f6;">CHG-0094832</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">CMDB CI</span><span class="dc-sidebar__prop-value">Safety-Analytics-Prod</span></div>
+          <div class="dc-sidebar__prop"><span class="dc-sidebar__prop-label">Assignment Group</span><span class="dc-sidebar__prop-value">Global Infra · APAC</span></div>
+
+        </div>
+        <!-- /dc-sidebar -->
+
+      </div>
+      <!-- /canvasView -->
+
+    </main>
+    <!-- /main-content -->
+
+    <!-- Tango Agent Chat Panel — collapsible, collapsed by default -->
+    <aside class="tango-panel tango-panel--collapsed" id="tangoPanel" aria-label="Tango AI co-pilot" aria-hidden="true">
+
+      <!-- Panel header — no tabs, pure chat -->
+      <div class="tango-panel__header">
+        <div class="tango-panel__header-left">
+          <div class="tango-panel__avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/><path d="M19 3 L19.75 5.25 L22 6 L19.75 6.75 L19 9 L18.25 6.75 L16 6 L18.25 5.25 Z"/></svg>
+          </div>
+          <div class="tango-panel__title-block">
+            <span class="tango-panel__title">Demand Agent</span>
+            <span class="tango-panel__subtitle">Tango · AI Co-pilot</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <button class="dwg-icon-btn" title="Clear chat" aria-label="Clear chat" style="width:26px;height:26px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Scrollable chat history — pure chat bubbles only -->
+      <div class="tango-panel__history" id="agentHistory" role="log" aria-label="Demand Agent chat history" aria-live="polite">
+
+        <div class="chat-date-sep">
+          <span class="chat-date-sep__line"></span>
+          <span class="chat-date-sep__label">Today · Nov 12</span>
+          <span class="chat-date-sep__line"></span>
+        </div>
+
+        <!-- Tango bubble: proactive insight -->
+        <div class="agent-bubble agent-bubble--tango">
+          <div class="agent-bubble__avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/></svg>
+          </div>
+          <div class="agent-bubble__body">
+            <div class="agent-bubble__text">
+              I've detected a <strong>legal blocker</strong> on data residency that is 2 days overdue. This is gating your Approval stage entry and could cause an SLA breach. Would you like me to escalate directly to the Legal team?
+            </div>
+            <div class="agent-bubble__actions">
+              <button class="agent-bubble__cta" data-agent-trigger="Escalating the data residency blocker to Legal now. I'll notify Priya K. and flag this in the demand log.">Escalate to Legal</button>
+              <button class="agent-bubble__cta agent-bubble__cta--ghost">Show me blockers</button>
+            </div>
+            <span class="agent-bubble__time">Just now</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Fixed footer: context hint + chat input -->
+      <div class="tango-panel__footer">
+        <div class="tango-panel__hint">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/><path d="M19 3 L19.75 5.25 L22 6 L19.75 6.75 L19 9 L18.25 6.75 L16 6 L18.25 5.25 Z"/></svg>
+          ✦ Tango has context on this demand
+        </div>
+        <div class="tango-panel__input-row">
+          <input
+            class="tango-panel__input"
+            type="text"
+            placeholder="Ask Tango about this demand…"
+            aria-label="Chat with Tango"
+          />
+          <button class="tango-panel__send" aria-label="Send message">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ── RIGHT GLOBAL NAV — always visible, 52px, Tango trigger lives here -->
+    <nav class="right-nav" id="rightNav" aria-label="Right panel controls">
+
+      <!-- Tango Agent trigger button -->
+      <button
+        class="right-nav__tango-btn"
+        id="btnToggleTango"
+        title="Open Demand Agent"
+        aria-label="Toggle Demand Agent"
+        aria-expanded="false"
+        aria-controls="tangoPanel"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/>
+          <path d="M19 3 L19.75 5.25 L22 6 L19.75 6.75 L19 9 L18.25 6.75 L16 6 L18.25 5.25 Z"/>
+        </svg>
+        <span class="right-nav__tango-label">Agent</span>
+      </button>
+
+      <!-- Divider -->
+      <div class="right-nav__divider"></div>
+
+      <!-- Notifications -->
+      <button class="right-nav__icon-btn" title="Notifications" aria-label="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </button>
+
+      <!-- Help -->
+      <button class="right-nav__icon-btn" title="Help" aria-label="Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </button>
+
+    </nav>
+    <!-- /right-nav -->
+
+  </div>
+  <!-- /app-shell -->
+
+  <!-- ═══════════════════════════════════════════════════════
+       JS — All interactions (Steps 1–8)
+  ════════════════════════════════════════════════════════════ -->
+  <script>
+    /* ── List / Kanban view toggle ─────────────────────────────── */
+    (function () {
+      const btnList   = document.getElementById('btnListView');
+      const btnKanban = document.getElementById('btnKanbanView');
+      const list      = document.getElementById('actionsList');
+      if (!btnList || !btnKanban || !list) return;
+
+      btnList.addEventListener('click', () => {
+        list.classList.add('list-view');
+        btnList.classList.add('active');
+        btnKanban.classList.remove('active');
+      });
+      btnKanban.addEventListener('click', () => {
+        list.classList.remove('list-view');
+        btnKanban.classList.add('active');
+        btnList.classList.remove('active');
+      });
+    })();
+
+    /* ── 0. Zone-header expand / collapse ─────────────────────── */
+    (function () {
+      const btn        = document.getElementById('execExpandBtn');
+      const stepper    = document.getElementById('stageStepper');
+      const header     = document.querySelector('.zone-header');
+      const avatarWrap = document.getElementById('zhAvatarWrap');
+      const inviteBtn  = document.getElementById('btnInvite');
+      if (!btn || !stepper || !header) return;
+
+      btn.addEventListener('click', () => {
+        const isCollapsed = stepper.classList.toggle('is-collapsed');
+        header.classList.toggle('is-collapsed', isCollapsed);
+        btn.setAttribute('aria-expanded', String(!isCollapsed));
+        btn.title = isCollapsed ? 'Expand header' : 'Collapse header';
+        btn.querySelector('svg polyline').setAttribute(
+          'points', isCollapsed ? '6 9 12 15 18 9' : '18 15 12 9 6 15'
+        );
+        // Reset avatar-only reveal when fully expanding
+        if (!isCollapsed && avatarWrap) avatarWrap.classList.remove('avatars-open');
+      });
+
+      // Invite button: when collapsed, toggle only the avatar cluster
+      if (inviteBtn && avatarWrap) {
+        inviteBtn.addEventListener('click', () => {
+          if (!header.classList.contains('is-collapsed')) return; // header open — do nothing extra
+          avatarWrap.classList.toggle('avatars-open');
+          inviteBtn.title = avatarWrap.classList.contains('avatars-open') ? 'Hide stakeholders' : 'Show stakeholders';
+        });
+      }
+    })();
+
+    /* ── 1. Inner nav expand/collapse ─────────────────────── */
+    const innerNav   = document.getElementById('innerNav');
+    const navToggle  = document.getElementById('navToggle');
+    const navDots    = innerNav.querySelectorAll('.nav-dot');
+    navToggle.addEventListener('click', () => {
+      const expanded = innerNav.classList.toggle('expanded');
+      navToggle.setAttribute('aria-expanded', String(expanded));
+      navDots.forEach(d => d.style.opacity = expanded ? '1' : '0');
+    });
+
+    /* ── 2. Activity Flow collapse / expand ───────────────── */
+    (function () {
+      const col   = document.getElementById('colFlow');
+      const ghost = document.getElementById('ghostFlow');
+      const btnC  = document.getElementById('btnCollapseFlow');
+      const btnE  = document.getElementById('btnExpandFlow');
+      if (!col || !ghost || !btnC || !btnE) return;
+      btnC.addEventListener('click', () => {
+        col.classList.add('collapsed');
+        ghost.classList.add('visible');
+      });
+      btnE.addEventListener('click', () => {
+        col.classList.remove('collapsed');
+        ghost.classList.remove('visible');
+      });
+    })();
+
+    /* ── 4. Master-detail: open / close + Mark Done auto-close ─ */
+    const actionsMD      = document.getElementById('actionsMD');
+    const detailPanel    = document.getElementById('detailPanel');
+    const detailBackdrop = document.getElementById('detailBackdrop');
+    const btnCloseDetail = document.getElementById('btnCloseDetail');
+    const dpMarkDone     = document.getElementById('dpMarkDone');
+    const dpTitle        = document.getElementById('dpTitle');
+    const dpStatus       = document.getElementById('dpStatus');
+    const dpStatusDot    = document.getElementById('dpStatusDot');
+    const allRows        = document.querySelectorAll('.action-row');
+
+    // Sync status dot colour with select value
+    const dotColors = { todo: '--todo', inprogress: '--inprogress', overdue: '--overdue', done: '--done' };
+    if (dpStatus && dpStatusDot) {
+      dpStatus.addEventListener('change', () => {
+        dpStatusDot.className = 'dp-status-dot dp-status-dot' + (dotColors[dpStatus.value] || '--todo');
+      });
+    }
+
+    function closeDetail() {
+      detailPanel.classList.remove('open');
+      detailPanel.classList.remove('expanded');
+      detailBackdrop.classList.remove('open');
+      detailPanel.setAttribute('aria-hidden', 'true');
+      allRows.forEach(r => r.classList.remove('active'));
+      document.body.style.overflow = '';
+      // Reset expand button icon
+      const btn = document.getElementById('btnExpandPanel');
+      if (btn) {
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+        btn.title = 'Expand';
+      }
+    }
+
+    function openDetail(row) {
+      const title = row.querySelector('.action-row__title')?.textContent?.trim();
+      if (title && dpTitle) dpTitle.textContent = title;
+      allRows.forEach(r => r.classList.remove('active'));
+      row.classList.add('active');
+      detailPanel.classList.add('open');
+      detailBackdrop.classList.add('open');
+      detailPanel.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    allRows.forEach(row => {
+      row.addEventListener('click', () => openDetail(row));
+      row.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDetail(row); }
+      });
+    });
+
+    // Expand / collapse panel width
+    const btnExpandPanel = document.getElementById('btnExpandPanel');
+    if (btnExpandPanel) {
+      btnExpandPanel.addEventListener('click', () => {
+        const isExpanded = detailPanel.classList.toggle('expanded');
+        // Swap icon: expanded = compress arrows, collapsed = expand arrows
+        btnExpandPanel.innerHTML = isExpanded
+          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>`
+          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>`;
+        btnExpandPanel.setAttribute('aria-label', isExpanded ? 'Collapse panel' : 'Expand panel');
+        btnExpandPanel.title = isExpanded ? 'Collapse' : 'Expand';
+      });
+    }
+
+    // Close on backdrop click or X button
+    btnCloseDetail.addEventListener('click', closeDetail);
+    detailBackdrop.addEventListener('click', closeDetail);
+
+    // ESC key closes modal
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && detailPanel.classList.contains('open')) closeDetail();
+    });
+
+    // Tango context collapsible
+    const tangoToggle = document.getElementById('dpTangoToggle');
+    const tangoBody   = document.getElementById('dpTangoBody');
+    const tangoBlock  = document.getElementById('dpTangoBlock');
+    if (tangoToggle && tangoBody) {
+      tangoToggle.addEventListener('click', () => {
+        const isOpen = tangoBlock.classList.toggle('is-open');
+        tangoBody.classList.toggle('collapsed', !isOpen);
+        tangoToggle.setAttribute('aria-expanded', String(isOpen));
+      });
+    }
+
+    // Activity + Comments collapsible sections
+    [
+      { btn: 'btnToggleActivity',  body: 'dpActBody' },
+      { btn: 'btnToggleComments',  body: 'dpCommentsBody' },
+    ].forEach(({ btn, body }) => {
+      const b = document.getElementById(btn);
+      const d = document.getElementById(body);
+      if (!b || !d) return;
+      b.addEventListener('click', () => {
+        const open = d.classList.toggle('collapsed');
+        b.setAttribute('aria-expanded', String(!open));
+      });
+    });
+
+    // Comment send
+    const commentInput = document.getElementById('dpCommentInput');
+    const commentSend  = document.getElementById('dpCommentSend');
+    const commentsList = document.getElementById('dpCommentsList');
+
+    function sendComment() {
+      const val = commentInput?.value?.trim();
+      if (!val || !commentsList) return;
+      const item = document.createElement('div');
+      item.className = 'dp-comment';
+      item.innerHTML = `
+        <div class="dp-comment-avatar" style="background:#FFA426;color:#1a1a1a;">AJ</div>
+        <div class="dp-comment-body">
+          <div class="dp-comment-meta">
+            <span class="dp-comment-author">Aravind J</span>
+            <span class="dp-comment-time">Just now</span>
+          </div>
+          <p class="dp-comment-text">${val.replace(/</g,'&lt;')}</p>
+        </div>`;
+      commentsList.appendChild(item);
+      commentInput.value = '';
+      item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    if (commentSend) commentSend.addEventListener('click', sendComment);
+    if (commentInput) commentInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendComment(); }
+    });
+    if (dpMarkDone) {
+      dpMarkDone.addEventListener('click', () => {
+        const activeRow = document.querySelector('.action-row.active');
+        if (activeRow) {
+          activeRow.classList.add('action-row--completed');
+          const cb = activeRow.querySelector('input[type="checkbox"]');
+          if (cb) cb.checked = true;
+        }
+        closeDetail();
+      });
+    }
+
+    /* ── 5. Canvas / Live view toggle ──────────────────────── */
+    const navLive     = document.getElementById('navLive');
+    const navCanvas   = document.getElementById('navCanvas');
+    const liveView    = document.getElementById('liveView');
+    const canvasView  = document.getElementById('canvasView');
+    const stageStepper = document.querySelector('.stage-stepper');
+
+    function switchToLive() {
+      liveView.style.display   = 'flex';
+      canvasView.style.display = 'none';
+      navLive.classList.add('active');
+      navCanvas.classList.remove('active');
+    }
+
+    function switchToCanvas() {
+      liveView.style.display   = 'none';
+      canvasView.style.display = 'flex';
+      navCanvas.classList.add('active');
+      navLive.classList.remove('active');
+    }
+
+    navLive.addEventListener('click',   e => { e.preventDefault(); switchToLive();   });
+    navCanvas.addEventListener('click', e => { e.preventDefault(); switchToCanvas(); });
+
+    /* ── 6. Demand Agent reactive trigger (Task 3) ──────────── */
+    const agentHistory  = document.getElementById('agentHistory');
+    const agentInput    = document.querySelector('.tango-panel__input');
+
+    // Helper: append a Tango response bubble
+    function appendAgentBubble(text, isTyping = false) {
+      const wrap = document.createElement('div');
+      wrap.className = 'agent-bubble agent-bubble--tango' + (isTyping ? ' agent-bubble--typing' : '');
+
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'agent-bubble__avatar';
+      avatarDiv.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/></svg>`;
+
+      const bodyDiv = document.createElement('div');
+      bodyDiv.className = 'agent-bubble__body';
+
+      const textDiv = document.createElement('div');
+      textDiv.className = 'agent-bubble__text';
+
+      if (isTyping) {
+        textDiv.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+      } else {
+        textDiv.innerHTML = text;
+      }
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'agent-bubble__time';
+      timeSpan.textContent = 'Just now';
+
+      bodyDiv.appendChild(textDiv);
+      if (!isTyping) bodyDiv.appendChild(timeSpan);
+      wrap.appendChild(avatarDiv);
+      wrap.appendChild(bodyDiv);
+      agentHistory.appendChild(wrap);
+      agentHistory.scrollTop = agentHistory.scrollHeight;
+      return { wrap, textDiv, timeSpan, bodyDiv };
+    }
+
+    // Helper: append a user message bubble
+    function appendUserBubble(text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'agent-bubble agent-bubble--user';
+
+      const bodyDiv = document.createElement('div');
+      bodyDiv.className = 'agent-bubble__body';
+
+      const textDiv = document.createElement('div');
+      textDiv.className = 'agent-bubble__text';
+      textDiv.textContent = text;
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'agent-bubble__time';
+      timeSpan.textContent = 'Just now';
+
+      bodyDiv.appendChild(textDiv);
+      bodyDiv.appendChild(timeSpan);
+      wrap.appendChild(bodyDiv);
+      agentHistory.appendChild(wrap);
+      agentHistory.scrollTop = agentHistory.scrollHeight;
+    }
+
+    // Insight card buttons trigger agent (Task 3 reactive trigger)
+    document.querySelectorAll('.ic-btn-primary[data-agent-trigger], .agent-bubble__cta[data-agent-trigger]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const triggerText = btn.getAttribute('data-agent-trigger');
+        agentInput.focus();
+
+        // Show typing indicator
+        const { wrap: typingWrap } = appendAgentBubble('', true);
+
+        setTimeout(() => {
+          typingWrap.remove();
+          appendAgentBubble(triggerText);
+        }, 1200);
+      });
+    });
+
+    // Wire insight buttons with agent triggers
+    const insightBtns = document.querySelectorAll('.ic-btn-primary');
+    const insightTriggers = [
+      'Initiating escalation sequence. I\'ll draft an escalation message to the Legal team and flag this blocker in the demand log. Do you want me to CC Priya K. and the PMO?',
+      'Escalating the data residency blocker to Legal now. Priya K. has been notified and the action has been marked urgent in the demand log.',
+      'Pulling up the resource conflict analysis now. Cloud Architect and Data Engineer roles are at 110% allocation. Want me to surface alternative candidates or propose a timeline shift?',
+      'Opening the Approval stage readiness checklist. 2 of 5 items remain: legal sign-off (2 days overdue) and blueprint final review. Shall I create escalation actions for both?'
+    ];
+    insightBtns.forEach((btn, i) => {
+      const msg = insightTriggers[i] || 'Processing your request…';
+      btn.setAttribute('data-agent-trigger', msg);
+      btn.addEventListener('click', () => {
+        agentInput.focus();
+        const { wrap: typingWrap } = appendAgentBubble('', true);
+        setTimeout(() => {
+          typingWrap.remove();
+          appendAgentBubble(msg);
+        }, 1200);
+      });
+    });
+
+    /* ── 8. Right nav: Tango panel toggle ──────────────────── */
+    const tangoPanel     = document.getElementById('tangoPanel');
+    const btnToggleTango = document.getElementById('btnToggleTango');
+
+    btnToggleTango.addEventListener('click', () => {
+      const isCollapsed = tangoPanel.classList.toggle('tango-panel--collapsed');
+      // Update aria states
+      tangoPanel.setAttribute('aria-hidden', String(isCollapsed));
+      btnToggleTango.setAttribute('aria-expanded', String(!isCollapsed));
+      btnToggleTango.setAttribute('title', isCollapsed ? 'Open Demand Agent' : 'Close Demand Agent');
+      // Visual active state on trigger button
+      btnToggleTango.classList.toggle('active', !isCollapsed);
+      // Focus the input when opening
+      if (!isCollapsed) {
+        setTimeout(() => {
+          const input = tangoPanel.querySelector('.tango-panel__input');
+          if (input) input.focus();
+        }, 290); // after transition completes
+      }
+    });
+    const sendBtn = document.querySelector('.tango-panel__send');
+
+    function sendMessage() {
+      const val = agentInput.value.trim();
+      if (!val) return;
+      appendUserBubble(val);
+      agentInput.value = '';
+
+      const { wrap: typingWrap } = appendAgentBubble('', true);
+      setTimeout(() => {
+        typingWrap.remove();
+        appendAgentBubble('Understood. Let me look into that for this demand and get back to you with the relevant context.');
+      }, 1400);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    agentInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    /* ── 9. Top-bar view toggle ─────────────────────────────── */
+    function setTopbarView(view) {
+      const homeBtn  = document.getElementById('tbvpHome');
+      const tangoBtn = document.getElementById('tbvpTango');
+      const panel    = document.getElementById('tangoPanel');
+      const toggleBtn = document.getElementById('btnToggleTango');
+
+      if (view === 'tango') {
+        homeBtn.classList.remove('active');
+        tangoBtn.classList.add('active');
+        // Expand the Tango panel if collapsed
+        if (panel && panel.classList.contains('tango-panel--collapsed')) {
+          panel.classList.remove('tango-panel--collapsed');
+          panel.setAttribute('aria-hidden', 'false');
+          if (toggleBtn) {
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            toggleBtn.classList.add('active');
+          }
+          setTimeout(() => {
+            const input = panel.querySelector('.tango-panel__input');
+            if (input) input.focus();
+          }, 310);
+        }
+      } else {
+        tangoBtn.classList.remove('active');
+        homeBtn.classList.add('active');
+      }
+    }
+
+    /* ── 10. New Action slide-out ───────────────────────────── */
+    function openNewActionPanel() {
+      const _panel    = document.getElementById('newActionPanel');
+      const _backdrop = document.getElementById('aspBackdrop');
+      if (!_panel || !_backdrop) return;
+      _panel.classList.add('open');
+      _backdrop.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => {
+        const first = _panel.querySelector('.asp-input, .asp-select');
+        if (first) first.focus();
+      }, 310);
+    }
+
+    function closeNewActionPanel() {
+      const _panel    = document.getElementById('newActionPanel');
+      const _backdrop = document.getElementById('aspBackdrop');
+      if (!_panel || !_backdrop) return;
+      _panel.classList.remove('open');
+      _backdrop.classList.remove('visible');
+      document.body.style.overflow = '';
+    }
+
+    function handleCreateAction() {
+      const title = document.getElementById('aspTitle')?.value?.trim();
+      if (!title) {
+        const titleInput = document.getElementById('aspTitle');
+        if (titleInput) {
+          titleInput.style.borderColor = '#ef4444';
+          titleInput.focus();
+          setTimeout(() => { titleInput.style.borderColor = ''; }, 1800);
+        }
+        return;
+      }
+      closeNewActionPanel();
+      ['aspTitle','aspAssignee','aspDemand','aspDue','aspPriority','aspNotes']
+        .forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = el.tagName === 'SELECT' ? el.options[0]?.value || '' : '';
+        });
+    }
+
+    // ESC key closes slide-out
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const _panel = document.getElementById('newActionPanel');
+        if (_panel && _panel.classList.contains('open')) closeNewActionPanel();
+      }
+    });
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NEW ACTION SLIDE-OUT PANEL
+  ════════════════════════════════════════════════════════════ -->
+
+  <!-- Backdrop -->
+  <div id="aspBackdrop" class="asp-backdrop" onclick="closeNewActionPanel()"></div>
+
+  <!-- Slide-out panel -->
+  <div id="newActionPanel" class="action-slide-out" aria-label="New action form" role="dialog" aria-modal="true">
+
+    <!-- Head -->
+    <div class="asp-head">
+      <div class="asp-head-left">
+        <div class="asp-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 4.1 12 6"/><path d="m5.1 8-2.9-.8"/><path d="m6 12-1.9 2"/><path d="M7.2 2.2 8 5.1"/><path d="M9.037 9.69a.498.498 0 0 1 .653-.653l11 4.5a.5.5 0 0 1-.074.949l-4.349 1.041a1 1 0 0 0-.74.739l-1.04 4.35a.5.5 0 0 1-.95.074z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="asp-title">New Action</div>
+          <div class="asp-subtitle">AI-Driven Safety Analytics · Solutioning</div>
+        </div>
+      </div>
+      <button class="asp-close" onclick="closeNewActionPanel()" aria-label="Close panel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="asp-body">
+
+      <!-- Title -->
+      <div class="asp-field">
+        <label class="asp-label" for="aspTitle">Title <span class="req">*</span></label>
+        <input class="asp-input" id="aspTitle" type="text" placeholder="What needs to be done?" autocomplete="off" />
+      </div>
+
+      <!-- Assignee -->
+      <div class="asp-field">
+        <label class="asp-label" for="aspAssignee">Assignee</label>
+        <select class="asp-select" id="aspAssignee">
+          <option value="">— Select assignee —</option>
+          <option value="ar">Aravind R. · Designer</option>
+          <option value="pk">Priya K. · Legal Lead</option>
+          <option value="am">Arjun M. · Tech Lead</option>
+          <option value="rp">Raj Patel</option>
+          <option value="kb">Kavita B. · Procurement</option>
+        </select>
+      </div>
+
+      <!-- Demand / Linked Context -->
+      <div class="asp-field">
+        <label class="asp-label" for="aspDemand">Demand / Linked Context</label>
+        <select class="asp-select" id="aspDemand">
+          <option value="bhp-safety" selected>AI-Driven Safety Analytics Platform</option>
+          <option value="bhp-hana">BHP Billiton — SAP S/4 HANA Migration</option>
+          <option value="other">Other / Standalone</option>
+        </select>
+        <div class="asp-context-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/>
+          </svg>
+          Tango will provide context based on the linked demand
+        </div>
+      </div>
+
+      <!-- Due Date + Priority (side by side) -->
+      <div class="asp-row">
+        <div class="asp-field">
+          <label class="asp-label" for="aspDue">Due Date</label>
+          <input class="asp-input" id="aspDue" type="date" />
+        </div>
+        <div class="asp-field">
+          <label class="asp-label" for="aspPriority">Priority</label>
+          <select class="asp-select" id="aspPriority">
+            <option value="">— Select —</option>
+            <option value="p1">P1 · Critical</option>
+            <option value="p2">P2 · High</option>
+            <option value="p3">P3 · Medium</option>
+            <option value="p4">P4 · Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="asp-field">
+        <label class="asp-label" for="aspNotes">Notes</label>
+        <textarea class="asp-textarea" id="aspNotes" placeholder="Add additional context or notes…" rows="4"></textarea>
+      </div>
+
+    </div>
+    <!-- /asp-body -->
+
+    <!-- Footer -->
+    <div class="asp-footer">
+      <button class="asp-btn-cancel" onclick="closeNewActionPanel()">Cancel</button>
+      <button class="asp-btn-create" onclick="handleCreateAction()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Create Action
+      </button>
+    </div>
+
+  </div>
+  <!-- /newActionPanel -->
+
+</body>
+</html>

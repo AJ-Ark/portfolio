@@ -1,0 +1,2931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Idea Space — BHP WAIO — Trmeric</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   ROOT TOKENS  (matches resource-hub-v11)
+═══════════════════════════════════════════ */
+:root {
+  --orange:        #FFA426;
+  --orange-deep:   #F89622;
+  --orange-dark:   #E67E10;
+  --orange-subtle: #FFF8F0;
+  --orange-light:  #FFF5E0;
+  --purple:        #8b5cf6;
+  --purple-bg:     #f3f0ff;
+  --purple-border: rgba(139,92,246,.2);
+  --green:         #10b981;
+  --green-bg:      #f0fdf4;
+  --red:           #ef4444;
+  --red-bg:        #fef2f2;
+  --red-border:    #fecaca;
+  --amber:         #f59e0b;
+  --amber-bg:      #fffbeb;
+  --blue:          #3b82f6;
+  --blue-bg:       #eff6ff;
+  --n900: #1a1a1a;
+  --n800: #333333;
+  --n600: #666666;
+  --n400: #999999;
+  --n200: #e5e5e5;
+  --n100: #f5f5f5;
+  --n50:  #fafafa;
+  --white:#ffffff;
+  --sidebar-w: 228px;
+  --topbar-h:  56px;
+  --panel-w:   600px;
+  --shadow1: 0 1px 2px rgba(0,0,0,.06);
+  --shadow2: 0 1px 3px rgba(0,0,0,.08);
+  --shadow3: 0 4px 6px rgba(0,0,0,.10);
+  --shadow4: 0 10px 15px rgba(0,0,0,.12);
+  --shadow-sheet: -4px 0 24px rgba(0,0,0,.10);
+  --ease-out: cubic-bezier(0,0,.2,1);
+  --ease-io:  cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Poppins',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--n50);color:var(--n900);font-size:14px;line-height:1.6}
+
+/* ════════════════════════════════════════
+   APP SHELL
+════════════════════════════════════════ */
+.app-shell{display:flex;flex-direction:column;height:100vh}
+
+/* ── Topbar ── */
+.topbar{
+  height:var(--topbar-h);background:var(--white);
+  border-bottom:1px solid var(--n200);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;flex-shrink:0;z-index:300;position:relative
+}
+.tb-left{display:flex;align-items:center;gap:12px}
+.tb-logo{display:flex;align-items:center;gap:7px;text-decoration:none}
+.tb-logo-mark{
+  width:30px;height:30px;border-radius:8px;background:var(--orange);
+  display:flex;align-items:center;justify-content:center
+}
+.tb-logo-mark svg{width:14px;height:14px}
+.tb-logo-name{font-size:16px;font-weight:700;color:var(--n900)}
+.tb-sep{color:var(--n200);font-size:18px;font-weight:300;line-height:1}
+.tb-breadcrumb{display:flex;align-items:center;gap:5px}
+.tb-bc{font-size:12px;color:var(--n600)}
+.tb-bc.active{font-weight:600;color:var(--n900);font-size:13px}
+.tb-bc-arrow{color:var(--n400);font-size:11px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.tb-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--orange));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--white);cursor:pointer
+}
+.tb-notif{
+  width:32px;height:32px;border-radius:50%;background:var(--n50);
+  border:1px solid var(--n200);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;color:var(--n600);
+  position:relative;transition:all 150ms
+}
+.tb-notif:hover{border-color:var(--orange);color:var(--orange)}
+.tb-notif svg{width:16px;height:16px}
+.notif-dot{
+  position:absolute;top:6px;right:7px;width:6px;height:6px;
+  border-radius:50%;background:var(--red);border:1.5px solid var(--white)
+}
+
+/* ── Body row ── */
+.body-row{display:flex;flex:1;overflow:hidden}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sidebar-w);background:var(--white);
+  border-right:1px solid var(--n200);
+  display:flex;flex-direction:column;overflow-y:auto;
+  flex-shrink:0;padding:12px 8px;gap:2px
+}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--n200);border-radius:3px}
+
+.nav-section-label{
+  font-size:10px;font-weight:700;color:var(--n400);
+  text-transform:uppercase;letter-spacing:.06em;
+  padding:8px 8px 4px;margin-top:4px
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 10px;border-radius:8px;cursor:pointer;
+  font-size:13px;font-weight:500;color:var(--n600);
+  transition:all 150ms;border:1.5px solid transparent;
+  user-select:none
+}
+.nav-item:hover{background:var(--n100);color:var(--n900)}
+.nav-item.active{background:var(--orange-subtle);color:var(--orange);border-color:rgba(255,164,38,.2)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.8}
+.nav-item.active svg{opacity:1}
+.nav-divider{height:1px;background:var(--n100);margin:8px 4px}
+
+.sidebar-bottom{margin-top:auto;padding-top:12px;border-top:1px solid var(--n100)}
+
+/* ── Main area ── */
+.main-area{
+  flex:1;overflow:hidden;position:relative;
+  display:flex;flex-direction:column
+}
+
+/* ── View containers ── */
+.view{display:none;flex:1;overflow:hidden;flex-direction:column}
+.view.active{display:flex}
+
+/* ════════════════════════════════════════
+   SHARED COMPONENTS
+════════════════════════════════════════ */
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:none;cursor:pointer;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:500;
+  border-radius:9999px;padding:8px 16px;
+  transition:all 150ms var(--ease-out);white-space:nowrap;line-height:1
+}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+.btn-primary{background:var(--orange);color:var(--n900)}
+.btn-primary:hover{background:var(--orange-deep)}
+.btn-outline{background:var(--white);color:var(--n900);border:1.5px solid var(--orange)}
+.btn-outline:hover{background:var(--orange-subtle)}
+.btn-ghost{background:transparent;color:var(--n600);border:1.5px solid transparent}
+.btn-ghost:hover{background:var(--n100);color:var(--n900)}
+.btn-gradient{background:linear-gradient(135deg,var(--purple) 0%,var(--orange) 100%);color:var(--white)}
+.btn-gradient:hover{opacity:.92}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:11px}
+
+/* Status chips */
+.chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600
+}
+.chip-orange{background:var(--orange-subtle);color:var(--orange-dark)}
+.chip-blue{background:var(--blue-bg);color:var(--blue)}
+.chip-green{background:var(--green-bg);color:var(--green)}
+.chip-gray{background:var(--n100);color:var(--n600)}
+.status-select-chip{
+  appearance:none;-webkit-appearance:none;
+  padding:4px 24px 4px 10px;border-radius:6px;
+  font-size:11px;font-weight:700;font-family:'Poppins',sans-serif;
+  border:1px solid var(--n200);cursor:pointer;
+  background:var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 6px center;
+}
+.status-select-chip[data-status="inception"]{background-color:var(--orange-subtle);color:var(--orange-dark);border-color:rgba(255,164,38,0.2)}
+.status-select-chip[data-status="draft"]{background-color:var(--blue-bg);color:var(--blue);border-color:rgba(59,130,246,0.2)}
+.status-select-chip[data-status="approved"]{background-color:var(--green-bg);color:var(--green);border-color:rgba(16,185,129,0.2)}
+.status-select-chip[data-status="archived"]{background-color:var(--n100);color:var(--n600)}
+.chip-draft{background:var(--n100);color:var(--n600)}
+.chip-q{background:var(--blue-bg);color:var(--blue)}
+
+/* Score pill */
+.score-pill{
+  display:inline-flex;align-items:center;gap:3px;
+  padding:3px 8px;border-radius:9999px;font-size:11px;font-weight:600
+}
+.score-high{background:var(--green-bg);color:var(--green)}
+.score-med{background:var(--orange-light);color:var(--orange-dark)}
+.score-low{background:var(--n100);color:var(--n600)}
+
+/* Search input */
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap svg{
+  position:absolute;left:11px;width:15px;height:15px;
+  color:var(--n400);pointer-events:none
+}
+.search-input{
+  padding:8px 12px 8px 35px;border:1px solid var(--n200);
+  border-radius:8px;font-family:'Poppins',sans-serif;
+  font-size:13px;color:var(--n900);background:var(--white);
+  outline:none;transition:border 150ms;width:220px
+}
+.search-input:focus{border-color:var(--orange)}
+
+/* Filter bar */
+.filter-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 20px;background:var(--white);
+  border-bottom:1px solid var(--n100);flex-shrink:0
+}
+.filter-bar-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+/* View mode pill */
+.view-mode-pill{
+  display:flex;align-items:center;gap:0;
+  background:var(--n50);border:1px solid var(--n200);
+  border-radius:9999px;padding:3px
+}
+.vm-btn{
+  padding:5px 13px;border-radius:9999px;border:none;
+  font-family:'Poppins',sans-serif;font-size:11px;font-weight:500;
+  cursor:pointer;color:var(--n600);background:transparent;
+  transition:all 150ms;display:flex;align-items:center;gap:4px
+}
+.vm-btn svg{width:13px;height:13px}
+.vm-btn.active{background:var(--white);color:var(--n900);box-shadow:var(--shadow1)}
+
+/* Exec summary strip */
+.exec-summary{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  padding:16px 20px;background:var(--white);
+  border-bottom:1px solid var(--n100);flex-shrink:0
+}
+.es-kpi{
+  background:var(--n50);border:1px solid var(--n100);border-radius:10px;
+  padding:14px 16px;display:flex;flex-direction:column;gap:3px
+}
+.es-kpi-label{font-size:11px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.05em}
+.es-kpi-val{font-size:24px;font-weight:700;color:var(--n900);line-height:1.1}
+.es-kpi-sub{font-size:11px;color:var(--n600)}
+.es-kpi-bar{height:3px;border-radius:3px;background:var(--n200);margin-top:6px;overflow:hidden}
+.es-kpi-fill{height:100%;border-radius:3px;background:var(--orange)}
+
+/* Table */
+.table-wrap{flex:1;overflow-y:auto;padding:0 20px 20px}
+.table-wrap::-webkit-scrollbar{width:4px}
+.table-wrap::-webkit-scrollbar-thumb{background:var(--n200);border-radius:4px}
+.demand-table{width:100%;border-collapse:collapse;border:1px solid var(--n200);border-radius:8px;overflow:hidden;background:var(--white);margin-top:16px}
+.demand-table thead tr{background:var(--n50);border-bottom:1px solid var(--n200)}
+.demand-table th{
+  padding:11px 14px;text-align:left;
+  font-size:11px;font-weight:700;color:var(--n600);
+  text-transform:uppercase;letter-spacing:.05em;white-space:nowrap
+}
+.demand-table th:first-child{border-radius:8px 0 0 0}
+.demand-table th:last-child{border-radius:0 8px 0 0}
+.demand-table td{padding:13px 14px;font-size:13px;color:var(--n900);border-bottom:1px solid var(--n100)}
+.demand-table tbody tr{cursor:pointer;transition:background 120ms}
+.demand-table tbody tr:hover td{background:var(--n50)}
+.demand-table tbody tr.row-active td{background:var(--orange-subtle)}
+.demand-table tbody tr:last-child td{border-bottom:none}
+.cell-idea-name{font-weight:600;color:var(--n900)}
+.cell-idea-sub{font-size:11px;color:var(--n400);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.sort-icon{display:inline-flex;align-items:center;margin-left:4px;opacity:.4}
+.sort-icon svg{width:10px;height:10px}
+
+/* Card grid */
+.card-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:14px;padding:16px 20px 20px;overflow-y:auto;flex:1
+}
+.card-grid::-webkit-scrollbar{width:4px}
+.card-grid::-webkit-scrollbar-thumb{background:var(--n200);border-radius:4px}
+.idea-card{
+  background:var(--white);border:1px solid var(--n100);
+  border-radius:12px;padding:18px;cursor:pointer;
+  transition:all 150ms var(--ease-out);
+  box-shadow:var(--shadow1)
+}
+.idea-card:hover{transform:translateY(-2px);box-shadow:var(--shadow3);border-color:var(--n200)}
+.idea-card.card-active{border-color:var(--orange);background:var(--orange-subtle)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:600;color:var(--n900);line-height:1.4;flex:1;margin-right:8px}
+.card-meta{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.card-scores{display:flex;gap:6px;margin-top:10px}
+.score-item{display:flex;flex-direction:column;gap:2px;flex:1}
+.score-item-label{font-size:9px;font-weight:600;color:var(--n400);text-transform:uppercase;letter-spacing:.05em}
+.score-bar{height:4px;border-radius:4px;background:var(--n200);overflow:hidden}
+.score-bar-fill{height:100%;border-radius:4px;background:var(--orange)}
+.score-bar-fill.complexity{background:var(--purple)}
+.card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--n100)}
+.card-footer-left{font-size:11px;color:var(--n400)}
+.card-obj-count{font-size:11px;color:var(--n400)}
+
+/* ════════════════════════════════════════
+   GRAPH VIEW
+════════════════════════════════════════ */
+.graph-view-wrap{
+  flex:1;position:relative;overflow:hidden;
+  background-color:var(--n50);
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(229,229,229,.5) 39px,rgba(229,229,229,.5) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(229,229,229,.5) 39px,rgba(229,229,229,.5) 40px);
+  background-size:40px 40px
+}
+#scatter-svg{width:100%;height:100%;display:block;cursor:grab}
+#scatter-svg:active{cursor:grabbing}
+
+/* Graph toolbar */
+/* ── Graph UI Layer (Responsive Wrapper) ── */
+.graph-ui-layer{
+  position:absolute;top:14px;left:16px;right:16px;z-index:50;
+  display:flex;justify-content:space-between;align-items:flex-start;
+  pointer-events:none;gap:10px;flex-wrap:wrap
+}
+.graph-ui-layer > *{pointer-events:auto}
+.graph-toolbar{display:flex;align-items:center;gap:7px}
+.graph-pill{
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  border:1px solid var(--n200);border-radius:9999px;
+  padding:7px 14px;font-size:12px;font-weight:600;color:var(--n900);
+  box-shadow:var(--shadow2);display:flex;align-items:center;gap:6px
+}
+.graph-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--orange)}
+
+.graph-stats{display:flex;gap:6px}
+.stat-pill{
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  border:1px solid var(--n200);border-radius:9999px;
+  padding:5px 12px;font-size:11px;font-weight:500;color:var(--n600);
+  display:flex;align-items:center;gap:5px
+}
+.stat-pill b{font-weight:700;color:var(--n900)}
+
+.graph-zoom{
+  position:absolute;bottom:16px;left:16px;z-index:50;
+  display:flex;flex-direction:column;gap:4px
+}
+.graph-zoom button{
+  width:30px;height:30px;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(10px);border:1px solid var(--n200);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;color:var(--n600);
+  font-family:'Poppins',sans-serif;line-height:1;
+  transition:all 150ms
+}
+.graph-zoom button:hover{border-color:var(--orange);color:var(--orange)}
+
+.graph-legend{
+  position:absolute;bottom:16px;right:20px;z-index:50;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  border:1px solid var(--n200);border-radius:10px;
+  padding:11px 14px;display:flex;flex-direction:column;gap:6px;
+  box-shadow:var(--shadow2)
+}
+.legend-title{font-size:9px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.legend-row{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--n600)}
+.legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.legend-line{width:20px;height:2px;border-radius:2px;flex-shrink:0}
+
+/* Filter pills row (graph) */
+.graph-filters{
+  display:flex;gap:4px;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(10px);border:1px solid var(--n200);
+  border-radius:9999px;padding:3px
+}
+.gf-btn{
+  padding:5px 13px;border-radius:9999px;border:none;
+  font-family:'Poppins',sans-serif;font-size:11px;font-weight:500;
+  cursor:pointer;color:var(--n600);background:transparent;
+  transition:all 150ms;display:flex;align-items:center;gap:4px
+}
+.gf-btn .gfdot{width:6px;height:6px;border-radius:50%}
+.gf-btn.active{background:var(--white);color:var(--n900);box-shadow:var(--shadow1)}
+
+/* SVG axis / node / edge styles */
+.axis-label-text{
+  font-family:'Poppins',sans-serif;font-size:10px;
+  font-weight:700;fill:#bbbbbb;letter-spacing:.07em
+}
+.axis-tick{
+  font-family:'Poppins',sans-serif;font-size:9px;fill:#cccccc
+}
+.quadrant-label{
+  font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;
+  fill:#e2e2e2;letter-spacing:.07em
+}
+.node-text{
+  font-family:'Poppins',sans-serif;font-size:9.5px;
+  font-weight:500;fill:var(--n600);text-anchor:middle;pointer-events:none;user-select:none
+}
+.node-icon{
+  font-size:11px;text-anchor:middle;dominant-baseline:central;
+  pointer-events:none;user-select:none;fill:white
+}
+
+/* Tooltip */
+#graph-tooltip{
+  position:fixed;pointer-events:none;z-index:600;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(16px);
+  border:1px solid var(--n200);border-radius:10px;
+  padding:11px 14px;box-shadow:var(--shadow4);
+  min-width:190px;max-width:250px;
+  opacity:0;transform:translateY(6px) scale(.97);
+  transition:opacity 150ms var(--ease-out),transform 150ms var(--ease-out)
+}
+#graph-tooltip.tt-show{opacity:1;transform:none}
+.tt-name{font-size:12px;font-weight:700;color:var(--n900);margin-bottom:3px}
+.tt-port{font-size:11px;color:var(--n600);margin-bottom:6px}
+.tt-chips{display:flex;gap:4px;flex-wrap:wrap}
+
+/* ── Combine Mode Button ── */
+.combine-mode-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:6px 13px;border-radius:9999px;border:1.5px solid var(--n200);
+  background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+  font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;
+  cursor:pointer;color:var(--n600);transition:all 200ms;
+  box-shadow:var(--shadow2)
+}
+.combine-mode-btn:hover{border-color:var(--purple);color:var(--purple)}
+.combine-mode-btn.active{
+  background:linear-gradient(135deg,var(--purple),#FFA426);
+  color:white;border-color:transparent;
+  box-shadow:0 2px 12px rgba(139,92,246,.35)
+}
+.combine-mode-btn .cb-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--purple);
+  animation:cbpulse 1.8s ease-in-out infinite;flex-shrink:0
+}
+.combine-mode-btn.active .cb-dot{background:white}
+@keyframes cbpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.6}}
+
+/* ── Combine Arc SVG overlay ── */
+.combine-arc{
+  fill:none;stroke-width:2;stroke-dasharray:6,4;
+  stroke:url(#combine-grad);opacity:0;
+  animation:arc-breathe 2.4s ease-in-out infinite;
+  pointer-events:stroke;cursor:pointer
+}
+.combine-arc.visible{opacity:1;pointer-events:stroke}
+@keyframes arc-breathe{
+  0%,100%{stroke-width:2;opacity:.7;stroke-dashoffset:0}
+  50%{stroke-width:3.5;opacity:1;stroke-dashoffset:-20}
+}
+.combine-sparkle{
+  pointer-events:none;
+  animation:sparkle-spin 2.4s ease-in-out infinite
+}
+@keyframes sparkle-spin{
+  0%,100%{transform:scale(1) rotate(0deg);opacity:.8}
+  50%{transform:scale(1.3) rotate(20deg);opacity:1}
+}
+.combine-arc-hit{
+  fill:none;stroke:transparent;stroke-width:18;
+  cursor:pointer;pointer-events:stroke
+}
+
+/* ── Combine Panel (floating modal) ── */
+.combine-panel{
+  position:absolute;left:50%;transform:translateX(-50%);
+  top:60px;z-index:200;
+  width:420px;
+  background:var(--white);border:1px solid var(--n200);
+  border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.14);
+  display:none;flex-direction:column;overflow:hidden
+}
+.combine-panel.visible{display:flex}
+.cp-stripe{
+  height:3px;flex-shrink:0;
+  background:linear-gradient(90deg,var(--purple) 0%,var(--orange) 100%)
+}
+.cp-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px 10px;
+}
+.cp-header-left{display:flex;align-items:center;gap:8px}
+.cp-ai-badge{
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;animation:tangoSpark 2.5s infinite ease-in-out
+}
+.cp-title{font-size:13px;font-weight:700;color:var(--n900)}
+.cp-subtitle{font-size:10px;color:var(--n400)}
+.cp-close{
+  width:26px;height:26px;border-radius:50%;background:var(--n100);
+  border:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;color:var(--n600);transition:all 150ms;font-size:14px
+}
+.cp-close:hover{background:var(--n200)}
+.cp-ideas{
+  display:flex;align-items:stretch;gap:0;
+  margin:0 18px 12px;border:1px solid var(--n200);border-radius:10px;overflow:hidden
+}
+.cp-idea-card{
+  flex:1;padding:11px 13px;background:var(--n50)
+}
+.cp-idea-card:first-child{border-right:1px solid var(--n200)}
+.cp-idea-label{font-size:9px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.cp-idea-title{font-size:12px;font-weight:600;color:var(--n900);line-height:1.4}
+.cp-idea-status{margin-top:5px}
+.cp-plus{
+  display:flex;align-items:center;justify-content:center;
+  padding:0 10px;background:var(--white);font-size:18px;
+  color:var(--purple);font-weight:700;border-left:1px solid var(--n200);border-right:1px solid var(--n200)
+}
+.cp-rationale{
+  margin:0 18px 14px;padding:11px 13px;
+  background:linear-gradient(135deg,rgba(139,92,246,.05),rgba(255,164,38,.05));
+  border:1px solid rgba(139,92,246,.15);border-radius:10px
+}
+.cp-rationale-label{
+  display:flex;align-items:center;gap:5px;
+  font-size:9px;font-weight:700;color:var(--purple);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px
+}
+.cp-rationale-text{font-size:11px;color:var(--n800);line-height:1.6}
+.cp-synergy{
+  display:flex;gap:6px;flex-wrap:wrap;margin-top:8px
+}
+.cp-synergy-tag{
+  padding:3px 9px;border-radius:9999px;font-size:10px;font-weight:600;
+  background:rgba(139,92,246,.1);color:var(--purple);
+  border:1px solid rgba(139,92,246,.15)
+}
+.cp-footer{
+  display:flex;gap:8px;padding:12px 18px 14px;
+  border-top:1px solid var(--n100)
+}
+
+/* ── Kebab Menu ── */
+.kebab-btn{
+  width:28px;height:28px;border-radius:6px;border:none;
+  background:transparent;cursor:pointer;display:flex;
+  align-items:center;justify-content:center;color:var(--n400);
+  transition:all 150ms;font-size:16px;letter-spacing:0
+}
+.kebab-btn:hover{background:var(--n100);color:var(--n900)}
+.kebab-menu{
+  position:fixed;z-index:500;
+  background:var(--white);border:1px solid var(--n200);
+  border-radius:10px;box-shadow:var(--shadow4);
+  padding:4px;min-width:160px;display:none
+}
+.kebab-menu.open{display:block}
+.km-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:6px;cursor:pointer;
+  font-size:12px;font-weight:500;color:var(--n800);
+  transition:all 120ms;white-space:nowrap
+}
+.km-item:hover{background:var(--n100)}
+.km-item.danger{color:var(--red)}
+.km-item.danger:hover{background:var(--red-bg)}
+.km-divider{height:1px;background:var(--n100);margin:4px 0}
+.km-item svg{width:12px;height:12px;flex-shrink:0}
+
+/* ════════════════════════════════════════
+   DETAIL PANEL  (Youreka Canvas)
+════════════════════════════════════════ */
+.detail-panel{
+  width:var(--panel-w);height:100%;background:var(--white);
+  border-left:1px solid var(--n200);
+  display:flex;flex-direction:column;overflow:hidden;
+  flex-shrink:0;
+  position:absolute;top:0;right:calc(-1 * var(--panel-w) - 10px);
+  box-shadow:var(--shadow-sheet);border-radius:16px 0 0 16px;
+  transition:right 350ms var(--ease-out);z-index:200
+}
+.detail-panel.dp-open{right:0}
+
+/* Panel gradient stripe */
+.dp-stripe{
+  height:3px;flex-shrink:0;
+  background:linear-gradient(90deg,var(--purple) 0%,var(--orange) 100%)
+}
+
+/* Panel header */
+.dp-header{
+  padding:18px 20px 14px;border-bottom:1px solid var(--n100);flex-shrink:0
+}
+.dp-header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.dp-type-row{
+  display:flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+  margin-bottom:5px
+}
+.dp-title{font-size:19px;font-weight:700;color:var(--n900);line-height:1.3;max-width:480px}
+.dp-close{
+  width:28px;height:28px;border-radius:50%;background:var(--n100);
+  border:none;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;color:var(--n600);flex-shrink:0;
+  margin-left:8px;margin-top:2px;transition:all 150ms
+}
+.dp-close:hover{background:var(--n200);color:var(--n900)}
+.dp-close svg{width:13px;height:13px}
+.dp-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* Panel footer — hidden (actions moved to header) */
+.dp-footer{ display:none !important; }
+
+/* Panel body */
+.dp-body{
+  flex:1;overflow-y:auto;padding:16px 20px 32px !important;
+  display:flex;flex-direction:column;gap:14px
+}
+.dp-body::-webkit-scrollbar{width:4px}
+.dp-body::-webkit-scrollbar-thumb{background:var(--n200);border-radius:4px}
+
+/* Header bottom row — meta + actions */
+.dp-header-bottom{ flex-wrap:wrap; gap:12px; }
+
+/* Canvas section card */
+.cs-card{
+  border:1px solid var(--n100);border-radius:12px;
+  background:var(--white)
+}
+.cs-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;border-bottom:1px solid var(--n100)
+}
+.cs-header-left{display:flex;align-items:center;gap:7px}
+.cs-icon{width:18px;height:18px;flex-shrink:0}
+.cs-title{font-size:12px;font-weight:700;color:var(--n900);letter-spacing:.01em}
+.cs-edit{
+  font-size:11px;font-weight:500;color:var(--n400);
+  background:none;border:none;cursor:pointer;
+  font-family:'Poppins',sans-serif;
+  display:flex;align-items:center;gap:3px;
+  transition:color 150ms
+}
+.cs-edit:hover{color:var(--orange)}
+.cs-edit svg{width:11px;height:11px}
+.cs-body{padding:14px}
+
+/* Spark */
+.spark-text{
+  font-size:13px;font-style:italic;color:var(--n800);line-height:1.75;
+  border-left:3px solid var(--orange);padding-left:12px
+}
+
+/* Score cards */
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.sc-card{
+  background:var(--n50);border:1px solid var(--n100);
+  border-radius:10px;padding:12px
+}
+.sc-label{font-size:9px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.sc-val{font-size:22px;font-weight:700;color:var(--n900);line-height:1}
+.sc-sub{font-size:10px;color:var(--n400);margin-top:2px}
+.sc-bar{height:4px;border-radius:4px;background:var(--n200);margin-top:8px;overflow:hidden}
+.sc-fill{height:100%;border-radius:4px}
+
+/* AI insight banner */
+.ai-insight{
+  background:linear-gradient(135deg,rgba(139,92,246,.07) 0%,rgba(255,164,38,.07) 100%);
+  border:1px solid var(--purple-border);border-radius:10px;
+  padding:11px 13px;display:flex;gap:9px;align-items:flex-start
+}
+.ai-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.ai-label{font-size:9px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}
+.ai-text{font-size:12px;color:var(--n600);line-height:1.6}
+
+/* Objectives */
+.obj-list{display:flex;flex-direction:column;gap:7px}
+.obj-row{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:9px 11px;background:var(--n50);
+  border:1px solid var(--n100);border-radius:8px
+}
+.obj-check-wrap{
+  width:17px;height:17px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;margin-top:1px
+}
+.obj-check-done{background:var(--green-bg);border:1.5px solid var(--green)}
+.obj-check-pend{background:var(--n100);border:1.5px solid var(--n200)}
+.obj-check-wrap svg{width:9px;height:9px}
+.obj-text{font-size:12px;color:var(--n800);line-height:1.5;flex:1}
+
+/* KR list */
+.kr-section{margin-top:10px;padding-top:10px;border-top:1px solid var(--n100)}
+.kr-section-label{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kr-item{
+  display:flex;align-items:flex-start;gap:7px;
+  font-size:12px;color:var(--n800);line-height:1.5;margin-bottom:5px
+}
+.kr-bullet{width:5px;height:5px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:6px}
+
+/* Chip groups */
+.chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.cap-chip{
+  padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;
+  background:var(--orange-light);color:var(--orange-dark);
+  border:1px solid rgba(255,164,38,.2);
+  display:inline-flex;align-items:center;gap:4px
+}
+.cap-chip svg{width:10px;height:10px}
+.con-chip{
+  padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;
+  background:var(--red-bg);color:var(--red);
+  border:1px solid var(--red-border);
+  display:inline-flex;align-items:center;gap:4px
+}
+.con-chip svg{width:10px;height:10px}
+
+/* Timeline */
+.tl-list{
+  display:flex;flex-direction:column;gap:0;
+  position:relative;padding-left:22px
+}
+.tl-list::before{
+  content:'';position:absolute;left:4px;top:8px;bottom:8px;
+  width:2px;background:var(--n200);border-radius:2px
+}
+.tl-item{
+  position:relative;padding:9px 12px;border:1px solid var(--n200);
+  border-radius:8px;background:var(--white);margin-bottom:7px;
+  transition:all 150ms
+}
+.tl-item.tl-completed{border-color:var(--green);background:var(--green-bg)}
+.tl-item.tl-active{border-color:var(--orange);background:var(--orange-subtle)}
+.tl-item::before{
+  content:'';position:absolute;left:-19px;top:50%;transform:translateY(-50%);
+  width:11px;height:11px;border-radius:50%;background:var(--n200);
+  border:2px solid var(--white);box-shadow:0 0 0 2px var(--n200)
+}
+.tl-item.tl-completed::before{background:var(--green);box-shadow:0 0 0 2px rgba(16,185,129,.2)}
+.tl-item.tl-active::before{
+  background:var(--orange);box-shadow:0 0 0 2px rgba(255,164,38,.2);
+  animation:pulse-node 1.5s ease-in-out infinite
+}
+@keyframes pulse-node{
+  0%,100%{box-shadow:0 0 0 2px rgba(255,164,38,.2)}
+  50%{box-shadow:0 0 0 5px rgba(255,164,38,.12)}
+}
+.tl-phase{font-size:10px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.tl-item.tl-completed .tl-phase{color:var(--green)}
+.tl-item.tl-active .tl-phase{color:var(--orange-dark)}
+.tl-milestone{font-size:12px;font-weight:500;color:var(--n900)}
+.tl-date{font-size:10px;color:var(--n400);margin-top:1px}
+
+/* Description */
+.desc-text{font-size:12px;color:var(--n800);line-height:1.7}
+
+/* Dependencies section */
+.dep-list{display:flex;flex-wrap:wrap;gap:6px}
+.dep-chip{
+  padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;
+  background:var(--purple-bg);color:var(--purple);
+  border:1px solid var(--purple-border);cursor:pointer;
+  transition:all 150ms;display:inline-flex;align-items:center;gap:4px
+}
+.dep-chip:hover{background:var(--purple);color:var(--white)}
+.dep-chip svg{width:10px;height:10px}
+
+/* Panel footer */
+.dp-footer{
+  padding:12px 20px 16px;border-top:1px solid var(--n100);
+  display:flex;gap:7px;flex-shrink:0
+}
+.dp-footer .btn{flex:1;justify-content:center}
+
+/* ── Animations ── */
+@keyframes shimmer{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+.skeleton{
+  background:linear-gradient(90deg,var(--n100) 25%,#ebebeb 50%,var(--n100) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;border-radius:4px
+}
+
+/* ── Resize handle ── */
+.main-with-panel{
+  flex:1;display:flex;overflow:hidden;position:relative
+}
+
+/* ── Right Nav ── */
+.right-nav{
+  width:48px;background:var(--white);border-left:1px solid var(--n200);
+  display:flex;flex-direction:column;align-items:center;
+  padding:10px 0;gap:8px;flex-shrink:0;z-index:200
+}
+.rn-tango{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple) 0%,var(--orange) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:var(--white);cursor:pointer;
+  box-shadow:0 2px 8px rgba(139,92,246,.35);
+  transition:all 150ms;border:none;font-family:'Poppins',sans-serif;font-weight:700
+}
+.rn-tango:hover{transform:scale(1.08);box-shadow:0 4px 12px rgba(139,92,246,.45)}
+.rn-divider{width:28px;height:1px;background:var(--n200);margin:2px 0}
+.rn-icon{
+  width:32px;height:32px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--n400);transition:all 150ms;
+  background:transparent;border:none
+}
+.rn-icon:hover{background:var(--n100);color:var(--n600)}
+.rn-icon svg{width:16px;height:16px}
+
+/* ── TANGO PANEL ── */
+.tango-panel{width:0;flex-shrink:0;overflow:hidden;background:#fff;border-left:1px solid #e5e5e5;display:flex;flex-direction:column;transition:width 280ms cubic-bezier(0,0,0.2,1),opacity 200ms;opacity:0;height:100%;position:fixed;right:48px;top:56px;bottom:0;z-index:800;}
+.tango-panel.open{width:296px;opacity:1;}
+.tp-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px 10px;background:#fff;border-bottom:1px solid #f0f0f0;flex-shrink:0;}
+.tp-hd-left{display:flex;align-items:center;gap:8px;}
+.tp-ai-icon{width:28px;height:28px;border-radius:7px;background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.18);display:flex;align-items:center;justify-content:center;animation:tangoSpark 2.5s infinite ease-in-out;}
+.tp-ai-icon svg{width:13px;height:13px;color:#8b5cf6;}
+@keyframes tangoSpark{0%{box-shadow:0 0 0 0 rgba(139,92,246,0.4);}50%{box-shadow:0 0 0 5px rgba(139,92,246,0);}100%{box-shadow:0 0 0 0 rgba(139,92,246,0);}}
+.tp-title{font-size:12px;font-weight:700;color:#1a1a1a;}
+.tp-subtitle{font-size:9px;color:#aaa;}
+.tp-live{display:flex;align-items:center;gap:4px;}
+.tp-live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:livepulse 1.5s ease-in-out infinite;}
+@keyframes livepulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+.tp-live-label{font-size:10px;color:#555;font-weight:600;}
+.tp-context{display:flex;align-items:center;gap:5px;margin:8px 10px;padding:4px 9px;border-radius:9999px;background:#f5f5f5;font-size:10px;color:#888;font-weight:500;}
+.tp-context svg{width:10px;height:10px;}
+.tp-feed{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:#e5e5e5 transparent;}
+.tp-msg{display:flex;flex-direction:column;gap:5px;}
+.tp-msg-hd{display:flex;align-items:center;gap:5px;}
+.tp-msg-av{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#8b5cf6,#FFA426);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700;flex-shrink:0;}
+.tp-msg-meta{font-size:10px;font-weight:600;color:#1a1a1a;}
+.tp-msg-meta span{font-weight:400;color:#bbb;}
+.tp-msg-body{font-size:11px;color:#444;line-height:1.55;padding:9px 11px;background:#fff;border:1px solid #e5e5e5;border-radius:9px 9px 9px 0;}
+.tp-msg-body.success{background:#f0fdf4;border-color:rgba(16,185,129,0.2);color:#065f46;}
+.tp-system-log{font-size:10px;color:#666;display:flex;align-items:center;gap:6px;padding:4px 8px;}
+.tp-typing{display:flex;align-items:center;gap:4px;padding:9px 11px;background:#fff;border:1px solid #e5e5e5;border-radius:9px 9px 9px 0;width:fit-content;}
+.tp-dot{width:5px;height:5px;border-radius:50%;background:#FFA426;animation:bounce 1.2s infinite;}
+.tp-dot:nth-child(2){animation-delay:.2s;}
+.tp-dot:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:scale(0.8);opacity:.5;}40%{transform:scale(1.2);opacity:1;}}
+.tp-input-wrap{display:flex;align-items:center;gap:7px;padding:10px;border-top:1px solid #f0f0f0;flex-shrink:0;background:#fff;}
+.tp-input{flex:1;padding:8px 12px;border:1.5px solid #e5e5e5;border-radius:9999px;font-size:11px;font-family:'Poppins',sans-serif;outline:none;transition:border-color 150ms;}
+.tp-input:focus{border-color:#FFA426;}
+.tp-send{width:30px;height:30px;border-radius:50%;border:none;background:#FFA426;color:#1a1a1a;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 150ms;flex-shrink:0;}
+
+/* DETAIL PANEL SHIFT LOGIC */
+body.tango-is-open .detail-panel.dp-open{right:344px;}
+
+/* ── Topbar center pill ── */
+.tb-center{position:absolute;left:50%;transform:translateX(-50%)}
+.tb-view-pill{
+  display:flex;align-items:center;gap:0;
+  background:var(--n50);border:1px solid var(--n200);
+  border-radius:9999px;padding:3px
+}
+.tb-vp-btn{
+  padding:5px 16px;border-radius:9999px;border:none;
+  font-family:'Poppins',sans-serif;font-size:12px;font-weight:500;
+  cursor:pointer;color:var(--n600);background:transparent;
+  transition:all 150ms;display:flex;align-items:center;gap:5px
+}
+.tb-vp-btn.active{background:var(--white);color:var(--n900);box-shadow:var(--shadow1)}
+.tb-vp-btn.tango-btn.active{
+  background:linear-gradient(135deg,var(--purple) 0%,var(--orange) 100%);
+  color:var(--white)
+}
+
+/* ── Page Header ── */
+.page-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 20px;background:var(--white);
+  border-bottom:1px solid var(--n200);flex-shrink:0
+}
+.ph-left{display:flex;align-items:center;gap:12px}
+.ph-icon{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--orange) 0%,var(--orange-deep) 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(255,164,38,.3)
+}
+.ph-icon svg{width:20px;height:20px;color:white;stroke:white}
+.ph-title{font-size:18px;font-weight:700;color:var(--n900);line-height:1.2}
+.ph-subtitle{font-size:12px;color:var(--n400);margin-top:1px}
+.ph-right{display:flex;align-items:center;gap:8px}
+
+/* ── Fixed Detail Panel ── */
+.detail-panel{
+  width:var(--panel-w);background:var(--white);
+  border-left:1px solid var(--n200);
+  display:flex;flex-direction:column;overflow:hidden;
+  position:fixed;
+  top:var(--topbar-h);
+  bottom:0;
+  right:-650px;
+  z-index:900;
+  box-shadow:var(--shadow-sheet);border-radius:16px 0 0 16px;
+  transition:right 350ms var(--ease-out)
+}
+.detail-panel.dp-open{right:48px}
+/* ── Bulk Action Bar ── */
+.bulk-action-bar{
+  position:absolute;bottom:-80px;left:50%;transform:translateX(-50%);
+  background:var(--n900);color:var(--white);
+  padding:12px 20px;border-radius:12px;box-shadow:var(--shadow4);
+  display:flex;align-items:center;gap:16px;z-index:400;
+  transition:bottom 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space:nowrap
+}
+.bulk-action-bar.visible{bottom:32px}
+.bulk-count{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.bulk-count-badge{
+  background:var(--orange);color:var(--n900);
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700
+}
+.bulk-actions{display:flex;gap:8px}
+.bulk-close{
+  cursor:pointer;color:var(--n400);margin-left:8px;
+  transition:color 0.15s;display:flex;align-items:center
+}
+.bulk-close:hover{color:var(--white)}
+
+/* Bulk Action Bar Warning State */
+.bulk-action-bar.warning-state{
+  background:var(--red-bg);color:var(--red);
+  border:1px solid var(--red-border)
+}
+.bulk-action-bar.warning-state .bulk-count-badge{
+  background:var(--red);color:var(--white)
+}
+.bulk-action-bar.warning-state .bulk-count{color:var(--red)}
+.bulk-action-bar.warning-state .bulk-close{color:var(--red);opacity:.7}
+.bulk-action-bar.warning-state .bulk-close:hover{opacity:1}
+.bulk-warning-text{
+  font-size:12px;font-weight:600;color:var(--red);
+  display:flex;align-items:center;gap:6px;padding-right:12px
+}
+.btn-disabled{opacity:.5;cursor:not-allowed !important;pointer-events:none}
+
+/* ── Table & Card Checkboxes ── */
+.idea-cb-wrap{display:flex;align-items:center;justify-content:center}
+.idea-cb{width:16px;height:16px;cursor:pointer;accent-color:var(--orange)}
+.card-cb-wrap{position:absolute;top:12px;right:12px;z-index:10}
+.idea-card{position:relative}
+
+/* ── Synergy Tag ── */
+.synergy-tag{
+  font-size:10px;font-weight:600;color:var(--purple);
+  background:rgba(139,92,246,.1);padding:2px 7px;
+  border-radius:4px;display:inline-flex;align-items:center;gap:3px;
+  margin-top:4px;border:1px solid rgba(139,92,246,.15);
+  animation:popIn 0.35s cubic-bezier(0.175,0.885,0.32,1.275) forwards
+}
+@keyframes popIn{
+  0%{opacity:0;transform:scale(0.8) translateY(4px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+
+/* ── Tango Quick Prompts ── */
+.tp-prompts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.tp-prompt-btn{
+  background:var(--white);border:1px solid var(--purple-border);
+  color:var(--purple);border-radius:8px;padding:8px 12px;
+  font-size:11px;font-weight:500;cursor:pointer;
+  text-align:left;transition:all 150ms;font-family:'Poppins',sans-serif
+}
+.tp-prompt-btn:hover{background:var(--purple-bg);border-color:var(--purple)}
+
+/* ── Toast ── */
+.tango-toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);
+  background:var(--n900);color:var(--white);
+  padding:9px 20px;border-radius:9999px;
+  font-size:12px;font-weight:500;
+  box-shadow:0 4px 16px rgba(0,0,0,.18);
+  opacity:0;pointer-events:none;z-index:1000;
+  transition:opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+  white-space:nowrap
+}
+.tango-toast.toast-show{
+  opacity:1;transform:translateX(-50%) translateY(0)
+}
+</style>
+<body>
+<div class="app-shell">
+
+<!-- ══════════ TOPBAR ══════════ -->
+<header class="topbar">
+  <div class="tb-left">
+    <img
+        src="trmericLogo.svg"
+        alt="trmeric logo"
+        style="height: 32px"
+        class="trmeric-logo"
+      />
+    <!-- <a class="tb-logo" href="#">
+      <div class="tb-logo-mark">
+        <svg viewBox="0 0 14 14" fill="none" stroke="var(--n900)" stroke-width="2.2">
+          <path d="M7 1v12M1 7h12"/>
+        </svg>
+      </div>
+      <span class="tb-logo-name">trmeric</span>
+    </a>
+    <span class="tb-sep">/</span>
+    <div class="tb-breadcrumb">
+      <span class="tb-bc">Workspace</span>
+      <span class="tb-bc-arrow">›</span>
+      <span class="tb-bc">BHP WAIO</span>
+      <span class="tb-bc-arrow">›</span>
+      <span class="tb-bc active">Idea Space</span>
+    </div> -->
+  </div>
+  <div class="tb-center">
+    <div class="tb-view-pill">
+      <button class="tb-vp-btn active" id="tbMyHub">My Hub</button>
+      <button class="tb-vp-btn tango-btn" id="tbTango">✦ Tango</button>
+    </div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-notif" title="Notifications">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1a5 5 0 015 5v3l1.5 2.5H1.5L3 9V6a5 5 0 015-5zM6 13a2 2 0 004 0"/></svg>
+      <span class="notif-dot"></span>
+    </div>
+    <div class="tb-notif" title="Settings">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4"/></svg>
+    </div>
+    <div class="tb-avatar">AK</div>
+  </div>
+</header>
+
+<!-- ══════════ BODY ROW ══════════ -->
+<div class="body-row">
+
+  <!-- ── SIDEBAR ── -->
+  <nav class="sidebar">
+    <span class="nav-section-label">Idea Space Views</span>
+
+    <div class="nav-item active" id="navIdeaGraph">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="4" cy="8" r="2.2"/><circle cx="12" cy="3.5" r="2.2"/><circle cx="12" cy="12.5" r="2.2"/><path d="M6 8h2M10 4.5L7.8 7M10 11.5L7.8 9"/></svg>
+      Graph View
+    </div>
+    <div class="nav-item" id="navIdeaList">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="11" width="14" height="2" rx="1"/></svg>
+      Dashboard & List
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="nav-item" style="color:var(--n400)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5v.5"/></svg>
+        Help & Docs
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════ MAIN AREA ══════════ -->
+  <div class="main-area">
+
+    <!-- ── Page Header ── -->
+    <div class="page-header">
+      <div class="ph-left">
+        <div class="ph-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a7 7 0 017 7c0 2.6-1.4 4.9-3.5 6.2V17a1 1 0 01-1 1h-5a1 1 0 01-1-1v-1.8A7 7 0 0112 2z"/>
+            <path d="M9 21h6M10 17v-2M14 17v-2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="ph-title">Idea Space</div>
+          <div class="ph-subtitle">BHP Mining · WAIO Operations · IROC Perth</div>
+        </div>
+      </div>
+      <div class="ph-right">
+        <button class="btn btn-outline btn-sm" id="btn-export">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1v10M4 7l4 4 4-4M2 13h12"/></svg>
+          Export
+        </button>
+        <button class="btn btn-primary btn-sm" id="btn-new-idea">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 1v14M1 8h14"/></svg>
+          New Idea
+        </button>
+      </div>
+    </div>
+
+    <!-- ─────── VIEW A: GRAPH ─────── -->
+    <div class="view active" id="viewIdeaGraph">
+      <div class="main-with-panel">
+        <div class="graph-view-wrap" id="graphWrap">
+
+          <!-- Graph UI Layer: toolbar + filters + stats -->
+          <div class="graph-ui-layer">
+            <div class="graph-toolbar">
+              <div class="graph-pill">
+                <span class="dot"></span>
+                Youreka Idea Space
+              </div>
+              <button class="combine-mode-btn" id="btnCombineMode">
+                <span class="cb-dot"></span>
+                ✦ Tango: Combine Ideas
+              </button>
+            </div>
+
+            <!-- Center filter pills -->
+            <div class="graph-filters">
+              <button class="gf-btn active" data-gf="all">All</button>
+              <button class="gf-btn" data-gf="inception"><span class="gfdot" style="background:var(--orange)"></span>Inception</button>
+              <button class="gf-btn" data-gf="draft"><span class="gfdot" style="background:var(--blue)"></span>Draft</button>
+              <button class="gf-btn" data-gf="approved"><span class="gfdot" style="background:var(--green)"></span>Approved</button>
+              <button class="gf-btn" data-gf="archived"><span class="gfdot" style="background:var(--n400)"></span>Archived</button>
+            </div>
+
+            <!-- Stats -->
+            <div class="graph-stats">
+              <div class="stat-pill"><b id="gStat1">12</b> Ideas</div>
+              <div class="stat-pill"><b id="gStat2">9</b> Edges</div>
+              <div class="stat-pill" id="gStat3Pill">
+                <span style="width:6px;height:6px;border-radius:50%;background:var(--orange);display:inline-block"></span>
+                BHP WAIO
+              </div>
+            </div>
+          </div>
+
+          <!-- Combine Panel (floating) -->
+          <div class="combine-panel" id="combinePanel">
+            <div class="cp-stripe"></div>
+            <div class="cp-header">
+              <div class="cp-header-left">
+                <div class="cp-ai-badge">✦</div>
+                <div>
+                  <div class="cp-title" id="cpTitle">Tango Synthesis</div>
+                  <div class="cp-subtitle">AI-suggested combination · BHP WAIO</div>
+                </div>
+              </div>
+              <button class="cp-close" id="cpClose">✕</button>
+            </div>
+            <div class="cp-ideas">
+              <div class="cp-idea-card">
+                <div class="cp-idea-label">Idea A</div>
+                <div class="cp-idea-title" id="cpIdeaA">—</div>
+                <div class="cp-idea-status" id="cpStatusA"></div>
+              </div>
+              <div class="cp-plus">+</div>
+              <div class="cp-idea-card">
+                <div class="cp-idea-label">Idea B</div>
+                <div class="cp-idea-title" id="cpIdeaB">—</div>
+                <div class="cp-idea-status" id="cpStatusB"></div>
+              </div>
+            </div>
+            <div class="cp-rationale">
+              <div class="cp-rationale-label">
+                <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" style="width:10px;height:10px"><path d="M6 1l1.2 3.2H10L7.6 6l.9 3L6 7.5 3.5 9l.9-3L2 4.2h2.8z"/></svg>
+                Tango Rationale
+              </div>
+              <div class="cp-rationale-text" id="cpRationale">—</div>
+              <div class="cp-synergy" id="cpSynergy"></div>
+            </div>
+            <div class="cp-footer">
+              <button class="btn btn-outline btn-sm" id="cpDismiss" style="flex:1">Dismiss</button>
+              <button class="btn btn-gradient btn-sm" id="cpCreate" style="flex:2">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M7 1v12M1 7h12"/></svg>
+                Create Combined Idea →
+              </button>
+            </div>
+          </div>
+
+          <!-- D3 SVG -->
+          <svg id="scatter-svg">
+            <defs>
+              <linearGradient id="combine-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#8b5cf6"/>
+                <stop offset="100%" stop-color="#FFA426"/>
+              </linearGradient>
+              <marker id="arrow-dep" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto">
+                <polygon points="0 0,7 2.5,0 5" fill="rgba(255,164,38,.5)"/>
+              </marker>
+              <filter id="f-glow-o" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="f-glow-b" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="f-glow-gr" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <filter id="f-glow-g" x="-40%" y="-40%" width="180%" height="180%">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <g id="canvas-g"></g>
+          </svg>
+
+          <!-- Zoom controls -->
+          <div class="graph-zoom">
+            <button id="gZoomIn" title="Zoom in">+</button>
+            <button id="gZoomFit" title="Reset" style="font-size:12px">⊙</button>
+            <button id="gZoomOut" title="Zoom out">−</button>
+          </div>
+
+          <!-- Legend -->
+          <div class="graph-legend">
+            <div class="legend-title">Legend</div>
+            <div class="legend-row"><div class="legend-dot" style="background:var(--orange)"></div> Inception</div>
+            <div class="legend-row"><div class="legend-dot" style="background:var(--blue)"></div> Draft</div>
+            <div class="legend-row"><div class="legend-dot" style="background:var(--green)"></div> Approved</div>
+            <div class="legend-row"><div class="legend-dot" style="background:var(--n400)"></div> Archived</div>
+            <div class="legend-row"><div class="legend-line" style="background:rgba(139,92,246,.4)"></div> Portfolio Link</div>
+            <div class="legend-row"><div class="legend-line" style="background:rgba(255,164,38,.5);background:repeating-linear-gradient(90deg,rgba(255,164,38,.5) 0,rgba(255,164,38,.5) 4px,transparent 4px,transparent 8px)"></div> Dependency</div>
+            <div class="legend-row" id="legendCombine" style="display:none"><div class="legend-line" style="background:linear-gradient(90deg,#8b5cf6,#FFA426);height:2px;border-radius:2px"></div> ✦ Tango Combine</div>
+            <div style="font-size:9px;color:var(--n400);margin-top:5px;padding-top:5px;border-top:1px solid var(--n100)">Node size = detail depth</div>
+          </div>
+
+        </div><!-- /graphWrap -->
+
+      </div><!-- /main-with-panel -->
+    </div><!-- /viewIdeaGraph -->
+
+    <!-- ─────── VIEW B: DASHBOARD & LIST ─────── -->
+    <div class="view" id="viewIdeaList">
+      <div class="main-with-panel">
+        <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+
+          <!-- Exec summary -->
+          <div class="exec-summary">
+            <div class="es-kpi">
+              <div class="es-kpi-label">Total Ideas</div>
+              <div class="es-kpi-val" id="kpiTotal">12</div>
+              <div class="es-kpi-sub">Across all portfolios</div>
+              <div class="es-kpi-bar"><div class="es-kpi-fill" style="width:100%"></div></div>
+            </div>
+            <div class="es-kpi">
+              <div class="es-kpi-label">Avg Impact Score</div>
+              <div class="es-kpi-val" id="kpiImpact">7.4</div>
+              <div class="es-kpi-sub">Out of 10 · ↑ 0.8 vs last quarter</div>
+              <div class="es-kpi-bar"><div class="es-kpi-fill" style="width:74%;background:var(--green)"></div></div>
+            </div>
+            <div class="es-kpi">
+              <div class="es-kpi-label">✦ Tango AI Matches</div>
+              <div class="es-kpi-val" id="kpiAI" style="color:var(--purple)">4</div>
+              <div class="es-kpi-sub">AI-generated ideas this cycle</div>
+              <div class="es-kpi-bar"><div class="es-kpi-fill" style="width:33%;background:var(--purple)"></div></div>
+            </div>
+            <div class="es-kpi">
+              <div class="es-kpi-label">Approved Ideas</div>
+              <div class="es-kpi-val" id="kpiApproved" style="color:var(--green)">3</div>
+              <div class="es-kpi-sub">Ready for project creation</div>
+              <div class="es-kpi-bar"><div class="es-kpi-fill" style="width:25%;background:var(--green)"></div></div>
+            </div>
+          </div>
+
+          <!-- Filter bar -->
+          <div class="filter-bar">
+            <div class="search-wrap">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3.5 3.5"/></svg>
+              <input class="search-input" id="listSearch" placeholder="Search ideas…" type="text">
+            </div>
+            <button class="btn btn-ghost btn-sm" id="listFilterType" style="gap:5px">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 3h12M3 7h8M5 11h4"/></svg>
+              Status
+            </button>
+            <button class="btn btn-ghost btn-sm" id="listFilterPortfolio">
+              <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="4" width="12" height="9" rx="1"/><path d="M4 4V3a3 3 0 016 0v1"/></svg>
+              Portfolio
+            </button>
+            <button class="btn btn-ghost btn-sm" id="listFilterQuarter">Quarter</button>
+            <div class="filter-bar-right">
+              <div class="view-mode-pill" id="vmPill">
+                <button class="vm-btn active" data-vm="table" id="vmTable">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="1" width="11" height="2" rx="1"/><rect x="1" y="5.5" width="11" height="2" rx="1"/><rect x="1" y="10" width="11" height="2" rx="1"/></svg>
+                  Table
+                </button>
+                <button class="vm-btn" data-vm="cards" id="vmCards">
+                  <svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="7" y="1" width="5" height="5" rx="1"/><rect x="1" y="7" width="5" height="5" rx="1"/><rect x="7" y="7" width="5" height="5" rx="1"/></svg>
+                  Cards
+                </button>
+              </div>
+              <button class="btn btn-primary btn-sm">
+                <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1v12M1 7h12"/></svg>
+                New Idea
+              </button>
+            </div>
+          </div>
+
+          <!-- Table view -->
+          <div id="tableView" style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+            <div class="table-wrap">
+              <table class="demand-table" id="ideasTable">
+                <thead>
+                  <tr>
+                    <th style="width:36px"></th>
+                    <th>Idea Name <span class="sort-icon"><svg viewBox="0 0 8 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1v8M1 6l3 3 3-3"/></svg></span></th>
+                    <th>Portfolio</th>
+                    <th>Status</th>
+                    <th>Impact <span class="sort-icon"><svg viewBox="0 0 8 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1v8M1 6l3 3 3-3"/></svg></span></th>
+                    <th>Complexity</th>
+                    <th>Quarter</th>
+                    <th>Objectives</th>
+                    <th style="width:36px"></th>
+                  </tr>
+                </thead>
+                <tbody id="ideasTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Card view (hidden by default) -->
+          <div id="cardsView" style="display:none;flex:1;overflow:hidden">
+            <div class="card-grid" id="ideasGrid"></div>
+          </div>
+
+          <!-- Bulk Action Bar -->
+          <div class="bulk-action-bar" id="bulkActionBar">
+            <div class="bulk-count">
+              <div class="bulk-count-badge" id="bulkCountNum">0</div>
+              Ideas Selected
+            </div>
+            <div class="bulk-actions">
+              <button class="btn btn-gradient btn-sm" onclick="startBulkConversionWorkflow()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/></svg>
+                Combine to Demand
+              </button>
+            </div>
+            <div class="bulk-close" onclick="clearIdeaSelection()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Detail Panel clone handle -->
+        <!-- (panel is shared, moves between views — see JS) -->
+      </div>
+    </div><!-- /viewIdeaList -->
+
+  </div><!-- /main-area -->
+
+  <!-- ── TANGO PANEL ── -->
+  <aside class="tango-panel" id="tangoPanel">
+    <div class="tp-header">
+      <div class="tp-hd-left">
+        <div class="tp-ai-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/><path d="M19 3 L19.75 5.25 L22 6 L19.75 6.75 L19 9 L18.25 6.75 L16 6 L18.25 5.25 Z"/></svg>
+        </div>
+        <div>
+          <div class="tp-title">Tango</div>
+          <div class="tp-subtitle">AI Agent · Idea › Demand</div>
+        </div>
+      </div>
+      <div class="tp-live">
+        <div class="tp-live-dot"></div>
+        <span class="tp-live-label">Live</span>
+      </div>
+    </div>
+    <div class="tp-context">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      Context: Youreka Idea Canvas
+    </div>
+    <div class="tp-feed" id="tpFeed">
+      <div class="tp-msg">
+        <div class="tp-msg-hd"><div class="tp-msg-av">✦</div><div class="tp-msg-meta">Tango <span>· ready</span></div></div>
+        <div class="tp-msg-body">
+          Hi! I can help you flesh out ideas, find synergies, or convert them into actionable Demand profiles. What would you like to do?
+          <div class="tp-prompts">
+            <button class="tp-prompt-btn" onclick="tangoPromptSynergy()">✦ Find ideas with synergy</button>
+            <button class="tp-prompt-btn" onclick="tangoPromptConvert()">✦ Convert an idea to demand</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tp-input-wrap">
+      <input type="text" class="tp-input" id="tpInput" placeholder="Ask Tango...">
+      <button class="tp-send" onclick="sendTangoMsg()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ── RIGHT GLOBAL NAV ── -->
+  <nav class="right-nav">
+    <button class="rn-tango" title="✦ Tango AI" onclick="toggleTangoPanel()">✦</button>
+    <div class="rn-divider"></div>
+    <button class="rn-icon" title="Layers">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 1l7 4-7 4-7-4 7-4zM1 9l7 4 7-4M1 13l7 4 7-4"/></svg>
+    </button>
+    <button class="rn-icon" title="Chart">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 14V8l3-3 3 3 4-6"/><path d="M2 14h12"/></svg>
+    </button>
+    <button class="rn-icon" title="Share">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="3" r="2"/><circle cx="4" cy="8" r="2"/><circle cx="12" cy="13" r="2"/><path d="M6 7l4-3M6 9l4 3"/></svg>
+    </button>
+  </nav>
+
+</div><!-- /body-row -->
+
+<!-- ── DETAIL PANEL (fixed, outside body-row) ── -->
+<div class="detail-panel" id="detailPanel">
+  <div class="dp-stripe"></div>
+  <div class="dp-header">
+    <div class="dp-header-top">
+      <div>
+        <div class="dp-type-row" id="dpTypeRow"></div>
+        <div class="dp-title" id="dpTitle">Idea Title</div>
+      </div>
+      <button class="dp-close" id="dpClose">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 3 3 11M3 3l8 8"/></svg>
+      </button>
+    </div>
+    <div class="dp-header-bottom" style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+      <div class="dp-meta" id="dpMeta" style="margin:0;"></div>
+      <div class="dp-actions" id="dpActions" style="display:flex;gap:8px;flex-shrink:0;"></div>
+    </div>
+  </div>
+  <div class="dp-body" id="dpBody"></div>
+</div>
+
+</div><!-- /app-shell -->
+
+<!-- Kebab dropdown menu -->
+<div class="kebab-menu" id="kebabMenu"></div>
+
+<!-- Toast notification -->
+<div class="tango-toast" id="tangoToast"></div>
+
+<!-- Tooltip -->
+<div id="graph-tooltip">
+  <div class="tt-name" id="ttName"></div>
+  <div class="tt-port" id="ttPort"></div>
+  <div class="tt-chips" id="ttChips"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+/* ─── TOAST ──────────────────────────────── */
+const toastEl = document.getElementById('tangoToast');
+let toastTimer = null;
+function showToast(msg, dur=3200){
+  clearTimeout(toastTimer);
+  toastEl.textContent = msg;
+  toastEl.classList.add('toast-show');
+  toastTimer = setTimeout(()=>toastEl.classList.remove('toast-show'), dur);
+}
+
+/* ─── DATA ──────────────────────────────── */
+const IDEAS = [
+  {
+    id:"I01",title:"AI-Powered Demand Forecasting",portfolio:"Technology",status:"inception",
+    impact:9,complexity:7,quarter:"Q2 2026",
+    spark:"What if we could see demand coming before the business even knew it needed something? Today's PMO teams spend weeks creating forecasts that are obsolete before they're printed.",
+    objectives:[{text:"Reduce manual forecasting effort by 60%",done:true},{text:"Surface demand signals 90 days ahead of pipeline reviews",done:true},{text:"Integrate with CRM and ERP data pipelines",done:false}],
+    keyResults:["90-day horizon prediction confidence above 82%","Resource allocation accuracy within ±8% variance","Full ERP integration live by Q2 2026"],
+    capabilities:["Machine Learning","ERP Integration","CRM Sync","Data Pipelines"],
+    constraints:["SOC 2 compliance required","No raw PII in training data"],
+    dependencies:["I04","I08"],
+    aiInsight:"Tango has identified 4 related initiatives in the Digital Transformation portfolio that could amplify this idea's reach by 2.3×.",
+    journey:[{phase:"Spark",milestone:"Idea Validated",date:"Jan 2026",status:"completed"},{phase:"Shape",milestone:"Objectives Defined",date:"Feb 2026",status:"active"},{phase:"Build",milestone:"ML Prototype",date:"Apr 2026",status:"pending"},{phase:"Launch",milestone:"Enterprise Rollout",date:"Jun 2026",status:"pending"}]
+  },
+  {
+    id:"I02",title:"One-Click Resource Matchmaking",portfolio:"People Ops",status:"approved",
+    impact:8,complexity:3,quarter:"Q1 2026",
+    spark:"PMO leads lose an average 3.4 hours per week to manual matchmaking. We can solve this completely with data we already have in the system.",
+    objectives:[{text:"Match resources to demand in under 3 seconds",done:true},{text:"Cross-reference skill matrices and availability",done:true},{text:"Confidence score on each recommendation",done:true}],
+    keyResults:["Eliminate the 3.4-hour manual matching cycle","Top-5 match confidence score above 80%","Adopted by 90% of PMO leads within 60 days"],
+    capabilities:["Resource Graph","Skill Matrix API","Availability Engine"],
+    constraints:["Must respect resource privacy settings","No direct people-data exports"],
+    dependencies:["I05"],
+    aiInsight:null,
+    journey:[{phase:"Spark",milestone:"Concept Validated",date:"Dec 2025",status:"completed"},{phase:"Shape",milestone:"Design Mapped",date:"Jan 2026",status:"completed"},{phase:"Build",milestone:"Beta Live",date:"Feb 2026",status:"completed"},{phase:"Launch",milestone:"GA Release",date:"Mar 2026",status:"active"}]
+  },
+  {
+    id:"I03",title:"Executive Strategy Pulse",portfolio:"Analytics",status:"approved",
+    impact:7,complexity:2,quarter:"Q1 2026",
+    spark:"Our most senior users spend Mondays reading reports compiled manually on Fridays. By Monday, the data is already stale.",
+    objectives:[{text:"Automated Monday morning portfolio digest",done:true},{text:"Zero manual PMO effort for weekly reporting",done:true}],
+    keyResults:["Remove 4-hour weekly reporting burden from PMO teams","100% of C-suite receive digest before 8am Monday","Digest click-through above 65%"],
+    capabilities:["Reporting Engine","Email Delivery","KPI Aggregation"],
+    constraints:["Board-level data confidentiality rules apply"],
+    dependencies:["I06"],
+    aiInsight:null,
+    journey:[{phase:"Spark",milestone:"Submitted",date:"Nov 2025",status:"completed"},{phase:"Shape",milestone:"Template Locked",date:"Dec 2025",status:"completed"},{phase:"Build",milestone:"Automation Live",date:"Jan 2026",status:"completed"},{phase:"Launch",milestone:"Executive Pilot",date:"Feb 2026",status:"completed"}]
+  },
+  {
+    id:"I04",title:"Conversational Project Creation",portfolio:"Technology",status:"draft",
+    impact:10,complexity:8,quarter:"Q3 2026",
+    spark:"What if you could start a project just by describing it out loud? No templates, no forms — just a natural conversation that produces a fully structured project plan.",
+    objectives:[{text:"Reduce project creation from 8 weeks to 10 minutes",done:true},{text:"AI auto-generates WBS, estimates, and risk flags",done:false},{text:"Support voice and text input modalities",done:false}],
+    keyResults:["10-minute end-to-end project creation via conversation","78% adoption within 90 days of launch","AI-generated WBS accepted without edits 60% of the time"],
+    capabilities:["Tango NLP Engine","WBS Generator","Risk Modeling","Voice Input"],
+    constraints:["Accuracy threshold: 85% before GA","Requires SSO for enterprise use"],
+    dependencies:["I01","I08"],
+    aiInsight:"Tango has validated this concept against 847 historical projects. Expected adoption rate: 78% within 90 days.",
+    journey:[{phase:"Spark",milestone:"Vision Document",date:"Jan 2026",status:"completed"},{phase:"Shape",milestone:"Prompt Engineering R&D",date:"Mar 2026",status:"active"},{phase:"Build",milestone:"Alpha Prototype",date:"May 2026",status:"pending"},{phase:"Launch",milestone:"Beta Program",date:"Jul 2026",status:"pending"}]
+  },
+  {
+    id:"I05",title:"Intelligent Capacity Buffers",portfolio:"People Ops",status:"draft",
+    impact:6,complexity:5,quarter:"Q2 2026",
+    spark:"Teams consistently run over capacity because no one accounts for uncertainty. A dynamic buffer system that watches for chaos signals before they become crises.",
+    objectives:[{text:"Auto-reserve capacity during high-uncertainty sprints",done:true},{text:"Monitor scope variance and dependency depth signals",done:false}],
+    keyResults:["Prevent 22% over-allocation in fast-moving portfolios","Team utilisation maintained above 85%","Buffer recommendations accepted 70% of the time"],
+    capabilities:["Capacity Engine","Sprint Telemetry","Uncertainty Scoring"],
+    constraints:["Resource managers must approve buffer changes > 20%"],
+    dependencies:["I02"],
+    aiInsight:null,
+    journey:[{phase:"Spark",milestone:"Problem Validated",date:"Feb 2026",status:"completed"},{phase:"Shape",milestone:"Algorithm Scoped",date:"Mar 2026",status:"active"},{phase:"Build",milestone:"Engine Build",date:"May 2026",status:"pending"},{phase:"Launch",milestone:"Rollout",date:"Jul 2026",status:"pending"}]
+  },
+  {
+    id:"I06",title:"Portfolio Health Heatmap",portfolio:"Analytics",status:"approved",
+    impact:8,complexity:3,quarter:"Q1 2026",
+    spark:"Portfolio health should be immediately visible at a glance — not buried in spreadsheets. A living heatmap that makes risk obvious before it becomes a crisis.",
+    objectives:[{text:"Live mosaic of all active projects by health score",done:true},{text:"Drill from portfolio to task in one click",done:true},{text:"Composite health: schedule, budget, sentiment",done:true}],
+    keyResults:["Real-time heatmap refresh under 5 seconds","Adopted by 100% of PMO directors within 30 days","Reduce escalation lag from 14 days to under 48 hours"],
+    capabilities:["Real-time Data Feed","Health Scoring Engine","Drill-down Navigation"],
+    constraints:["Financial data requires CFO approval to display"],
+    dependencies:["I03"],
+    aiInsight:null,
+    journey:[{phase:"Spark",milestone:"Concept Reviewed",date:"Dec 2025",status:"completed"},{phase:"Shape",milestone:"KPIs Defined",date:"Jan 2026",status:"completed"},{phase:"Build",milestone:"Live Dashboard",date:"Feb 2026",status:"completed"},{phase:"Launch",milestone:"Director Rollout",date:"Mar 2026",status:"active"}]
+  },
+  {
+    id:"I07",title:"Blockchain Audit Trail",portfolio:"Governance",status:"archived",
+    impact:5,complexity:9,quarter:"Q4 2026",
+    spark:"Enterprise audit processes cost companies millions in manual evidence gathering. A permissioned ledger could make this instant and tamper-proof.",
+    objectives:[{text:"Immutable record of every project decision",done:false},{text:"SOC 2 and ISO 27001 compliance alignment",done:false}],
+    keyResults:["Reduce external audit prep time by 70%","Instant evidence package in under 60 seconds","Zero tampered records in 12-month audit"],
+    capabilities:["Distributed Ledger","Audit API","Compliance Engine","Smart Contracts"],
+    constraints:["Legal review required before launch","Node infrastructure costs must be approved"],
+    dependencies:["I09"],
+    aiInsight:null,
+    journey:[{phase:"Spark",milestone:"Regulatory Analysis",date:"Feb 2026",status:"completed"},{phase:"Shape",milestone:"Architecture Proposal",date:"Apr 2026",status:"active"},{phase:"Build",milestone:"Proof of Concept",date:"Jul 2026",status:"pending"},{phase:"Launch",milestone:"Pilot with Legal",date:"Oct 2026",status:"pending"}]
+  },
+  {
+    id:"I08",title:"Tango Knowledge Distiller",portfolio:"Technology",status:"inception",
+    impact:9,complexity:6,quarter:"Q2 2026",
+    spark:"Expert PMs carry enormous institutional knowledge in their heads. When they leave, it's gone. Tango can systematically extract and encode it into the platform.",
+    objectives:[{text:"Extract reusable patterns from completed projects",done:true},{text:"Automatically build organisation-wide playbooks",done:false},{text:"Feed recommendations into new project creation",done:false}],
+    keyResults:["340 reusable patterns surfaced in first run","Zero manual curation effort required","New project creation time reduced by 25%"],
+    capabilities:["NLP Pattern Extraction","Retrospective Scanner","Template Generator","Recommendation API"],
+    constraints:["Must anonymise sensitive project data before analysis"],
+    dependencies:["I04"],
+    aiInsight:"Cross-referencing 12,400 project artefacts. Estimated 340 reusable patterns to be surfaced in first run.",
+    journey:[{phase:"Spark",milestone:"Idea Incubated",date:"Feb 2026",status:"completed"},{phase:"Shape",milestone:"Data Pipeline Scoped",date:"Mar 2026",status:"completed"},{phase:"Build",milestone:"NLP Engine Build",date:"May 2026",status:"active"},{phase:"Launch",milestone:"Beta with 3 Clients",date:"Aug 2026",status:"pending"}]
+  },
+  {
+    id:"I09",title:"Quantum Planning Simulator",portfolio:"Technology",status:"inception",
+    impact:10,complexity:10,quarter:"Q4 2026",
+    spark:"For the most complex enterprise programmes, linear planning fundamentally fails. What if we could explore every possible plan at once?",
+    objectives:[{text:"Evaluate 10,000+ resource permutations simultaneously",done:false},{text:"Find globally optimal delivery plan for complex programmes",done:false}],
+    keyResults:["35% reduction in multi-year programme delivery risk","NPV at 3 years exceeds all other initiatives combined","Production-grade within 24 months"],
+    capabilities:["Quantum Computing API","Simulation Engine","Optimisation Framework"],
+    constraints:["18–24 months to production-grade","Requires quantum hardware partnership"],
+    dependencies:["I01","I07"],
+    aiInsight:"This is a moonshot. Tango estimates 18–24 months to production-grade, but the NPV at 3 years exceeds all other initiatives combined.",
+    journey:[{phase:"Spark",milestone:"Research Brief Published",date:"Mar 2026",status:"completed"},{phase:"Shape",milestone:"Technology Feasibility",date:"May 2026",status:"active"},{phase:"Build",milestone:"Lab Prototype",date:"Q4 2026",status:"pending"},{phase:"Launch",milestone:"Enterprise Pilot",date:"Q2 2027",status:"pending"}]
+  },
+  {
+    id:"I10",title:"Smart Meeting Eliminator",portfolio:"People Ops",status:"approved",
+    impact:6,complexity:2,quarter:"Q1 2026",
+    spark:"Status meetings are often just people reading spreadsheets at each other. With async AI briefings, teams can reclaim those hours for real work.",
+    objectives:[{text:"Replace 40% of status meetings with async AI summaries",done:true},{text:"Surface only genuine blockers needing synchronous time",done:true}],
+    keyResults:["41% meeting load reduction in pilot","No degradation in project velocity","Adopted by 3 enterprise clients in pilot"],
+    capabilities:["Meeting Analytics","Async Briefing Generator","Blocker Detection"],
+    constraints:["Calendar API requires explicit user consent"],
+    dependencies:["I06"],
+    aiInsight:null,
+    journey:[{phase:"Spark",milestone:"Hypothesis Validated",date:"Dec 2025",status:"completed"},{phase:"Shape",milestone:"User Research Done",date:"Jan 2026",status:"completed"},{phase:"Build",milestone:"3-Client Pilot",date:"Feb 2026",status:"completed"},{phase:"Launch",milestone:"GA Launch",date:"Apr 2026",status:"active"}]
+  },
+  {
+    id:"I11",title:"Dependency Gravity Map",portfolio:"Analytics",status:"draft",
+    impact:7,complexity:5,quarter:"Q2 2026",
+    spark:"Dependency management today is a static spreadsheet. What if dependencies were alive — exerting gravitational force on each other, making cascade risk immediately visible?",
+    objectives:[{text:"Visualise cross-project dependencies as living force graph",done:true},{text:"What-if simulations: remove a project, watch graph restructure",done:false}],
+    keyResults:["23 hidden dependency chains detected","Programme managers run 5+ what-if simulations per week","Cascade risk made visible before it propagates"],
+    capabilities:["Force Graph Engine","Dependency Parser","Simulation Mode"],
+    constraints:["Performance: must handle 500+ nodes fluidly"],
+    dependencies:["I01","I04","I08"],
+    aiInsight:"Tango has detected 23 hidden dependency chains in the current portfolio not captured in existing documentation.",
+    journey:[{phase:"Spark",milestone:"Concept Prototyped",date:"Feb 2026",status:"completed"},{phase:"Shape",milestone:"Graph Algorithm",date:"Mar 2026",status:"active"},{phase:"Build",milestone:"D3 Implementation",date:"May 2026",status:"pending"},{phase:"Launch",milestone:"Analytics Launch",date:"Jul 2026",status:"pending"}]
+  },
+  {
+    id:"I12",title:"Budget Velocity Tracker",portfolio:"Finance",status:"draft",
+    impact:5,complexity:4,quarter:"Q1 2026",
+    spark:"Finance teams review actuals monthly. Programme teams update plans weekly. The gap between these cycles costs companies significant budget overruns.",
+    objectives:[{text:"Real-time burn rate vs delivery progress dashboard",done:true},{text:"Flag projects where spend outpaces value delivery",done:true},{text:"Integrate with SAP and Oracle ERP",done:false}],
+    keyResults:["Daily actuals pull from SAP/Oracle ERP","Monthly finance reviews replaced with live dashboards","Finance and PMO share single source of truth"],
+    capabilities:["SAP Integration","Oracle ERP Connector","Financial Telemetry"],
+    constraints:["CFO sign-off required for live financial data access"],
+    dependencies:["I06","I03"],
+    aiInsight:null,
+    journey:[{phase:"Spark",milestone:"Finance Pain Mapped",date:"Jan 2026",status:"completed"},{phase:"Shape",milestone:"ERP Connector Scoped",date:"Feb 2026",status:"completed"},{phase:"Build",milestone:"Telemetry Layer Build",date:"Apr 2026",status:"active"},{phase:"Launch",milestone:"Finance Pilot",date:"Jun 2026",status:"pending"}]
+  }
+];
+
+const COMBINE_SUGGESTIONS = [
+  {
+    a:'I01', b:'I08',
+    title:'Predictive Intelligence Platform',
+    rationale:'Both ideas share a deep data-pipeline dependency and target the same PMO blindspot: decisions made without forward visibility. Combining AI Demand Forecasting with the Knowledge Distiller creates a self-improving prediction loop — the Distiller feeds historical project patterns directly into the Forecasting model, compounding accuracy over time.',
+    synergy:['Shared NLP pipeline','Compounding data flywheel','Single ERP integration','Reduces build cost by ~35%']
+  },
+  {
+    a:'I04', b:'I11',
+    title:'Intelligent Project Genesis',
+    rationale:'Conversational Project Creation generates project structures, but Dependency Gravity Map gives it spatial awareness. When a PM describes a new project, the system could instantly surface hidden cascade risks from existing initiatives — making the creation moment also the risk-assessment moment.',
+    synergy:['Shared graph model','Real-time risk at creation','Eliminates a separate workflow step','High: both in draft']
+  },
+  {
+    a:'I03', b:'I06',
+    title:'Unified Executive Intelligence',
+    rationale:'The Strategy Pulse delivers Monday digests; the Heatmap provides live visual health. These are two halves of the same executive experience. Combined, they become a single executive command surface: automated narrative + live drill-down. No toggle needed.',
+    synergy:['Same audience (C-suite)','Shared KPI aggregation engine','Unified data contract','Reduces onboarding complexity']
+  },
+  {
+    a:'I05', b:'I02',
+    title:'Adaptive Resource Orchestrator',
+    rationale:'Capacity Buffers know when teams are at risk of overload; Resource Matchmaking knows who can step in. Together they close the loop: detect over-allocation → auto-suggest the right person → reserve capacity. Currently these are two separate manual steps.',
+    synergy:['Shared availability API','Closes the detect-to-act gap','Single resource graph','Lowers PMO intervention rate']
+  },
+  {
+    a:'I10', b:'I12',
+    title:'Continuous Value Pulse',
+    rationale:'Meeting Eliminator replaces status theatre with async briefs; Budget Velocity Tracker replaces monthly finance reviews with live dashboards. The shared insight: synchronous time is expensive, and both ideas are about replacing scheduled reviews with continuous signals. One platform, one subscription to truth.',
+    synergy:['Shared async signal architecture','Same buyer (ops + finance)','Reduces two separate integrations','Calendar + ERP in one layer']
+  }
+];
+
+/* ─── STATS ──────────────────────────────── */
+const inceptionCount = IDEAS.filter(d=>d.status==='inception').length;
+const approvedCount  = IDEAS.filter(d=>d.status==='approved').length;
+const avgImpact = (IDEAS.reduce((s,d)=>s+d.impact,0)/IDEAS.length).toFixed(1);
+document.getElementById('kpiTotal').textContent = IDEAS.length;
+document.getElementById('kpiImpact').textContent = avgImpact;
+document.getElementById('kpiAI').textContent = inceptionCount;
+document.getElementById('kpiApproved').textContent = approvedCount;
+document.getElementById('gStat1').textContent = IDEAS.length;
+
+/* ─── VIEW SWITCHING ─────────────────────── */
+function switchView(viewId){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(viewId==='viewIdeaGraph'){
+    document.getElementById('navIdeaGraph').classList.add('active');
+    // Force D3 to recalculate scales based on the now-visible container
+    window.dispatchEvent(new Event('resize'));
+  } else if(viewId==='viewIdeaList'){
+    document.getElementById('navIdeaList').classList.add('active');
+  }
+  // Close panel on view switch
+  const panel = document.getElementById('detailPanel');
+  panel.classList.remove('dp-open');
+  currentSelected = null;
+}
+document.getElementById('navIdeaGraph').addEventListener('click',()=>switchView('viewIdeaGraph'));
+document.getElementById('navIdeaList').addEventListener('click',()=>switchView('viewIdeaList'));
+
+// Topbar center pill toggle
+document.getElementById('tbMyHub').addEventListener('click',()=>{
+  document.getElementById('tbMyHub').classList.add('active');
+  document.getElementById('tbTango').classList.remove('active');
+});
+document.getElementById('tbTango').addEventListener('click',()=>{
+  document.getElementById('tbTango').classList.add('active');
+  document.getElementById('tbMyHub').classList.remove('active');
+});
+
+/* ─── DETAIL PANEL ───────────────────────── */
+let currentSelected = null;
+
+function statusLabel(status){
+  if(status==='inception') return {text:'● Inception', cls:'chip-orange'};
+  if(status==='draft')     return {text:'📝 Draft',    cls:'chip-blue'};
+  if(status==='approved')  return {text:'✓ Approved',  cls:'chip-green'};
+  return {text:'■ Archived', cls:'chip-gray'};
+}
+
+function scoreClass(v,max){
+  const r=v/max;
+  return r>=.7?'score-high':r>=.4?'score-med':'score-low';
+}
+
+function openPanel(idea){
+  currentSelected = idea.id;
+
+  // 1. Header Dropdown
+  document.getElementById('dpTypeRow').innerHTML =
+    '<select class="status-select-chip" data-status="' + idea.status + '" onchange="changeIdeaStatus(\'' + idea.id + '\', this.value)">' +
+    '<option value="inception"' + (idea.status==='inception'?' selected':'') + '>● Inception</option>' +
+    '<option value="draft"'     + (idea.status==='draft'    ?' selected':'') + '>📝 Draft</option>' +
+    '<option value="approved"'  + (idea.status==='approved' ?' selected':'') + '>✓ Approved</option>' +
+    '<option value="archived"'  + (idea.status==='archived' ?' selected':'') + '>■ Archived</option>' +
+    '</select>';
+
+  document.getElementById('dpTitle').textContent = idea.title;
+
+  // Meta chips
+  document.getElementById('dpMeta').innerHTML = `
+    <span class="chip" style="background:var(--purple-bg);color:var(--purple);font-size:11px">
+      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" style="width:10px;height:10px"><rect x="1" y="3" width="10" height="8" rx="1"/><path d="M4 3V2a2 2 0 014 0v1"/></svg>
+      ${idea.portfolio}
+    </span>
+    <span class="chip chip-q" style="font-size:11px">${idea.quarter}</span>
+    <span class="chip ${scoreClass(idea.impact,10)}" style="font-size:11px">Impact ${idea.impact}/10</span>
+    <span class="chip ${scoreClass(11-idea.complexity,10)}" style="font-size:11px">CX ${idea.complexity}/10</span>
+  `;
+
+  // 2. Dynamic CTAs in the Header
+  const actionsContainer = document.getElementById('dpActions');
+  let primaryCTA = '';
+
+  if (idea.status === 'inception') {
+    primaryCTA = '<button class="btn btn-primary btn-sm" onclick="changeIdeaStatus(\'' + idea.id + '\', \'draft\')">Submit as Draft →</button>';
+  } else if (idea.status === 'draft') {
+    primaryCTA = '<button class="btn btn-primary btn-sm" style="background:var(--green);color:white;" onclick="changeIdeaStatus(\'' + idea.id + '\', \'approved\')">✓ Approve Idea</button>';
+  } else if (idea.status === 'approved') {
+    primaryCTA = '<button class="btn btn-gradient btn-sm" id="btnConvertDemand" onclick="startConversionWorkflow()">✦ Convert to Demand</button>';
+  } else if (idea.status === 'archived') {
+    primaryCTA = '<button class="btn btn-outline btn-sm" onclick="changeIdeaStatus(\'' + idea.id + '\', \'inception\')">Restore Idea</button>';
+  }
+
+  actionsContainer.innerHTML =
+    '<button class="btn btn-outline btn-sm" style="padding:6px 10px;">' +
+    '<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" style="width:12px;height:12px;margin-right:4px;"><path d="M9.5 2l2.5 2.5-7 7H3V9l7-7z"/></svg> Edit' +
+    '</button>' +
+    primaryCTA;
+
+  // Body
+  const impactPct = idea.impact*10;
+  const cxPct = idea.complexity*10;
+  const impactColor = impactPct>=70?'var(--green)':impactPct>=40?'var(--orange)':'var(--n400)';
+  const cxColor = cxPct>=70?'var(--red)':cxPct>=50?'var(--amber)':'var(--green)';
+
+  let html = ``;
+
+  // Score grid
+  html += `<div class="score-grid">
+    <div class="sc-card">
+      <div class="sc-label">Impact Score</div>
+      <div class="sc-val">${idea.impact}<span style="font-size:13px;color:var(--n400)">/10</span></div>
+      <div class="sc-sub">Business value</div>
+      <div class="sc-bar"><div class="sc-fill" style="width:${impactPct}%;background:${impactColor}"></div></div>
+    </div>
+    <div class="sc-card">
+      <div class="sc-label">Complexity</div>
+      <div class="sc-val">${idea.complexity}<span style="font-size:13px;color:var(--n400)">/10</span></div>
+      <div class="sc-sub">Time to market</div>
+      <div class="sc-bar"><div class="sc-fill" style="width:${cxPct}%;background:${cxColor}"></div></div>
+    </div>
+  </div>`;
+
+  // AI insight
+  if(idea.aiInsight){
+    html += `<div class="ai-insight">
+      <div class="ai-icon">✦</div>
+      <div><div class="ai-label">Tango Insight</div><div class="ai-text">${idea.aiInsight}</div></div>
+    </div>`;
+  }
+
+  // Spark
+  html += `<div class="cs-card">
+    <div class="cs-header">
+      <div class="cs-header-left">
+        <svg class="cs-icon" viewBox="0 0 18 18" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M9 1l1.6 4.2H15L11.3 7.6l1.4 4.4L9 9.6l-3.7 2.4 1.4-4.4L3 5.2h4.4z"/></svg>
+        <span class="cs-title">✦ Spark — The Origin</span>
+      </div>
+      <button class="cs-edit"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 1.5l2 2-6 6H3V9l5.5-7.5z"/></svg>Edit</button>
+    </div>
+    <div class="cs-body"><p class="spark-text">"${idea.spark}"</p></div>
+  </div>`;
+
+  // Objectives + KRs
+  html += `<div class="cs-card">
+    <div class="cs-header">
+      <div class="cs-header-left">
+        <svg class="cs-icon" viewBox="0 0 18 18" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M3 5h12M3 9h12M3 13h7"/></svg>
+        <span class="cs-title">▲ Shape — Objectives & Key Results</span>
+      </div>
+      <button class="cs-edit"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 1.5l2 2-6 6H3V9l5.5-7.5z"/></svg>Edit</button>
+    </div>
+    <div class="cs-body">
+      <div class="obj-list">
+        ${idea.objectives.map(o=>`
+          <div class="obj-row">
+            <div class="obj-check-wrap ${o.done?'obj-check-done':'obj-check-pend'}">
+              <svg viewBox="0 0 10 10" fill="none" stroke="${o.done?'var(--green)':'var(--n400)'}" stroke-width="2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg>
+            </div>
+            <div class="obj-text">${o.text}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="kr-section">
+        <div class="kr-section-label">Key Results</div>
+        ${idea.keyResults.map(kr=>`
+          <div class="kr-item"><div class="kr-bullet"></div><span>${kr}</span></div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+
+  // Capabilities + Constraints
+  html += `<div class="cs-card">
+    <div class="cs-header">
+      <div class="cs-header-left">
+        <svg class="cs-icon" viewBox="0 0 18 18" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M9 1l2 5h5l-4 3 1.5 5L9 11l-4.5 3L6 9 2 6h5z"/></svg>
+        <span class="cs-title">Capabilities & Constraints</span>
+      </div>
+    </div>
+    <div class="cs-body" style="display:flex;flex-direction:column;gap:11px">
+      <div>
+        <div style="font-size:9px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Capabilities Required</div>
+        <div class="chip-row">
+          ${idea.capabilities.map(c=>`<span class="cap-chip"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 1v8M1 5h8"/></svg>${c}</span>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Constraints</div>
+        <div class="chip-row">
+          ${idea.constraints.map(c=>`<span class="con-chip"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 2v4M5 8v.5"/></svg>${c}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // Dependencies
+  if(idea.dependencies && idea.dependencies.length){
+    const depIdeas = idea.dependencies.map(dep=>IDEAS.find(d=>d.id===dep)).filter(Boolean);
+    html += `<div class="cs-card">
+      <div class="cs-header">
+        <div class="cs-header-left">
+          <svg class="cs-icon" viewBox="0 0 18 18" fill="none" stroke="var(--orange)" stroke-width="1.8"><circle cx="4" cy="9" r="2.5"/><circle cx="14" cy="4" r="2.5"/><circle cx="14" cy="14" r="2.5"/><path d="M6.5 9h3M11.5 5.5l-2 2M11.5 12.5l-2-2"/></svg>
+          <span class="cs-title">Dependencies</span>
+        </div>
+      </div>
+      <div class="cs-body">
+        <div class="dep-list">
+          ${depIdeas.map(d=>`<span class="dep-chip" data-dep="${d.id}"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h4M5 3l2 2-2 2"/></svg>${d.id}: ${d.title}</span>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Journey Timeline
+  html += `<div class="cs-card">
+    <div class="cs-header">
+      <div class="cs-header-left">
+        <svg class="cs-icon" viewBox="0 0 18 18" fill="none" stroke="var(--orange)" stroke-width="1.8"><path d="M3 9h12M12 5l4 4-4 4"/></svg>
+        <span class="cs-title">▶ Journey Timeline</span>
+      </div>
+      <button class="cs-edit"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 1.5l2 2-6 6H3V9l5.5-7.5z"/></svg>Edit</button>
+    </div>
+    <div class="cs-body">
+      <div class="tl-list">
+        ${idea.journey.map(j=>`
+          <div class="tl-item tl-${j.status}">
+            <div class="tl-phase">${j.phase}</div>
+            <div class="tl-milestone">${j.milestone}</div>
+            ${j.date?`<div class="tl-date">${j.date}</div>`:''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('dpBody').innerHTML = html;
+  document.getElementById('dpBody').scrollTop = 0;
+  document.getElementById('detailPanel').classList.add('dp-open');
+
+  // Dep chip click handler
+  document.querySelectorAll('.dep-chip').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const dep = IDEAS.find(d=>d.id===el.dataset.dep);
+      if(dep) openPanel(dep);
+    });
+  });
+
+  // Highlight row
+  document.querySelectorAll('#ideasTbody tr').forEach(tr=>{
+    tr.classList.toggle('row-active', tr.dataset.id===idea.id);
+  });
+  document.querySelectorAll('.idea-card').forEach(c=>{
+    c.classList.toggle('card-active', c.dataset.id===idea.id);
+  });
+}
+
+document.getElementById('dpClose').addEventListener('click',()=>{
+  document.getElementById('detailPanel').classList.remove('dp-open');
+  currentSelected = null;
+  document.querySelectorAll('#ideasTbody tr').forEach(tr=>tr.classList.remove('row-active'));
+  document.querySelectorAll('.idea-card').forEach(c=>c.classList.remove('card-active'));
+  if(activeGraphFilter) resetHighlight();
+});
+
+/* ─── TABLE & CARD RENDERS ───────────────── */
+function scImpact(v){ return v>=8?'score-high':v>=5?'score-med':'score-low'; }
+function scCX(v){ return v<=3?'score-high':v<=6?'score-med':'score-low'; }
+
+function renderTable(data){
+  const tbody = document.getElementById('ideasTbody');
+  tbody.innerHTML = '';
+  data.forEach(idea=>{
+    const tl = statusLabel(idea.status);
+    const tr = document.createElement('tr');
+    tr.dataset.id = idea.id;
+    tr.innerHTML = `
+      <td class="idea-cb-wrap" onclick="event.stopPropagation()">
+        <input type="checkbox" class="idea-cb" value="${idea.id}" onchange="handleIdeaSelection()">
+      </td>
+      <td>
+        <div class="cell-idea-name">${idea.title}</div>
+        <div class="cell-idea-sub">${idea.spark.substring(0,60)}…</div>
+        <div class="synergy-slot"></div>
+      </td>
+      <td><span style="font-size:12px;color:var(--n600)">${idea.portfolio}</span></td>
+      <td><span class="chip ${tl.cls}">${tl.text}</span></td>
+      <td><span class="score-pill ${scImpact(idea.impact)}">${idea.impact}/10</span></td>
+      <td><span class="score-pill ${scCX(idea.complexity)}">${idea.complexity}/10</span></td>
+      <td><span class="chip chip-q">${idea.quarter}</span></td>
+      <td><span style="font-size:11px;color:var(--n600)">${idea.objectives.filter(o=>o.done).length}/${idea.objectives.length} done</span></td>
+      <td><button class="kebab-btn" data-kebab="${idea.id}" title="Actions">⋮</button></td>
+    `;
+    tr.addEventListener('click', ()=>openPanel(idea));
+    const kb = tr.querySelector('.kebab-btn');
+    kb.addEventListener('click', (e)=>{ e.stopPropagation(); showKebabMenu(e, idea); });
+    tbody.appendChild(tr);
+  });
+}
+renderTable(IDEAS);
+
+/* ─── CARD VIEW ───────────────────────────── */
+function renderCards(data){
+  const grid = document.getElementById('ideasGrid');
+  grid.innerHTML = '';
+  data.forEach(idea=>{
+    const tl = statusLabel(idea.status);
+    const card = document.createElement('div');
+    card.className = 'idea-card';
+    card.dataset.id = idea.id;
+    card.innerHTML = `
+      <div class="card-cb-wrap" onclick="event.stopPropagation()">
+        <input type="checkbox" class="idea-cb" value="${idea.id}" onchange="handleIdeaSelection()">
+      </div>
+      <div class="card-top" style="padding-right:28px">
+        <div class="card-title">${idea.title}</div>
+        <span class="chip ${tl.cls}" style="font-size:10px;white-space:nowrap">${tl.text}</span>
+      </div>
+      <div class="card-meta">
+        <span class="chip" style="background:var(--purple-bg);color:var(--purple);font-size:10px">${idea.portfolio}</span>
+        <span class="chip chip-q" style="font-size:10px">${idea.quarter}</span>
+        <span class="synergy-slot" style="display:block;width:100%"></span>
+      </div>
+      <div class="card-scores">
+        <div class="score-item">
+          <div class="score-item-label">Impact</div>
+          <div class="score-bar"><div class="score-bar-fill" style="width:${idea.impact*10}%"></div></div>
+          <div style="font-size:10px;font-weight:600;color:var(--n600);margin-top:2px">${idea.impact}/10</div>
+        </div>
+        <div class="score-item">
+          <div class="score-item-label">Complexity</div>
+          <div class="score-bar"><div class="score-bar-fill complexity" style="width:${idea.complexity*10}%"></div></div>
+          <div style="font-size:10px;font-weight:600;color:var(--n600);margin-top:2px">${idea.complexity}/10</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="card-footer-left">${idea.objectives.filter(o=>o.done).length}/${idea.objectives.length} objectives</span>
+        <span class="card-obj-count">${idea.dependencies.length} dep${idea.dependencies.length!==1?'s':''}</span>
+      </div>
+    `;
+    card.addEventListener('click',()=>openPanel(idea));
+    grid.appendChild(card);
+  });
+}
+renderCards(IDEAS);
+
+/* ─── VIEW MODE TOGGLE ────────────────────── */
+document.querySelectorAll('.vm-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.vm-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.dataset.vm;
+    document.getElementById('tableView').style.display = mode==='table'?'flex':'none';
+    document.getElementById('cardsView').style.display = mode==='cards'?'flex':'none';
+    if(mode==='table') document.getElementById('tableView').style.flexDirection='column';
+  });
+});
+
+/* ─── SEARCH ──────────────────────────────── */
+document.getElementById('listSearch').addEventListener('input',function(){
+  const q = this.value.toLowerCase();
+  const filtered = q ? IDEAS.filter(d=>d.title.toLowerCase().includes(q)||d.portfolio.toLowerCase().includes(q)) : IDEAS;
+  renderTable(filtered);
+  renderCards(filtered);
+});
+
+/* ─── D3 GRAPH ────────────────────────────── */
+let hoveredId = null;
+let activeGraphFilter = 'all';
+
+const svg = d3.select('#scatter-svg');
+const cg = d3.select('#canvas-g');
+const gWrap = document.getElementById('graphWrap');
+
+function getWH(){ return { W: gWrap.clientWidth, H: gWrap.clientHeight }; }
+
+const MARGIN = { top:56, right:56, bottom:62, left:68 };
+
+function getScales(){
+  const {W,H} = getWH();
+  const pw = W - MARGIN.left - MARGIN.right;
+  const ph = H - MARGIN.top - MARGIN.bottom;
+  const xS = d3.scaleLinear().domain([0,10]).range([0,pw]);
+  const yS = d3.scaleLinear().domain([0,10]).range([ph,0]);
+  return {xS,yS,pw,ph,W,H};
+}
+
+// Assign computed positions
+function computePositions(){
+  const {xS,yS} = getScales();
+  IDEAS.forEach(d=>{
+    d.baseX = xS(d.impact);
+    d.baseY = yS(d.complexity);
+    d.x = d.baseX;
+    d.y = d.baseY;
+    d.r = 7 + (d.objectives.length + d.keyResults.length) * 1.5;
+  });
+}
+computePositions();
+
+// Build edge list
+const EDGES = [];
+const portfolioMap = {};
+IDEAS.forEach(d=>{
+  if(!portfolioMap[d.portfolio]) portfolioMap[d.portfolio]=[];
+  portfolioMap[d.portfolio].push(d.id);
+});
+Object.values(portfolioMap).forEach(ids=>{
+  for(let i=0;i<ids.length-1;i++) EDGES.push({src:ids[i],tgt:ids[i+1],type:'portfolio'});
+});
+IDEAS.forEach(d=>{
+  (d.dependencies||[]).forEach(dep=>{
+    if(IDEAS.find(x=>x.id===dep)) EDGES.push({src:d.id,tgt:dep,type:'dependency'});
+  });
+});
+document.getElementById('gStat2').textContent = EDGES.length;
+
+// D3 collision sim
+const sim = d3.forceSimulation(IDEAS)
+  .force('x', d3.forceX(d=>d.baseX).strength(0.88))
+  .force('y', d3.forceY(d=>d.baseY).strength(0.88))
+  .force('collide', d3.forceCollide(d=>d.r+9).strength(0.82))
+  .alphaDecay(0.04)
+  .on('tick', render);
+
+// Zoom
+const zoom = d3.zoom().scaleExtent([0.25,5]).on('zoom',e=>{
+  cg.attr('transform',e.transform);
+});
+svg.call(zoom);
+
+function nodeColor(status){
+  if(status==='inception') return '#FFA426';
+  if(status==='draft')     return '#3b82f6';
+  if(status==='approved')  return '#10b981';
+  return '#999999';
+}
+function nodeFilter(status){
+  if(status==='inception') return 'url(#f-glow-o)';
+  if(status==='draft')     return 'url(#f-glow-b)';
+  if(status==='approved')  return 'url(#f-glow-g)';
+  return 'url(#f-glow-gr)';
+}
+function nodeColorBg(status){
+  if(status==='inception') return 'rgba(255,164,38,.12)';
+  if(status==='draft')     return 'rgba(59,130,246,.12)';
+  if(status==='approved')  return 'rgba(16,185,129,.12)';
+  return 'rgba(153,153,153,.12)';
+}
+
+let axesG, edgesG, nodesG;
+
+function buildGraph(){
+  const {xS,yS,pw,ph,W,H} = getScales();
+  cg.selectAll('*').remove();
+
+  // Translate group to margin
+  cg.attr('transform',`translate(${MARGIN.left},${MARGIN.top})`);
+
+  // ── Axes ──
+  axesG = cg.append('g').attr('class','axes');
+
+  // Grid lines
+  [1,2,3,4,5,6,7,8,9].forEach(v=>{
+    axesG.append('line').attr('x1',xS(v)).attr('y1',0).attr('x2',xS(v)).attr('y2',ph)
+      .attr('stroke','#ebebeb').attr('stroke-width',.8).attr('stroke-dasharray','3,3');
+    axesG.append('line').attr('x1',0).attr('y1',yS(v)).attr('x2',pw).attr('y2',yS(v))
+      .attr('stroke','#ebebeb').attr('stroke-width',.8).attr('stroke-dasharray','3,3');
+  });
+
+  // Axis lines
+  axesG.append('line').attr('x1',0).attr('y1',ph).attr('x2',pw).attr('y2',ph)
+    .attr('stroke','var(--n200)').attr('stroke-width',1.5);
+  axesG.append('line').attr('x1',0).attr('y1',0).attr('x2',0).attr('y2',ph)
+    .attr('stroke','var(--n200)').attr('stroke-width',1.5);
+
+  // Ticks
+  [0,2,4,6,8,10].forEach(v=>{
+    axesG.append('line').attr('x1',xS(v)).attr('y1',ph).attr('x2',xS(v)).attr('y2',ph+5)
+      .attr('stroke','var(--n200)').attr('stroke-width',1);
+    axesG.append('text').attr('class','axis-tick').attr('x',xS(v)).attr('y',ph+17).attr('text-anchor','middle').text(v);
+    axesG.append('line').attr('x1',-5).attr('y1',yS(v)).attr('x2',0).attr('y2',yS(v))
+      .attr('stroke','var(--n200)').attr('stroke-width',1);
+    axesG.append('text').attr('class','axis-tick').attr('x',-12).attr('y',yS(v)+4).attr('text-anchor','end').text(v);
+  });
+
+  // Axis labels
+  axesG.append('text').attr('class','axis-label-text')
+    .attr('x',pw/2).attr('y',ph+46).attr('text-anchor','middle')
+    .text('← LOW IMPACT    IMPACT    HIGH IMPACT →');
+  axesG.append('text').attr('class','axis-label-text')
+    .attr('transform',`translate(-50,${ph/2}) rotate(-90)`).attr('text-anchor','middle')
+    .text('← QUICK WIN    COMPLEXITY    MOONSHOT →');
+
+  // Quadrant labels
+  const QL = [
+    {x:pw*.24,y:ph*.14,t:'MOONSHOTS',s:'High complexity, high impact'},
+    {x:pw*.78,y:ph*.14,t:'STRATEGIC BETS',s:'High impact, complex'},
+    {x:pw*.24,y:ph*.88,t:'FILL-INS',s:'Low impact, easy'},
+    {x:pw*.78,y:ph*.88,t:'QUICK WINS',s:'High impact, fast'}
+  ];
+  QL.forEach(q=>{
+    axesG.append('text').attr('class','quadrant-label').attr('x',q.x).attr('y',q.y).attr('text-anchor','middle').text(q.t);
+    axesG.append('text').attr('class','axis-tick').attr('x',q.x).attr('y',q.y+14).attr('text-anchor','middle').attr('fill','#ddd').text(q.s);
+  });
+
+  // Center crosshair
+  axesG.append('line').attr('x1',xS(5)).attr('y1',0).attr('x2',xS(5)).attr('y2',ph)
+    .attr('stroke','#ddd').attr('stroke-width',1).attr('stroke-dasharray','6,4');
+  axesG.append('line').attr('x1',0).attr('y1',yS(5)).attr('x2',pw).attr('y2',yS(5))
+    .attr('stroke','#ddd').attr('stroke-width',1).attr('stroke-dasharray','6,4');
+
+  // ── Edges ──
+  edgesG = cg.append('g').attr('class','edges');
+  drawEdges();
+
+  // ── Combine Arcs Layer ──
+  d3.select('#combine-arcs-g').remove();
+  cg.append('g').attr('id','combine-arcs-g');
+
+  // ── Nodes ──
+  nodesG = cg.append('g').attr('class','nodes');
+  drawNodes();
+}
+
+function drawEdges(){
+  if(!edgesG) return;
+  edgesG.selectAll('.e').remove();
+  EDGES.forEach(e=>{
+    const src = IDEAS.find(d=>d.id===e.src);
+    const tgt = IDEAS.find(d=>d.id===e.tgt);
+    if(!src||!tgt) return;
+    // Do not draw edges if either connected node is hidden by the status filter
+    if(activeGraphFilter !== 'all'){
+      if(src.status !== activeGraphFilter || tgt.status !== activeGraphFilter) return;
+    }
+    const dx=tgt.x-src.x, dy=tgt.y-src.y;
+    const cx1=src.x+dx*.35+dy*.15, cy1=src.y+dy*.35-dx*.15;
+    const cx2=src.x+dx*.65+dy*.15, cy2=src.y+dy*.65-dx*.15;
+    const isPort = e.type==='portfolio';
+    edgesG.append('path')
+      .datum(e).attr('class','e')
+      .attr('d',`M ${src.x} ${src.y} C ${cx1} ${cy1},${cx2} ${cy2},${tgt.x} ${tgt.y}`)
+      .attr('fill','none')
+      .attr('stroke', isPort?'rgba(139,92,246,.2)':'rgba(255,164,38,.3)')
+      .attr('stroke-width', isPort?1.5:1.5)
+      .attr('stroke-dasharray', isPort?'none':'5,4')
+      .attr('marker-end', isPort?'none':'url(#arrow-dep)')
+      .attr('data-src',e.src).attr('data-tgt',e.tgt).attr('data-type',e.type)
+      .attr('opacity',1);
+  });
+}
+
+function drawNodes(){
+  if(!nodesG) return;
+  nodesG.selectAll('.ng').remove();
+  const visibleIdeas = activeGraphFilter==='all' ? IDEAS : IDEAS.filter(d=>d.status===activeGraphFilter);
+
+  visibleIdeas.forEach(idea=>{
+    const ng = nodesG.append('g').attr('class','ng')
+      .attr('data-id',idea.id)
+      .attr('transform',`translate(${idea.x},${idea.y})`)
+      .style('cursor','pointer');
+
+    ng.append('circle').attr('class','node-halo').attr('r',idea.r+8)
+      .attr('fill',nodeColorBg(idea.status)).attr('opacity',0);
+
+    ng.append('circle').attr('r',idea.r+2.5).attr('fill','none')
+      .attr('stroke',nodeColor(idea.status)).attr('stroke-width',1).attr('opacity',.2);
+
+    ng.append('circle').attr('class','node-main').attr('r',idea.r)
+      .attr('fill',nodeColor(idea.status))
+      .attr('filter',nodeFilter(idea.status))
+      .attr('stroke','white').attr('stroke-width',2.5);
+
+    const words = idea.title.split(' ');
+    const mid = Math.ceil(words.length/2);
+    const l1 = words.slice(0,mid).join(' ');
+    const l2 = words.slice(mid).join(' ');
+    const ly = idea.r+13;
+    ng.append('text').attr('class','node-text').attr('y',ly).text(l1);
+    if(l2) ng.append('text').attr('class','node-text').attr('y',ly+13).text(l2);
+
+    ng.on('mouseenter',function(event){
+      hoveredId = idea.id;
+      highlightConnected(idea.id);
+      showTooltip(event,idea);
+    })
+    .on('mousemove',e=>posTooltip(e))
+    .on('mouseleave',()=>{
+      hoveredId = null;
+      if(!currentSelected) resetHighlight();
+      hideTooltip();
+    })
+    .on('click',(event)=>{
+      event.stopPropagation();
+      if(currentSelected===idea.id){
+        document.getElementById('detailPanel').classList.remove('dp-open');
+        currentSelected=null;
+        resetHighlight();
+      } else {
+        openPanel(idea);
+        highlightConnected(idea.id);
+      }
+    });
+  });
+}
+
+function render(){
+  if(!nodesG) return;
+  nodesG.selectAll('.ng').each(function(){
+    const id = this.dataset.id;
+    const idea = IDEAS.find(d=>d.id===id);
+    if(idea) d3.select(this).attr('transform',`translate(${idea.x},${idea.y})`);
+  });
+  drawEdges();
+  if (combineMode) drawCombineArcs(); // Direct call, no throttling
+}
+
+// Highlight / dim
+function highlightConnected(id){
+  const connected = new Set([id]);
+  EDGES.forEach(e=>{ if(e.src===id) connected.add(e.tgt); if(e.tgt===id) connected.add(e.src); });
+
+  nodesG.selectAll('.ng').each(function(){
+    const nid = this.dataset.id;
+    const isConn = connected.has(nid);
+    const sel = d3.select(this);
+    sel.selectAll('.node-main,.node-text').transition().duration(180).attr('opacity',isConn?1:.15);
+    if(nid===id){
+      sel.select('.node-halo').transition().duration(180).attr('opacity',1);
+      sel.select('.node-main').transition().duration(180).attr('r',IDEAS.find(d=>d.id===nid).r*1.18);
+    } else {
+      sel.select('.node-halo').transition().duration(180).attr('opacity',0);
+    }
+  });
+
+  edgesG.selectAll('.e').each(function(){
+    const s=this.dataset.src, t=this.dataset.tgt;
+    const isConn = s===id||t===id;
+    const eType = this.dataset.type;
+    d3.select(this).transition().duration(180)
+      .attr('opacity',isConn?1:.04)
+      .attr('stroke-width',isConn?2.5:1.5)
+      .attr('stroke',isConn
+        ? (eType==='portfolio'?'rgba(139,92,246,.75)':'rgba(255,164,38,.85)')
+        : (eType==='portfolio'?'rgba(139,92,246,.2)':'rgba(255,164,38,.3)')
+      );
+  });
+}
+
+function resetHighlight(){
+  if(!nodesG) return;
+  nodesG.selectAll('.ng').each(function(){
+    const nid = this.dataset.id;
+    const idea = IDEAS.find(d=>d.id===nid);
+    d3.select(this).selectAll('.node-main').transition().duration(180)
+      .attr('opacity',1).attr('r',idea?idea.r:12);
+    d3.select(this).selectAll('.node-halo').transition().duration(180).attr('opacity',0);
+    d3.select(this).selectAll('.node-text').transition().duration(180).attr('opacity',1);
+  });
+  edgesG.selectAll('.e').each(function(){
+    const eType = this.dataset.type;
+    d3.select(this).transition().duration(180)
+      .attr('opacity',1).attr('stroke-width',1.5)
+      .attr('stroke', eType==='portfolio'?'rgba(139,92,246,.2)':'rgba(255,164,38,.3)');
+  });
+}
+
+svg.on('click',()=>{
+  if(currentSelected){
+    document.getElementById('detailPanel').classList.remove('dp-open');
+    currentSelected=null;
+    resetHighlight();
+  }
+});
+
+// Graph filters
+document.querySelectorAll('.gf-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.gf-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeGraphFilter = btn.dataset.gf;
+    drawNodes();
+    const cnt = activeGraphFilter==='all'?IDEAS.length:IDEAS.filter(d=>d.status===activeGraphFilter).length;
+    document.getElementById('gStat1').textContent = cnt;
+  });
+});
+
+// Zoom buttons
+document.getElementById('gZoomIn').addEventListener('click',()=>svg.transition().duration(250).call(zoom.scaleBy,1.35));
+document.getElementById('gZoomOut').addEventListener('click',()=>svg.transition().duration(250).call(zoom.scaleBy,0.75));
+document.getElementById('gZoomFit').addEventListener('click',()=>svg.transition().duration(350).call(zoom.transform,d3.zoomIdentity));
+
+// Tooltip
+const tt = document.getElementById('graph-tooltip');
+function showTooltip(event, idea){
+  const tl = statusLabel(idea.status);
+  document.getElementById('ttName').textContent = idea.title;
+  document.getElementById('ttPort').textContent = idea.portfolio + ' Portfolio';
+  document.getElementById('ttChips').innerHTML = `
+    <span class="chip ${tl.cls}" style="font-size:10px">${tl.text}</span>
+    <span class="chip score-${scoreClass(idea.impact,10).replace('score-','')}" style="font-size:10px">Impact ${idea.impact}</span>
+    <span class="chip" style="background:var(--n100);color:var(--n600);font-size:10px">CX ${idea.complexity}</span>
+  `;
+  tt.classList.add('tt-show');
+  posTooltip(event);
+}
+function posTooltip(event){
+  const x=event.clientX+14, y=event.clientY-12;
+  const tw=tt.offsetWidth, th=tt.offsetHeight;
+  const ww=window.innerWidth, wh=window.innerHeight;
+  tt.style.left=(x+tw>ww?x-tw-24:x)+'px';
+  tt.style.top=(y+th>wh?y-th:y)+'px';
+}
+function hideTooltip(){ tt.classList.remove('tt-show'); }
+
+// Build initial graph
+buildGraph();
+
+// Resize handling
+let resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(()=>{
+    computePositions();
+    sim.alpha(0.3).restart();
+    buildGraph();
+  },200);
+});
+
+// Initial sim ticks
+sim.alpha(0.6).restart();
+
+/* ══════════════════════════════════════════
+   TANGO PANEL
+══════════════════════════════════════════ */
+
+// Toggle Tango Panel
+let tangoPanelOpen = false;
+function toggleTangoPanel() {
+  tangoPanelOpen = !tangoPanelOpen;
+  document.getElementById('tangoPanel').classList.toggle('open', tangoPanelOpen);
+  document.body.classList.toggle('tango-is-open', tangoPanelOpen);
+}
+
+// Auto-scroll feed helper
+function scrollTangoFeed() {
+  const feed = document.getElementById('tpFeed');
+  feed.scrollTop = feed.scrollHeight;
+}
+
+function tangoPromptConvert(){
+  const prompts = document.querySelector('.tp-prompts');
+  if(prompts) prompts.remove();
+
+  const feed = document.getElementById('tpFeed');
+  feed.innerHTML += `
+    <div class="tp-msg" style="align-items:flex-end;">
+      <div class="tp-msg-body" style="background:#FFF8F0;border-color:#FFE4B5;border-radius:9px 9px 0 9px;">Convert an idea to demand</div>
+    </div>`;
+  scrollTangoFeed();
+
+  setTimeout(()=>{
+    feed.innerHTML += `
+      <div class="tp-msg">
+        <div class="tp-msg-hd"><div class="tp-msg-av">✦</div><div class="tp-msg-meta">Tango <span>· now</span></div></div>
+        <div class="tp-msg-body">
+          To convert a single idea, open its details panel and click <strong>✦ Convert to Demand</strong>.<br/><br/>
+          To combine multiple ideas, select them using the checkboxes in the List view and use the bulk action bar.
+        </div>
+      </div>`;
+    scrollTangoFeed();
+  }, 600);
+}
+
+function tangoPromptSynergy(){
+  const prompts = document.querySelector('.tp-prompts');
+  if(prompts) prompts.remove();
+
+  const feed = document.getElementById('tpFeed');
+  feed.innerHTML += `
+    <div class="tp-msg" style="align-items:flex-end;">
+      <div class="tp-msg-body" style="background:#FFF8F0;border-color:#FFE4B5;border-radius:9px 9px 0 9px;">Find ideas with synergy</div>
+    </div>`;
+  scrollTangoFeed();
+
+  setTimeout(()=>{
+    feed.innerHTML += `
+      <div class="tp-msg" id="tango-syn-session">
+        <div class="tp-msg-hd"><div class="tp-msg-av">✦</div><div class="tp-msg-meta">Tango <span>· scanning portfolio…</span></div></div>
+        <div class="tp-typing" id="tango-syn-typing"><div class="tp-dot"></div><div class="tp-dot"></div><div class="tp-dot"></div></div>
+      </div>`;
+    scrollTangoFeed();
+  }, 400);
+
+  setTimeout(()=>{
+    const typing = document.getElementById('tango-syn-typing');
+    if(typing) typing.remove();
+    const session = document.getElementById('tango-syn-session');
+
+    let synListHtml = '';
+    if(typeof COMBINE_SUGGESTIONS !== 'undefined'){
+      synListHtml = COMBINE_SUGGESTIONS.map(sug => {
+        const a = IDEAS.find(d => d.id === sug.a)?.title || sug.a;
+        const b = IDEAS.find(d => d.id === sug.b)?.title || sug.b;
+        return `<div style="padding:8px;background:var(--n50);border:1px solid var(--n200);border-radius:6px;margin-bottom:8px;font-size:10px;">
+          <strong style="color:var(--n900);font-size:11px;">${sug.title}</strong><br/>
+          <span style="color:var(--n600)">${a} + ${b}</span>
+        </div>`;
+      }).join('');
+    }
+
+    if(session){
+      session.innerHTML += `
+        <div class="tp-msg-body">
+          I scanned the portfolio and found <strong>${COMBINE_SUGGESTIONS.length} high-value synergies</strong>. You can combine these to save resources and accelerate delivery:
+          <div style="margin-top:12px;">${synListHtml}</div>
+          <button class="btn btn-outline btn-xs" style="width:100%;justify-content:center;margin-top:4px;" onclick="switchView('viewIdeaGraph');document.getElementById('btnCombineMode').click();">
+            Highlight on Graph View
+          </button>
+        </div>`;
+      session.querySelector('.tp-msg-meta span').textContent = '· now';
+    }
+    scrollTangoFeed();
+  }, 1800);
+}
+
+// Simple manual send
+function sendTangoMsg() {
+  const input = document.getElementById('tpInput');
+  const val = input.value.trim();
+  if (!val) return;
+  const feed = document.getElementById('tpFeed');
+  feed.innerHTML += `
+    <div class="tp-msg" style="align-items:flex-end;">
+      <div class="tp-msg-body" style="background:#FFF8F0;border-color:#FFE4B5;border-radius:9px 9px 0 9px;">${val}</div>
+    </div>`;
+  input.value = '';
+  scrollTangoFeed();
+  setTimeout(() => {
+    feed.innerHTML += `
+      <div class="tp-msg">
+        <div class="tp-msg-hd"><div class="tp-msg-av">✦</div><div class="tp-msg-meta">Tango <span>· now</span></div></div>
+        <div class="tp-msg-body">Got it — I'll factor that into the demand profile.</div>
+      </div>`;
+    scrollTangoFeed();
+  }, 900);
+}
+document.getElementById('tpInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendTangoMsg(); });
+
+// Agentic Conversion Workflow
+function startConversionWorkflow() {
+  // 1. Update UI state
+  if (!tangoPanelOpen) toggleTangoPanel();
+  const btn = document.getElementById('btnConvertDemand');
+  btn.disabled = true;
+  btn.innerHTML = `<span style="opacity:0.7">Converting...</span>`;
+
+  const feed = document.getElementById('tpFeed');
+
+  // 2. User Message
+  feed.innerHTML += `
+    <div class="tp-msg" style="align-items:flex-end;">
+      <div class="tp-msg-body" style="background:#FFF8F0;border-color:#FFE4B5;border-radius:9px 9px 0 9px;">Convert this idea to a demand profile.</div>
+    </div>`;
+  scrollTangoFeed();
+
+  // 3. Start Agentic Timeline
+  setTimeout(() => {
+    feed.innerHTML += `
+      <div class="tp-msg" id="tango-active-session">
+        <div class="tp-msg-hd"><div class="tp-msg-av">✦</div><div class="tp-msg-meta">Tango <span>· executing...</span></div></div>
+        <div id="tango-logs"></div>
+        <div class="tp-typing" id="tango-typing"><div class="tp-dot"></div><div class="tp-dot"></div><div class="tp-dot"></div></div>
+      </div>`;
+    scrollTangoFeed();
+  }, 500);
+
+  setTimeout(() => {
+    const logs = document.getElementById('tango-logs');
+    if (logs) logs.innerHTML += `<div class="tp-system-log"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="width:10px;height:10px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Analyzing constraints &amp; capabilities...</div>`;
+    scrollTangoFeed();
+  }, 1500);
+
+  setTimeout(() => {
+    const logs = document.getElementById('tango-logs');
+    if (logs) logs.innerHTML += `<div class="tp-system-log"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="width:10px;height:10px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Generating preliminary WBS...</div>`;
+    scrollTangoFeed();
+  }, 3000);
+
+  setTimeout(() => {
+    const logs = document.getElementById('tango-logs');
+    if (logs) logs.innerHTML += `<div class="tp-system-log"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="width:10px;height:10px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Drafting resource requirement profiles...</div>`;
+    scrollTangoFeed();
+  }, 4500);
+
+  setTimeout(() => {
+    const typing = document.getElementById('tango-typing');
+    if (typing) typing.remove();
+    const session = document.getElementById('tango-active-session');
+    if (session) session.innerHTML += `
+      <div class="tp-msg-body success" style="margin-top:8px;">
+        ✓ Conversion complete. I have drafted a Demand Profile with 3 required resource roles (SAP Lead, Data Engineer, PM) based on the idea's scope.
+        <button class="btn btn-outline btn-xs" onclick="showToast('Opening Demand Profile… (coming soon)', 2800)" style="margin-top:10px;background:white;width:100%;justify-content:center;">Review Demand Profile →</button>
+      </div>`;
+    scrollTangoFeed();
+    btn.innerHTML = `✓ Converted`;
+    btn.style.background = '#10b981';
+    btn.style.color = '#fff';
+    btn.style.borderColor = 'transparent';
+    showToast('✓ Demand Profile drafted — ready to review', 4000);
+  }, 6000);
+}
+
+
+/* ══════════════════════════════════════════
+   TANGO COMBINE MODE
+══════════════════════════════════════════ */
+
+// Combination suggestions from Tango — rich rationale, not just resource-based
+
+let combineMode = false;
+const combinePanel = document.getElementById('combinePanel');
+
+function drawCombineArcs() {
+  const cgArcs = d3.select('#combine-arcs-g');
+  if (!cgArcs.node()) return;
+  if (!combineMode) { cgArcs.selectAll('*').remove(); return; }
+
+  // Filter valid suggestions based on active status filter
+  const validSuggestions = COMBINE_SUGGESTIONS.filter(sug => {
+    const ideaA = IDEAS.find(d => d.id === sug.a);
+    const ideaB = IDEAS.find(d => d.id === sug.b);
+    if (!ideaA || !ideaB) return false;
+    if (activeGraphFilter !== 'all') {
+      if (ideaA.status !== activeGraphFilter || ideaB.status !== activeGraphFilter) return false;
+    }
+    return true;
+  });
+
+  // D3 data binding
+  const arcs = cgArcs.selectAll('.combine-group').data(validSuggestions, d => d.a + '-' + d.b);
+  const enter = arcs.enter().append('g').attr('class', 'combine-group');
+
+  // Invisible wide hit target
+  enter.append('path').attr('class', 'combine-arc-hit')
+    .attr('fill', 'none').attr('stroke', 'transparent').attr('stroke-width', 18)
+    .style('cursor', 'pointer')
+    .on('click', (e, d) => { e.stopPropagation(); showCombinePanel(d); });
+
+  // Visible breathing arc
+  enter.append('path').attr('class', 'combine-arc visible')
+    .attr('fill', 'none').attr('stroke-width', 2).attr('stroke-dasharray', '6,4')
+    .attr('stroke', 'url(#combine-grad)')
+    .style('animation', 'arc-breathe 2.4s ease-in-out infinite')
+    .style('animation-delay', (d, i) => (i * 0.4) + 's')
+    .style('pointer-events', 'stroke').style('cursor', 'pointer')
+    .on('click', (e, d) => { e.stopPropagation(); showCombinePanel(d); });
+
+  // Midpoint sparkle group
+  const sparkle = enter.append('g').attr('class', 'combine-sparkle')
+    .style('animation', 'sparkle-spin 2.4s ease-in-out infinite')
+    .style('animation-delay', (d, i) => (i * 0.4 + 0.2) + 's')
+    .style('cursor', 'pointer')
+    .on('click', (e, d) => { e.stopPropagation(); showCombinePanel(d); });
+  sparkle.append('circle').attr('r', 10).attr('fill', 'white')
+    .attr('stroke', 'rgba(139,92,246,.3)').attr('stroke-width', 1.5);
+  sparkle.append('text').attr('text-anchor', 'middle').attr('dominant-baseline', 'central')
+    .attr('font-size', 10).attr('fill', '#8b5cf6').attr('pointer-events', 'none').text('✦');
+
+  arcs.exit().remove();
+
+  // Update positions on every tick — stays locked to D3 coordinate space
+  cgArcs.selectAll('.combine-group').each(function(d) {
+    const ideaA = IDEAS.find(x => x.id === d.a);
+    const ideaB = IDEAS.find(x => x.id === d.b);
+    if (!ideaA || !ideaB) return;
+    const mx = (ideaA.x + ideaB.x) / 2;
+    const my = (ideaA.y + ideaB.y) / 2;
+    const dx = ideaB.x - ideaA.x;
+    const dy = ideaB.y - ideaA.y;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const nx = -dy / len;
+    const ny =  dx / len;
+    const bulge = Math.min(len * 0.3, 60);
+    const cpx = mx + nx * bulge;
+    const cpy = my + ny * bulge;
+    const dPath = `M ${ideaA.x} ${ideaA.y} Q ${cpx} ${cpy} ${ideaB.x} ${ideaB.y}`;
+    d3.select(this).select('.combine-arc-hit').attr('d', dPath);
+    d3.select(this).select('.combine-arc').attr('d', dPath);
+    d3.select(this).select('.combine-sparkle').attr('transform', `translate(${cpx},${cpy})`);
+  });
+}
+
+
+function showCombinePanel(sug) {
+  const ideaA = IDEAS.find(d => d.id === sug.a);
+  const ideaB = IDEAS.find(d => d.id === sug.b);
+  if (!ideaA || !ideaB) return;
+
+  document.getElementById('cpTitle').textContent = sug.title;
+  document.getElementById('cpIdeaA').textContent = ideaA.title;
+  document.getElementById('cpIdeaB').textContent = ideaB.title;
+
+  const slA = statusLabel(ideaA.status);
+  const slB = statusLabel(ideaB.status);
+  document.getElementById('cpStatusA').innerHTML = '<span class="chip ' + slA.cls + '" style="font-size:9px;margin-top:4px;display:inline-flex">' + slA.text + '</span>';
+  document.getElementById('cpStatusB').innerHTML = '<span class="chip ' + slB.cls + '" style="font-size:9px;margin-top:4px;display:inline-flex">' + slB.text + '</span>';
+
+  document.getElementById('cpRationale').textContent = sug.rationale;
+
+  const synergyEl = document.getElementById('cpSynergy');
+  synergyEl.innerHTML = sug.synergy.map(s => '<span class="cp-synergy-tag">' + s + '</span>').join('');
+
+  combinePanel.classList.add('visible');
+
+  // Wire Create button
+  document.getElementById('cpCreate').onclick = function() {
+    combinePanel.classList.remove('visible');
+    showToast('✦ Combined idea "' + sug.title + '" created in Draft stage');
+    // Optionally add to IDEAS
+    const newIdea = {
+      id: 'IC' + Date.now().toString().slice(-4),
+      title: sug.title,
+      portfolio: ideaA.portfolio,
+      status: 'draft',
+      impact: Math.min(10, Math.round((ideaA.impact + ideaB.impact) / 2 + 1)),
+      complexity: Math.round((ideaA.complexity + ideaB.complexity) / 2),
+      quarter: 'Q3 2026',
+      spark: 'A Tango-synthesised combination of "' + ideaA.title + '" and "' + ideaB.title + '" — ' + sug.rationale.substring(0, 120) + '…',
+      objectives: [{text:'Define unified scope and WBS',done:false},{text:'Merge data pipelines and API contracts',done:false}],
+      keyResults: ['Combined initiative delivers more value than the sum of parts', 'Single integration vs two separate builds'],
+      capabilities: [...new Set([...ideaA.capabilities||[], ...ideaB.capabilities||[]])].slice(0,4),
+      constraints: [...new Set([...ideaA.constraints||[], ...ideaB.constraints||[]])].slice(0,2),
+      dependencies: [],
+      aiInsight: 'This idea was synthesised by Tango from ' + ideaA.id + ' and ' + ideaB.id + '. ' + sug.synergy[0] + '.',
+      journey: [{phase:'Spark',milestone:'Tango Synthesised',date:'Mar 2026',status:'completed'},{phase:'Shape',milestone:'Scope Definition',date:'Apr 2026',status:'active'},{phase:'Build',milestone:'Unified Prototype',date:'Jun 2026',status:'pending'},{phase:'Launch',milestone:'Enterprise Rollout',date:'Aug 2026',status:'pending'}]
+    };
+    IDEAS.push(newIdea);
+    computePositions();
+    // Explicitly update the simulation's internal node array before restarting
+    sim.nodes(IDEAS);
+    sim.alpha(0.4).restart();
+    renderTable(IDEAS);
+    renderCards(IDEAS);
+    drawNodes();
+    setTimeout(drawCombineArcs, 400);
+  };
+}
+
+// Close combine panel
+document.getElementById('cpClose').addEventListener('click', () => combinePanel.classList.remove('visible'));
+document.getElementById('cpDismiss').addEventListener('click', () => combinePanel.classList.remove('visible'));
+
+// Toggle combine mode
+document.getElementById('btnCombineMode').addEventListener('click', function() {
+  combineMode = !combineMode;
+  this.classList.toggle('active', combineMode);
+  document.getElementById('legendCombine').style.display = combineMode ? 'flex' : 'none';
+  if (combineMode) {
+    // Slight delay so nodes are positioned
+    setTimeout(drawCombineArcs, 120);
+    showToast('✦ Tango is highlighting combination opportunities');
+  } else {
+    d3.select('#combine-arcs-g').selectAll('*').remove();
+    combinePanel.classList.remove('visible');
+  }
+});
+
+// Redraw arcs on sim tick (handled inside render() above)
+
+/* ══════════════════════════════════════════
+   KEBAB MENU
+══════════════════════════════════════════ */
+const kebabMenuEl = document.getElementById('kebabMenu');
+let kebabActiveIdea = null;
+
+function showKebabMenu(event, idea) {
+  kebabActiveIdea = idea;
+  const sl = statusLabel(idea.status);
+
+  // Build contextual status progression items
+  const statusItems = [];
+  if (idea.status !== 'inception') statusItems.push({label:'Set Inception', status:'inception', icon:'●'});
+  if (idea.status !== 'draft')     statusItems.push({label:'Set Draft',     status:'draft',     icon:'📝'});
+  if (idea.status !== 'approved')  statusItems.push({label:'Approve',       status:'approved',  icon:'✓'});
+  if (idea.status !== 'archived')  statusItems.push({label:'Archive',       status:'archived',  icon:'■', danger:true});
+
+  kebabMenuEl.innerHTML =
+    '<div class="km-item" id="kmOpen"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="10" height="10" rx="2"/><path d="M5 7h4M7 5l2 2-2 2"/></svg>Open Details</div>' +
+    '<div class="km-divider"></div>' +
+    statusItems.map(s =>
+      '<div class="km-item' + (s.danger?' danger':'') + '" data-setstatus="' + s.status + '">' +
+      s.icon + ' ' + s.label + '</div>'
+    ).join('') +
+    '<div class="km-divider"></div>' +
+    '<div class="km-item" id="kmGraph"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="4" cy="7" r="2"/><circle cx="10" cy="3" r="2"/><circle cx="10" cy="11" r="2"/><path d="M6 7h1M8.5 4l-2 2M8.5 10l-2-2"/></svg>View in Graph</div>';
+
+  // Position menu near the button
+  const rect = event.currentTarget.getBoundingClientRect();
+  kebabMenuEl.style.top = (rect.bottom + 4) + 'px';
+  kebabMenuEl.style.left = Math.min(rect.right - 160, window.innerWidth - 168) + 'px';
+  kebabMenuEl.classList.add('open');
+
+  // Wire up items
+  document.getElementById('kmOpen').onclick = function() {
+    closeKebab();
+    openPanel(kebabActiveIdea);
+  };
+  document.getElementById('kmGraph').onclick = function() {
+    closeKebab();
+    // Switch to graph view and highlight
+    switchView('viewIdeaGraph');
+    document.getElementById('navIdeaGraph').classList.add('active');
+    document.getElementById('navIdeaList').classList.remove('active');
+    setTimeout(() => {
+      if (nodesG) {
+        openPanel(kebabActiveIdea);
+        highlightConnected(kebabActiveIdea.id);
+      }
+    }, 100);
+  };
+  kebabMenuEl.querySelectorAll('[data-setstatus]').forEach(el => {
+    el.addEventListener('click', function() {
+      const ns = this.dataset.setstatus;
+      closeKebab();
+      changeIdeaStatus(kebabActiveIdea.id, ns);
+    });
+  });
+}
+
+function closeKebab() {
+  kebabMenuEl.classList.remove('open');
+  kebabActiveIdea = null;
+}
+
+// Close kebab on outside click
+document.addEventListener('click', function(e) {
+  if (!kebabMenuEl.contains(e.target) && !e.target.closest('.kebab-btn')) {
+    closeKebab();
+  }
+});
+
+/* ─── SELECTION & BULK ACTIONS ────────────── */
+function validateSynergy(selectedIds){
+  if(selectedIds.length <= 1) return true;
+  if(typeof COMBINE_SUGGESTIONS !== 'undefined'){
+    for(let i = 0; i < selectedIds.length; i++){
+      for(let j = i + 1; j < selectedIds.length; j++){
+        const idA = selectedIds[i], idB = selectedIds[j];
+        if(COMBINE_SUGGESTIONS.some(sug =>
+          (sug.a === idA && sug.b === idB) || (sug.a === idB && sug.b === idA)
+        )) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function handleIdeaSelection(){
+  const selectedBoxes = Array.from(document.querySelectorAll('.idea-cb:checked'));
+  const selectedIds = selectedBoxes.map(cb => cb.value);
+
+  const bar = document.getElementById('bulkActionBar');
+  document.getElementById('bulkCountNum').textContent = selectedBoxes.length;
+
+  const isValid = validateSynergy(selectedIds);
+  const actionsDiv = bar.querySelector('.bulk-actions');
+
+  if(selectedBoxes.length > 0){
+    bar.classList.add('visible');
+
+    if(!isValid && selectedBoxes.length > 1){
+      // WARNING STATE
+      bar.classList.add('warning-state');
+      actionsDiv.innerHTML = `
+        <div class="bulk-warning-text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Scope Conflict Detected
+        </div>
+        <button class="btn btn-gradient btn-sm btn-disabled">Combine to Demand</button>
+      `;
+    } else {
+      // VALID STATE
+      bar.classList.remove('warning-state');
+      actionsDiv.innerHTML = `
+        <button class="btn btn-gradient btn-sm" onclick="startBulkConversionWorkflow()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M12 3 L13.5 8.5 L19 10 L13.5 11.5 L12 17 L10.5 11.5 L5 10 L10.5 8.5 Z"/></svg>
+          Combine to Demand
+        </button>
+      `;
+    }
+  } else {
+    // HIDDEN STATE
+    bar.classList.remove('visible');
+    bar.classList.remove('warning-state');
+  }
+
+  // Reactive synergy tags — only show when selection is valid
+  const suggestedIds = new Set();
+  if(typeof COMBINE_SUGGESTIONS !== 'undefined'){
+    selectedIds.forEach(selId => {
+      COMBINE_SUGGESTIONS.forEach(sug => {
+        if(sug.a === selId && !selectedIds.includes(sug.b)) suggestedIds.add(sug.b);
+        if(sug.b === selId && !selectedIds.includes(sug.a)) suggestedIds.add(sug.a);
+      });
+    });
+  }
+
+  document.querySelectorAll('#ideasTbody tr, #ideasGrid .idea-card').forEach(el => {
+    const id = el.dataset.id;
+    const slot = el.querySelector('.synergy-slot');
+    if(!slot) return;
+    if(suggestedIds.has(id) && isValid){
+      if(slot.innerHTML === '') slot.innerHTML = '<div class="synergy-tag">✦ Tango Suggests Combining</div>';
+    } else {
+      slot.innerHTML = '';
+    }
+  });
+}
+
+function clearIdeaSelection(){
+  document.querySelectorAll('.idea-cb').forEach(cb => cb.checked = false);
+  handleIdeaSelection();
+}
+
+function startBulkConversionWorkflow(){
+  const selectedBoxes = Array.from(document.querySelectorAll('.idea-cb:checked'));
+  const selectedIds = selectedBoxes.map(cb => cb.value);
+  const titles = selectedIds.map(id => {
+    const idea = IDEAS.find(d => d.id === id);
+    return idea ? idea.title : id;
+  });
+
+  if(!tangoPanelOpen) toggleTangoPanel();
+  const feed = document.getElementById('tpFeed');
+
+  feed.innerHTML += `
+    <div class="tp-msg" style="align-items:flex-end;">
+      <div class="tp-msg-body" style="background:#FFF8F0;border-color:#FFE4B5;border-radius:9px 9px 0 9px;">
+        Combine these ${titles.length} ideas into a single Demand Profile:<br/>
+        <strong>${titles.join('</strong><br/><strong>')}</strong>
+      </div>
+    </div>`;
+  scrollTangoFeed();
+
+  setTimeout(()=>{
+    feed.innerHTML += `
+      <div class="tp-msg" id="tango-bulk-session">
+        <div class="tp-msg-hd"><div class="tp-msg-av">✦</div><div class="tp-msg-meta">Tango <span>· executing…</span></div></div>
+        <div id="tango-bulk-logs"></div>
+        <div class="tp-typing" id="tango-bulk-typing"><div class="tp-dot"></div><div class="tp-dot"></div><div class="tp-dot"></div></div>
+      </div>`;
+    scrollTangoFeed();
+  }, 500);
+
+  setTimeout(()=>{
+    const logs = document.getElementById('tango-bulk-logs');
+    if(logs) logs.innerHTML += `<div class="tp-system-log"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="width:10px;height:10px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Analysing overlap and resolving capability redundancies…</div>`;
+    scrollTangoFeed();
+  }, 2000);
+
+  setTimeout(()=>{
+    const logs = document.getElementById('tango-bulk-logs');
+    if(logs) logs.innerHTML += `<div class="tp-system-log"><svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" style="width:10px;height:10px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg> Synthesising combined Work Breakdown Structure…</div>`;
+    scrollTangoFeed();
+  }, 3500);
+
+  setTimeout(()=>{
+    const typing = document.getElementById('tango-bulk-typing');
+    const session = document.getElementById('tango-bulk-session');
+    if(typing) typing.remove();
+    if(session) session.innerHTML += `
+      <div class="tp-msg-body success" style="margin-top:8px;">
+        ✓ Consolidation complete. I've drafted a single Demand Profile. Merging these ideas eliminated 2 duplicate roles and saved an estimated 14% on implementation timeline.
+        <button class="btn btn-outline btn-xs" onclick="showToast('Opening Combined Demand Profile… (coming soon)', 2800)" style="margin-top:10px;background:white;width:100%;justify-content:center;">Review Combined Demand →</button>
+      </div>`;
+    scrollTangoFeed();
+    clearIdeaSelection();
+    showToast('✓ Combined Demand Profile drafted');
+  }, 5500);
+}
+
+window.changeIdeaStatus = function(id, newStatus) {
+  const ideaIndex = IDEAS.findIndex(d => d.id === id);
+  if (ideaIndex === -1) return;
+  IDEAS[ideaIndex].status = newStatus;
+
+  renderTable(IDEAS);
+  renderCards(IDEAS);
+  drawNodes();
+
+  if (currentSelected === id) { openPanel(IDEAS[ideaIndex]); }
+
+  const formattedStatus = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+  if (typeof showToast === 'function') { showToast('✓ Idea moved to ' + formattedStatus + ' stage'); }
+};
+</script>
+</body>
+</html>
