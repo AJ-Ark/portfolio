@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11120f">
+  <meta name="description" content="Rippl — an advanced projector-table lamp for focused reading and effortless note-taking. A case study by Aravind J.">
+  <title>Rippl — Notes beyond the page · Aravind J</title>
+  <link rel="preload" href="assets/rippl-hero.jpg" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <script type="module" src="three-scene.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#case-study">Skip to case study</a>
+  <canvas class="webgl" id="webgl" aria-hidden="true"></canvas>
+  <p class="webgl-status" id="webgl-status" role="status" hidden></p>
+  <div class="loader" aria-hidden="true">
+    <p>Rippl</p><span></span>
+  </div>
+  <div class="progress" aria-hidden="true"><i></i></div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Aravind J, back to top">AJ<span>®</span></a>
+    <p class="project-label">Case study&nbsp; / &nbsp;2023</p>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><span>Menu</span><i></i></button>
+    <nav id="site-nav" aria-label="Case study navigation">
+      <a href="#overview">Overview</a>
+      <a href="#research">Research</a>
+      <a href="#experience">Experience</a>
+      <a href="#reflection">Reflection</a>
+    </nav>
+  </header>
+
+  <main id="case-study">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-kicker reveal"><span>01</span> Product × Interaction</div>
+      <h1 id="hero-title" aria-label="Rippl">
+        <span class="word word-r">R</span><span class="word word-rest">ippl</span>
+      </h1>
+      <p class="hero-thesis reveal">Notes that <em>ripple</em><br>beyond the page.</p>
+      <figure class="hero-media" data-parallax>
+        <img src="assets/rippl-hero.jpg" width="1200" height="1089" alt="Rippl projector lamp illuminating an open book on a study desk">
+      </figure>
+      <div class="hero-meta reveal">
+        <dl><div><dt>Role</dt><dd>Research & design</dd></div><div><dt>Duration</dt><dd>12 weeks</dd></div><div><dt>Focus</dt><dd>Learning & memory</dd></div></dl>
+        <a href="#overview">Begin the story <span>↓</span></a>
+      </div>
+    </section>
+
+    <section class="manifesto" id="overview">
+      <p class="eyebrow reveal">The premise</p>
+      <p class="display-copy reveal">Reading asks for attention.<br><span>Technology keeps taking it.</span></p>
+      <div class="manifesto-note reveal">
+        <p>I observed distracted reading among my peers and began an ambiguous journey: could emerging technology improve learning without interrupting its most natural ritual?</p>
+        <small>Initial observation / NID</small>
+      </div>
+    </section>
+
+    <section class="definition dark-section">
+      <div class="section-index">02 / The object</div>
+      <div class="definition-copy reveal">
+        <p class="eyebrow">What is Rippl?</p>
+        <h2>A lamp that<br><i>thinks with you.</i></h2>
+        <p>Rippl is an advanced projector-table lamp designed to make reading and note-taking more focused, immersive, and interactive—without replacing the book.</p>
+      </div>
+      <figure class="device-stage reveal" data-tilt>
+        <img src="assets/rippl-device.jpg" loading="lazy" width="1825" height="1296" alt="Physical form study of the Rippl table lamp">
+        <figcaption><span>01</span> Table lamp mode</figcaption>
+      </figure>
+      <div class="feature-marquee" aria-label="Rippl capabilities">
+        <div>Text recognition — Focused projection — Handwriting capture — Distraction free — Text recognition — Focused projection — Handwriting capture — Distraction free —</div>
+      </div>
+    </section>
+
+    <section class="research" id="research">
+      <div class="section-index">03 / Research</div>
+      <div class="research-heading reveal">
+        <p class="eyebrow">The tension</p>
+        <h2>We reach for a book.<br>Then the internet<br><em>reaches back.</em></h2>
+      </div>
+      <blockquote class="reveal">“Picture this: you’re all set to hit the books, but before you know it, your phone buzzes, social media beckons, and your focus takes a fall.”<cite>Anonymous interviewee</cite></blockquote>
+      <figure class="wide-figure reveal">
+        <img src="assets/findings.png" loading="lazy" width="1836" height="861" alt="Research findings about distracted reading and learning">
+        <figcaption>01 — What emerged from the research</figcaption>
+      </figure>
+      <div class="insight-grid">
+        <article class="reveal"><span>01</span><h3>Impaired focus</h3><p>Technological interruptions reduce comprehension and make it harder to remain inside the material.</p></article>
+        <article class="reveal"><span>02</span><h3>Limited recall</h3><p>Passive reading makes essential information harder to retrieve when it matters.</p></article>
+        <article class="reveal"><span>03</span><h3>Low engagement</h3><p>Traditional reading offers few moments for active, two-way participation.</p></article>
+      </div>
+    </section>
+
+    <section class="question dark-section">
+      <p class="eyebrow reveal">The design question</p>
+      <p class="question-mark" aria-hidden="true">?</p>
+      <h2 class="reveal">How might we create an engaging learning experience that combats distraction, improves retention, and deepens understanding?</h2>
+      <div class="objectives reveal"><span>Focus better</span><span>Retrieve effortlessly</span><span>Interact naturally</span></div>
+    </section>
+
+    <section class="interaction" id="experience">
+      <div class="section-index">04 / Experience</div>
+      <div class="interaction-intro reveal">
+        <p class="eyebrow">A natural gesture</p>
+        <h2>Mark it.<br>Meet more.</h2>
+        <p>Highlight a term as you already would. Rippl recognises the mark, projects relevant information, and lets you keep what matters beside the original page.</p>
+      </div>
+      <div class="interaction-steps">
+        <figure class="step reveal"><div><img src="assets/interaction-mark.png" loading="lazy" width="2000" height="2000" alt="Reader highlighting a term in a book"></div><figcaption><b>01</b><span>Mark a passage</span></figcaption></figure>
+        <figure class="step reveal"><div><img src="assets/interaction-project.png" loading="lazy" width="2080" height="2000" alt="Rippl projecting learning assistance beside the book"></div><figcaption><b>02</b><span>Explore the projection</span></figcaption></figure>
+      </div>
+    </section>
+
+    <section class="interface dark-section">
+      <div class="section-index">05 / Interface</div>
+      <header class="interface-heading reveal"><p class="eyebrow">The projected layer</p><h2>Information,<br>where attention is.</h2></header>
+      <div class="interface-gallery">
+        <figure class="ui-frame reveal"><img src="assets/startup-flow.png" loading="lazy" width="1885" height="774" alt="Rippl startup interface flow"><figcaption>Startup / connection / setup</figcaption></figure>
+        <figure class="ui-frame pale reveal"><img src="assets/what-rippl-does.png" loading="lazy" width="2042" height="764" alt="Diagram showing Rippl functions"><figcaption>Recognise / retrieve / retain</figcaption></figure>
+      </div>
+      <div class="mode-switcher reveal">
+        <div><p class="eyebrow">One object, two modes</p><h3>Study light.<br>Portable projector.</h3></div>
+        <figure data-tilt><img src="assets/projector-mode.png" loading="lazy" width="1563" height="1296" alt="Rippl configured in portable projector mode"></figure>
+      </div>
+    </section>
+
+    <section class="principles">
+      <div class="section-index">06 / Principles</div>
+      <p class="eyebrow reveal">Built around the reader</p>
+      <div class="principle-list">
+        <article class="reveal"><span>01</span><h2>Clear projection</h2><p>Sharp, legible information exactly where it is useful.</p></article>
+        <article class="reveal"><span>02</span><h2>Automatic recognition</h2><p>Text capture that turns a familiar mark into a doorway.</p></article>
+        <article class="reveal"><span>03</span><h2>Quiet compatibility</h2><p>A layer that works with books and notes instead of competing with them.</p></article>
+      </div>
+    </section>
+
+    <section class="reflection dark-section" id="reflection">
+      <div class="section-index">07 / Reflection</div>
+      <p class="eyebrow reveal">Epilogue</p>
+      <h2 class="reveal">Learning becomes meaningful when it crosses the distance from <em>knowing</em> to <em>doing.</em></h2>
+      <div class="reflection-copy reveal"><p>By combining hands-on experience with cognitive learning, we can remember important lessons and make better choices. Rippl explores that transition—not as another screen, but as a more attentive relationship with the objects already in front of us.</p></div>
+      <footer>
+        <p>Project by<br><strong>Aravind J</strong></p>
+        <a href="mailto:aravind_j@nid.edu">Let’s make something meaningful <span>↗</span></a>
+        <p class="copyright">© <span id="year"></span> Aravind J</p>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>

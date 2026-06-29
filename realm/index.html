@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Realm of Elementals · Where vanishing wings are kept alive</title>
+  <meta name="description" content="Realm of Elementals is a WebAR butterfly-guardianship experience and physical installation by Aravind J that turns conservation into care." />
+  <meta name="theme-color" content="#0b120b" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0f0a'/%3E%3Cpath fill='%23d9b46a' d='M50 50c-6-16-18-24-30-22-9 1.5-13 9-10 18 3 9 16 16 27 14 5-1 9-4 13-10zM50 50c6-16 18-24 30-22 9 1.5 13 9 10 18-3 9-16 16-27 14-5-1-9-4-13-10zM50 50c-4 12-6 22-5 31 .4 4 5 4 5 0 1-9-1-19-5-31z'/%3E%3Ccircle cx='50' cy='34' r='3.2' fill='%23d9b46a'/%3E%3C/svg%3E" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Realm of Elementals" />
+  <meta property="og:description" content="Where vanishing wings are kept alive. A WebAR guardianship experience by Aravind J." />
+  <meta property="og:image" content="assets/poster.jpg" />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Three.js (ES module) -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ===================== SPATIAL BACKGROUND ===================== -->
+  <canvas id="webgl" class="bg-canvas" aria-hidden="true"></canvas>
+  <div class="bg-veil" aria-hidden="true"></div>
+
+  <!-- ===================== PRELOADER ===================== -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__mark">
+      <svg viewBox="0 0 100 100" class="butterfly-mark" aria-hidden="true">
+        <use href="#bf-glyph"></use>
+      </svg>
+      <span class="preloader__word">Realm of Elementals</span>
+    </div>
+    <div class="preloader__bar"><i></i></div>
+  </div>
+
+  <!-- shared svg defs -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="bf-glyph">
+        <path fill="currentColor" d="M50 50c-6-16-18-24-30-22-9 1.5-13 9-10 18 3 9 16 16 27 14 5-1 9-4 13-10zM50 50c6-16 18-24 30-22 9 1.5 13 9 10 18-3 9-16 16-27 14-5-1-9-4-13-10zM50 50c-4 12-6 22-5 31 .4 4 5 4 5 0 1-9-1-19-5-31z" opacity=".9"/>
+        <circle cx="50" cy="34" r="3.2" fill="currentColor"/>
+      </g>
+    </defs>
+  </svg>
+
+  <!-- ===================== NAV ===================== -->
+  <header class="nav" id="nav">
+    <a class="nav__brand" href="#top">
+      <svg viewBox="0 0 100 100" class="nav__bf"><use href="#bf-glyph"></use></svg>
+      <span>Realm of Elementals</span>
+    </a>
+    <nav class="nav__links">
+      <a href="#problem">The Problem</a>
+      <a href="#pivot">The Pivot</a>
+      <a href="#app">The App</a>
+      <a href="#installation">Installation</a>
+      <a href="#research">Research</a>
+      <a href="#about">About</a>
+    </nav>
+    <a href="https://realmofelementals.art" target="_blank" rel="noopener" class="nav__cta">Enter the realm</a>
+  </header>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="top">
+    <div class="hero__veil"></div>
+    <div class="hero__inner">
+      <p class="hero__eyebrow reveal">Realm of</p>
+      <h1 class="hero__title">
+        <span class="hero__title-em reveal" data-d="1">Elementals</span>
+      </h1>
+      <p class="hero__tag reveal" data-d="2">Where vanishing wings are kept alive.</p>
+      <p class="hero__meta reveal" data-d="3">An augmented-reality experience &amp; installation · Aravind&nbsp;J</p>
+    </div>
+    <div class="hero__scroll reveal" data-d="4">
+      <span>Scroll to begin</span>
+      <i></i>
+    </div>
+  </section>
+
+  <!-- ===================== LOGLINE ===================== -->
+  <section class="logline section" id="intro">
+    <div class="wrap">
+      <p class="logline__lead">
+        <span class="word">The</span> <span class="word">small</span> <span class="word">things</span>
+        <span class="word">you</span> <span class="word">do,</span> <span class="word">for</span>
+        <span class="word">yourself</span> <span class="word">and</span> <span class="word">for</span>
+        <span class="word">the</span> <span class="word">world</span> <span class="word">around</span>
+        <span class="word">you,</span> <span class="word">become</span> <span class="word">a</span>
+        <span class="word">living</span> <span class="word">creature</span> <span class="word">you</span>
+        <span class="word">can</span> <span class="word">watch</span> <span class="word">grow.</span>
+        <span class="word">You</span> <span class="word">live</span> <span class="word">it.</span>
+        <span class="word">The</span> <span class="word">realm</span> <span class="word">shows</span> <span class="word">it.</span>
+      </p>
+      <div class="logline__pillars">
+        <div class="pillar reveal"><span class="pillar__n">01</span><h3>Act</h3><p>One real act a day, for yourself or the world.</p></div>
+        <div class="pillar reveal" data-d="1"><span class="pillar__n">02</span><h3>See</h3><p>Your care grows into a living creature.</p></div>
+        <div class="pillar reveal" data-d="2"><span class="pillar__n">03</span><h3>Learn</h3><p>Meet a real, threatened species.</p></div>
+        <div class="pillar reveal" data-d="3"><span class="pillar__n">04</span><h3>Become</h3><p>Help nature, and it helps you back.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROBLEM ===================== -->
+  <section class="section problem" id="problem">
+    <div class="wrap">
+      <span class="kicker reveal">01 · The Problem</span>
+      <h2 class="display reveal" data-d="1">We are told the planet is dying.<br><em>And we feel nothing.</em></h2>
+      <div class="problem__grid">
+        <div class="problem__text reveal" data-d="2">
+          <p>The crisis is everywhere and felt nowhere. We hear the planet is collapsing, yet nothing we do each day seems to touch it. The damage is far away, slow, abstract. Our own choices feel too small to matter.</p>
+          <p>So we look away. Not from cruelty, but because we can never see the line between what we do and what becomes of the world, or of ourselves. What you cannot see, you cannot care for.</p>
+        </div>
+        <div class="problem__stats">
+          <div class="stat reveal" data-d="1"><b data-count="22">0</b><span>% decline in butterfly numbers in 20 years</span></div>
+          <div class="stat reveal" data-d="2"><b data-count="40">0</b><span>% of insect species in decline worldwide</span></div>
+          <div class="stat reveal" data-d="3"><b>1 of 5</b><span>pollinator species at risk of extinction</span></div>
+        </div>
+      </div>
+      <figure class="problem__plate reveal">
+        <img src="assets/sketch-confrontation.png" loading="lazy" decoding="async" alt="A storyboard sketch: a hand holds a phone where a grey butterfly asks, 'I don't feel well. Do you know why we are disappearing?'" />
+        <figcaption>An early concept asked the user to confront a dying creature directly.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== PIVOT ===================== -->
+  <section class="section pivot" id="pivot">
+    <div class="wrap">
+      <span class="kicker reveal">02 · The Pivot</span>
+      <h2 class="display reveal" data-d="1">Guilt makes us look away.<br><em>Care makes us look closer.</em></h2>
+      <div class="pivot__cols">
+        <div class="pivot__col pivot__col--from reveal" data-d="1">
+          <span class="pivot__label">We began with</span>
+          <h3>Confrontation</h3>
+          <p>Shock the user. Show the damage. Make them feel the weight of extinction. It was honest, and it pushed people away. Fear closes the hand.</p>
+        </div>
+        <div class="pivot__arrow reveal" data-d="2" aria-hidden="true">
+          <svg viewBox="0 0 120 24"><path d="M2 12h112m0 0-12-8m12 8-12 8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <div class="pivot__col pivot__col--to reveal" data-d="3">
+          <span class="pivot__label">We arrived at</span>
+          <h3>Care</h3>
+          <p>Give the user something fragile to love. Attachment does what argument cannot. It makes the abstract personal, and the personal worth protecting.</p>
+        </div>
+      </div>
+      <blockquote class="pullquote reveal">
+        “People don't protect what they're afraid of.<br>They protect what they've come to love.”
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ===================== APP INTRO / SHOWCASE ===================== -->
+  <section class="section app" id="app">
+    <div class="wrap">
+      <span class="kicker reveal">03 · The Design Response</span>
+      <h2 class="display reveal" data-d="1"><em>Realm of Elementals</em></h2>
+      <p class="lede reveal" data-d="2">Realm of Elementals is a web app that turns your real acts of self-care and sustainable living into a living world you can watch grow. No download, no account. You do the small things; the realm makes their effect visible. Right now that world is a single butterfly. In time, it becomes many species, a whole ecosystem that answers to how you live.</p>
+      <div class="exchange reveal" data-d="3">
+        <div class="exchange__col">
+          <span class="exchange__label">For you</span>
+          <p>A quiet daily ritual, a creature that needs you, and proof that small habits add up.</p>
+        </div>
+        <div class="exchange__col">
+          <span class="exchange__label">For the world</span>
+          <p>Real acts of care and sustainability, and a person who has started to notice.</p>
+        </div>
+      </div>
+      <p class="reveal" data-d="4"><a href="#research" class="btn btn--ghost app__research-link">Dive into the research behind it →</a></p>
+    </div>
+
+    <!-- horizontal scroll gallery -->
+    <div class="screens" id="screens">
+      <div class="screens__track" id="screensTrack">
+        <figure class="screen">
+          <img src="assets/ui-naming.png" loading="lazy" decoding="async" alt="App screen: a Common Jezebel butterfly, 'Who am I?' and a field to name her." />
+          <figcaption><b>Meet her</b>A real species, named by you.</figcaption>
+        </figure>
+        <figure class="screen">
+          <img src="assets/ui-egg.png" loading="lazy" decoding="async" alt="App screen: a golden egg in your care, growth at 53%." />
+          <figcaption><b>Raise her</b>From an egg, day by day.</figcaption>
+        </figure>
+        <figure class="screen">
+          <img src="assets/ui-offering.png" loading="lazy" decoding="async" alt="App screen: Today's Offering, small real-world acts of care." />
+          <figcaption><b>Today's offering</b>One real act, every day.</figcaption>
+        </figure>
+        <figure class="screen">
+          <img src="assets/ui-chrysalis.png" loading="lazy" decoding="async" alt="App screen: a green chrysalis. 'She's becoming something new. Three breaths. That's all she asks.'" />
+          <figcaption><b>Transform</b>Breathe with her as she changes.</figcaption>
+        </figure>
+        <figure class="screen">
+          <img src="assets/ui-ar.png" loading="lazy" decoding="async" alt="App screen: AR activation, a glowing egg aligning in the camera view." />
+          <figcaption><b>Step through</b>The realm opens in your room.</figcaption>
+        </figure>
+        <figure class="screen">
+          <img src="assets/ui-status.png" loading="lazy" decoding="async" alt="App screen: Nila's status, day 1 of her life, vitality 100%." />
+          <figcaption><b>She remembers</b>Your care, kept alive.</figcaption>
+        </figure>
+      </div>
+    </div>
+    <p class="screens__hint reveal">Drag, scroll, or swipe →</p>
+  </section>
+
+  <!-- ===================== LIFECYCLE ===================== -->
+  <section class="section lifecycle" id="lifecycle">
+    <div class="wrap">
+      <span class="kicker reveal">04 · The Becoming</span>
+      <h2 class="display reveal" data-d="1">Four stages. <em>Earned, not given.</em></h2>
+      <p class="lede reveal" data-d="2">She grows only when you show up. Tasks done in the real world move her through a life, roughly a week of small, deliberate care.</p>
+    </div>
+    <div class="cycle">
+      <div class="cycle__line" aria-hidden="true"></div>
+      <div class="cycle__step reveal">
+        <div class="cycle__art" data-stage="egg"></div>
+        <h3>The Egg</h3><p>She arrives in your care, waiting. The realm is quiet until you begin.</p>
+      </div>
+      <div class="cycle__step reveal" data-d="1">
+        <div class="cycle__art" data-stage="larva"></div>
+        <h3>The Caterpillar</h3><p>She hatches and feeds. Each day of care thickens her toward the next threshold.</p>
+      </div>
+      <div class="cycle__step reveal" data-d="2">
+        <div class="cycle__art" data-stage="chrysalis"></div>
+        <h3>The Chrysalis</h3><p>She folds inward. Three slow breaths from you, and the change begins.</p>
+      </div>
+      <div class="cycle__step reveal" data-d="3">
+        <div class="cycle__art" data-stage="butterfly"></div>
+        <h3>The Butterfly</h3><p>She opens her wings, takes your name, and flies free in the realm.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STORY PLATES ===================== -->
+  <section class="section plates">
+    <div class="plate">
+      <figure class="plate__img reveal"><img src="assets/sketch-egg.png" loading="lazy" decoding="async" alt="Sketch: a person discovers a glowing egg." /></figure>
+      <div class="plate__txt reveal" data-d="1">
+        <span class="kicker">A quiet beginning</span>
+        <h3 class="display-sm">It starts with something you could lose.</h3>
+        <p>The first moment is deliberately small. No mission, no countdown, just a fragile life handed to you, and the question of whether you'll come back tomorrow.</p>
+      </div>
+    </div>
+    <div class="plate plate--rev">
+      <figure class="plate__img reveal"><img src="assets/sketch-emergence.png" loading="lazy" decoding="async" alt="Sketch: a butterfly emerges in augmented reality from a phone." /></figure>
+      <div class="plate__txt reveal" data-d="1">
+        <span class="kicker">A precious moment</span>
+        <h3 class="display-sm">“Because of you, I made it.”</h3>
+        <p>When she finally emerges, it is in your space, through your camera, a private, unrepeatable moment of arrival. The reward for care is not points. It is presence.</p>
+      </div>
+    </div>
+    <div class="plate">
+      <figure class="plate__img reveal"><img src="assets/sketch-liveshere.png" loading="lazy" decoding="async" alt="Sketch: a butterfly badge placed on a desk, taken from a weekend market." /></figure>
+      <div class="plate__txt reveal" data-d="1">
+        <span class="kicker">It lives here now</span>
+        <h3 class="display-sm">A creature that follows you home.</h3>
+        <p>A physical badge carries her identity into the world. Scan it on any phone and your realm returns, and the butterfly becomes a small companion you keep, not an app you close.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== INSTALLATION ===================== -->
+  <section class="section installation" id="installation">
+    <div class="installation__bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="kicker reveal">05 · Into the Room</span>
+      <h2 class="display reveal" data-d="1">The realm became a place<br>you could <em>walk into.</em></h2>
+      <p class="lede reveal" data-d="2">For the final showcase, the digital world spilled into a physical one. A bouquet of paper butterflies became an AR marker. Point a phone at it and the swarm comes alive, every wing a creature someone had raised.</p>
+    </div>
+    <div class="installation__media">
+      <figure class="installation__hero reveal">
+        <img src="assets/installation-hands.png" loading="lazy" decoding="async" alt="Visitor holds a phone at the installation; the camera reveals a swarm of AR butterflies rising from a paper bouquet." />
+      </figure>
+      <div class="installation__side">
+        <figure class="reveal" data-d="1"><img src="assets/fieldtest-1.png" loading="lazy" decoding="async" alt="Field test: a visitor interacting with the installation." /></figure>
+        <figure class="reveal" data-d="2"><img src="assets/fieldtest-2.png" loading="lazy" decoding="async" alt="Field test: visitors at the Realm of Elementals installation." /></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ENTER (CTA) ===================== -->
+  <section class="section enter" id="enter">
+    <div class="enter__bg" aria-hidden="true"></div>
+    <div class="wrap">
+      <span class="kicker reveal">Visit the realm</span>
+      <h2 class="display reveal" data-d="1">It is waiting<br>for <em>you.</em></h2>
+      <p class="lede reveal" data-d="2">No download, no account. Open the realm on your phone, point the camera at the butterfly, and the swarm comes alive in the room with you.</p>
+      <div class="enter__steps2">
+        <figure class="enter__card reveal" data-d="2">
+          <span class="enter__step">Step 1 · Open</span>
+          <a class="enter__card-frame enter__qr-card" href="https://realmofelementals.art" target="_blank" rel="noopener" aria-label="Open realmofelementals.art"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29 29" shape-rendering="crispEdges"><path stroke="#0a0f0a" d="M0 0.5h7m1 0h3m2 0h2m1 0h1m1 0h1m3 0h7M0 1.5h1m5 0h1m2 0h1m2 0h4m2 0h3m1 0h1m5 0h1M0 2.5h1m1 0h3m1 0h1m4 0h2m1 0h1m2 0h2m1 0h1m1 0h1m1 0h3m1 0h1M0 3.5h1m1 0h3m1 0h1m1 0h1m1 0h3m5 0h1m1 0h1m1 0h1m1 0h3m1 0h1M0 4.5h1m1 0h3m1 0h1m1 0h2m2 0h1m4 0h2m3 0h1m1 0h3m1 0h1M0 5.5h1m5 0h1m1 0h1m1 0h1m1 0h1m3 0h1m2 0h2m1 0h1m5 0h1M0 6.5h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7M8 7.5h2m3 0h1m1 0h3m1 0h2M0 8.5h1m3 0h1m1 0h4m3 0h1m3 0h1m2 0h6m2 0h1M0 9.5h1m4 0h1m2 0h3m2 0h2m1 0h1m5 0h7M0 10.5h1m1 0h2m1 0h4m2 0h2m3 0h1m3 0h1m2 0h1m4 0h1M1 11.5h2m7 0h3m1 0h1m2 0h2m1 0h1m1 0h1m1 0h2m1 0h2M1 12.5h3m2 0h1m1 0h1m1 0h1m1 0h10m5 0h1M1 13.5h2m2 0h1m3 0h1m1 0h1m5 0h2m3 0h7M1 14.5h1m1 0h1m2 0h3m3 0h4m2 0h1m1 0h1m4 0h2m1 0h1M0 15.5h2m1 0h1m1 0h1m1 0h4m2 0h1m1 0h3m2 0h1m2 0h1m3 0h2M0 16.5h1m2 0h4m4 0h3m3 0h1m2 0h2m5 0h1M0 17.5h1m1 0h1m1 0h1m4 0h2m2 0h2m1 0h1m1 0h1m3 0h4m1 0h2M3 18.5h1m2 0h1m2 0h1m2 0h1m3 0h2m2 0h1m1 0h1m3 0h1m1 0h1M2 19.5h4m2 0h1m2 0h2m1 0h1m2 0h2m1 0h2m5 0h2M0 20.5h3m1 0h4m2 0h1m2 0h5m1 0h7m2 0h1M8 21.5h1m3 0h1m6 0h2m3 0h1m3 0h1M0 22.5h7m1 0h1m4 0h3m3 0h2m1 0h1m1 0h3m1 0h1M0 23.5h1m5 0h1m3 0h1m1 0h2m1 0h3m1 0h2m3 0h1m3 0h1M0 24.5h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h2m3 0h1m1 0h7m1 0h2M0 25.5h1m1 0h3m1 0h1m3 0h1m1 0h1m1 0h1m1 0h1m2 0h3m5 0h1M0 26.5h1m1 0h3m1 0h1m3 0h2m1 0h1m2 0h6m3 0h4M0 27.5h1m5 0h1m2 0h4m4 0h1m2 0h1m1 0h4m1 0h2M0 28.5h7m1 0h1m3 0h1m1 0h2m2 0h1m1 0h2m2 0h1m2 0h1"/></svg></a>
+          <figcaption>Scan to open the realm on your phone</figcaption>
+        </figure>
+        <div class="enter__arrow reveal" data-d="2" aria-hidden="true">
+          <svg viewBox="0 0 60 24"><path d="M2 12h54m0 0-11-7m11 7-11 7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <figure class="enter__card reveal" data-d="3">
+          <span class="enter__step">Step 2 · Summon</span>
+          <div class="enter__card-frame enter__target"><img src="assets/target-emerald-peacock-landscape.png" loading="lazy" decoding="async" alt="The Emerald Peacock butterfly marker. Point your camera at it to summon the swarm." /></div>
+          <figcaption>Point your camera here to summon the swarm</figcaption>
+        </figure>
+      </div>
+      <div class="enter__links reveal" data-d="4">
+        <a href="https://realmofelementals.art" target="_blank" rel="noopener" class="btn">Enter the realm →</a>
+        <a href="assets/target-emerald-peacock-landscape.png" download class="enter__url">Download the marker to print ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== REFLECTION ===================== -->
+  <section class="section reflection" id="reflection">
+    <div class="wrap">
+      <span class="kicker reveal">06 · Reflection</span>
+      <h2 class="display reveal" data-d="1">What stayed with people<br>was not the data.</h2>
+      <div class="reflection__grid">
+        <p class="reflection__lead reveal" data-d="2">It was the name they gave her. The morning they remembered to do her offering. The small, irrational worry that she might not make it. Attachment, it turns out, is a conservation technology.</p>
+        <ul class="reflection__list reveal" data-d="3">
+          <li><b>Care over guilt.</b> Emotional attachment outperformed fear in every test session.</li>
+          <li><b>Friction by design.</b> Slow growth made the creature feel real, not gamified.</li>
+          <li><b>No install, no account.</b> WebAR removed every barrier between curiosity and care.</li>
+          <li><b>Digital → physical → real.</b> The badge and installation closed the loop back to the world.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RESEARCH ===================== -->
+  <section class="section research" id="research">
+    <div class="wrap">
+      <span class="kicker reveal">07 · The Research</span>
+      <h2 class="display reveal" data-d="1">Why this <em>was built.</em></h2>
+      <p class="lede reveal" data-d="2">Eight ideas behind the realm. Hover or tap any tile to open it.</p>
+      <div class="bento reveal" id="bento" data-d="2">
+        <button class="btile" type="button" data-i="0" style="--accent:#7BBFB5">
+          <span class="btile__head">
+            <span class="btile__num">01</span>
+            <span class="btile__tag" style="background:rgba(123,191,181,0.12);color:#7BBFB5">The Problem</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor">
+    <circle cx="60" cy="60" r="50" stroke-width="1" opacity=".16" class="gx-breathe"/>
+    <circle cx="60" cy="60" r="37" stroke-width="1.2" opacity=".28" class="gx-breathe" style="animation-delay:.5s"/>
+    <circle cx="60" cy="60" r="24" stroke-width="1.5" opacity=".48" class="gx-breathe" style="animation-delay:1s"/>
+    <circle cx="60" cy="60" r="6" fill="currentColor" stroke="none" class="gx-pulse"/>
+  </svg></span>
+          <span class="btile__hint">Extinction of experience</span>
+          <span class="btile__detail">
+            <span class="btile__headline">The world is losing its nature, and nobody notices.</span>
+            <span class="btile__body">Biologist Robert Pyle called it the "Extinction of Experience." Urban populations have lost daily contact with the natural world, not through malice but through the ordinary accumulation of cities. The feedback loop: less exposure, less familiarity, less feeling, less action. Until even the absence goes unremarked.</span>
+            <span class="btile__source">Pyle, R. (1993). The Thunder Tree.</span>
+          </span>
+        </button>
+        <button class="btile" type="button" data-i="1" style="--accent:#C9A84C">
+          <span class="btile__head">
+            <span class="btile__num">02</span>
+            <span class="btile__tag" style="background:rgba(201,168,76,0.10);color:#C9A84C">Policy Gap</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor">
+    <rect x="16" y="44" width="32" height="32" rx="7" stroke-width="1.6" opacity=".7"/>
+    <rect x="72" y="44" width="32" height="32" rx="7" stroke-width="1.6" opacity=".38"/>
+    <line x1="50" y1="60" x2="70" y2="60" stroke-width="1.5" stroke-dasharray="2 4" opacity=".55" class="gx-dash"/>
+    <circle cx="60" cy="60" r="2.5" fill="currentColor" stroke="none" class="gx-pulse"/>
+  </svg></span>
+          <span class="btile__hint">Policy cannot reach you</span>
+          <span class="btile__detail">
+            <span class="btile__headline">Policy knows what to do. It cannot reach the individual.</span>
+            <span class="btile__body">CBD Kunming-Montreal 2030 Targets: 30% of land conserved. OECM principles establish protection. These frameworks are precise. They operate at institutional scale. They have no mechanism for a person in a city to feel what is being lost and choose differently. The gap between policy and behaviour is where design lives.</span>
+            <span class="btile__source">CBD COP15 (2022). Kunming-Montreal Framework.</span>
+          </span>
+        </button>
+        <button class="btile" type="button" data-i="2" style="--accent:#9F97E8">
+          <span class="btile__head">
+            <span class="btile__num">03</span>
+            <span class="btile__tag" style="background:rgba(127,119,221,0.12);color:#9F97E8">Neuroscience</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor">
+    <circle cx="46" cy="60" r="22" stroke-width="1.6" opacity=".5"/>
+    <circle cx="74" cy="60" r="22" stroke-width="1.6" opacity=".5"/>
+    <circle cx="46" cy="60" r="3.5" fill="currentColor" stroke="none" class="gx-travel"/>
+  </svg></span>
+          <span class="btile__hint">Emotion gates memory</span>
+          <span class="btile__detail">
+            <span class="btile__headline">Emotion is the gate to memory. Facts don't pass through it alone.</span>
+            <span class="btile__body">The amygdala feeds directly into the hippocampus. Emotional arousal is the biological prerequisite for long-term memory encoding. Bloom's three learning domains: Cognitive, Affective, Psychomotor. Environmental education has historically only addressed one. The feeling must precede the fact, not follow it.</span>
+            <span class="btile__source">Bloom (1956). Taxonomy of Educational Objectives.</span>
+          </span>
+        </button>
+        <button class="btile" type="button" data-i="3" style="--accent:#E8925A">
+          <span class="btile__head">
+            <span class="btile__num">04</span>
+            <span class="btile__tag" style="background:rgba(232,146,90,0.10);color:#E8925A">Decentering</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor">
+    <circle cx="48" cy="60" r="22" stroke-width="1.4" stroke-dasharray="3 4" opacity=".4" class="gx-spin"/>
+    <circle cx="72" cy="60" r="22" stroke-width="1.8" opacity=".68"/>
+    <circle cx="72" cy="60" r="5" fill="currentColor" stroke="none" class="gx-pulse"/>
+  </svg></span>
+          <span class="btile__hint">Change needs a threshold</span>
+          <span class="btile__detail">
+            <span class="btile__headline">Identity cannot be changed from inside itself.</span>
+            <span class="btile__body">Decentering: a metacognitive process of stepping outside a fixed self-model. Four stages: disengagement, liminality, immersion, reintegration. The brain is a prediction machine that fiercely protects its models. Ritual has always been how humans safely update them. The chrysalis breathing exercise is a 42-second secular ritual. The stillness is the mechanism.</span>
+            <span class="btile__source">Bernstein et al. (2015). Perspectives on Psychological Science.</span>
+          </span>
+        </button>
+        <button class="btile" type="button" data-i="4" style="--accent:#52b788">
+          <span class="btile__head">
+            <span class="btile__num">05</span>
+            <span class="btile__tag" style="background:rgba(45,106,79,0.15);color:#52b788">Mayeroff</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor">
+    <g class="gx-spin">
+      <circle cx="60" cy="60" r="34" stroke-width="1" opacity=".2"/>
+      <line x1="70.0" y1="60.0" x2="94.0" y2="60.0" stroke-width="1" opacity=".28"/>
+      <line x1="67.1" y1="67.1" x2="84.0" y2="84.0" stroke-width="1" opacity=".28"/>
+      <line x1="60.0" y1="70.0" x2="60.0" y2="94.0" stroke-width="1" opacity=".28"/>
+      <line x1="52.9" y1="67.1" x2="36.0" y2="84.0" stroke-width="1" opacity=".28"/>
+      <line x1="50.0" y1="60.0" x2="26.0" y2="60.0" stroke-width="1" opacity=".28"/>
+      <line x1="52.9" y1="52.9" x2="36.0" y2="36.0" stroke-width="1" opacity=".28"/>
+      <line x1="60.0" y1="50.0" x2="60.0" y2="26.0" stroke-width="1" opacity=".28"/>
+      <line x1="67.1" y1="52.9" x2="84.0" y2="36.0" stroke-width="1" opacity=".28"/>
+      <circle cx="94.0" cy="60.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+      <circle cx="84.0" cy="84.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+      <circle cx="60.0" cy="94.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+      <circle cx="36.0" cy="84.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+      <circle cx="26.0" cy="60.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+      <circle cx="36.0" cy="36.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+      <circle cx="60.0" cy="26.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+      <circle cx="84.0" cy="36.0" r="3" fill="currentColor" stroke="none" opacity=".6"/>
+    </g>
+    <circle cx="60" cy="60" r="7" fill="currentColor" stroke="none" class="gx-pulse"/>
+  </svg></span>
+          <span class="btile__hint">Care is a practice</span>
+          <span class="btile__detail">
+            <span class="btile__headline">Caring is not a feeling. It is a practice.</span>
+            <span class="btile__body">Milton Mayeroff, On Caring (1971): knowing, patience, honesty, trust, humility, hope, courage, devotion. And reciprocity: caring flows both ways, or it is not caring. The butterfly gives first: morning messages, observations, presence. Then it asks. That order is not a design decision. It is Mayeroff's prerequisite.</span>
+            <span class="btile__source">Mayeroff, M. (1971). On Caring. Harper &amp; Row.</span>
+          </span>
+        </button>
+        <button class="btile" type="button" data-i="5" style="--accent:#C9A84C">
+          <span class="btile__head">
+            <span class="btile__num">06</span>
+            <span class="btile__tag" style="background:rgba(201,168,76,0.10);color:#C9A84C">Tamagotchi Effect</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor">
+    <rect x="38" y="26" width="44" height="68" rx="17" stroke-width="1.6" opacity=".55"/>
+    <path d="M48 60 h6 l4 -12 l6 24 l4 -12 h6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="gx-pulse"/>
+    <circle cx="60" cy="84" r="2.5" fill="currentColor" stroke="none" opacity=".5"/>
+  </svg></span>
+          <span class="btile__hint">Attachment through need</span>
+          <span class="btile__detail">
+            <span class="btile__headline">Genuine attachment forms through need, not charm.</span>
+            <span class="btile__body">In 1996 Bandai reversed the logic of entertainment. The Tamagotchi made demands: it could die of neglect. The mechanism: the creature needs you, not the other way around. Mentor Shoban Shah (RCA London): "Let them care for it for 7 to 10 days. As they feed and interact, they build a bond. Post this bonding, introduce the confrontation."</span>
+            <span class="btile__source">Allison, A. (2006). Millennial Monsters.</span>
+          </span>
+        </button>
+        <button class="btile" type="button" data-i="6" style="--accent:#7BBFB5">
+          <span class="btile__head">
+            <span class="btile__num">07</span>
+            <span class="btile__tag" style="background:rgba(123,191,181,0.10);color:#7BBFB5">The Butterfly</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120">
+    <g fill="currentColor" opacity=".85">
+      <g transform="translate(15 15) scale(0.42)"><use href="#bf-glyph" class="gx-flap"/></g>
+      <g transform="translate(63 15) scale(0.42)"><use href="#bf-glyph" class="gx-flap" style="animation-delay:.6s"/></g>
+      <g transform="translate(15 63) scale(0.42)"><use href="#bf-glyph" class="gx-flap" style="animation-delay:1.2s"/></g>
+      <g transform="translate(63 63) scale(0.42)"><use href="#bf-glyph" class="gx-flap" style="animation-delay:1.8s"/></g>
+    </g>
+  </svg></span>
+          <span class="btile__hint">Four real species</span>
+          <span class="btile__detail">
+            <span class="btile__headline">Four species. One entry point into the natural world.</span>
+            <span class="btile__body">Crimson Rose: legally protected, Schedule II India 2022, migrates across the Palk Strait. Blue Mormon: largest Indian butterfly, Western Ghats endemic. Tailed Jay: electric green-black, pan-India. Common Emigrant: migratory, the ordinary miracle most people walk past without noticing. Each species carries its own story. The realm eventually tells all of them.</span>
+            <span class="btile__source">Wildlife Protection Act, India (2022).</span>
+          </span>
+        </button>
+        <button class="btile" type="button" data-i="7" style="--accent:#E8925A">
+          <span class="btile__head">
+            <span class="btile__num">08</span>
+            <span class="btile__tag" style="background:rgba(232,146,90,0.10);color:#E8925A">The Proof</span>
+          </span>
+          <span class="btile__art" aria-hidden="true"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor">
+    <line x1="22" y1="66" x2="98" y2="66" stroke-width="1" stroke-dasharray="2 5" opacity=".22" class="gx-dash"/>
+    <g fill="currentColor" stroke="none" opacity=".5"><circle cx="24" cy="66" r="3.5"/><circle cx="31" cy="66" r="3.5"/><circle cx="38" cy="66" r="3.5"/></g>
+    <path d="M60 48 q7 7 0 30 q-7 -23 0 -30 Z" stroke-width="1.6" opacity=".7" class="gx-sway"/>
+    <g transform="translate(76 45) scale(0.38)" fill="currentColor" stroke="none"><use href="#bf-glyph" class="gx-flap"/></g>
+  </svg></span>
+          <span class="btile__hint">Proven in a garden</span>
+          <span class="btile__detail">
+            <span class="btile__headline">The mechanism was proven in a garden, not a lab.</span>
+            <span class="btile__body">An Oleander Hawk Moth caterpillar appeared at home. A family member wanted to discard it. It was brought inside. For two weeks it was observed: feeding, growing, becoming a moth. When it flew she said: "It doesn't even know you took care of it." The reply: "That's exactly what nature does to us." One woman. Two weeks. No lecture.</span>
+            <span class="btile__source">Personal observation. Tiruchirappalli, 2025.</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT ===================== -->
+  <section class="section about" id="about">
+    <div class="wrap about__wrap">
+      <figure class="about__portrait reveal">
+        <img src="assets/portrait.jpg" loading="lazy" decoding="async" alt="Portrait of Aravind J" />
+      </figure>
+      <div class="about__txt reveal" data-d="1">
+        <span class="kicker">The maker</span>
+        <h2 class="display-sm">Aravind J</h2>
+        <p>Realm of Elementals is my study in whether tenderness, rather than alarm, can move people to protect the natural world.</p>
+        <p>It brings together interaction design, WebAR, narrative, illustration, sound, and a physical installation into a single argument: that we save what we have learned to love.</p>
+        <div class="about__links">
+          <a href="mailto:aravindspav@gmail.com" class="btn">Get in touch</a>
+          <a href="#top" class="btn btn--ghost">Back to top ↑</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="footer">
+    <div class="wrap">
+      <svg viewBox="0 0 100 100" class="footer__bf"><use href="#bf-glyph"></use></svg>
+      <p class="footer__tag">Where vanishing wings are kept alive.</p>
+      <a href="https://realmofelementals.art" target="_blank" rel="noopener" class="footer__enter">Enter the realm →</a>
+      <p class="footer__meta">Realm of Elementals · Aravind J · 2026</p>
+    </div>
+  </footer>
+
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
