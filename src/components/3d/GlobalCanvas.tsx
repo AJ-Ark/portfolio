@@ -6,7 +6,7 @@ import ParticleField from "./ParticleField";
 import { useParticle } from "@/lib/particleContext";
 
 export default function GlobalCanvas() {
-  const { activeDomain } = useParticle();
+  const { activeDomain, previewOffsetX } = useParticle();
 
   return (
     <div
@@ -29,7 +29,7 @@ export default function GlobalCanvas() {
         style={{ width: "100%", height: "100%" }}
       >
         <Suspense fallback={null}>
-          <ParticleField domain={activeDomain} />
+          <ParticleField domain={activeDomain} offsetX={previewOffsetX} />
         </Suspense>
       </Canvas>
     </div>

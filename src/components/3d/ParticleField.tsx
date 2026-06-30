@@ -7,6 +7,9 @@ import type { Domain } from "@/data/projects";
 
 interface ParticleFieldProps {
   domain?: Domain | null;
+  /** Normalized horizontal offset (-1 left edge .. 0 center .. 1 right edge)
+   *  for where the cluster should sit on screen. */
+  offsetX?: number;
 }
 
 const PARTICLE_COUNT = 5000;
@@ -143,13 +146,16 @@ function getDomainColor(domain: Domain | null): THREE.Color {
   return DOMAIN_COLORS[domain ?? "idle"] ?? DOMAIN_COLORS.idle;
 }
 
-export default function ParticleField({ domain = null }: ParticleFieldProps) {
+export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFieldProps) {
   const points  = useRef<THREE.Points>(null!);
   const posAttr = useRef<THREE.BufferAttribute>(null!);
   const timeRef = useRef(0);
   const prevDomain = useRef<Domain | null>(domain);
   const morphRef   = useRef(1);
   const domainRef  = useRef<Domain | null>(domain);
+  const offsetXRef = useRef(0);
+  const offsetXTarget = useRef(offsetX);
+  offsetXTarget.current = offsetX;
 
   const { size, camera } = useThree();
 
@@ -192,6 +198,13 @@ export default function ParticleField({ domain = null }: ParticleFieldProps) {
     const repelRadius = 1.6;
     const repelStr    = 0.28;
 
+    /* Ease the horizontal offset toward its target and apply it as the
+       points object's own position (not baked into particle positions) so
+       rotation still happens around the shape's own center instead of
+       orbiting around world origin. */
+    offsetXRef.current += (offsetXTarget.current - offsetXRef.current) * 0.06;
+    if (points.current) points.current.position.x = offsetXRef.current * halfW;
+
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const [tx, ty, tz] = getTargetPosition(domainRef.current,  i, seeds, t);
       const [px, py, pz] = getTargetPosition(prevDomain.current, i, seeds, t);
@@ -210,8 +223,10 @@ export default function ParticleField({ domain = null }: ParticleFieldProps) {
       let ny = cy + (ity - cy) * 0.05;
       const nz = cz + (itz - cz) * 0.05;
 
-      /* Cursor repulsion (XY only) */
-      const dx   = nx - curWX;
+      /* Cursor repulsion (XY only) — curWX is world space, particle x is
+         local to the (possibly offset) points object, so shift the cursor
+         into local space before comparing. */
+      const dx   = nx - (curWX - offsetXRef.current * halfW);
       const dy   = ny - curWY;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < repelRadius && dist > 0.001) {

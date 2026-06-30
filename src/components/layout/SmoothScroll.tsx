@@ -3,6 +3,15 @@
 import { useEffect, useRef } from "react";
 import Lenis from "lenis";
 
+declare global {
+  interface Window {
+    /** Single shared Lenis instance, escape-hatched for components that
+     *  need to pause/resume page-level smooth scroll (e.g. a scroll-hijacked
+     *  pagination block) without threading a context through the tree. */
+    __lenis?: Lenis;
+  }
+}
+
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
 
@@ -14,6 +23,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     });
 
     lenisRef.current = lenis;
+    window.__lenis = lenis;
 
     let raf: number;
     function tick(time: number) {
@@ -25,6 +35,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     return () => {
       cancelAnimationFrame(raf);
       lenis.destroy();
+      window.__lenis = undefined;
     };
   }, []);
 
