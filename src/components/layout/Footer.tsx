@@ -64,7 +64,7 @@ export default function Footer() {
 
         <div className="flex items-center gap-6">
           <a
-            href="mailto:aravind@trmeric.com"
+            href="mailto:aravindspav@gmail.com"
             className="footer-link"
             style={{
               fontFamily: "var(--font-mono)",
@@ -77,7 +77,7 @@ export default function Footer() {
             Email
           </a>
           <a
-            href="https://linkedin.com/in/aravindj"
+            href="https://www.linkedin.com/in/aravind-j-5a6b8b136/"
             target="_blank"
             rel="noopener noreferrer"
             className="footer-link"

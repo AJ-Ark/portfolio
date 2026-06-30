@@ -109,7 +109,7 @@ export default function Navigation() {
             </Link>
           ))}
           <a
-            href="mailto:aravind@trmeric.com"
+            href="mailto:aravindspav@gmail.com"
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: ".65rem",
@@ -172,7 +172,7 @@ export default function Navigation() {
             </Link>
           ))}
           <a
-            href="mailto:aravind@trmeric.com"
+            href="mailto:aravindspav@gmail.com"
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: ".68rem",
@@ -181,7 +181,7 @@ export default function Navigation() {
               color: "var(--color-accent)",
             }}
           >
-            aravind@trmeric.com →
+            aravindspav@gmail.com →
           </a>
         </div>
       )}

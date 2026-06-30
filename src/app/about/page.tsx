@@ -137,17 +137,17 @@ export default function AboutPage() {
           <PlotInLines delay={300}>
             <div className="flex flex-wrap gap-4">
               <a
-                href="mailto:aravind@trmeric.com"
+                href="mailto:aravindspav@gmail.com"
                 className="label-mono px-4 py-2 rounded transition-all duration-200"
                 style={{
                   background: "var(--color-paper)",
                   color: "var(--color-ink)",
                 }}
               >
-                aravind@trmeric.com →
+                aravindspav@gmail.com →
               </a>
               <a
-                href="https://linkedin.com/in/aravindj"
+                href="https://www.linkedin.com/in/aravind-j-5a6b8b136/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="label-mono px-4 py-2 rounded transition-all duration-200"

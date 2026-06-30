@@ -122,7 +122,7 @@ export default function EnrichmentDemo() {
 
         {/* Discoveries */}
         {revealed > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: ".7rem" }}>
+          <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: ".7rem" }}>
             {DISCOVERIES.slice(0, revealed).map((d) => (
               <div
                 key={d.title}

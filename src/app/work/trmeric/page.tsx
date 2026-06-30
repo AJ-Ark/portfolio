@@ -207,7 +207,7 @@ export default function TrmericPage() {
       <main id="main-content">
 
         {/* ═══════════════ 01 · HERO ═══════════════ */}
-        <section style={{ minHeight: "88vh", display: "grid", gridTemplateColumns: "55% 45%", alignItems: "center", padding: "8rem var(--pad) 5rem", gap: "3rem" }}>
+        <section className="mobile-stack" style={{ minHeight: "88vh", display: "grid", gridTemplateColumns: "55% 45%", alignItems: "center", padding: "8rem var(--pad) 5rem", gap: "3rem" }}>
           <div>
             <PlotInLines>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem" }}>
@@ -268,7 +268,7 @@ export default function TrmericPage() {
         <section style={{ padding: "6rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={s.kicker}>What Trmeric is</span>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start" }}>
               <div>
                 <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.4rem)", lineHeight: 1.12, letterSpacing: "-.02em", color: INK, marginBottom: "1.4rem" }}>
                   An AI-native B2B SaaS for{" "}<em style={{ fontStyle: "italic", color: ACC }}>demand management, resource management, and portfolio value.</em>
@@ -296,7 +296,7 @@ export default function TrmericPage() {
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={s.kicker}>Four lifecycle phases · 23 surfaces</span>
             <p style={{ ...s.body, marginBottom: "2.5rem", marginTop: ".5rem" }}>Every surface answers one question. The lifecycle is the spine; every feature is a response to a specific failure mode in how enterprises manage work.</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", border: `1px solid ${LINE}`, borderRadius: "14px", overflow: "hidden" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", border: `1px solid ${LINE}`, borderRadius: "14px", overflow: "hidden" }}>
               {PHASES.map(({ letter, label, question, persona, icon, surfaces, desc }) => (
                 <div key={letter} style={{ padding: "1.8rem 1.6rem", background: BASE, borderRight: `1px solid ${LINE}` }}>
                   <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.6rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, marginBottom: ".4rem" }}>{letter}</div>
@@ -322,7 +322,7 @@ export default function TrmericPage() {
         <section style={{ padding: "4rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={{ ...s.kicker, marginBottom: "1.5rem" }}>Outcomes, measured not claimed</span>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
               {(project.metrics ?? []).map(({ value, label }) => (
                 <div key={label} style={{ padding: "2rem 1.6rem", borderRight: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
                   <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.4rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".5rem" }}>{value}</div>
@@ -338,7 +338,7 @@ export default function TrmericPage() {
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={s.kicker}>The surface archive, 8 of 23</span>
             <p style={{ ...s.body, marginBottom: "2.5rem", marginTop: ".4rem" }}>Every screen is a production-grade prototype. Engineering builds from these directly.</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
               {[
                 { src: "/images/trmeric/cockpit.png", label: "Demand Cockpit", alt: "Demand Cockpit" },
                 { src: "/images/trmeric/project-manager.png", label: "Project Manager", alt: "Project Manager" },
@@ -391,7 +391,7 @@ export default function TrmericPage() {
                 </div>
 
                 {/* Body copy + decisions in 2-col */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start", marginBottom: "2.5rem" }}>
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start", marginBottom: "2.5rem" }}>
                   <div>
                     <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, marginBottom: ".8rem" }}>Thought process</div>
                     <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, marginBottom: "1.4rem" }}>{f.body}</p>
@@ -466,7 +466,7 @@ export default function TrmericPage() {
         {/* ═══════════════ 08 · DESIGN SYSTEM ═══════════════ */}
         <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "start" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "start" }}>
               <div>
                 <span style={s.kicker}>Design system, Trmeric DS v3</span>
                 <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-.02em", color: INK, marginBottom: "1.2rem", lineHeight: 1.2 }}>Built from the turmeric plant.</h2>
@@ -527,7 +527,7 @@ export default function TrmericPage() {
 
           {/* ── 02: The positioning ── text left, image right ── */}
           <div style={{ borderBottom: `1px solid ${LINE}`, background: BASE2 }}>
-            <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "5rem", alignItems: "center" }}>
+            <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "5rem", alignItems: "center" }}>
               <div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACC, marginBottom: "1.2rem", opacity: 0.8 }}>
                   Where it begins
@@ -557,7 +557,7 @@ export default function TrmericPage() {
           {/* ── 03: The plant ── full-width ── */}
           <div style={{ borderBottom: `1px solid ${LINE}` }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "5rem", alignItems: "center" }}>
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "5rem", alignItems: "center" }}>
                 <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
                   <Image
                     src="/images/trmeric/logo-story/04.png"
@@ -614,7 +614,7 @@ export default function TrmericPage() {
 
           {/* ── 05: Golden ratio ── side by side ── */}
           <div style={{ borderBottom: `1px solid ${LINE}` }}>
-            <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
+            <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
               <div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACC, marginBottom: "1.2rem", opacity: 0.8 }}>
                   The mathematics
@@ -676,7 +676,7 @@ export default function TrmericPage() {
 
           {/* ── 07: Color system ── ── */}
           <div style={{ borderBottom: `1px solid ${LINE}` }}>
-            <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "5rem", alignItems: "center" }}>
+            <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "5rem", alignItems: "center" }}>
               <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
                 <Image
                   src="/images/trmeric/logo-story/07.png"
@@ -715,7 +715,7 @@ export default function TrmericPage() {
               <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "56ch" }}>
                 The logo is constructed from simple shapes so it maintains legibility at every size. Minimum height: 32px. The horizontal lockup is the default. On dark backgrounds the mark renders in amber. On amber backgrounds it reverses to white. The mark was designed to work in all three without modification, because a brand that only works on white backgrounds has not been properly finished.
               </p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div style={{ position: "relative", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
                   <Image
                     src="/images/trmeric/logo-story/08.png"

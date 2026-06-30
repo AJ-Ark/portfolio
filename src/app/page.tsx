@@ -370,6 +370,7 @@ export default function Home() {
             DOMAINS — three full-height panels
         ═══════════════════════════════════════════════ */}
         <section
+          className="mobile-stack domain-grid-section"
           style={{
             height: "100dvh",
             display: "grid",
@@ -393,6 +394,7 @@ export default function Home() {
           }}
         >
           <div
+            className="mobile-stack"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
@@ -472,8 +474,8 @@ export default function Home() {
               </span>
               <div style={{ display: "flex", flexDirection: "column", gap: ".6rem" }}>
                 {[
-                  { label: "aravind@trmeric.com →", href: "mailto:aravind@trmeric.com" },
-                  { label: "LinkedIn →", href: "https://linkedin.com/in/aravindj" },
+                  { label: "aravindspav@gmail.com →", href: "mailto:aravindspav@gmail.com" },
+                  { label: "LinkedIn →", href: "https://www.linkedin.com/in/aravind-j-5a6b8b136/" },
                 ].map(({ label, href }) => (
                   <a
                     key={href}
@@ -511,6 +513,8 @@ export default function Home() {
         .domain-panel:hover .panel-enter { opacity: 1 !important; transform: translateX(4px); }
         @media (max-width: 768px) {
           .domain-panel { border-right: none !important; border-bottom: 1px solid var(--line); }
+          .domain-grid-section { height: auto !important; }
+          .domain-panel { min-height: 60vh; }
         }
       `}</style>
     </>

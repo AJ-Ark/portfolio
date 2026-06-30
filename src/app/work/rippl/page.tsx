@@ -367,7 +367,7 @@ export default function RipplPage() {
         <section style={{ padding: "0 var(--pad) 6rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: FAINT, opacity: 0.6, display: "block", marginBottom: "2rem" }}>Who needs this</span>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
               {[
                 { who: "Medical students", context: "Dense terminology, high-stakes recall, limited time.", need: "Instant definitions beside the text, without losing place." },
                 { who: "Civil exam aspirants", context: "Months of multi-subject revision, cross-referencing sources.", need: "Linked notes that surface related material automatically." },
@@ -392,7 +392,7 @@ export default function RipplPage() {
         <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>02 / The object</span>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
               <div>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>What is Rippl?</span>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2rem, 4.5vw, 3.8rem)", lineHeight: 1.05, letterSpacing: "-.01em", color: PAPER, marginBottom: "1.4rem" }}>
@@ -449,7 +449,7 @@ export default function RipplPage() {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
               {[
                 { num: "01", h: "Impaired focus", b: "Technological interruptions reduce comprehension and make it harder to remain inside the material. The cost isn't just time. It's the depth of understanding that forms while uninterrupted." },
                 { num: "02", h: "Limited recall", b: "Passive reading makes essential information harder to retrieve when it matters. Without an active encoding mechanism, information enters short-term memory and exits before it's used." },
@@ -506,7 +506,7 @@ export default function RipplPage() {
         <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>04 / How it works</span>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start", marginBottom: "3rem" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start", marginBottom: "3rem" }}>
               <div>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.1, color: PAPER, marginBottom: "1.4rem" }}>
                   The recognition<br /><em style={{ fontStyle: "italic", color: ACCB }}>pipeline.</em>
@@ -522,7 +522,7 @@ export default function RipplPage() {
                 <div style={{ padding: "2rem 1.5rem", background: BASE, borderRadius: "14px", border: `1px solid ${LINEW}` }}>
                   <PipelineSVG />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem", marginTop: "1rem" }}>
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem", marginTop: "1rem" }}>
                   {[
                     ["OCR Engine","Python + Tesseract"],
                     ["Handwriting","Custom trained model"],
@@ -546,7 +546,7 @@ export default function RipplPage() {
         <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>05 / Experience</span>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: "4rem", alignItems: "start" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: "4rem", alignItems: "start" }}>
               <div>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>A natural gesture</span>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2.2rem, 4.5vw, 4rem)", lineHeight: 0.96, letterSpacing: "-.015em", color: PAPER, marginBottom: "1.4rem" }}>
@@ -608,7 +608,7 @@ export default function RipplPage() {
             </div>
 
             {/* One object, two modes */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center", paddingTop: "3rem", borderTop: `1px solid ${LINEW}` }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center", paddingTop: "3rem", borderTop: `1px solid ${LINEW}` }}>
               <div>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>One object, two modes</span>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.6rem, 3vw, 2.4rem)", lineHeight: 1.12, color: PAPER, marginBottom: "1rem" }}>
@@ -640,7 +640,7 @@ export default function RipplPage() {
 
             {/* ── Marking & Annotating ── */}
             <div style={{ marginBottom: "3.5rem" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
                 <div style={{ position: "relative", height: "280px", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/images/rippl/gifs/marking.gif" alt="Recorded interaction: marking a passage and choosing Annotate to generate an AI summary" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
@@ -670,7 +670,7 @@ export default function RipplPage() {
 
             {/* ── Sorting & Categorizing ── */}
             <div style={{ marginBottom: "3.5rem" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
                 <div>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCB, marginBottom: ".6rem", display: "block" }}>02 · Sorting &amp; categorizing</span>
                   <p style={{ fontSize: ".88rem", color: DIM, lineHeight: 1.68 }}>
@@ -699,7 +699,7 @@ export default function RipplPage() {
 
             {/* ── Navigating history ── */}
             <div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
                 <div style={{ position: "relative", height: "280px", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/images/rippl/gifs/history.gif" alt="Recorded interaction: opening history and navigating previously marked, saved, and flash-carded content" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
@@ -775,7 +775,7 @@ export default function RipplPage() {
               Each prototype was built to test a specific hypothesis. They were run publicly, not in a lab, to capture unscripted reactions from real readers.
             </p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               {[
                 {
                   num: "01",
@@ -832,7 +832,7 @@ export default function RipplPage() {
         <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / Design process</span>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
               <div>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.1, color: PAPER, marginBottom: "1.4rem" }}>
                   From daily objects to a{" "}<em style={{ fontStyle: "italic", color: ACC }}>new form factor.</em>
@@ -843,7 +843,7 @@ export default function RipplPage() {
                 <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "42ch" }}>
                   The interaction had to feel invisible. If the user had to think about the device, the device had failed. Every design decision was tested against this rule.
                 </p>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".8rem", marginTop: "1.8rem" }}>
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".8rem", marginTop: "1.8rem" }}>
                   {[["Table lamp","Familiar, warm, present"],["Projector","Content onto surface"],["Camera","Capture + interpret"]].map(([obj, desc]) => (
                     <div key={obj} style={{ padding: ".8rem", background: BASE, border: `1px solid ${LINEW}`, borderRadius: "8px" }}>
                       <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: ".9rem", color: ACCB, display: "block", marginBottom: ".3rem" }}>{obj}</span>
@@ -865,7 +865,7 @@ export default function RipplPage() {
         <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2rem" }}>Built around the reader</span>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}`, marginBottom: "0" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}`, marginBottom: "0" }}>
               {[
                 { num: "01", h: "Clear projection", b: "Sharp, legible information exactly where it is useful: beside the text you just marked, not on a separate screen competing for attention." },
                 { num: "02", h: "Automatic recognition", b: "Text capture that turns a familiar mark into a doorway. You highlight. Rippl does the rest. No buttons, no modes, no app to open." },
@@ -879,7 +879,7 @@ export default function RipplPage() {
               ))}
             </div>
             {/* Stats strip */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderLeft: `1px solid ${LINEW}` }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderLeft: `1px solid ${LINEW}` }}>
               {[["12 weeks","Project duration"],["1,000+","Public participants"],["3","Working prototypes"]].map(([val, label]) => (
                 <div key={label} style={{ padding: "1.8rem 1.6rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
                   <div style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "2.4rem", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".4rem" }}>{val}</div>
