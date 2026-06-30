@@ -38,21 +38,21 @@ export const particleProfiles: Record<Domain, ParticleBehaviourProfile> = {
   rippl: {
     id: "rippl",
     type: "ripple",
-    accent: "#78B9C5",
+    accent: "#4FA8A0",    /* muted teal, matches Rippl domain preset */
     particleCount: 4000,
     speed: 0.6,
   },
   realm: {
     id: "realm",
     type: "organic",
-    accent: "#4A9E8E",
+    accent: "#d9b46a",    /* gold — matches realm/css/style.css exactly */
     particleCount: 6000,
     speed: 0.4,
   },
   trmeric: {
     id: "trmeric",
     type: "lattice",
-    accent: "#FFA426",
+    accent: "#FFA426",    /* amber — unchanged */
     particleCount: 5000,
     speed: 0.8,
   },
@@ -67,7 +67,7 @@ export const projects: Project[] = [
     type: "academic",
     year: "2024",
     role: "Design Researcher & Interaction Designer",
-    accent: "#78B9C5",
+    accent: "#4FA8A0",
     particleProfile: particleProfiles.rippl,
     keywords: ["Interaction Design", "Physical Computing", "OCR", "HCI", "Prototyping"],
     metrics: [
@@ -96,10 +96,10 @@ export const projects: Project[] = [
     oneLiner: "A WebAR butterfly-raising experience that extends the Tata Motors Lakehouse to people who'll never visit in person.",
     type: "academic",
     year: "2025–2026",
-    role: "Designer & Researcher, M.Des graduation project — NID Gandhinagar",
-    accent: "#4A9E8E",
+    role: "Designer & Researcher, in partnership with Tata Motors · graduation thesis",
+    accent: "#d9b46a",
     particleProfile: particleProfiles.realm,
-    keywords: ["WebAR", "Ecological Identity", "Care", "Behavioural Change", "NID"],
+    keywords: ["WebAR", "Ecological Identity", "Care", "Behavioural Change", "Tata Motors"],
     metrics: [
       { value: "9 months", label: "Research & build" },
       { value: "M.Des", label: "Graduation project" },
@@ -109,7 +109,7 @@ export const projects: Project[] = [
       {
         slug: "webar-experience",
         title: "WebAR Experience",
-        oneLiner: "The butterfly lifecycle as a care mechanic — raise, observe, release.",
+        oneLiner: "The butterfly lifecycle as a care mechanic: raise, observe, release.",
       },
       {
         slug: "lifecycle-design",
@@ -123,10 +123,10 @@ export const projects: Project[] = [
     slug: "trmeric",
     domain: "trmeric",
     title: "Trmeric",
-    oneLiner: "Designing the full product experience for an AI-native enterprise platform — demand intake to portfolio value.",
+    oneLiner: "Designing the full product experience for an AI-native enterprise platform, demand intake to portfolio value.",
     type: "professional",
     year: "2025–present",
-    role: "Senior Product Designer — sole designer, founding team",
+    role: "Senior Product Designer, sole designer, founding team",
     accent: "#FFA426",
     particleProfile: particleProfiles.trmeric,
     keywords: ["Enterprise SaaS", "AI Design", "Design Systems", "B2B", "Prototyping"],
@@ -152,21 +152,15 @@ export const projects: Project[] = [
         tags: ["Force Graph", "Persona", "Executive"],
       },
       {
-        slug: "tango",
-        title: "Tango — AI Agent Design",
-        oneLiner: "Designing interaction patterns for an AI agent that lives across every surface.",
-        tags: ["AI Design", "Agent UX", "Patterns"],
-      },
-      {
         slug: "trucible",
-        title: "Trucible — Knowledge OS",
+        title: "Trucible · Knowledge OS",
         oneLiner: "Wiki and Explorer modes for an enterprise context management system.",
         sandboxSrc: "trmeric/trucible.html",
         tags: ["Knowledge Management", "Dual Mode", "Search"],
       },
       {
         slug: "signals",
-        title: "Signals — D3 Force Graph",
+        title: "Signals · D3 Force Graph",
         oneLiner: "An Obsidian-style force-directed signal map for early-warning detection.",
         sandboxSrc: "trmeric/pm-signals.html",
         tags: ["D3", "Force Graph", "Data Viz"],

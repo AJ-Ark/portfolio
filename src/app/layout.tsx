@@ -6,7 +6,7 @@ import WebGLLayer from "@/components/3d/WebGLLayer";
 
 export const metadata: Metadata = {
   title: {
-    default: "Aravind J — Product Designer & UX Researcher",
+    default: "Aravind J · Product Designer & UX Researcher",
     template: "%s · Aravind J",
   },
   description:
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_IN",
     siteName: "Aravind J",
-    title: "Aravind J — Product Designer & UX Researcher",
+    title: "Aravind J · Product Designer & UX Researcher",
     description:
       "Senior Product Designer & UX Researcher. Architect by training, designer by practice.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aravind J — Product Designer & UX Researcher",
+    title: "Aravind J · Product Designer & UX Researcher",
     description:
       "Senior Product Designer & UX Researcher. Architect by training, designer by practice.",
   },

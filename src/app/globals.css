@@ -1,30 +1,47 @@
 @import "tailwindcss";
 
-/* ─── Design tokens — drafting table at dusk ─── */
-@theme {
-  /* Palette */
-  --color-ground: #14110E;
-  --color-paper: #F2ECE0;
-  --color-graphite: #3A352E;
-  --color-graphite-light: #6B6157;
-  --color-ink: #1C1712;
+/* ══════════════════════════════════════════════════════════════════
+   ARAVIND J PORTFOLIO — CSS foundation
+   Source of truth: ROE-PORTFOLIO-DESIGN-LANGUAGE.md + realm/css/style.css
+   ══════════════════════════════════════════════════════════════════ */
 
-  /* Domain accents */
-  --color-rippl: #78B9C5;
-  --color-realm: #4A9E8E;
-  --color-trmeric: #FFA426;
+/* ─── Tailwind theme tokens ─── */
+@theme {
+  /* Base — home / landing (warm dark threshold) */
+  --color-ground:         #0e0b09;
+  --color-ground-2:       #141109;
+  --color-paper:          #ece6d6;
+  --color-graphite:       #3A352E;
+  --color-graphite-light: #7a7368;
+  --color-ink:            #060402;
+
+  /* Single accent per domain — Tailwind utilities */
+  --color-accent:         #d9b46a;   /* gold — home portal accent */
+  --color-accent-bright:  #f1d8a3;
+  --color-accent-deep:    #a07f44;
+  --color-realm:          #d9b46a;
+  --color-rippl:          #4FA8A0;
+  --color-trmeric:        #FFA426;
 
   /* Typography */
   --font-display: "Fraunces", Georgia, serif;
-  --font-body: "General Sans", "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-body:    "General Sans", "Inter", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", "Fira Code", monospace;
 
-  /* Spacing */
+  /* Compat alias */
   --spacing-page: clamp(1.5rem, 5vw, 4rem);
+}
 
-  /* Easing */
-  --ease-architectural: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-plot: cubic-bezier(0.16, 1, 0.3, 1);
+/* ─── Global custom properties (outside @theme — not Tailwind utilities) ─── */
+:root {
+  --pad:        clamp(20px, 6vw, 120px);
+  --ease:       cubic-bezier(.22, 1, .36, 1);
+  --ease-plot:  cubic-bezier(.16, 1, .3, 1);    /* alias for PlotInLines component */
+  --rad:        18px;
+  --r-sm:       12px;
+  --line:       rgba(217, 180, 106, .18);    /* gold-tinted hairline */
+  --shadow-sm:  0 4px 20px -8px rgba(6, 4, 2, .5);
+  --shadow-lg:  0 30px 70px -30px rgba(6, 4, 2, .6);
 }
 
 /* ─── Base ─── */
@@ -44,126 +61,165 @@ body {
   color: var(--color-paper);
   font-family: var(--font-body);
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  /* Smooth domain palette transitions */
-  transition: background-color 0.8s var(--ease-architectural), color 0.6s ease;
+  transition:
+    background-color 0.9s var(--ease),
+    color 0.6s ease;
 }
 
-/* ─── Fonts ─── */
-@font-face {
-  font-family: "General Sans";
-  src: url("https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap");
-  font-display: swap;
-}
+img   { max-width: 100%; display: block; height: auto; }
+a     { color: inherit; text-decoration: none; }
 
-/* ─── Selection ─── */
 ::selection {
-  background: color-mix(in srgb, var(--color-trmeric) 30%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
   color: var(--color-paper);
 }
 
 /* ─── Scrollbar ─── */
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: var(--color-ground); }
-::-webkit-scrollbar-thumb { background: var(--color-graphite); border-radius: 2px; }
+::-webkit-scrollbar          { width: 3px; }
+::-webkit-scrollbar-track    { background: var(--color-ground); }
+::-webkit-scrollbar-thumb    { background: var(--color-graphite); border-radius: 2px; }
 
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    animation-duration:       0.01ms !important;
+    animation-iteration-count: 1    !important;
+    transition-duration:      0.01ms !important;
   }
 }
 
-/* ─── Architectural drafting type utilities ─── */
-.label-mono {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-graphite-light);
+/* ══════════════════════════════════════════════════════════════════
+   DOMAIN PALETTE OVERRIDES
+   Applied via data-domain on <html> by DomainTheme.tsx
+   Each preset tunes only the five dials — spine stays fixed.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── REALM — dark / gold / lyrical / high-immersion ── */
+[data-domain="realm"] {
+  --color-ground:         #060a06;
+  --color-ground-2:       #0a0f0a;
+  --color-paper:          #ece6d6;
+  --color-graphite:       #1e2d1e;
+  --color-graphite-light: #8a8272;
+  --color-accent:         #d9b46a;
+  --color-accent-bright:  #f1d8a3;
+  --color-accent-deep:    #a07f44;
+  --line:                 rgba(217, 180, 106, .18);
+  color-scheme: dark;
 }
 
+/* Default (dark domains) — light logo visible */
+:root {
+  --logo-light-opacity: 1;
+  --logo-dark-opacity:  0;
+}
+
+/* ── RIPPL — light / muted teal / industrial / measured ── */
+[data-domain="rippl"] {
+  --color-ground:         #F4F1EA;
+  --color-ground-2:       #E9E3D6;
+  --color-paper:          #1A1814;
+  --color-graphite:       #544f45;
+  --color-graphite-light: #938c7f;
+  --color-accent:         #4FA8A0;
+  --color-accent-bright:  #6FC4BC;
+  --color-accent-deep:    #357A74;
+  --line:                 rgba(26, 24, 20, .14);
+  --shadow-sm:            0 4px 20px -8px rgba(26, 24, 20, .15);
+  --shadow-lg:            0 30px 70px -30px rgba(26, 24, 20, .22);
+  --logo-light-opacity:   0;
+  --logo-dark-opacity:    1;
+  color-scheme: light;
+}
+
+/* ── TRMERIC — light / amber / systematic / restrained ── */
+[data-domain="trmeric"] {
+  --color-ground:         #FAF7F1;
+  --color-ground-2:       #F1EADC;
+  --color-paper:          #17150F;
+  --color-graphite:       #6f6a5e;
+  --color-graphite-light: #9b9488;
+  --color-accent:         #FFA426;
+  --color-accent-bright:  #FFB84D;
+  --color-accent-deep:    #E8730E;
+  --line:                 rgba(23, 21, 15, .12);
+  --shadow-sm:            0 4px 20px -8px rgba(23, 21, 15, .12);
+  --shadow-lg:            0 30px 70px -30px rgba(23, 21, 15, .18);
+  --logo-light-opacity:   0;
+  --logo-dark-opacity:    1;
+  color-scheme: light;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TYPE UTILITIES
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Eyebrow / label role ── */
+.kicker, .label-mono {
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+/* ── Display role ── */
 .display-serif {
   font-family: var(--font-display);
   font-optical-sizing: auto;
 }
-
-/* ─── Domain palette overrides ─────────────────────────────────── */
-/* Applied via data-domain="realm|rippl|trmeric" on <html>          */
-
-[data-domain="realm"] {
-  --color-ground: #09120a;
-  --color-paper: #e4ddc8;
-  --color-graphite: #2d3d2e;
-  --color-graphite-light: #5a7a5c;
-  --color-ink: #0d1a0e;
-  --color-accent: #4A9E8E;
+.display-serif em {
+  font-style: italic;
+  color: var(--color-accent-bright);
 }
 
-[data-domain="rippl"] {
-  --color-ground: #0c1316;
-  --color-paper: #deeaed;
-  --color-graphite: #233038;
-  --color-graphite-light: #4d7380;
-  --color-ink: #0e1a1f;
-  --color-accent: #78B9C5;
+/* ── Body ── */
+.lede {
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: var(--color-graphite-light);
+  max-width: 46ch;
+  line-height: 1.65;
 }
 
-[data-domain="trmeric"] {
-  --color-ground: #14110E;
-  --color-paper: #F2ECE0;
-  --color-graphite: #3A352E;
-  --color-graphite-light: #6B6157;
-  --color-ink: #1C1712;
-  --color-accent: #FFA426;
+/* ── Hairline structure ── */
+.hairline-top    { border-top:    1px solid var(--line); }
+.hairline-bottom { border-bottom: 1px solid var(--line); }
+
+/* ── Skip link ── */
+.skip-link {
+  position: fixed; top: 1rem; left: 1rem; z-index: 9999;
+  padding: .5rem 1rem;
+  background: var(--color-paper); color: var(--color-ink);
+  font-family: var(--font-mono); font-size: .75rem; border-radius: 4px;
+  transform: translateY(-200%); transition: transform .2s ease;
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* ── Datum line decoration ── */
+.datum-line { position: relative; }
+.datum-line::after {
+  content: ""; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--color-graphite) 40%, transparent);
 }
 
-/* ─── Atmospheric grain overlay ─── */
+/* ══════════════════════════════════════════════════════════════════
+   ATMOSPHERIC GRAIN OVERLAY
+   Same on all domains — opacity shift per luminance handled by
+   mixing against the domain's --color-ground.
+   ══════════════════════════════════════════════════════════════════ */
 body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 900;
-  opacity: 0.035;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 200px 200px;
-}
-
-/* ─── Skip link ─── */
-.skip-link {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 9999;
-  padding: 0.5rem 1rem;
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  border-radius: 4px;
-  transform: translateY(-200%);
-  transition: transform 0.2s ease;
-}
-.skip-link:focus {
-  transform: translateY(0);
-}
-
-/* ─── Datum line ─── */
-.datum-line {
-  position: relative;
-}
-.datum-line::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: color-mix(in srgb, var(--color-graphite) 40%, transparent);
 }

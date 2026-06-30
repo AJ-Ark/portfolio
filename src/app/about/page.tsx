@@ -1,6 +1,6 @@
+import Image from "next/image";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
-import SectionIndicator from "@/components/ui/SectionIndicator";
 import DimensionCallout from "@/components/ui/DimensionCallout";
 import PlotInLines from "@/components/ui/PlotInLines";
 import Link from "next/link";
@@ -9,14 +9,13 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Aravind Jegajeeva Rajasekar — architect by training, designer by practice. B.Arch SPA Vijayawada, M.Des NID Gandhinagar. Senior Product Designer at Trmeric.",
+    "Aravind Jegajeeva Rajasekar, architect by training, designer by practice. B.Arch SPA Vijayawada, M.Des NID Gandhinagar. Senior Product Designer at Trmeric.",
 };
 
 export default function AboutPage() {
   return (
     <>
       <Navigation />
-      <SectionIndicator />
 
       <main id="main-content" style={{ padding: "9rem var(--spacing-page) 6rem" }}>
         <div style={{ maxWidth: "56rem" }}>
@@ -58,10 +57,10 @@ export default function AboutPage() {
                 On this site
               </span>
               <p style={{ color: "var(--color-graphite-light)", lineHeight: 1.7, fontSize: "0.9375rem" }}>
-                This portfolio is itself the argument. The architectural section metaphor
-                — moving inward along a Z-axis — is my SPA Vijayawada self: structure,
-                depth, intentional space. The particle ecosystem — organic, living, three
-                behaviours — is my NID self: research, ecology, care. The WebGL binding
+                This portfolio is itself the argument. The architectural section metaphor,
+                moving inward along a Z-axis, is my SPA Vijayawada self: structure,
+                depth, intentional space. The particle ecosystem, organic, living, three
+                behaviours, is my NID self: research, ecology, care. The WebGL binding
                 both in real time is the web developer self that learned to build ideas
                 the same day he had them. The form is the argument.
               </p>
@@ -72,27 +71,27 @@ export default function AboutPage() {
           <PlotInLines delay={180}>
             <div className="space-y-5 mb-12" style={{ maxWidth: "38rem" }}>
               <p style={{ color: "var(--color-graphite-light)", lineHeight: 1.8, fontSize: "0.9375rem" }}>
-                I came to design through architecture. Six years at SPA Vijayawada — licensed
-                by the Council of Architecture — taught me to hold a system in my head at
+                I came to design through architecture. Six years at SPA Vijayawada, licensed
+                by the Council of Architecture, taught me to hold a system in my head at
                 full scale while still caring about the door handle. Buildings are systems.
                 So are interfaces. The patience is the same; the medium is faster.
               </p>
               <p style={{ color: "var(--color-graphite-light)", lineHeight: 1.8, fontSize: "0.9375rem" }}>
                 I taught myself web development between architecture school and NID because
                 I wanted a medium where I could test an idea the same afternoon I had it.
-                That instinct never left. My prototypes are not wireframes — they are
+                That instinct never left. My prototypes are not wireframes. They are
                 functional, interactive, data-driven artifacts. When engineering builds
                 from my prototypes directly, that's the intended workflow.
               </p>
               <p style={{ color: "var(--color-graphite-light)", lineHeight: 1.8, fontSize: "0.9375rem" }}>
                 NID Gandhinagar gave me research rigour. The M.Des in New Media Design
-                taught me to know when an instinct is actually an insight — and when it
+                taught me to know when an instinct is actually an insight, and when it
                 isn't. My graduation project, Realm of Elementals, was that discipline in
                 full: nine months of research on care, decentering, and ecological identity,
                 built into a WebAR experience.
               </p>
               <p style={{ color: "var(--color-graphite-light)", lineHeight: 1.8, fontSize: "0.9375rem" }}>
-                Currently: Senior Product Designer at Trmeric — sole designer on the founding
+                Currently: Senior Product Designer at Trmeric, sole designer on the founding
                 team. I own the full design surface of an AI-native enterprise SaaS platform,
                 from information architecture to production-grade prototypes. I sit in product
                 strategy as an equal, not as a service provider.
@@ -172,22 +171,23 @@ export default function AboutPage() {
             </div>
           </PlotInLines>
 
-          {/* Headshot placeholder */}
+          {/* Portrait */}
           <PlotInLines delay={360}>
             <div
-              className="mt-16 rounded flex items-center justify-center"
+              className="mt-16 rounded overflow-hidden"
               style={{
-                height: 320,
-                maxWidth: 280,
-                background: "#0C0A08",
+                position: "relative",
+                height: 360,
+                width: 280,
                 border: "1px solid #2E2A25",
               }}
             >
-              <span className="label-mono text-center" style={{ color: "#3A352E" }}>
-                [Headshot — Aravind]
-                <br />
-                Replace: /public/images/headshot.jpg
-              </span>
+              <Image
+                src="/images/headshot.jpg"
+                alt="Portrait of Aravind Jegajeeva Rajasekar"
+                fill
+                style={{ objectFit: "cover" }}
+              />
             </div>
           </PlotInLines>
         </div>

@@ -1,45 +1,78 @@
+import Image from "next/image";
+
 export default function Footer() {
   return (
     <footer
-      className="datum-line"
       style={{
-        padding: "3rem var(--spacing-page)",
-        borderTop: "1px solid color-mix(in srgb, #3A352E 50%, transparent)",
+        padding: "3rem var(--spacing-page) 2.5rem",
+        borderTop: "1px solid var(--line)",
+        background: "var(--color-ground-2, var(--color-ground))",
       }}
     >
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        {/* Left: name + location */}
-        <div>
-          <span
-            className="display-serif block mb-1"
+        <div style={{ position: "relative", width: 32, height: 32, flexShrink: 0 }}>
+          {/* Light logo (dark backgrounds — home, realm, rippl) */}
+          <Image
+            src="/images/aj_LOGO_light.png"
+            alt=""
+            width={32}
+            height={32}
+            aria-hidden="true"
             style={{
-              fontFamily: "var(--font-display)",
-              fontSize: "1rem",
-              color: "var(--color-paper)",
+              width: 32,
+              height: 32,
+              objectFit: "contain",
+              position: "absolute",
+              inset: 0,
+              opacity: "var(--logo-light-opacity, 1)",
+              transition: "opacity 0.6s ease",
             }}
-          >
-            Aravind Jegajeeva Rajasekar
-          </span>
-          <span className="label-mono" style={{ color: "var(--color-graphite-light)" }}>
-            Tiruchirappalli, Tamil Nadu · India
-          </span>
+          />
+          {/* Dark logo (light backgrounds — trmeric) */}
+          <Image
+            src="/images/aj_LOGO_dark.png"
+            alt="Aravind J"
+            width={32}
+            height={32}
+            style={{
+              width: 32,
+              height: 32,
+              objectFit: "contain",
+              position: "absolute",
+              inset: 0,
+              opacity: "var(--logo-dark-opacity, 0)",
+              transition: "opacity 0.6s ease",
+            }}
+          />
         </div>
 
-        {/* Center: drawing info block */}
         <div
-          className="label-mono text-center hidden md:block"
-          style={{ color: "#3A352E", fontSize: "0.5rem" }}
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: ".5rem",
+            letterSpacing: ".1em",
+            textTransform: "uppercase",
+            color: "var(--color-graphite-light)",
+            opacity: .35,
+            textAlign: "center",
+          }}
+          className="hidden md:block"
         >
-          <div>DRAWING REF: PORTFOLIO–2026</div>
-          <div>REV: 01 · SCALE: NTS</div>
+          <div>PORTFOLIO · 2026</div>
+          <div>REV 01 · NTS</div>
         </div>
 
-        {/* Right: links */}
         <div className="flex items-center gap-6">
           <a
             href="mailto:aravind@trmeric.com"
-            className="label-mono transition-colors duration-200 hover:text-[--color-paper]"
-            style={{ color: "var(--color-graphite-light)" }}
+            className="footer-link"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: ".65rem",
+              letterSpacing: ".14em",
+              textTransform: "uppercase",
+              color: "var(--color-graphite-light)",
+            }}
           >
             Email
           </a>
@@ -47,12 +80,26 @@ export default function Footer() {
             href="https://linkedin.com/in/aravindj"
             target="_blank"
             rel="noopener noreferrer"
-            className="label-mono transition-colors duration-200 hover:text-[--color-paper]"
-            style={{ color: "var(--color-graphite-light)" }}
+            className="footer-link"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: ".65rem",
+              letterSpacing: ".14em",
+              textTransform: "uppercase",
+              color: "var(--color-graphite-light)",
+            }}
           >
             LinkedIn
           </a>
-          <span className="label-mono" style={{ color: "#3A352E" }}>
+          <span
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: ".6rem",
+              letterSpacing: ".1em",
+              color: "var(--color-graphite-light)",
+              opacity: .35,
+            }}
+          >
             © 2026
           </span>
         </div>

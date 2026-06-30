@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -22,93 +23,135 @@ export default function Navigation() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-400"
+      className="fixed top-0 left-0 right-0 z-50"
       style={{
-        borderBottom: scrolled
-          ? "1px solid color-mix(in srgb, #3A352E 60%, transparent)"
-          : "1px solid transparent",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
+        borderBottom: scrolled ? "1px solid var(--line)" : "1px solid transparent",
+        backdropFilter: scrolled ? "blur(16px)" : "none",
         background: scrolled
-          ? "color-mix(in srgb, #14110E 85%, transparent)"
+          ? "color-mix(in srgb, var(--color-ground) 88%, transparent)"
           : "transparent",
+        transition: "border-color .3s ease, background .3s ease, backdrop-filter .3s ease",
       }}
     >
       <div
         className="flex items-center justify-between"
-        style={{ padding: "1rem var(--spacing-page)" }}
+        style={{ padding: "1.1rem var(--spacing-page)" }}
       >
-        {/* Title block mark */}
-        <Link href="/" className="group flex items-baseline gap-2">
+        <Link href="/" className="group flex items-center gap-2.5">
+          {/* AJ logo mark — light version for dark domains, dark for light */}
+          <span style={{ position: "relative", display: "inline-block", width: 28, height: 28, flexShrink: 0 }}>
+            {/* Light logo (dark backgrounds — home, realm, rippl) */}
+            <Image
+              src="/images/aj_LOGO_light.png"
+              alt=""
+              width={28}
+              height={28}
+              aria-hidden="true"
+              style={{
+                width: 28,
+                height: 28,
+                objectFit: "contain",
+                position: "absolute",
+                inset: 0,
+                opacity: "var(--logo-light-opacity, 1)",
+                transition: "opacity 0.6s ease",
+              }}
+            />
+            {/* Dark logo (light backgrounds — trmeric) */}
+            <Image
+              src="/images/aj_LOGO_dark.png"
+              alt="Aravind J"
+              width={28}
+              height={28}
+              style={{
+                width: 28,
+                height: 28,
+                objectFit: "contain",
+                position: "absolute",
+                inset: 0,
+                opacity: "var(--logo-dark-opacity, 0)",
+                transition: "opacity 0.6s ease",
+              }}
+            />
+          </span>
           <span
-            className="display-serif"
             style={{
               fontFamily: "var(--font-display)",
-              fontSize: "1.125rem",
+              fontStyle: "italic",
+              fontSize: "1rem",
               fontWeight: 400,
               color: "var(--color-paper)",
-              letterSpacing: "-0.01em",
+              letterSpacing: "-.01em",
             }}
           >
             Aravind J
           </span>
-          <span
-            className="label-mono opacity-40 group-hover:opacity-70 transition-opacity"
-            style={{ fontSize: "0.5rem" }}
-          >
-            PORTFOLIO
-          </span>
         </Link>
 
-        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8" aria-label="Primary">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="label-mono transition-colors duration-200"
               style={{
-                color:
-                  pathname === link.href
-                    ? "var(--color-paper)"
-                    : "var(--color-graphite-light)",
-                fontSize: "0.6875rem",
+                fontFamily: "var(--font-mono)",
+                fontSize: ".68rem",
+                letterSpacing: ".16em",
+                textTransform: "uppercase",
+                color: pathname.startsWith(link.href)
+                  ? "var(--color-paper)"
+                  : "var(--color-graphite-light)",
+                transition: "color .2s ease",
               }}
-              aria-current={pathname === link.href ? "page" : undefined}
+              aria-current={pathname.startsWith(link.href) ? "page" : undefined}
             >
               {link.label}
             </Link>
           ))}
           <a
             href="mailto:aravind@trmeric.com"
-            className="label-mono px-3 py-1.5 rounded transition-all duration-200"
             style={{
-              color: "var(--color-paper)",
-              border: "1px solid color-mix(in srgb, #6B6157 50%, transparent)",
-              fontSize: "0.6875rem",
+              fontFamily: "var(--font-mono)",
+              fontSize: ".65rem",
+              letterSpacing: ".14em",
+              textTransform: "uppercase",
+              color: "var(--color-accent)",
+              border: "1px solid var(--line)",
+              borderRadius: "4px",
+              padding: ".4rem .9rem",
+              transition: "border-color .2s ease, color .2s ease",
             }}
           >
             Say hello →
           </a>
         </nav>
 
-        {/* Mobile menu toggle */}
         <button
-          className="md:hidden label-mono"
+          className="md:hidden"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
-          style={{ color: "var(--color-graphite-light)", fontSize: "0.6875rem" }}
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: ".65rem",
+            letterSpacing: ".12em",
+            textTransform: "uppercase",
+            color: "var(--color-graphite-light)",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+          }}
         >
           {menuOpen ? "✕ CLOSE" : "≡ MENU"}
         </button>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div
-          className="md:hidden flex flex-col gap-6 px-6 py-8"
+          className="md:hidden flex flex-col gap-6"
           style={{
-            borderTop: "1px solid #3A352E",
+            padding: "2rem var(--spacing-page) 2.5rem",
+            borderTop: "1px solid var(--line)",
             background: "var(--color-ground)",
           }}
         >
@@ -117,10 +160,11 @@ export default function Navigation() {
               key={link.href}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="display-serif"
               style={{
                 fontFamily: "var(--font-display)",
+                fontStyle: "italic",
                 fontSize: "1.5rem",
+                fontWeight: 400,
                 color: "var(--color-paper)",
               }}
             >
@@ -129,10 +173,15 @@ export default function Navigation() {
           ))}
           <a
             href="mailto:aravind@trmeric.com"
-            className="label-mono"
-            style={{ color: "var(--color-graphite-light)" }}
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: ".68rem",
+              letterSpacing: ".16em",
+              textTransform: "uppercase",
+              color: "var(--color-accent)",
+            }}
           >
-            aravind@trmeric.com
+            aravind@trmeric.com →
           </a>
         </div>
       )}

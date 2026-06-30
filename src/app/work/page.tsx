@@ -1,20 +1,18 @@
 import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
-import SectionIndicator from "@/components/ui/SectionIndicator";
 import { projects } from "@/data/projects";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "All projects — Trmeric, Realm of Elementals, Rippl. Product design, UX research, interaction design.",
+  description: "All projects: Trmeric, Realm of Elementals, Rippl. Product design, UX research, interaction design.",
 };
 
 export default function WorkIndex() {
   return (
     <>
       <Navigation />
-      <SectionIndicator />
 
       <main
         id="main-content"
@@ -40,7 +38,7 @@ export default function WorkIndex() {
           </h1>
           <p style={{ color: "var(--color-graphite-light)", fontSize: "0.9375rem", lineHeight: 1.6 }}>
             Three domains. Professional, academic, and research-led.
-            Each with its own texture — but the same underlying instinct:
+            Each with its own texture, but the same underlying instinct:
             prototype to understand, not to present.
           </p>
         </div>

@@ -1,232 +1,518 @@
+"use client";
+
 import Link from "next/link";
+import { useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
-import SectionIndicator from "@/components/ui/SectionIndicator";
-import PlotInLines from "@/components/ui/PlotInLines";
-import WordReveal from "@/components/ui/WordReveal";
+import CursorGlow from "@/components/ui/CursorGlow";
 import Preloader from "@/components/ui/Preloader";
 import { projects } from "@/data/projects";
-import DomainPortalCard from "@/components/ui/DomainPortalCard";
+import { useParticle } from "@/lib/particleContext";
+import type { Domain } from "@/data/projects";
+
+const DOMAINS: {
+  slug: Domain;
+  headline: string;
+  body: string;
+  label: string;
+  accent: string;
+}[] = [
+  {
+    slug: "realm",
+    headline: "Realm of Elementals",
+    body: "A WebAR butterfly-raising experience. Care, not confrontation, is what changes behaviour.",
+    label: "WebAR · Tata Motors · Graduation thesis",
+    accent: "#d9b46a",
+  },
+  {
+    slug: "rippl",
+    headline: "Rippl",
+    body: "A projector-lamp that fixes distracted reading and turns notetaking into a two-way interaction.",
+    label: "Interaction Design · Physical Computing",
+    accent: "#4FA8A0",
+  },
+  {
+    slug: "trmeric",
+    headline: "Trmeric",
+    body: "23 surfaces. One AI-native enterprise platform. Designed and built as sole designer on the founding team.",
+    label: "Enterprise SaaS · AI Design · Founding Team",
+    accent: "#FFA426",
+  },
+];
+
+function DomainPanel({
+  slug, headline, body, label, accent,
+}: (typeof DOMAINS)[number]) {
+  const { setPreviewDomain } = useParticle();
+  const ref = useRef<HTMLAnchorElement>(null);
+
+  return (
+    <Link
+      ref={ref}
+      href={`/work/${slug}`}
+      onMouseEnter={() => setPreviewDomain(slug)}
+      onMouseLeave={() => setPreviewDomain(null)}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: "2.5rem 2rem 2.5rem",
+        borderRight: "1px solid var(--line)",
+        position: "relative",
+        overflow: "hidden",
+        minHeight: "100%",
+        transition: "background 0.5s cubic-bezier(.22,1,.36,1), border-color 0.5s cubic-bezier(.22,1,.36,1)",
+        cursor: "none",
+        "--panel-accent": accent,
+      } as React.CSSProperties}
+      className="domain-panel group"
+    >
+      {/* Corner accent — top left */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: "1.5rem",
+          left: "1.5rem",
+          width: 18,
+          height: 18,
+          borderTop: `1px solid ${accent}`,
+          borderLeft: `1px solid ${accent}`,
+          opacity: 0.5,
+          transition: "opacity 0.4s ease, width 0.4s ease, height 0.4s ease",
+        }}
+        className="panel-corner"
+      />
+      {/* Corner accent — bottom right */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: "1.5rem",
+          right: "1.5rem",
+          width: 18,
+          height: 18,
+          borderBottom: `1px solid ${accent}`,
+          borderRight: `1px solid ${accent}`,
+          opacity: 0.5,
+        }}
+      />
+
+      {/* Top: domain name */}
+      <div>
+        <div aria-hidden="true" style={{ height: "3rem" }} />
+
+        {/* Domain name — oversized */}
+        <h2
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 400,
+            fontSize: "clamp(2rem, 4.5vw, 4rem)",
+            lineHeight: 1.0,
+            letterSpacing: "-.02em",
+            color: "var(--color-paper)",
+            marginBottom: "1.4rem",
+          }}
+        >
+          {headline}
+        </h2>
+
+        <p
+          className="panel-body-text"
+          style={{
+            fontFamily: "var(--font-body)",
+            fontSize: ".875rem",
+            color: "var(--color-graphite-light)",
+            lineHeight: 1.65,
+            maxWidth: "26ch",
+            transition: "color 0.4s ease",
+          }}
+        >
+          {body}
+        </p>
+      </div>
+
+      {/* Bottom: label + CTA */}
+      <div>
+        <div
+          className="panel-divider"
+          style={{
+            height: "1px",
+            background: "var(--line)",
+            marginBottom: "1.2rem",
+            transition: "background 0.4s ease",
+          }}
+        />
+        <span
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: ".52rem",
+            letterSpacing: ".18em",
+            textTransform: "uppercase",
+            color: "var(--color-graphite-light)",
+            display: "block",
+            marginBottom: ".8rem",
+            opacity: 0.6,
+          }}
+        >
+          {label}
+        </span>
+        <span
+          className="panel-enter"
+          style={{
+            fontFamily: "var(--font-mono)",
+            fontSize: ".62rem",
+            letterSpacing: ".16em",
+            textTransform: "uppercase",
+            color: accent,
+            opacity: 0.8,
+            transition: "opacity 0.3s ease, transform 0.3s cubic-bezier(.22,1,.36,1)",
+            display: "inline-block",
+          }}
+        >
+          Enter →
+        </span>
+      </div>
+
+      {/* Hover fill — full-panel wash, not just a faint bottom glow */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: 0,
+          background: `linear-gradient(180deg, ${accent}1f 0%, ${accent}0c 40%, transparent 75%)`,
+          opacity: 0,
+          transition: "opacity 0.45s cubic-bezier(.22,1,.36,1)",
+          pointerEvents: "none",
+        }}
+        className="panel-glow"
+      />
+    </Link>
+  );
+}
 
 export default function Home() {
   return (
     <>
       <Preloader />
+      <CursorGlow />
       <Navigation />
-      <SectionIndicator />
 
-      <main id="main-content">
-        {/* PLANE 0: Hero */}
+      <main id="main-content" style={{ cursor: "none" }}>
+
+        {/* ═══════════════════════════════════════════════
+            HERO — full viewport, massive type
+        ═══════════════════════════════════════════════ */}
         <section
-          className="relative min-h-screen flex flex-col justify-center overflow-hidden"
-          style={{ padding: "8rem var(--spacing-page) 6rem" }}
+          style={{
+            height: "100dvh",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            padding: "0 var(--pad) 3.5rem",
+            position: "relative",
+            overflow: "hidden",
+          }}
         >
-          {/* Datum line */}
+          {/* Datum line — horizontal hairline across the mid-point */}
           <div
-            className="absolute left-0 right-0"
             aria-hidden="true"
             style={{
+              position: "absolute",
               top: "50%",
+              left: 0,
+              right: 0,
               height: "1px",
-              background:
-                "linear-gradient(90deg, transparent, color-mix(in srgb, #3A352E 40%, transparent) 20%, color-mix(in srgb, #3A352E 40%, transparent) 80%, transparent)",
+              background: "var(--line)",
+              opacity: 0.4,
             }}
           />
 
-          <div className="relative z-10 max-w-4xl">
-            <PlotInLines delay={0}>
-              <span className="label-mono mb-8 block" style={{ color: "#4A453E" }}>
-                PLANE 00 · FACADE · THRESHOLD
-              </span>
-            </PlotInLines>
+          {/* Vertical rule — right edge */}
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              right: "var(--pad)",
+              width: "1px",
+              background: "var(--line)",
+              opacity: 0.25,
+            }}
+          />
 
-            {/* Word-by-word hero headline — three visual lines */}
-            <div
-              className="display-serif mb-6"
+          {/* The headline — oversized, architectural */}
+          <div style={{ position: "relative", zIndex: 2 }}>
+            <h1
               style={{
                 fontFamily: "var(--font-display)",
-                fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
                 fontWeight: 300,
-                lineHeight: 1.05,
-                letterSpacing: "-0.02em",
+                lineHeight: 0.94,
+                letterSpacing: "-.025em",
+                marginBottom: "2.5rem",
               }}
             >
-              <WordReveal
-                as="span"
-                delay={300}
-                stagger={65}
-                style={{ display: "block", color: "var(--color-paper)" }}
-              >
-                Architect by training.
-              </WordReveal>
-              <WordReveal
-                as="em"
-                delay={600}
-                stagger={65}
-                style={{ display: "block", fontStyle: "italic", color: "var(--color-paper)" }}
-              >
-                Designer by practice.
-              </WordReveal>
-              <WordReveal
-                as="span"
-                delay={850}
-                stagger={55}
-                style={{ display: "block", color: "var(--color-graphite-light)", fontWeight: 300 }}
-              >
-                I build the thing to understand the thing.
-              </WordReveal>
-            </div>
-
-            <PlotInLines delay={1200}>
-              <p
-                className="mb-10"
+              {/* Line 1 */}
+              <span
                 style={{
-                  fontSize: "1.0625rem",
-                  color: "var(--color-graphite-light)",
-                  maxWidth: "36rem",
-                  lineHeight: 1.6,
+                  display: "block",
+                  fontSize: "clamp(3.5rem, 10.5vw, 9.5rem)",
+                  color: "var(--color-paper)",
                 }}
               >
-                Senior Product Designer & UX Researcher{" "}
-                <span style={{ color: "#4A453E" }}>·</span>{" "}
-                <span style={{ color: "var(--color-paper)" }}>
-                  M.Des New Media Design, NID Gandhinagar
-                </span>
-              </p>
-            </PlotInLines>
+                Architect
+              </span>
+              {/* Line 2 — italic, shifted right for rhythm */}
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "clamp(3.5rem, 10.5vw, 9.5rem)",
+                  fontStyle: "italic",
+                  color: "var(--color-accent)",
+                  paddingLeft: "clamp(1.5rem, 6vw, 6rem)",
+                }}
+              >
+                by practice.
+              </span>
+              {/* Line 3 — smaller, muted */}
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "clamp(1.1rem, 2.8vw, 2.6rem)",
+                  color: "var(--color-graphite-light)",
+                  fontStyle: "normal",
+                  marginTop: "1.5rem",
+                  fontWeight: 300,
+                  letterSpacing: "-.01em",
+                }}
+              >
+                I build the thing to understand the thing.
+              </span>
+            </h1>
 
-            <PlotInLines delay={1400}>
-              <div className="flex flex-wrap items-center gap-4">
-                <Link
-                  href="/work"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded transition-all duration-300"
-                  style={{
-                    background: "var(--color-paper)",
-                    color: "var(--color-ink)",
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.75rem",
-                    letterSpacing: "0.06em",
-                    fontWeight: 500,
-                  }}
-                >
-                  View work →
-                </Link>
-                <a
-                  href="#portals"
-                  className="label-mono px-5 py-3 rounded transition-all duration-300"
-                  style={{
-                    color: "var(--color-graphite-light)",
-                    border: "1px solid #3A352E",
-                  }}
-                >
-                  Explore domains ↓
-                </a>
-              </div>
-            </PlotInLines>
+            {/* Meta strip */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "2rem",
+                paddingTop: "1.5rem",
+                borderTop: "1px solid var(--line)",
+                flexWrap: "wrap",
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: ".6rem",
+                  letterSpacing: ".2em",
+                  textTransform: "uppercase",
+                  color: "var(--color-graphite-light)",
+                  opacity: 0.6,
+                }}
+              >
+                Product Designer & UX Researcher
+              </span>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: ".6rem",
+                  letterSpacing: ".2em",
+                  textTransform: "uppercase",
+                  color: "var(--color-graphite-light)",
+                  opacity: 0.6,
+                }}
+              >
+                M.Des New Media Design · NID Gandhinagar
+              </span>
+            </div>
           </div>
 
-          {/* Scroll indicator */}
+          {/* Scroll cue */}
           <div
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             aria-hidden="true"
+            style={{
+              position: "absolute",
+              bottom: "2rem",
+              right: "var(--pad)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: ".5rem",
+            }}
           >
             <div
-              className="w-px animate-pulse"
               style={{
-                height: 40,
-                background:
-                  "linear-gradient(to bottom, color-mix(in srgb, #6B6157 60%, transparent), transparent)",
+                width: "1px",
+                height: "48px",
+                background: "linear-gradient(to bottom, var(--color-accent), transparent)",
+                opacity: 0.5,
               }}
             />
-            <span className="label-mono" style={{ fontSize: "0.5rem", color: "#3A352E" }}>
-              MOVE INWARD
+            <span
+              style={{
+                fontFamily: "var(--font-mono)",
+                fontSize: ".45rem",
+                letterSpacing: ".2em",
+                textTransform: "uppercase",
+                color: "var(--color-graphite-light)",
+                writingMode: "vertical-rl",
+                opacity: 0.4,
+              }}
+            >
+              Scroll
             </span>
           </div>
         </section>
 
-        {/* PLANE 1: Domain portals */}
-        <section
-          id="portals"
-          style={{ padding: "6rem var(--spacing-page)", position: "relative" }}
-        >
-          <div className="mb-12 flex items-center gap-6">
-            <span className="label-mono" style={{ color: "#3A352E" }}>
-              PLANE 01 · DOMAINS · PORTALS
-            </span>
-            <div
-              style={{
-                flex: 1,
-                height: "1px",
-                background:
-                  "linear-gradient(90deg, color-mix(in srgb, #3A352E 40%, transparent), transparent)",
-              }}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {projects.map((project, i) => (
-              <DomainPortalCard key={project.slug} project={project} index={i} />
-            ))}
-          </div>
-        </section>
-
-        {/* Currently section */}
+        {/* ═══════════════════════════════════════════════
+            DOMAINS — three full-height panels
+        ═══════════════════════════════════════════════ */}
         <section
           style={{
-            padding: "6rem var(--spacing-page)",
-            borderTop: "1px solid color-mix(in srgb, #3A352E 30%, transparent)",
+            height: "100dvh",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            borderTop: "1px solid var(--line)",
+            position: "relative",
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl">
+          {DOMAINS.map((domain) => (
+            <DomainPanel key={domain.slug} {...domain} />
+          ))}
+        </section>
+
+        {/* ═══════════════════════════════════════════════
+            ABOUT — three-column editorial strip
+        ═══════════════════════════════════════════════ */}
+        <section
+          style={{
+            padding: "5rem var(--pad)",
+            borderTop: "1px solid var(--line)",
+          }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "3rem",
+              maxWidth: "960px",
+            }}
+          >
             <div>
-              <span className="label-mono block mb-3" style={{ color: "#4A453E" }}>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: ".56rem",
+                  letterSpacing: ".22em",
+                  textTransform: "uppercase",
+                  color: "var(--color-accent)",
+                  display: "block",
+                  marginBottom: ".8rem",
+                  opacity: 0.7,
+                }}
+              >
                 Currently
               </span>
-              <p style={{ color: "var(--color-graphite-light)", fontSize: "0.9375rem", lineHeight: 1.6 }}>
-                Senior Product Designer at{" "}
-                <span style={{ color: "var(--color-trmeric)" }}>Trmeric</span>.
-                <br />
+              <p
+                style={{
+                  fontSize: ".9rem",
+                  color: "var(--color-graphite-light)",
+                  lineHeight: 1.7,
+                }}
+              >
+                Senior Product Designer at Trmeric.
                 M.Des New Media Design, NID Gandhinagar (2026).
               </p>
             </div>
+
             <div>
-              <span className="label-mono block mb-3" style={{ color: "#4A453E" }}>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: ".56rem",
+                  letterSpacing: ".22em",
+                  textTransform: "uppercase",
+                  color: "var(--color-accent)",
+                  display: "block",
+                  marginBottom: ".8rem",
+                  opacity: 0.7,
+                }}
+              >
                 Background
               </span>
-              <p style={{ color: "var(--color-graphite-light)", fontSize: "0.9375rem", lineHeight: 1.6 }}>
-                B.Arch from SPA Vijayawada. Six years of architecture taught me to
-                hold a system in my head at full scale while still caring about the
-                door handle.
+              <p
+                style={{
+                  fontSize: ".9rem",
+                  color: "var(--color-graphite-light)",
+                  lineHeight: 1.7,
+                }}
+              >
+                B.Arch, SPA Vijayawada. Six years of
+                architecture taught me to hold a system at full
+                scale while still caring about the door handle.
               </p>
             </div>
+
             <div>
-              <span className="label-mono block mb-3" style={{ color: "#4A453E" }}>
+              <span
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: ".56rem",
+                  letterSpacing: ".22em",
+                  textTransform: "uppercase",
+                  color: "var(--color-accent)",
+                  display: "block",
+                  marginBottom: ".8rem",
+                  opacity: 0.7,
+                }}
+              >
                 Reach
               </span>
-              <div className="flex flex-col gap-2">
-                <a
-                  href="mailto:aravind@trmeric.com"
-                  className="label-mono transition-colors hover:text-[--color-paper]"
-                  style={{ color: "var(--color-graphite-light)" }}
-                >
-                  aravind@trmeric.com →
-                </a>
-                <a
-                  href="https://linkedin.com/in/aravindj"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="label-mono transition-colors hover:text-[--color-paper]"
-                  style={{ color: "var(--color-graphite-light)" }}
-                >
-                  LinkedIn →
-                </a>
+              <div style={{ display: "flex", flexDirection: "column", gap: ".6rem" }}>
+                {[
+                  { label: "aravind@trmeric.com →", href: "mailto:aravind@trmeric.com" },
+                  { label: "LinkedIn →", href: "https://linkedin.com/in/aravindj" },
+                ].map(({ label, href }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    target={href.startsWith("http") ? "_blank" : undefined}
+                    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: ".6rem",
+                      letterSpacing: ".14em",
+                      textTransform: "uppercase",
+                      color: "var(--color-graphite-light)",
+                    }}
+                  >
+                    {label}
+                  </a>
+                ))}
               </div>
             </div>
           </div>
         </section>
+
       </main>
 
       <Footer />
+
+      {/* Panel hover styles */}
+      <style>{`
+        .domain-panel { border-right-color: var(--line); }
+        .domain-panel:hover { border-right-color: var(--panel-accent); }
+        .domain-panel:hover .panel-glow { opacity: 1 !important; }
+        .domain-panel:hover .panel-corner { opacity: 1 !important; width: 28px !important; height: 28px !important; }
+        .domain-panel:hover .panel-divider { background: var(--panel-accent) !important; opacity: 0.6; }
+        .domain-panel:hover .panel-body-text { color: var(--color-paper) !important; }
+        .domain-panel:hover .panel-enter { opacity: 1 !important; transform: translateX(4px); }
+        @media (max-width: 768px) {
+          .domain-panel { border-right: none !important; border-bottom: 1px solid var(--line); }
+        }
+      `}</style>
     </>
   );
 }

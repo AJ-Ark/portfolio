@@ -42,7 +42,8 @@ export default function WordReveal({
   const lines = children.split("\n");
 
   return (
-    <Tag ref={ref as React.Ref<any>} className={className} style={style} aria-label={children}>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Tag is a dynamic intrinsic element, its ref type varies per tag
+    <Tag ref={ref as any} className={className} style={style} aria-label={children}>
       {lines.map((line, li) => {
         const words = line.split(/(\s+)/);
         let wordIndex = lines

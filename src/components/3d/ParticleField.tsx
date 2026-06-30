@@ -11,22 +11,35 @@ interface ParticleFieldProps {
 
 const PARTICLE_COUNT = 5000;
 
-// ─── Per-particle seed (stable across renders) ───
+/* ── Module-level cursor — updated on window, never causes React re-renders ── */
+const cursor = { x: 0, y: 0 };
+if (typeof window !== "undefined") {
+  window.addEventListener(
+    "mousemove",
+    (e) => {
+      cursor.x = (e.clientX / window.innerWidth) * 2 - 1;
+      cursor.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    },
+    { passive: true }
+  );
+}
+
+/* ── Seeds ── */
 function makeSeeds(count: number): Float32Array {
   const s = new Float32Array(count * 3);
   for (let i = 0; i < count; i++) {
-    s[i * 3] = Math.random();
+    s[i * 3]     = Math.random();
     s[i * 3 + 1] = Math.random();
     s[i * 3 + 2] = Math.random();
   }
   return s;
 }
 
-// ─── Target position calculators ───
+/* ── Target shapes ── */
 function rippleTarget(i: number, seed: Float32Array, t: number): [number, number, number] {
-  const rings = 14;
-  const ring = Math.floor(i / (PARTICLE_COUNT / rings));
-  const angle = (i / (PARTICLE_COUNT / rings)) * Math.PI * 2 + t * 0.08;
+  const rings  = 14;
+  const ring   = Math.floor(i / (PARTICLE_COUNT / rings));
+  const angle  = (i / (PARTICLE_COUNT / rings)) * Math.PI * 2 + t * 0.08;
   const radius = (ring + 1) * 0.55 + Math.sin(t * 0.4 + ring * 0.5) * 0.25;
   const scatter = (seed[i * 3] - 0.5) * 0.5;
   return [
@@ -36,18 +49,52 @@ function rippleTarget(i: number, seed: Float32Array, t: number): [number, number
   ];
 }
 
+/* Butterfly silhouette: two wing lobes (forewing + hindwing), mirrored
+   left/right, plus a thin body down the spine. Particles fill the wing
+   area (not just trace an outline) so the shape reads clearly at
+   particle density, with a slow flutter for life. Scaled up to match
+   the visual footprint of the ripple and lattice domains. */
+const WING_SCALE = 1.7;
+
 function organicTarget(i: number, seed: Float32Array, t: number): [number, number, number] {
-  const angle = (i / PARTICLE_COUNT) * Math.PI * 4;
-  const t2 = i / PARTICLE_COUNT;
-  // Butterfly wing silhouette (parametric)
-  const r = Math.pow(Math.abs(Math.cos(angle * 2)), 0.4) * 3.2;
-  const drift = Math.sin(t * 0.25 + seed[i * 3] * 6) * 0.6;
-  const breathe = Math.sin(t * 0.5 + seed[i * 3 + 1] * 4) * 0.2;
-  return [
-    Math.cos(angle) * r + drift,
-    Math.sin(angle) * r * 0.55 + breathe + (seed[i * 3 + 2] - 0.5) * 0.4,
-    (seed[i * 3] - 0.5) * 2.5 + Math.sin(t * 0.2 + t2 * 6) * 0.3,
-  ];
+  const s0 = seed[i * 3];
+  const s1 = seed[i * 3 + 1];
+  const s2 = seed[i * 3 + 2];
+
+  /* ~3.5% of particles form the body/spine */
+  if (s0 < 0.035) {
+    const along  = (s1 - 0.5) * 2;
+    const bodyY  = along * 1.7 * WING_SCALE;
+    const wiggle = Math.sin(t * 0.6 + s2 * 3) * 0.03 * WING_SCALE;
+    return [wiggle, bodyY, (s2 - 0.5) * 0.12];
+  }
+
+  const side       = i % 2 === 0 ? 1 : -1;
+  const isForewing = s1 < 0.62; // larger upper wing vs smaller lower (hind) wing
+
+  const rad = Math.sqrt((s0 * 37.13) % 1); // decorrelated, area-uniform radius
+  const ang = s2 * Math.PI * 2;
+
+  const cx  = isForewing ? 1.3 : 0.9;
+  const cy  = isForewing ? 0.8 : -0.75;
+  const rx  = isForewing ? 1.5 : 1.0;
+  const ry  = isForewing ? 1.1 : 0.9;
+  const rot = isForewing ? -0.3 : 0.3;
+
+  const ex = Math.cos(ang) * rad * rx;
+  const ey = Math.sin(ang) * rad * ry;
+  const rc = Math.cos(rot), rs = Math.sin(rot);
+  let wx = ex * rc - ey * rs + cx;
+  const wy = ey * rc + ex * rs + cy;
+
+  /* Slow flutter: wings breathe in/out about the body, like a gentle flap */
+  const flutter = 1 + Math.sin(t * 1.0 + (isForewing ? 0 : 1.4)) * 0.06;
+  wx *= flutter;
+
+  const drift  = Math.sin(t * 0.3 + s0 * 6) * 0.05;
+  const depthZ = (s2 - 0.5) * 1.0 + Math.sin(t * 0.2 + s1 * 6) * 0.15;
+
+  return [side * (wx + drift) * WING_SCALE, wy * WING_SCALE, depthZ];
 }
 
 function latticeTarget(i: number, seed: Float32Array, t: number): [number, number, number] {
@@ -55,19 +102,19 @@ function latticeTarget(i: number, seed: Float32Array, t: number): [number, numbe
   const gx = (i % gridSize) - gridSize * 0.5;
   const gy = (Math.floor(i / gridSize) % gridSize) - gridSize * 0.5;
   const gz = Math.floor(i / (gridSize * gridSize)) - gridSize * 0.5;
-  // Data-flow pulse along X axis
   const flow = Math.sin(t * 0.7 + gx * 0.4 + gy * 0.2) * 0.12;
   return [gx * 0.55 + flow, gy * 0.55 + flow * 0.5, gz * 0.5];
 }
 
 function idleTarget(i: number, seed: Float32Array, t: number): [number, number, number] {
-  // Fibonacci sphere — slow drift
-  const phi = Math.acos(1 - (2 * (i + 0.5)) / PARTICLE_COUNT);
+  const phi   = Math.acos(1 - (2 * (i + 0.5)) / PARTICLE_COUNT);
   const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-  const r = 3.8 + Math.sin(t * 0.15 + seed[i * 3] * 4) * 0.4;
+  /* Larger radius so the resting field reaches toward the edges of the
+     viewport instead of reading as a small, timid cluster mid-screen. */
+  const r     = 6.8 + Math.sin(t * 0.15 + seed[i * 3] * 4) * 0.6;
   return [
     r * Math.sin(phi) * Math.cos(theta + t * 0.04),
-    r * Math.cos(phi) * 0.55,
+    r * Math.cos(phi) * 0.62,
     r * Math.sin(phi) * Math.sin(theta + t * 0.04),
   ];
 }
@@ -78,17 +125,18 @@ function getTargetPosition(
   seed: Float32Array,
   t: number
 ): [number, number, number] {
-  if (domain === "rippl") return rippleTarget(i, seed, t);
-  if (domain === "realm") return organicTarget(i, seed, t);
+  if (domain === "rippl")   return rippleTarget(i, seed, t);
+  if (domain === "realm")   return organicTarget(i, seed, t);
   if (domain === "trmeric") return latticeTarget(i, seed, t);
   return idleTarget(i, seed, t);
 }
 
+/* ── Correct ROE accent colors ── */
 const DOMAIN_COLORS: Record<string, THREE.Color> = {
-  rippl: new THREE.Color("#78B9C5"),
-  realm: new THREE.Color("#4A9E8E"),
-  trmeric: new THREE.Color("#FFA426"),
-  idle: new THREE.Color("#4A453E"),
+  rippl:   new THREE.Color("#4FA8A0"),   /* muted teal */
+  realm:   new THREE.Color("#d9b46a"),   /* gold         */
+  trmeric: new THREE.Color("#FFA426"),   /* amber        */
+  idle:    new THREE.Color("#7a6e58"),   /* warm graphite, brightened for presence */
 };
 
 function getDomainColor(domain: Domain | null): THREE.Color {
@@ -96,13 +144,14 @@ function getDomainColor(domain: Domain | null): THREE.Color {
 }
 
 export default function ParticleField({ domain = null }: ParticleFieldProps) {
-  const points = useRef<THREE.Points>(null!);
+  const points  = useRef<THREE.Points>(null!);
   const posAttr = useRef<THREE.BufferAttribute>(null!);
   const timeRef = useRef(0);
   const prevDomain = useRef<Domain | null>(domain);
-  const morphRef = useRef(1); // 0 = prev, 1 = current
+  const morphRef   = useRef(1);
+  const domainRef  = useRef<Domain | null>(domain);
 
-  const { size } = useThree();
+  const { size, camera } = useThree();
 
   const seeds = useMemo(() => makeSeeds(PARTICLE_COUNT), []);
 
@@ -110,19 +159,16 @@ export default function ParticleField({ domain = null }: ParticleFieldProps) {
     const pos = new Float32Array(PARTICLE_COUNT * 3);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const [x, y, z] = idleTarget(i, seeds, 0);
-      pos[i * 3] = x;
-      pos[i * 3 + 1] = y;
-      pos[i * 3 + 2] = z;
+      pos[i * 3] = x; pos[i * 3 + 1] = y; pos[i * 3 + 2] = z;
     }
     return pos;
   }, [seeds]);
 
-  // Kick off morph when domain changes
-  const domainRef = useRef<Domain | null>(domain);
+  /* Domain change → reset morph */
   if (domain !== domainRef.current) {
     prevDomain.current = domainRef.current;
-    domainRef.current = domain;
-    morphRef.current = 0; // reset morph progress
+    domainRef.current  = domain;
+    morphRef.current   = 0;
   }
 
   useFrame((_, delta) => {
@@ -132,49 +178,75 @@ export default function ParticleField({ domain = null }: ParticleFieldProps) {
     if (!posAttr.current) return;
     const pos = posAttr.current.array as Float32Array;
 
-    // Advance morph (0→1 over ~1.2s with ease)
-    if (morphRef.current < 1) {
-      morphRef.current = Math.min(1, morphRef.current + delta / 1.2);
-    }
-    const morphEased = morphRef.current < 1
-      ? 1 - Math.pow(1 - morphRef.current, 3) // cubic ease-out
-      : 1;
+    /* Morph progress */
+    if (morphRef.current < 1) morphRef.current = Math.min(1, morphRef.current + delta / 1.2);
+    const morphEased = morphRef.current < 1 ? 1 - Math.pow(1 - morphRef.current, 3) : 1;
 
-    // Per-particle: lerp between prev and current target
+    /* Cursor → world space (project onto z=0 plane) */
+    const cam = camera as THREE.PerspectiveCamera;
+    const fovRad  = (cam.fov * Math.PI) / 180;
+    const halfH   = cam.position.z * Math.tan(fovRad / 2);
+    const halfW   = halfH * (size.width / size.height);
+    const curWX   = cursor.x * halfW;
+    const curWY   = cursor.y * halfH;
+    const repelRadius = 1.6;
+    const repelStr    = 0.28;
+
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const [tx, ty, tz] = getTargetPosition(domainRef.current, i, seeds, t);
+      const [tx, ty, tz] = getTargetPosition(domainRef.current,  i, seeds, t);
       const [px, py, pz] = getTargetPosition(prevDomain.current, i, seeds, t);
 
       const cx = pos[i * 3];
       const cy = pos[i * 3 + 1];
       const cz = pos[i * 3 + 2];
 
-      // Interpolated target (cross-fade between two behaviours)
+      /* Lerped target */
       const itx = px + (tx - px) * morphEased;
       const ity = py + (ty - py) * morphEased;
       const itz = pz + (tz - pz) * morphEased;
 
-      // Smooth approach to interpolated target
-      const lerpSpeed = 0.05;
-      pos[i * 3] = cx + (itx - cx) * lerpSpeed;
-      pos[i * 3 + 1] = cy + (ity - cy) * lerpSpeed;
-      pos[i * 3 + 2] = cz + (itz - cz) * lerpSpeed;
+      /* Smooth approach */
+      let nx = cx + (itx - cx) * 0.05;
+      let ny = cy + (ity - cy) * 0.05;
+      const nz = cz + (itz - cz) * 0.05;
+
+      /* Cursor repulsion (XY only) */
+      const dx   = nx - curWX;
+      const dy   = ny - curWY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < repelRadius && dist > 0.001) {
+        const strength = ((repelRadius - dist) / repelRadius) * repelStr;
+        nx += (dx / dist) * strength;
+        ny += (dy / dist) * strength;
+      }
+
+      pos[i * 3]     = nx;
+      pos[i * 3 + 1] = ny;
+      pos[i * 3 + 2] = nz;
     }
 
     posAttr.current.needsUpdate = true;
 
-    // Slow rotation — axis changes per domain
+    /* Rotation */
     if (points.current) {
-      points.current.rotation.y += delta * (domainRef.current === "trmeric" ? 0.06 : 0.03);
-      points.current.rotation.x = Math.sin(t * 0.08) * 0.06;
+      if (domainRef.current === "realm") {
+        // The butterfly silhouette is flat (built in the XY plane) — free
+        // spin would swing it edge-on to the camera at certain angles and
+        // read as two odd slivers instead of wings. Ease back to face-on
+        // instead of accumulating rotation, with just a faint tilt for life.
+        points.current.rotation.y += (0 - points.current.rotation.y) * 0.08;
+        points.current.rotation.x += (Math.sin(t * 0.2) * 0.025 - points.current.rotation.x) * 0.08;
+      } else {
+        points.current.rotation.y += delta * (domainRef.current === "trmeric" ? 0.06 : 0.025);
+        points.current.rotation.x  = Math.sin(t * 0.08) * 0.06;
+      }
     }
 
-    // Color lerp
+    /* Color + opacity */
     const mat = points.current?.material as THREE.PointsMaterial;
     if (mat) {
-      const target = getDomainColor(domainRef.current);
-      mat.color.lerp(target, 0.025);
-      mat.opacity = 0.55 + Math.sin(t * 0.4) * 0.08;
+      mat.color.lerp(getDomainColor(domainRef.current), 0.03);
+      mat.opacity = 0.65 + Math.sin(t * 0.35) * 0.1;
     }
   });
 
@@ -189,10 +261,10 @@ export default function ParticleField({ domain = null }: ParticleFieldProps) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={size.width < 768 ? 0.022 : 0.013}
+        size={size.width < 768 ? 0.026 : 0.016}
         color={getDomainColor(domain)}
         transparent
-        opacity={0.55}
+        opacity={0.65}
         sizeAttenuation
         depthWrite={false}
       />

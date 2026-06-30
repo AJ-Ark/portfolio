@@ -1,7 +1,37 @@
 node_modules/
+.next/
+.vercel/
+out/
+dist/
+*.tsbuildinfo
+next-env.d.ts
 .DS_Store
 Thumbs.db
 *.log
 .vscode/
 
 .vercel
+
+# Claude Code session/tooling config, not project content
+.claude/
+
+# Raw prototype source + scratch exports — the actual deployed copies
+# live under public/. These folders are large (200MB+ of raw video/
+# screenshot exports) and not needed to build or run the site.
+realm/
+rippl/
+trmeric/
+shared/
+Logo loaded/
+_source/
+
+# Loose scratch docs / superseded entry point from the pre-Next.js site
+index.html
+EXPERIENCE-BUILD-PROMPT.md
+portfolio-website-build-prompt*.md
+unified-portfolio-build-prompt.md
+trmeric-portfolio-research*.html
+trmericLogo.png
+trmericLogo.svg
+aj_LOGO_dark.png
+aj_LOGO_light.png

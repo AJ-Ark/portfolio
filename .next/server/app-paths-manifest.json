@@ -1,9 +1,0 @@
-{
-  "/about/page": "app/about/page.js",
-  "/page": "app/page.js",
-  "/work/page": "app/work/page.js",
-  "/work/realm/page": "app/work/realm/page.js",
-  "/work/rippl/page": "app/work/rippl/page.js",
-  "/work/trmeric/[slug]/page": "app/work/trmeric/[slug]/page.js",
-  "/work/trmeric/page": "app/work/trmeric/page.js"
-}
