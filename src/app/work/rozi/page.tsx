@@ -267,6 +267,70 @@ export default function RoziPage() {
         </section>
 
         {/* ═══════════════════════════════════════
+            02.5 · HOW MIGHT WE
+        ═══════════════════════════════════════ */}
+        <section style={{ borderTop: `1px solid ${LINEW}`, background: GND }}>
+          <div style={{ padding: "8rem var(--pad)" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+
+              {/* Header */}
+              <div style={{ marginBottom: "5.5rem" }}>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.7, display: "block", marginBottom: "1.4rem" }}>Solution</span>
+                <h2 style={{
+                  fontFamily: "var(--font-display)", fontWeight: 400,
+                  fontSize: "clamp(1.5rem, 3vw, 2.6rem)", lineHeight: 1.1,
+                  letterSpacing: "-.025em", color: PAP,
+                }}>
+                  How might we solve our{" "}
+                  <em style={{ fontStyle: "italic", color: ACC }}>user group&apos;s problem?</em>
+                </h2>
+              </div>
+
+              {/* Two-column: ghost framing question left, HMW cards right */}
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
+
+                {/* Ghost text */}
+                <div>
+                  <p style={{
+                    fontFamily: "var(--font-display)", fontWeight: 700,
+                    fontSize: "clamp(1.6rem, 2.8vw, 2.5rem)",
+                    color: "rgba(240,232,213,.08)", lineHeight: 1.2,
+                    letterSpacing: "-.01em", userSelect: "none",
+                  }}>
+                    What and how can we design for these socio&#8209;economic groups?
+                  </p>
+                </div>
+
+                {/* Staggered HMW cards */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+                  {([
+                    { q: "How might we create an application that helps them find work without having to ask for it?", filled: true },
+                    { q: "How might we facilitate the user group with the tech they are already familiar with?",       filled: false },
+                    { q: "How might we help this community stay safe when the contractor is no longer their safety net?", filled: true },
+                  ] as { q: string; filled: boolean }[]).map(({ q, filled }, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        padding: "2rem 2.4rem",
+                        borderRadius: "20px",
+                        background: filled ? ACC : GND2,
+                        border: `1.5px solid ${filled ? "transparent" : LINE}`,
+                        color: filled ? PAP : ACCB,
+                        fontSize: ".95rem", fontWeight: 700, lineHeight: 1.45,
+                        marginLeft: i % 2 === 1 ? "1.5rem" : "0",
+                      }}
+                    >
+                      {q}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════════
             03 · PLATFORM OVERVIEW
         ═══════════════════════════════════════ */}
         <section style={{ background: GND2, borderTop: `1px solid ${LINEW}` }}>
@@ -529,70 +593,6 @@ export default function RoziPage() {
 
             <div style={{ background: GND2, border: `1px solid ${LINE}`, borderRadius: "2px", padding: "3.5rem 2.5rem" }}>
               <OpportunityMapSVG />
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════════
-            05.5 · SOLUTION — HOW MIGHT WE
-        ═══════════════════════════════════════ */}
-        <section style={{ borderTop: `1px solid ${LINEW}`, background: GND }}>
-          <div style={{ padding: "8rem var(--pad)" }}>
-            <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-
-              {/* Header */}
-              <div style={{ marginBottom: "5.5rem" }}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.7, display: "block", marginBottom: "1.4rem" }}>Solution</span>
-                <h2 style={{
-                  fontFamily: "var(--font-display)", fontWeight: 400,
-                  fontSize: "clamp(1.5rem, 3vw, 2.6rem)", lineHeight: 1.1,
-                  letterSpacing: "-.025em", color: PAP,
-                }}>
-                  How might we solve our{" "}
-                  <em style={{ fontStyle: "italic", color: ACC }}>user group&apos;s problem?</em>
-                </h2>
-              </div>
-
-              {/* Two-column: ghost framing question left, HMW cards right */}
-              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
-
-                {/* Ghost text */}
-                <div>
-                  <p style={{
-                    fontFamily: "var(--font-display)", fontWeight: 700,
-                    fontSize: "clamp(1.6rem, 2.8vw, 2.5rem)",
-                    color: "rgba(240,232,213,.08)", lineHeight: 1.2,
-                    letterSpacing: "-.01em", userSelect: "none",
-                  }}>
-                    What and how can we design for these socio&#8209;economic groups?
-                  </p>
-                </div>
-
-                {/* Staggered HMW cards */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
-                  {([
-                    { q: "How might we create an application that helps them find work without having to ask for it?", filled: true },
-                    { q: "How might we facilitate the user group with the tech they are already familiar with?",       filled: false },
-                    { q: "How might we help this community stay safe when the contractor is no longer their safety net?", filled: true },
-                  ] as { q: string; filled: boolean }[]).map(({ q, filled }, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        padding: "2rem 2.4rem",
-                        borderRadius: "20px",
-                        background: filled ? ACC : GND2,
-                        border: `1.5px solid ${filled ? "transparent" : LINE}`,
-                        color: filled ? PAP : ACCB,
-                        fontSize: ".95rem", fontWeight: 700, lineHeight: 1.45,
-                        marginLeft: i % 2 === 1 ? "1.5rem" : "0",
-                      }}
-                    >
-                      {q}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
             </div>
           </div>
         </section>

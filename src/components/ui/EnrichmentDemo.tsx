@@ -88,7 +88,7 @@ export default function EnrichmentDemo() {
           disabled={running}
           style={{
             fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase",
-            color: running ? FAINT : "#fff", background: running ? "transparent" : ACC,
+            color: running ? FAINT : "#17150F", background: running ? "transparent" : ACC,
             border: running ? `1px solid ${LINE}` : "none", borderRadius: "4px", padding: ".4rem .8rem",
             cursor: running ? "default" : "pointer",
           }}

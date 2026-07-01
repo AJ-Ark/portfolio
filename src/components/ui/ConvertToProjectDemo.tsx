@@ -91,7 +91,7 @@ export default function ConvertToProjectDemo() {
           onClick={convert}
           style={{
             width: "100%", fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".12em", textTransform: "uppercase",
-            color: phase === "done" ? ACCD : "#fff",
+            color: phase === "done" ? ACCD : "#17150F",
             background: phase === "done" ? "transparent" : phase === "converting" ? FAINT : ACC,
             border: phase === "done" ? `1px solid ${LINA}` : "none",
             borderRadius: "6px", padding: ".75rem", cursor: phase === "converting" ? "default" : "pointer",

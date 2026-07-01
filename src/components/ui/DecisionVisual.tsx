@@ -241,7 +241,7 @@ function GradientViz({ accent }: { accent: string }) {
   return (
     <div style={{ ...boxStyle, padding: "1.2rem 1.1rem", display: "flex", flexDirection: "column", gap: ".8rem" }}>
       <div style={{ display: "flex", alignItems: "center", gap: ".8rem" }}>
-        <span style={{ padding: ".5rem 1rem", borderRadius: 100, background: accent, color: "#fff", fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".06em" }}>
+        <span style={{ padding: ".5rem 1rem", borderRadius: 100, background: accent, color: "#17150F", fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".06em" }}>
           New demand
         </span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".08em", textTransform: "uppercase", color: FAINT }}>
@@ -249,7 +249,7 @@ function GradientViz({ accent }: { accent: string }) {
         </span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: ".8rem" }}>
-        <span style={{ padding: ".5rem 1rem", borderRadius: 100, background: "linear-gradient(135deg, #8b5cf6, #FFA426)", color: "#fff", fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".06em" }}>
+        <span style={{ padding: ".5rem 1rem", borderRadius: 100, background: "linear-gradient(135deg, #8b5cf6, #FFA426)", color: "#17150F", fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".06em" }}>
           Ask Tango
         </span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".08em", textTransform: "uppercase", color: "#8b5cf6" }}>

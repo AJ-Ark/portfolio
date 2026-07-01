@@ -532,7 +532,7 @@ export default async function TrmericSubPage({ params }: Props) {
                   href={`/prototypes/${piece.sandboxSrc}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: "#fff", background: ACC, borderRadius: "4px", padding: ".8rem 1.6rem", display: "inline-flex", alignItems: "center", gap: ".5rem", whiteSpace: "nowrap" }}
+                  style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: INK, background: ACC, borderRadius: "4px", padding: ".8rem 1.6rem", display: "inline-flex", alignItems: "center", gap: ".5rem", whiteSpace: "nowrap" }}
                 >
                   Access the prototype →
                 </a>
@@ -709,7 +709,7 @@ export default async function TrmericSubPage({ params }: Props) {
                   {c.temporalModes && (
                     <>
                       <div style={{ display: "flex", alignItems: "center", gap: ".8rem", marginBottom: ".6rem" }}>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".08em", padding: ".2rem .5rem", borderRadius: "4px", background: ACC, color: "#fff", fontWeight: 700 }}>NEW</span>
+                        <span style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".08em", padding: ".2rem .5rem", borderRadius: "4px", background: ACC, color: INK, fontWeight: 700 }}>NEW</span>
                         <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.05rem", color: INK }}>The missing dimension: temporal state</h4>
                       </div>
                       <p style={{ fontSize: ".84rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>The portfolio is not one view, it's three completely different mental modes. This is absent from every current PPM tool. It's a major design opportunity.</p>
@@ -907,7 +907,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
                   {c.closingQuote && (
                     <div style={{ padding: "1.8rem 2rem", borderRadius: "14px", background: "linear-gradient(135deg, rgba(139,92,246,.05), rgba(255,164,38,.05))", border: "1.5px solid rgba(139,92,246,.18)" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem", fontFamily: "var(--font-mono)", fontSize: ".6rem", fontWeight: 700, letterSpacing: ".06em", color: "#fff", background: "linear-gradient(135deg, #8b5cf6, #FFA426)", padding: ".3rem .8rem", borderRadius: "100px", marginBottom: "1rem" }}>✦ Tango</span>
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem", fontFamily: "var(--font-mono)", fontSize: ".6rem", fontWeight: 700, letterSpacing: ".06em", color: INK, background: "linear-gradient(135deg, #8b5cf6, #FFA426)", padding: ".3rem .8rem", borderRadius: "100px", marginBottom: "1rem" }}>✦ Tango</span>
                       <blockquote style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1.05rem", color: INK, lineHeight: 1.7, maxWidth: "64ch" }}>
                         "{c.closingQuote.quote}"
                       </blockquote>

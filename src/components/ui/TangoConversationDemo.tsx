@@ -109,7 +109,7 @@ export default function TangoConversationDemo() {
               padding: ".6rem .9rem",
               borderRadius: m.from === "you" ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
               background: m.from === "you" ? ACC : BASE2_BG,
-              color: m.from === "you" ? "#fff" : INK,
+              color: m.from === "you" ? "#17150F" : INK,
               fontSize: ".82rem",
               lineHeight: 1.5,
             }}>
@@ -174,7 +174,7 @@ export default function TangoConversationDemo() {
                 ))}
               </div>
             </div>
-            <button onClick={reset} style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: "#fff", background: ACC, border: "none", borderRadius: "4px", padding: ".55rem 1.1rem", cursor: "pointer" }}>
+            <button onClick={reset} style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: "#17150F", background: ACC, border: "none", borderRadius: "4px", padding: ".55rem 1.1rem", cursor: "pointer" }}>
               Run again →
             </button>
           </div>
