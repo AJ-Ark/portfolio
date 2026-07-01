@@ -153,6 +153,20 @@ a     { color: inherit; text-decoration: none; }
   color-scheme: light;
 }
 
+/* ── ROZI — dark / red / social-impact / direct ── */
+[data-domain="rozi"] {
+  --color-ground:         #0c0806;
+  --color-ground-2:       #160d08;
+  --color-paper:          #f0e8d5;
+  --color-graphite:       #3d2a1f;
+  --color-graphite-light: #9a8070;
+  --color-accent:         #C94030;
+  --color-accent-bright:  #E85540;
+  --color-accent-deep:    #8F2218;
+  --line:                 rgba(201, 64, 48, .18);
+  color-scheme: dark;
+}
+
 /* ══════════════════════════════════════════════════════════════════
    TYPE UTILITIES
    ══════════════════════════════════════════════════════════════════ */

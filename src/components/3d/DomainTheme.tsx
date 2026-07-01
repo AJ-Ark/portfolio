@@ -7,6 +7,7 @@ function getDomain(pathname: string): string {
   if (pathname.includes("/realm")) return "realm";
   if (pathname.includes("/rippl")) return "rippl";
   if (pathname.includes("/trmeric")) return "trmeric";
+  if (pathname.includes("/rozi")) return "rozi";
   return "";
 }
 

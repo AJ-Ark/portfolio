@@ -1,4 +1,4 @@
-export type Domain = "rippl" | "realm" | "trmeric";
+export type Domain = "rippl" | "realm" | "trmeric" | "rozi";
 export type ProjectType = "academic" | "professional" | "personal";
 
 export interface ParticleBehaviourProfile {
@@ -55,6 +55,13 @@ export const particleProfiles: Record<Domain, ParticleBehaviourProfile> = {
     accent: "#FFA426",    /* amber — unchanged */
     particleCount: 5000,
     speed: 0.8,
+  },
+  rozi: {
+    id: "rozi",
+    type: "organic",
+    accent: "#C94030",    /* Rozi red — warm, readable on dark */
+    particleCount: 4500,
+    speed: 0.5,
   },
 };
 
@@ -173,6 +180,24 @@ export const projects: Project[] = [
       },
     ],
     coverImage: "/images/trmeric/cover.png",
+  },
+  {
+    slug: "rozi",
+    domain: "rozi",
+    title: "Rozi",
+    oneLiner: "A two-sided labour marketplace that connects India's informal workers directly to employers — no contractor, no wage skimming.",
+    type: "academic",
+    year: "2021",
+    role: "UX Researcher & Service Designer",
+    accent: "#C94030",
+    particleProfile: particleProfiles.rozi,
+    keywords: ["Service Design", "UX Research", "Social Impact", "Inclusive Design", "Mobile"],
+    metrics: [
+      { value: "Top 5", label: "SARVA Designathon 2021" },
+      { value: "24h", label: "Design sprint" },
+      { value: "2-sided", label: "Platform architecture" },
+    ],
+    coverImage: "/images/rozi/hero-phones.png",
   },
 ];
 

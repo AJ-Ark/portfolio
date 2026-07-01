@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "All projects: Trmeric, Realm of Elementals, Rippl. Product design, UX research, interaction design.",
+  description: "All projects: Trmeric, Realm of Elementals, Rippl, Rozi. Product design, UX research, interaction design, service design.",
 };
 
 export default function WorkIndex() {
@@ -37,7 +37,7 @@ export default function WorkIndex() {
             Work
           </h1>
           <p style={{ color: "var(--color-graphite-light)", fontSize: "0.9375rem", lineHeight: 1.6 }}>
-            Three domains. Professional, academic, and research-led.
+            Four projects. Professional, academic, and research-led.
             Each with its own texture, but the same underlying instinct:
             prototype to understand, not to present.
           </p>

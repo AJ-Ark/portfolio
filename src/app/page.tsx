@@ -35,6 +35,13 @@ const DOMAINS: {
     label: "Enterprise SaaS · AI Design · Founding Team",
     accent: "#FFA426",
   },
+  {
+    slug: "rozi",
+    headline: "Rozi",
+    body: "A marketplace for India's 40 crore informal workers. Register, find a job, get paid. The contractor takes nothing.",
+    label: "Service Design · UX Research · SARVA Designathon",
+    accent: "#C94030",
+  },
 ];
 
 export default function Home() {
