@@ -4,6 +4,7 @@ import { useRef, useMemo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { Domain } from "@/data/projects";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface ParticleFieldProps {
   domain?: Domain | null;
@@ -177,20 +178,32 @@ function getTargetPosition(
   return idleTarget(i, seed, t);
 }
 
-/* ── Correct ROE accent colors ── */
-const DOMAIN_COLORS: Record<string, THREE.Color> = {
-  rippl:   new THREE.Color("#4FA8A0"),   /* muted teal   */
-  realm:   new THREE.Color("#d9b46a"),   /* gold         */
-  trmeric: new THREE.Color("#FFA426"),   /* amber        */
-  rozi:    new THREE.Color("#C2745A"),   /* subtle terracotta */
-  idle:    new THREE.Color("#7a6e58"),   /* warm graphite */
+/* ── Particle colors — darker in light mode for contrast ── */
+const DARK_COLORS: Record<string, THREE.Color> = {
+  rippl:   new THREE.Color("#4FA8A0"),
+  realm:   new THREE.Color("#d9b46a"),
+  trmeric: new THREE.Color("#FFA426"),
+  rozi:    new THREE.Color("#C2745A"),
+  idle:    new THREE.Color("#7a6e58"),
+};
+const LIGHT_COLORS: Record<string, THREE.Color> = {
+  rippl:   new THREE.Color("#246660"),
+  realm:   new THREE.Color("#6B5020"),
+  trmeric: new THREE.Color("#B87010"),
+  rozi:    new THREE.Color("#7A2A14"),
+  idle:    new THREE.Color("#3a352E"),
 };
 
-function getDomainColor(domain: Domain | null): THREE.Color {
-  return DOMAIN_COLORS[domain ?? "idle"] ?? DOMAIN_COLORS.idle;
+function getDomainColor(domain: Domain | null, dark: boolean): THREE.Color {
+  const map = dark ? DARK_COLORS : LIGHT_COLORS;
+  return map[domain ?? "idle"] ?? map.idle;
 }
 
 export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFieldProps) {
+  const dark    = useColorScheme();
+  const darkRef = useRef(dark);
+  darkRef.current = dark;
+
   const points  = useRef<THREE.Points>(null!);
   const posAttr = useRef<THREE.BufferAttribute>(null!);
   const timeRef = useRef(0);
@@ -309,8 +322,9 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
     /* Color + opacity */
     const mat = points.current?.material as THREE.PointsMaterial;
     if (mat) {
-      mat.color.lerp(getDomainColor(domainRef.current), 0.03);
-      mat.opacity = 0.65 + Math.sin(t * 0.35) * 0.1;
+      mat.color.lerp(getDomainColor(domainRef.current, darkRef.current), 0.03);
+      const baseOpacity = darkRef.current ? 0.65 : 0.80;
+      mat.opacity = baseOpacity + Math.sin(t * 0.35) * 0.1;
     }
   });
 
@@ -325,10 +339,10 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
         />
       </bufferGeometry>
       <pointsMaterial
-        size={size.width < 768 ? 0.026 : 0.016}
-        color={getDomainColor(domain)}
+        size={size.width < 768 ? 0.038 : 0.024}
+        color={getDomainColor(domain, dark)}
         transparent
-        opacity={0.65}
+        opacity={dark ? 0.65 : 0.80}
         sizeAttenuation
         depthWrite={false}
       />
