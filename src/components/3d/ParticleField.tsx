@@ -16,7 +16,7 @@ interface ParticleFieldProps {
 const PARTICLE_COUNT = 5000;
 
 /* ── Module-level cursor — updated on window, never causes React re-renders ── */
-const cursor = { x: 0, y: 0 };
+const cursor = { x: 0, y: 9 };
 if (typeof window !== "undefined") {
   window.addEventListener(
     "mousemove",
@@ -26,6 +26,18 @@ if (typeof window !== "undefined") {
     },
     { passive: true }
   );
+
+  /* Touch: same NDC mapping — lets fingers scatter particles on mobile */
+  const fromTouch = (e: TouchEvent) => {
+    const t = e.touches[0];
+    if (!t) return;
+    cursor.x = (t.clientX / window.innerWidth)  * 2 - 1;
+    cursor.y = -(t.clientY / window.innerHeight) * 2 + 1;
+  };
+  window.addEventListener("touchstart", fromTouch, { passive: true });
+  window.addEventListener("touchmove",  fromTouch, { passive: true });
+  /* When finger lifts, park the cursor off-screen so repulsion fades out */
+  window.addEventListener("touchend", () => { cursor.x = 9; cursor.y = 9; }, { passive: true });
 }
 
 /* ── Seeds ── */
@@ -252,8 +264,8 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
     const halfW   = halfH * (size.width / size.height);
     const curWX   = cursor.x * halfW;
     const curWY   = cursor.y * halfH;
-    const repelRadius = 1.6;
-    const repelStr    = 0.28;
+    const repelRadius = 1.8;
+    const repelStr    = 0.32;
 
     /* Ease the horizontal offset toward its target and apply it as the
        points object's own position (not baked into particle positions) so
@@ -261,6 +273,18 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
        orbiting around world origin. */
     offsetXRef.current += (offsetXTarget.current - offsetXRef.current) * 0.06;
     if (points.current) points.current.position.x = offsetXRef.current * halfW;
+
+    /* Unproject the screen cursor into the LOCAL space of the points object.
+       The object is Y-rotated, so world-X maps to a mix of local-X and local-Z.
+       Three.js Y-rotation: worldX = localX·cos(a) + localZ·sin(a)
+       Inverse (world → local), given cursor is at world Z = 0:
+         localCurX = curRelX · cos(rotY)
+         localCurZ = curRelX · sin(rotY)
+       This fixes the mirror-image repulsion seen when the formation is mid-spin. */
+    const rotY      = points.current?.rotation.y ?? 0;
+    const curRelX   = curWX - offsetXRef.current * halfW;
+    const localCurX = curRelX * Math.cos(rotY);
+    const localCurZ = curRelX * Math.sin(rotY);
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const [tx, ty, tz] = getTargetPosition(domainRef.current,  i, seeds, t);
@@ -278,18 +302,20 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
       /* Smooth approach */
       let nx = cx + (itx - cx) * 0.05;
       let ny = cy + (ity - cy) * 0.05;
-      const nz = cz + (itz - cz) * 0.05;
+      let nz = cz + (itz - cz) * 0.05;
 
-      /* Cursor repulsion (XY only) — curWX is world space, particle x is
-         local to the (possibly offset) points object, so shift the cursor
-         into local space before comparing. */
-      const dx   = nx - (curWX - offsetXRef.current * halfW);
+      /* Cursor repulsion in local 3-D space — the rotation-corrected cursor
+         coords ensure the void appears at the screen position of the cursor,
+         not at its mirror image due to the Y-spin. */
+      const dx   = nx - localCurX;
       const dy   = ny - curWY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dz   = nz - localCurZ;
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
       if (dist < repelRadius && dist > 0.001) {
         const strength = ((repelRadius - dist) / repelRadius) * repelStr;
         nx += (dx / dist) * strength;
         ny += (dy / dist) * strength;
+        nz += (dz / dist) * strength;
       }
 
       pos[i * 3]     = nx;
