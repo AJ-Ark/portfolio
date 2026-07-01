@@ -12,7 +12,6 @@ interface DomainItem {
   body: string;
   label: string;
   accent: string;
-  coverImage?: string;
 }
 
 const WHEEL_THRESHOLD = 12;       // px of deltaY to count as an intentional tick
@@ -171,7 +170,8 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
     }
     const item = domains[slide - 1];
     if (!item) return;
-    setPreviewDomain(item.slug, CARD_OFFSET_X);
+    const isMobile = typeof window !== "undefined" && window.innerWidth <= 760;
+    setPreviewDomain(item.slug, isMobile ? 0 : CARD_OFFSET_X);
   }, [slide, domains, setPreviewDomain]);
 
   /* After 2 s idle on the hero slide, nudge the first project card up as a
@@ -209,11 +209,10 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
           .reel-spacer { display: none !important; }
           .reel-text {
             max-width: 100% !important;
-            background: transparent !important;
+            background: linear-gradient(to top, #0e0b09 28%, rgba(14,11,9,.55) 48%, transparent 78%) !important;
             justify-content: flex-end !important;
             padding-bottom: 3.5rem !important;
           }
-          .reel-mobile-bg { display: block !important; }
         }
       `}</style>
     </div>
@@ -311,23 +310,6 @@ function ProjectContent({ item }: { item: DomainItem }) {
       className="reel-card"
       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%", pointerEvents: "auto", position: "relative" }}
     >
-      {/* Mobile cover image — hidden on desktop via CSS */}
-      {item.coverImage && (
-        <div
-          className="reel-mobile-bg"
-          aria-hidden="true"
-          style={{
-            display: "none",
-            position: "absolute", inset: 0,
-            backgroundImage: `url(${item.coverImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-          }}
-        >
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #0e0b09 38%, rgba(14,11,9,.72) 65%, rgba(14,11,9,.12) 100%)" }} />
-        </div>
-      )}
-
       <div
         className="reel-text"
         style={{
