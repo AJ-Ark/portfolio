@@ -10,6 +10,9 @@ export default function CursorGlow() {
   const raf     = useRef<number>(0);
 
   useEffect(() => {
+    /* Touch/stylus devices don't have a fine pointer — hide the cursor entirely */
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
     const onMove = (e: MouseEvent) => {
       pos.current = { x: e.clientX, y: e.clientY };
     };
