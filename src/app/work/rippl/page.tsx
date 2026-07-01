@@ -1,27 +1,23 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import WordReveal from "@/components/ui/WordReveal";
 import RipplVideoCard from "@/components/ui/RipplVideoCard";
-import type { Metadata } from "next";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
-export const metadata: Metadata = {
-  title: "Rippl · Notes beyond the page",
-  description:
-    "A projector-table lamp that fights distracted reading and turns notetaking into a two-way interaction. 12-week research-to-hardware-to-interface project at NID.",
-};
-
-/* ── Palette ── */
-const BASE  = "#0d0904";
-const BASE2 = "#130c06";
-const PAPER = "#ece6d6";
-const DIM   = "rgba(236,230,214,.6)";
-const FAINT = "rgba(236,230,214,.28)";
-const ACC   = "#4FA8A0";
-const ACCB  = "#6FC4BC";
-const LINE  = "rgba(79,168,160,.18)";
-const LINEW = "rgba(236,230,214,.1)";
+/* ── Palette — CSS vars so sub-components auto-adapt to dark/light ── */
+const BASE  = "var(--color-ground)";
+const BASE2 = "var(--color-ground-2)";
+const PAPER = "var(--color-paper)";
+const DIM   = "var(--color-dim)";
+const FAINT = "var(--color-faint)";
+const ACC   = "var(--color-accent)";
+const ACCB  = "var(--color-accent-bright)";
+const LINE  = "var(--line)";
+const LINEW = "var(--line-weak)";
 
 /* ── SVG: Before / After reading journey ── */
 function ReadingJourneySVG() {
@@ -80,7 +76,7 @@ function ReadingJourneySVG() {
       ))}
       {nodesB.map((n) => (
         <g key={n.x}>
-          <circle cx={n.x} cy={rowB} r={nodeR} fill={n.sub === "Natural gesture" || n.sub === "Recognition" ? `${ACC}22` : "none"} stroke={n.x === cols[0] ? FAINT : ACC} strokeWidth="1.5" />
+          <circle cx={n.x} cy={rowB} r={nodeR} fill={n.sub === "Natural gesture" || n.sub === "Recognition" ? "color-mix(in srgb, var(--color-accent) 13%, transparent)" : "none"} stroke={n.x === cols[0] ? FAINT : ACC} strokeWidth="1.5" />
           <text x={n.x} y={rowB + 4} fontFamily="var(--font-mono)" fontSize="7.5" fill={n.x === cols[0] ? FAINT : PAPER} textAnchor="middle">{n.label.split(" ")[0]}</text>
           <text x={n.x} y={rowB + 13} fontFamily="var(--font-mono)" fontSize="7.5" fill={n.x === cols[0] ? FAINT : PAPER} textAnchor="middle">{n.label.split(" ")[1] ?? ""}</text>
           <text x={n.x} y={rowB + nodeR + 14} fontFamily="var(--font-mono)" fontSize="7" fill={ACC} textAnchor="middle" opacity="0.8">{n.sub}</text>
@@ -120,7 +116,7 @@ function PipelineSVG() {
           <g key={s.label}>
             {/* Box */}
             <rect x={x} y={0} width={w} height={h} rx="6"
-              fill={isLast ? `${ACC}18` : `${LINEW}`}
+              fill={isLast ? "color-mix(in srgb, var(--color-accent) 9%, transparent)" : LINEW}
               stroke={isLast ? ACC : LINEW}
               strokeWidth="1"
             />
@@ -168,10 +164,10 @@ function DeviceSchematicSVG() {
       {/* Camera module — attached to arm */}
       <rect x="130" y="178" width="36" height="26" rx="4" fill="none" stroke={ACC} strokeWidth="1.5" />
       <circle cx="148" cy="191" r="7" fill="none" stroke={ACC} strokeWidth="1" />
-      <circle cx="148" cy="191" r="3" fill={`${ACC}40`} stroke={ACC} strokeWidth="1" />
+      <circle cx="148" cy="191" r="3" fill="color-mix(in srgb, var(--color-accent) 25%, transparent)" stroke={ACC} strokeWidth="1" />
 
       {/* Projector cone — projects downward */}
-      <path d="M130,210 L94,290 L176,290 L162,210 Z" fill={`${ACC}10`} stroke={LINE} strokeWidth="1" />
+      <path d="M130,210 L94,290 L176,290 L162,210 Z" fill="color-mix(in srgb, var(--color-accent) 6%, transparent)" stroke={LINE} strokeWidth="1" />
       <text x="135" y="255" fontFamily="var(--font-mono)" fontSize="8" fill={ACC} opacity="0.7">PROJECTION</text>
 
       {/* Labels */}
@@ -206,8 +202,8 @@ function FlowChip({ label, kind = "action" }: FStep) {
         minHeight: isAction ? "3.4rem" : "auto",
         minWidth: isAction ? "3.4rem" : "auto",
         borderRadius: isAction ? "50%" : "100px",
-        border: `1px solid ${isAction ? ACC : "rgba(236,230,214,.35)"}`,
-        background: isAction ? "rgba(79,168,160,.06)" : "transparent",
+        border: `1px solid ${isAction ? ACC : FAINT}`,
+        background: isAction ? "color-mix(in srgb, var(--color-accent) 6%, transparent)" : "transparent",
         color: isAction ? ACCB : PAPER,
         fontFamily: "var(--font-mono)",
         fontSize: ".58rem",
@@ -269,6 +265,11 @@ function FlowFork({ trunk, branches }: { trunk: FStep; branches: FStep[][] }) {
 }
 
 export default function RipplPage() {
+  const dark = useColorScheme();
+  const GRAD_BASE = dark ? "#0d0904" : "#F7F3EC";
+  const GRAD_88   = dark ? "rgba(13,9,4,.88)"  : "rgba(247,243,236,.88)";
+  const GRAD_45   = dark ? "rgba(13,9,4,.45)"  : "rgba(247,243,236,.45)";
+
   return (
     <>
       <Navigation />
@@ -289,7 +290,7 @@ export default function RipplPage() {
           </div>
           <div aria-hidden="true" style={{
             position: "absolute", inset: 0,
-            background: `linear-gradient(to top, ${BASE} 0%, rgba(13,9,4,.88) 35%, rgba(13,9,4,.45) 65%, transparent 100%)`,
+            background: `linear-gradient(to top, ${GRAD_BASE} 0%, ${GRAD_88} 35%, ${GRAD_45} 65%, transparent 100%)`,
           }} />
 
           {/* Huge title — top-left, cropped */}

@@ -132,6 +132,9 @@ a     { color: inherit; text-decoration: none; }
   --shadow-lg:            0 30px 70px -30px rgba(26, 24, 20, .22);
   --logo-light-opacity:   0;
   --logo-dark-opacity:    1;
+  --color-dim:   rgba(26, 24, 20, .62);
+  --color-faint: rgba(26, 24, 20, .28);
+  --line-weak:   rgba(26, 24, 20, .1);
   color-scheme: light;
 }
 
@@ -150,6 +153,9 @@ a     { color: inherit; text-decoration: none; }
   --shadow-lg:            0 30px 70px -30px rgba(0, 0, 0, .6);
   --logo-light-opacity:   1;
   --logo-dark-opacity:    0;
+  --color-dim:   rgba(242, 232, 208, .62);
+  --color-faint: rgba(242, 232, 208, .36);
+  --line-weak:   rgba(255, 164, 38, .14);
   color-scheme: dark;
 }
 
@@ -164,6 +170,9 @@ a     { color: inherit; text-decoration: none; }
   --color-accent-bright:  #E85540;
   --color-accent-deep:    #8F2218;
   --line:                 rgba(201, 64, 48, .18);
+  --color-dim:   rgba(240, 232, 213, .6);
+  --color-faint: rgba(240, 232, 213, .28);
+  --line-weak:   rgba(240, 232, 213, .1);
   color-scheme: dark;
 }
 
@@ -249,4 +258,115 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 200px 200px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SYSTEM THEME OVERRIDES
+   data-theme is stamped by a blocking <script> in layout.tsx before
+   first paint, so there is no flash. Each block below overrides the
+   domain tokens for the non-default appearance mode.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── HOME PORTAL — light ── */
+html[data-theme="light"] {
+  --color-ground:         #F7F3EC;
+  --color-ground-2:       #EDE7DA;
+  --color-paper:          #1A1510;
+  --color-graphite:       rgba(26, 21, 16, .62);
+  --color-graphite-light: rgba(26, 21, 16, .42);
+  --color-ink:            #0c0904;
+  --color-accent:         #8a6a2a;
+  --color-accent-bright:  #6B5020;
+  --color-accent-deep:    #a07f44;
+  --line:                 rgba(26, 21, 16, .12);
+  --shadow-sm:            0 4px 20px -8px rgba(26, 21, 16, .12);
+  --shadow-lg:            0 30px 70px -30px rgba(26, 21, 16, .18);
+  --color-dim:   rgba(26, 21, 16, .62);
+  --color-faint: rgba(26, 21, 16, .28);
+  --line-weak:   rgba(26, 21, 16, .1);
+  --logo-light-opacity:   0;
+  --logo-dark-opacity:    1;
+  color-scheme: light;
+}
+
+/* ── REALM — light ── */
+html[data-theme="light"] [data-domain="realm"] {
+  --color-ground:         #F2F5EE;
+  --color-ground-2:       #E8EDE4;
+  --color-paper:          #1a1e1a;
+  --color-graphite:       rgba(26, 30, 26, .62);
+  --color-graphite-light: rgba(26, 30, 26, .42);
+  --color-accent:         #7a6030;
+  --color-accent-bright:  #5a4520;
+  --color-accent-deep:    #9a7a3a;
+  --line:                 rgba(26, 30, 26, .12);
+  --color-dim:   rgba(26, 30, 26, .62);
+  --color-faint: rgba(26, 30, 26, .28);
+  --line-weak:   rgba(26, 30, 26, .1);
+  --logo-light-opacity:   0;
+  --logo-dark-opacity:    1;
+  color-scheme: light;
+}
+
+/* ── RIPPL — dark (when OS is dark) ── */
+html[data-theme="dark"] [data-domain="rippl"] {
+  --color-ground:         #0d0904;
+  --color-ground-2:       #130c06;
+  --color-paper:          #ece6d6;
+  --color-graphite:       rgba(236, 230, 214, .62);
+  --color-graphite-light: rgba(236, 230, 214, .38);
+  --color-accent:         #4FA8A0;
+  --color-accent-bright:  #6FC4BC;
+  --color-accent-deep:    #357A74;
+  --line:                 rgba(79, 168, 160, .18);
+  --shadow-sm:            0 4px 20px -8px rgba(0, 0, 0, .45);
+  --shadow-lg:            0 30px 70px -30px rgba(0, 0, 0, .5);
+  --color-dim:   rgba(236, 230, 214, .6);
+  --color-faint: rgba(236, 230, 214, .28);
+  --line-weak:   rgba(236, 230, 214, .1);
+  --logo-light-opacity:   1;
+  --logo-dark-opacity:    0;
+  color-scheme: dark;
+}
+
+/* ── TRMERIC — light ── */
+html[data-theme="light"] [data-domain="trmeric"] {
+  --color-ground:         #FAF7F1;
+  --color-ground-2:       #F1EADC;
+  --color-paper:          #17150F;
+  --color-graphite:       rgba(23, 21, 15, .62);
+  --color-graphite-light: rgba(23, 21, 15, .42);
+  --color-accent:         #FFA426;
+  --color-accent-bright:  #FFB84D;
+  --color-accent-deep:    #E8730E;
+  --line:                 rgba(23, 21, 15, .12);
+  --shadow-sm:            0 4px 24px -8px rgba(23, 21, 15, .14);
+  --shadow-lg:            0 30px 70px -30px rgba(23, 21, 15, .2);
+  --color-dim:   rgba(23, 21, 15, .62);
+  --color-faint: rgba(23, 21, 15, .36);
+  --line-weak:   rgba(23, 21, 15, .12);
+  --logo-light-opacity:   0;
+  --logo-dark-opacity:    1;
+  color-scheme: light;
+}
+
+/* ── ROZI — light ── */
+html[data-theme="light"] [data-domain="rozi"] {
+  --color-ground:         #FBF8F5;
+  --color-ground-2:       #F3EDE6;
+  --color-paper:          #0c0806;
+  --color-graphite:       rgba(12, 8, 6, .62);
+  --color-graphite-light: rgba(12, 8, 6, .42);
+  --color-accent:         #C94030;
+  --color-accent-bright:  #E85540;
+  --color-accent-deep:    #A02A1C;
+  --line:                 rgba(12, 8, 6, .1);
+  --shadow-sm:            0 4px 20px -8px rgba(12, 8, 6, .12);
+  --shadow-lg:            0 30px 70px -30px rgba(12, 8, 6, .18);
+  --color-dim:   rgba(12, 8, 6, .6);
+  --color-faint: rgba(12, 8, 6, .28);
+  --line-weak:   rgba(12, 8, 6, .08);
+  --logo-light-opacity:   0;
+  --logo-dark-opacity:    1;
+  color-scheme: light;
 }

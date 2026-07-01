@@ -1,26 +1,18 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
-import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
-export const metadata: Metadata = {
-  title: "Rozi · No middlemen, just work",
-  description:
-    "A two-sided labour marketplace connecting India's informal workers directly to employers. Top 5 at SARVA Designathon 2021.",
-};
-
-/* -- Palette -- */
-const GND   = "#0c0806";
-const GND2  = "#160d08";
-const PAP   = "#f0e8d5";
-const DIM   = "rgba(240,232,213,.6)";
-const FAINT = "rgba(240,232,213,.28)";
+/* -- Accent is the same in dark + light -- */
 const ACC   = "#C94030";
 const ACCB  = "#E85540";
 const LINE  = "rgba(201,64,48,.22)";
-const LINEW = "rgba(240,232,213,.1)";
+
+type SvgP = { GND2: string; PAP: string; DIM: string; FAINT: string };
 
 const FLOWS = [
   { src: "/images/rozi/flow-01-language.gif",  label: "Language selection",     desc: "Hindi, regional, English" },
@@ -40,7 +32,7 @@ const SCREENS = [
 /* ─────────────────────────────────────────────────────
    LIFECYCLE ARC: five stages of a migrant worker's life
 ───────────────────────────────────────────────────────*/
-function LifecycleMapSVG() {
+function LifecycleMapSVG({ GND2, PAP, DIM, FAINT }: SvgP) {
   const MONO = '"JetBrains Mono", monospace';
   const nodes = [
     { x:  100, y: 215, num: "01", stage: "ENTRY",         a1: "Leaves village",            a2: "Takes first contractor work" },
@@ -89,7 +81,7 @@ function LifecycleMapSVG() {
 /* ─────────────────────────────────────────────────────
    OPPORTUNITY MAP: seven systemic gaps
 ───────────────────────────────────────────────────────*/
-function OpportunityMapSVG() {
+function OpportunityMapSVG({ GND2, PAP, DIM, FAINT }: SvgP) {
   const MONO  = '"JetBrains Mono", monospace';
   const SERIF = '"Fraunces", Georgia, serif';
   const cx = 540, cy = 280;
@@ -140,6 +132,17 @@ const labelStyle: CSSProperties = {
 };
 
 export default function RoziPage() {
+  const dark = useColorScheme();
+  const GND   = dark ? "#0c0806" : "#FBF8F5";
+  const GND2  = dark ? "#160d08" : "#F3EDE6";
+  const PAP   = dark ? "#f0e8d5" : "#0c0806";
+  const DIM   = dark ? "rgba(240,232,213,.6)" : "rgba(12,8,6,.6)";
+  const FAINT = dark ? "rgba(240,232,213,.28)" : "rgba(12,8,6,.28)";
+  const LINEW = dark ? "rgba(240,232,213,.1)" : "rgba(12,8,6,.08)";
+  const GND88 = dark ? "rgba(12,8,6,.88)" : "rgba(251,248,245,.88)";
+  const GND50 = dark ? "rgba(12,8,6,.5)"  : "rgba(251,248,245,.5)";
+  const svgP: SvgP = { GND2, PAP, DIM, FAINT };
+
   return (
     <>
       <Navigation />
@@ -164,7 +167,7 @@ export default function RoziPage() {
           </div>
           <div aria-hidden="true" style={{
             position: "absolute", inset: 0,
-            background: `linear-gradient(to top, ${GND} 0%, rgba(12,8,6,.88) 35%, rgba(12,8,6,.5) 65%, transparent 100%)`,
+            background: `linear-gradient(to top, ${GND} 0%, ${GND88} 35%, ${GND50} 65%, transparent 100%)`,
           }} />
           <div aria-hidden="true" style={{
             position: "absolute", top: "10vh", left: "var(--pad)", zIndex: 2,
@@ -544,7 +547,7 @@ export default function RoziPage() {
             </div>
 
             <div style={{ background: GND, border: `1px solid ${LINE}`, borderRadius: "2px", padding: "3.5rem 2.5rem" }}>
-              <LifecycleMapSVG />
+              <LifecycleMapSVG {...svgP} />
             </div>
           </div>
 
@@ -592,7 +595,7 @@ export default function RoziPage() {
             </div>
 
             <div style={{ background: GND2, border: `1px solid ${LINE}`, borderRadius: "2px", padding: "3.5rem 2.5rem" }}>
-              <OpportunityMapSVG />
+              <OpportunityMapSVG {...svgP} />
             </div>
           </div>
         </section>

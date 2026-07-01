@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
@@ -5,46 +7,14 @@ import Footer from "@/components/layout/Footer";
 import WordReveal from "@/components/ui/WordReveal";
 import PlotInLines from "@/components/ui/PlotInLines";
 import { projectsBySlug } from "@/data/projects";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Trmeric · Product Design",
-  description:
-    "Senior Product Designer on the founding team of Trmeric. 23 surfaces, one AI-native enterprise platform, built from scratch as sole designer.",
-};
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 const project = projectsBySlug["trmeric"];
 
-/* ── Palette — dark mode ── */
-const BASE  = "#0F0D09";
-const BASE2 = "#1C1508";
-const INK   = "#F2E8D0";
-const DIM   = "rgba(242,232,208,.62)";
-const FAINT = "rgba(242,232,208,.36)";
-const ACC   = "#FFA426";
-const ACCB  = "#FFB84D";
-const ACCD  = "#FF9A35";
-const LINE  = "rgba(255,164,38,.14)";
-const LINA  = "rgba(255,164,38,.26)";
-const SHADOW = "0 4px 32px -8px rgba(0,0,0,.65)";
-
-const s = {
-  kicker: {
-    fontFamily: "var(--font-mono)",
-    fontSize: ".65rem",
-    letterSpacing: ".22em",
-    textTransform: "uppercase" as const,
-    color: ACCD,
-    display: "block",
-    marginBottom: "1.1rem",
-  },
-  body: {
-    fontSize: ".9375rem",
-    color: DIM,
-    lineHeight: 1.78,
-    maxWidth: "56ch",
-  },
-};
+/* ── Accent is the same in dark + light ── */
+const ACC  = "#FFA426";
+const ACCB = "#FFB84D";
+const LINA = "rgba(255,164,38,.26)";
 
 const PHASES = [
   { letter: "A", label: "Shape", question: "What should we build?", persona: "Demand Manager", icon: "chat" as const, surfaces: ["Demand intake", "Canvas", "Tango AI scoping", "Ideation"], desc: "Capture intent. Structure the demand. Tango turns an idea into a scoped initiative in 90 seconds instead of 3 months." },
@@ -200,6 +170,34 @@ const FEATURES: Feature[] = [
 ];
 
 export default function TrmericPage() {
+  const dark = useColorScheme();
+  const BASE  = dark ? "#0F0D09" : "#FAF7F1";
+  const BASE2 = dark ? "#1C1508" : "#F1EADC";
+  const INK   = dark ? "#F2E8D0" : "#17150F";
+  const DIM   = dark ? "rgba(242,232,208,.62)" : "rgba(23,21,15,.62)";
+  const FAINT = dark ? "rgba(242,232,208,.36)" : "rgba(23,21,15,.36)";
+  const ACCD  = dark ? "#FF9A35" : "#E8730E";
+  const LINE  = dark ? "rgba(255,164,38,.14)" : "rgba(23,21,15,.12)";
+  const SHADOW = dark ? "0 4px 32px -8px rgba(0,0,0,.65)" : "0 4px 24px -8px rgba(23,21,15,.14)";
+
+  const s = {
+    kicker: {
+      fontFamily: "var(--font-mono)",
+      fontSize: ".65rem",
+      letterSpacing: ".22em",
+      textTransform: "uppercase" as const,
+      color: ACCD,
+      display: "block",
+      marginBottom: "1.1rem",
+    },
+    body: {
+      fontSize: ".9375rem",
+      color: DIM,
+      lineHeight: 1.78,
+      maxWidth: "56ch",
+    },
+  };
+
   return (
     <div style={{ background: BASE, color: INK, minHeight: "100vh" }}>
       <Navigation />
