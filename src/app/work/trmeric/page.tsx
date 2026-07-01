@@ -15,18 +15,18 @@ export const metadata: Metadata = {
 
 const project = projectsBySlug["trmeric"];
 
-/* ── Palette ── */
-const BASE  = "#FAF7F1";
-const BASE2 = "#F1EADC";
-const INK   = "#17150F";
-const DIM   = "#6f6a5e";
-const FAINT = "#9b9488";
+/* ── Palette — dark mode ── */
+const BASE  = "#0F0D09";
+const BASE2 = "#1C1508";
+const INK   = "#F2E8D0";
+const DIM   = "rgba(242,232,208,.62)";
+const FAINT = "rgba(242,232,208,.36)";
 const ACC   = "#FFA426";
 const ACCB  = "#FFB84D";
-const ACCD  = "#E8730E";
-const LINE  = "rgba(23,21,15,.12)";
-const LINA  = "rgba(255,164,38,.2)";
-const SHADOW = "0 4px 24px -8px rgba(23,21,15,.14)";
+const ACCD  = "#FF9A35";
+const LINE  = "rgba(255,164,38,.14)";
+const LINA  = "rgba(255,164,38,.26)";
+const SHADOW = "0 4px 32px -8px rgba(0,0,0,.65)";
 
 const s = {
   kicker: {
@@ -281,7 +281,7 @@ export default function TrmericPage() {
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".18em", textTransform: "uppercase", color: FAINT, marginBottom: ".6rem" }}>Before Trmeric</div>
                   <p style={{ fontSize: ".875rem", color: DIM, lineHeight: 1.6 }}>Demand requests arrive as emails, get lost in spreadsheets, and have no lifecycle visibility. No structured intake. No AI scoping. No portfolio-level value tracking.</p>
                 </div>
-                <div style={{ padding: "1.4rem 1.6rem", border: `1px solid ${LINA}`, borderRadius: "12px", background: "rgba(255,164,38,.04)" }}>
+                <div style={{ padding: "1.4rem 1.6rem", border: `1px solid ${LINA}`, borderRadius: "12px", background: "rgba(255,164,38,.09)" }}>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".18em", textTransform: "uppercase", color: ACC, marginBottom: ".6rem" }}>With Trmeric</div>
                   <p style={{ fontSize: ".875rem", color: DIM, lineHeight: 1.6 }}>Intake → AI scoping → resource planning → execution → portfolio value. One continuous workflow across all personas with Tango surfacing the right context for each.</p>
                 </div>
@@ -508,9 +508,9 @@ export default function TrmericPage() {
           </div>
 
           {/* ── 01: The completed mark — revealed full-width ── */}
-          <div style={{ background: "#fff", borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
+          <div style={{ background: BASE2, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "4rem 3rem", background: "#fff", borderRadius: "16px", border: `1px solid ${LINE}` }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "4rem 3rem", background: BASE2, borderRadius: "16px", border: `1px solid ${LINE}` }}>
                 <Image
                   src="/images/trmeric/logo-story/01.png"
                   alt="Trmeric brand vision v1.0, the concentric ring mark paired with the trmeric wordmark, first presentation"
