@@ -1,0 +1,24 @@
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+
+# Raw prototype source + scratch exports (same as .gitignore)
+/realm/
+/rippl/
+/trmeric/
+/shared/
+/Logo loaded/
+/_source/
+
+# Scratch docs
+/index.html
+/EXPERIENCE-BUILD-PROMPT.md
+/portfolio-website-build-prompt*.md
+/unified-portfolio-build-prompt.md
+/trmeric-portfolio-research*.html
