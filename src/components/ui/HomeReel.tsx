@@ -12,6 +12,7 @@ interface DomainItem {
   body: string;
   label: string;
   accent: string;
+  coverImage?: string;
 }
 
 const WHEEL_THRESHOLD = 12;       // px of deltaY to count as an intentional tick
@@ -206,7 +207,13 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
       <style>{`
         @media (max-width: 760px) {
           .reel-spacer { display: none !important; }
-          .reel-text { max-width: 100% !important; }
+          .reel-text {
+            max-width: 100% !important;
+            background: transparent !important;
+            justify-content: flex-end !important;
+            padding-bottom: 3.5rem !important;
+          }
+          .reel-mobile-bg { display: block !important; }
         }
       `}</style>
     </div>
@@ -302,8 +309,25 @@ function ProjectContent({ item }: { item: DomainItem }) {
     <Link
       href={`/work/${item.slug}`}
       className="reel-card"
-      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%", pointerEvents: "auto" }}
+      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%", pointerEvents: "auto", position: "relative" }}
     >
+      {/* Mobile cover image — hidden on desktop via CSS */}
+      {item.coverImage && (
+        <div
+          className="reel-mobile-bg"
+          aria-hidden="true"
+          style={{
+            display: "none",
+            position: "absolute", inset: 0,
+            backgroundImage: `url(${item.coverImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center top",
+          }}
+        >
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #0e0b09 38%, rgba(14,11,9,.72) 65%, rgba(14,11,9,.12) 100%)" }} />
+        </div>
+      )}
+
       <div
         className="reel-text"
         style={{
@@ -316,6 +340,7 @@ function ProjectContent({ item }: { item: DomainItem }) {
           background: "var(--color-ground)",
           padding: "0 var(--pad)",
           position: "relative",
+          zIndex: 1,
         }}
       >
         <div aria-hidden="true" style={{ position: "absolute", top: "2rem", left: "var(--pad)", width: 18, height: 18, borderTop: `1px solid ${item.accent}`, borderLeft: `1px solid ${item.accent}`, opacity: 0.6 }} />

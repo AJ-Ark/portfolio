@@ -13,6 +13,7 @@ const DOMAINS: {
   body: string;
   label: string;
   accent: string;
+  coverImage?: string;
 }[] = [
   {
     slug: "realm",
@@ -20,6 +21,7 @@ const DOMAINS: {
     body: "A WebAR butterfly-raising experience. Care, not confrontation, is what changes behaviour.",
     label: "WebAR · Tata Motors · Graduation thesis",
     accent: "#d9b46a",
+    coverImage: "/images/realm/installation-cover.jpg",
   },
   {
     slug: "rippl",
@@ -27,6 +29,7 @@ const DOMAINS: {
     body: "A projector-lamp that fixes distracted reading and turns notetaking into a two-way interaction.",
     label: "Interaction Design · Physical Computing",
     accent: "#4FA8A0",
+    coverImage: "/images/rippl/rippl-hero.jpg",
   },
   {
     slug: "trmeric",
@@ -34,6 +37,7 @@ const DOMAINS: {
     body: "23 surfaces. One AI-native enterprise platform. Designed and built as sole designer on the founding team.",
     label: "Enterprise SaaS · AI Design · Founding Team",
     accent: "#FFA426",
+    coverImage: "/images/trmeric/allinone.png",
   },
   {
     slug: "rozi",
@@ -41,6 +45,7 @@ const DOMAINS: {
     body: "A marketplace for India's 40 crore informal workers. Register, find a job, get paid. The contractor takes nothing.",
     label: "Service Design · UX Research · SARVA Designathon",
     accent: "#C94030",
+    coverImage: "/images/rozi/hero-phones.png",
   },
 ];
 
