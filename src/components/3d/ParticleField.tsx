@@ -39,6 +39,48 @@ function makeSeeds(count: number): Float32Array {
 }
 
 /* ── Target shapes ── */
+
+/* Solar-system / compounding orbital rings for Rippl.
+   7 inclined rings at power-law radii, each breathing and micro-vibrating.
+   Inner orbits spin faster (Kepler-like), giving a layered living depth. */
+function orbitalTarget(i: number, seed: Float32Array, t: number): [number, number, number] {
+  const ORBIT_COUNT = 7;
+  const orbit = i % ORBIT_COUNT;
+  const posInOrbit = Math.floor(i / ORBIT_COUNT);
+  const particlesPerOrbit = PARTICLE_COUNT / ORBIT_COUNT;
+
+  // Power-law radii — inner close, outer progressively spaced
+  const baseRadius = 0.5 + Math.pow(orbit + 1, 1.2) * 0.6;
+
+  // Slow breath: orbit expands and contracts as a unit, each at its own phase
+  const breathe = Math.sin(t * 0.25 + orbit * 1.1) * 0.2;
+  // Micro-vibration: faster, smaller — the "alive / tense" feel
+  const vibrate = Math.sin(t * 1.5 + orbit * 0.8 + seed[i * 3] * 6.28) * 0.025;
+  const radius = baseRadius + breathe + vibrate;
+
+  // Kepler-like: inner orbits rotate faster
+  const fraction = posInOrbit / particlesPerOrbit;
+  const angSpeed = 0.06 / (orbit + 1);
+  const angle = fraction * Math.PI * 2 + t * angSpeed;
+
+  // Each orbit at a distinct inclination — 3D solar-system perspective
+  const inclination = orbit * 0.13;
+  const cosInc = Math.cos(inclination);
+  const sinInc = Math.sin(inclination);
+
+  const x = Math.cos(angle) * radius;
+  const yFlat = Math.sin(angle) * radius;
+
+  // Thin scatter perpendicular to orbit plane for diffuse cloud feel
+  const scatter = (seed[i * 3 + 1] - 0.5) * 0.05;
+
+  return [
+    x + scatter * 0.3,
+    yFlat * cosInc + scatter,
+    yFlat * sinInc + scatter * 0.5,
+  ];
+}
+
 function rippleTarget(i: number, seed: Float32Array, t: number): [number, number, number] {
   const rings  = 14;
   const ring   = Math.floor(i / (PARTICLE_COUNT / rings));
@@ -128,7 +170,8 @@ function getTargetPosition(
   seed: Float32Array,
   t: number
 ): [number, number, number] {
-  if (domain === "rippl")   return rippleTarget(i, seed, t);
+  if (domain === "rippl")   return orbitalTarget(i, seed, t);
+  if (domain === "rozi")    return rippleTarget(i, seed, t);
   if (domain === "realm")   return organicTarget(i, seed, t);
   if (domain === "trmeric") return latticeTarget(i, seed, t);
   return idleTarget(i, seed, t);
@@ -136,10 +179,11 @@ function getTargetPosition(
 
 /* ── Correct ROE accent colors ── */
 const DOMAIN_COLORS: Record<string, THREE.Color> = {
-  rippl:   new THREE.Color("#4FA8A0"),   /* muted teal */
+  rippl:   new THREE.Color("#4FA8A0"),   /* muted teal   */
   realm:   new THREE.Color("#d9b46a"),   /* gold         */
   trmeric: new THREE.Color("#FFA426"),   /* amber        */
-  idle:    new THREE.Color("#7a6e58"),   /* warm graphite, brightened for presence */
+  rozi:    new THREE.Color("#C2745A"),   /* subtle terracotta */
+  idle:    new THREE.Color("#7a6e58"),   /* warm graphite */
 };
 
 function getDomainColor(domain: Domain | null): THREE.Color {
@@ -252,7 +296,12 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
         points.current.rotation.y += (0 - points.current.rotation.y) * 0.08;
         points.current.rotation.x += (Math.sin(t * 0.2) * 0.025 - points.current.rotation.x) * 0.08;
       } else {
-        points.current.rotation.y += delta * (domainRef.current === "trmeric" ? 0.06 : 0.025);
+        const rotSpeed =
+          domainRef.current === "trmeric" ? 0.06   // lattice — fastest
+          : domainRef.current === "rozi"  ? 0.022  // ripple rings — gentle
+          : domainRef.current === "rippl" ? 0.015  // orbital — slow, stately
+          : 0.025;                                  // default
+        points.current.rotation.y += delta * rotSpeed;
         points.current.rotation.x  = Math.sin(t * 0.08) * 0.06;
       }
     }

@@ -3,7 +3,7 @@ export type ProjectType = "academic" | "professional" | "personal";
 
 export interface ParticleBehaviourProfile {
   id: Domain;
-  type: "ripple" | "organic" | "lattice";
+  type: "ripple" | "organic" | "lattice" | "orbital";
   accent: string;
   particleCount: number;
   speed: number;
@@ -37,7 +37,7 @@ export interface Project {
 export const particleProfiles: Record<Domain, ParticleBehaviourProfile> = {
   rippl: {
     id: "rippl",
-    type: "ripple",
+    type: "orbital",
     accent: "#4FA8A0",    /* muted teal, matches Rippl domain preset */
     particleCount: 4000,
     speed: 0.6,
@@ -58,7 +58,7 @@ export const particleProfiles: Record<Domain, ParticleBehaviourProfile> = {
   },
   rozi: {
     id: "rozi",
-    type: "organic",
+    type: "ripple",
     accent: "#C94030",    /* Rozi red — warm, readable on dark */
     particleCount: 4500,
     speed: 0.5,
