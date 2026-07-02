@@ -79,7 +79,6 @@ export const projects: Project[] = [
     keywords: ["Interaction Design", "Physical Computing", "OCR", "HCI", "Prototyping"],
     metrics: [
       { value: "12 weeks", label: "Project duration" },
-      { value: "1000+", label: "Public participants" },
       { value: "3", label: "Working prototypes" },
     ],
     subPieces: [

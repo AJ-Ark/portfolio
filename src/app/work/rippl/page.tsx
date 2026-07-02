@@ -328,7 +328,7 @@ export default function RipplPage() {
             </p>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "2.5rem", paddingTop: "1.8rem", borderTop: `1px solid ${LINEW}` }}>
-              {[["Role","Research & Design"],["Duration","12 weeks"],["Focus","Learning & memory"],["Participants","1,000+ public"],["Prototypes","3 working builds"]].map(([l,v]) => (
+              {[["Role","Research & Design"],["Duration","12 weeks"],["Focus","Learning & memory"],["Prototypes","3 working builds"]].map(([l,v]) => (
                 <div key={l}>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: ".3rem" }}>{l}</span>
                   <span style={{ fontSize: ".8rem", color: DIM }}>{v}</span>
@@ -880,8 +880,8 @@ export default function RipplPage() {
               ))}
             </div>
             {/* Stats strip */}
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderLeft: `1px solid ${LINEW}` }}>
-              {[["12 weeks","Project duration"],["1,000+","Public participants"],["3","Working prototypes"]].map(([val, label]) => (
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", borderLeft: `1px solid ${LINEW}` }}>
+              {[["12 weeks","Project duration"],["3","Working prototypes"]].map(([val, label]) => (
                 <div key={label} style={{ padding: "1.8rem 1.6rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
                   <div style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "2.4rem", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".4rem" }}>{val}</div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT }}>{label}</div>
