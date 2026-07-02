@@ -396,7 +396,7 @@ body{font-family:'Poppins',sans-serif;background:var(--canvas-bg);color:var(--n8
 .pcv-obj-tile__meta{font-size:10.5px;color:var(--n500);font-weight:500;}
 .pcv-obj-tile__pct{font-size:18px;font-weight:700;color:var(--n900);line-height:1;letter-spacing:-.01em;flex-shrink:0;}
 
-/* KPI cards — flat, popping numbers, no gradient/stripe (post "too Claudian" feedback) */
+/* KPI cards — flat, popping numbers, no gradient/stripe (post "too default-AI-generated" feedback) */
 .pcv-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .pcv-kpi{display:flex;flex-direction:column;gap:6px;background:var(--white);border:1px solid var(--n100);border-radius:10px;padding:14px 16px;transition:border-color 150ms;}
 .pcv-kpi:hover{border-color:var(--n200);}
@@ -2278,7 +2278,7 @@ const MAP_PROJECTS = [
   {id:'p5', name:'AI Revenue Engine Transformation', health:'amber', krs:['k5','k7']},
   {id:'p6', name:'Workflow Automation Hub', health:'green', krs:['k3','k8','k6']},
   {id:'p7', name:'Internal Operations Efficiency', health:'green', krs:['k4','k8']},
-  {id:'p8', name:'Claude-Comparable Super Agent', health:'amber', krs:['k5','k7','k6']}
+  {id:'p8', name:'Enterprise Agent Platform Buildout', health:'amber', krs:['k5','k7','k6']}
 ];
 const MAP_HEALTH_HUE = {green:'#10b981', amber:'#f59e0b', red:'#ef4444', none:'#cbd5e1'};
 const MAP_TYPE_HUE = {portfolio:'#F89622', project:'#8b5cf6', kr:'#06b6d4', goal:'#10b981'};
@@ -3263,7 +3263,7 @@ function renderPortfolioCanvas(){
       </div>
     </div>`;
 
-  // ── KPIs — flat cards, popping numbers (no gradient/stripe — Claudian-free)
+  // ── KPIs — flat cards, popping numbers (no gradient/stripe)
   const kpis = [
     {val:'73%',  lbl:'Budget utilisation', delta:'on plan',          deltaCls:''},
     {val:'81%',  lbl:'Delivery rate',      delta:'+12 pts QoQ',      deltaCls:'pcv-kpi__delta--up'},
