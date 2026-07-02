@@ -132,7 +132,7 @@ export const projects: Project[] = [
     title: "Trmeric",
     oneLiner: "Designing the full product experience for an AI-native enterprise platform, demand intake to portfolio value.",
     type: "professional",
-    year: "2025–present",
+    year: "2024–present",
     role: "Senior Product Designer, sole designer, founding team",
     accent: "#FFA426",
     particleProfile: particleProfiles.trmeric,

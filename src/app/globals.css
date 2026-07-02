@@ -141,10 +141,16 @@ a     { color: inherit; text-decoration: none; }
   color-scheme: light;
 }
 
-/* ── TRMERIC — dark / amber / systematic / restrained ── */
+/* ── TRMERIC — dark / amber / systematic / restrained ──
+   Ground-2 used to carry the accent hue's own low blue-channel
+   (#1C1508 — R28 G21 B8), which reads as a saturated coffee-brown
+   rather than a neutral dark surface. Rozi's ground-2 (#1C1917, R28
+   G25 B23) is the same lightness with almost no hue skew — desaturating
+   ground/ground-2 the same way here fixes the muddy background while
+   leaving the accent and hairline tokens untouched. */
 [data-domain="trmeric"] {
-  --color-ground:         #0F0D09;
-  --color-ground-2:       #1C1508;
+  --color-ground:         #0E0C0A;
+  --color-ground-2:       #1A1613;
   --color-paper:          #F2E8D0;
   --color-graphite:       rgba(242, 232, 208, .62);
   --color-graphite-light: rgba(242, 232, 208, .38);
@@ -314,8 +320,13 @@ html[data-theme="light"] [data-domain="realm"] {
   color-scheme: light;
 }
 
-/* ── RIPPL — dark (when OS is dark) ── */
-html[data-theme="dark"] [data-domain="rippl"] {
+/* ── RIPPL — dark (when OS is dark) ──
+   Compound selector (no space): data-theme AND data-domain both live on
+   <html>, so a descendant combinator ("html[data-theme] [data-domain]")
+   can never match the same element — it left Rippl on its light base
+   palette in dark mode while the hero gradient went dark (the "inverted"
+   bug). Targeting the single <html> element that carries both fixes it. */
+html[data-theme="dark"][data-domain="rippl"] {
   --color-ground:         #0d0904;
   --color-ground-2:       #130c06;
   --color-paper:          #ece6d6;

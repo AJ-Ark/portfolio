@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const TIMELINE = [
-  { year: "2025 – now",  event: "Senior Product Designer, Trmeric",         detail: "Founding team. Sole designer." },
+  { year: "2024 – now",  event: "Senior Product Designer, Trmeric",         detail: "Founding team. Sole designer." },
   { year: "2024 – 2026", event: "M.Des New Media Design, NID Gandhinagar",   detail: "Research-led practice. Thesis: Realm of Elementals." },
   { year: "2018 – 2024", event: "B.Arch, SPA Vijayawada",                   detail: "Six years. Council of Architecture licensed." },
 ];
