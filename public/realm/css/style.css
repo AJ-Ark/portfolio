@@ -2,6 +2,17 @@
    REALM OF ELEMENTALS — portfolio
    ============================================================ */
 
+/* Cross-document view transition — pairs with the portfolio's own opt-in
+   so arriving from (and returning to) the portfolio crossfades instead of
+   flashing a blank frame between documents. */
+@view-transition{
+  navigation:auto;
+}
+::view-transition-old(root),
+::view-transition-new(root){
+  animation-duration:.6s;
+}
+
 :root{
   --forest-0:#060a06;
   --forest-1:#0a0f0a;

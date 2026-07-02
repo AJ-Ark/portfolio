@@ -431,6 +431,18 @@ html[data-theme="light"] {
    into the cluster and the dive itself is the loader. The attribute is
    removed shortly after the new route mounts, fading the page back in.
    ══════════════════════════════════════════════════════════════════ */
+
+/* Cross-document view transition: hard navigations (portfolio ↔ the
+   standalone Realm site) crossfade instead of flashing a blank frame.
+   Realm's stylesheet opts in on its side too. Unsupported browsers
+   simply fall back to a normal navigation. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .6s;
+}
 header, main, footer {
   transition: opacity .5s var(--ease);
 }

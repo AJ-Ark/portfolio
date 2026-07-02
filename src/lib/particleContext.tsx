@@ -38,7 +38,13 @@ const ParticleContext = createContext<ParticleContextValue>({
 const WARP_ARRIVAL_HOLD_MS = 400;
 /* If navigation never happens (error, dev hiccup), never leave the page
    invisible — force-release the warp. */
-const WARP_FAILSAFE_MS = 3000;
+const WARP_FAILSAFE_MS = 4000;
+/* How long the dive owns the screen before the route swaps underneath it.
+   Long enough to feel like a slow immersion, not a cut. */
+const WARP_NAV_MS = 900;
+/* Realm is a standalone static site — entering it is a hard navigation,
+   handled specially below so the dive stays alive until the very swap. */
+const REALM_DOC = "/realm/index.html";
 
 export function ParticleProvider({ children, initialDomain = null }: { children: ReactNode; initialDomain?: Domain | null }) {
   const [domain, setDomain] = useState<Domain | null>(initialDomain);
@@ -114,14 +120,31 @@ export function useWarpNavigate() {
 
   return useCallback(
     (href: string, domain: Domain) => {
+      /* Realm skips the /work/realm redirect hop and navigates straight to
+         the static document. Crucially, a hard navigation keeps the CURRENT
+         page rendering while the next document is fetched — the dive never
+         stops moving until the swap — and the cross-document view
+         transition (globals.css) crossfades the two instead of flashing. */
+      const isRealm = domain === "realm";
+      const dest = isRealm ? REALM_DOC : href;
+
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        router.push(href);
+        if (isRealm) window.location.assign(dest);
+        else router.push(dest);
         return;
       }
-      router.prefetch(href);
+
+      if (isRealm) {
+        // Warm the document in the HTTP cache while the dive plays.
+        fetch(dest, { cache: "force-cache" }).catch(() => {});
+      } else {
+        router.prefetch(dest);
+      }
       startWarp(domain);
-      // Let the dive own the screen before the route swaps underneath it.
-      window.setTimeout(() => router.push(href), 650);
+      window.setTimeout(() => {
+        if (isRealm) window.location.assign(dest);
+        else router.push(dest);
+      }, WARP_NAV_MS);
     },
     [router, startWarp]
   );

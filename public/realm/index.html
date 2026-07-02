@@ -21,6 +21,16 @@
 
   <link rel="stylesheet" href="css/style.css" />
 
+  <!-- Fetch the particle field's dependencies EARLY — three.js is the
+       critical path to the first rendered warp frame, so it must not wait
+       for the parser to reach the bottom-of-body script tags. -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="modulepreload" href="https://unpkg.com/three@0.160.0/build/three.module.js" />
+  <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" />
+  <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" />
+  <link rel="preload" as="script" href="https://unpkg.com/lenis@1.0.42/dist/lenis.min.js" />
+
   <!-- Three.js (ES module) -->
   <script type="importmap">
   {

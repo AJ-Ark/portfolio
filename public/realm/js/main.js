@@ -15,14 +15,17 @@ function hidePreloader(){
   if(pre){ pre.classList.add("done"); setTimeout(()=>pre.remove(), 900); }
   if(window.__beginWarp) window.__beginWarp();   // launch the portal as the cover fades
 }
-/* Fade the cover as soon as the DOM is ready — the particle warp fly-in IS
-   the arrival moment (continuous with the portfolio's dive-in transition),
-   so there is nothing to "wait" for: the field is procedural, not an asset. */
-const armPreloader = ()=> setTimeout(hidePreloader, 150);
-if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", armPreloader);
-else armPreloader();
-// safety net
-setTimeout(hidePreloader, 2500);
+/* Fade the cover on the first frame the particle field can actually render:
+   __beginWarp is defined synchronously once the scene below is built, so the
+   first rAF tick after this module evaluates sees it — the warp fly-in is
+   already moving as the cover fades, continuous with the portfolio's
+   dive-in transition. No fixed timer, nothing to "wait" for. */
+(function armPreloader(){
+  if(window.__beginWarp){ hidePreloader(); return; }
+  if(!preloaderHidden) requestAnimationFrame(armPreloader);
+})();
+// safety net — never trap a visitor behind the cover if the scene fails
+setTimeout(hidePreloader, 4000);
 
 /* ============================================================
    SMOOTH SCROLL (Lenis) + GSAP sync
