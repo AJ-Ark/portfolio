@@ -299,8 +299,6 @@ function QuadrantCard({ q, p }: { q: Quadrant; p: RoziPalette }) {
             lineHeight: 1.32,
             color: p.PAP,
             position: "relative",
-            paddingLeft: "1.1rem",
-            borderLeft: `2px solid ${p.GOLD}`,
           }}
         >
           <span aria-hidden="true" style={{ color: p.GOLDT, marginRight: ".08em" }}>

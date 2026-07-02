@@ -27,14 +27,34 @@ function NoteCard({
   return (
     <div
       style={{
+        position: "relative",
         background: p.GND2,
         border: `1px solid ${p.LINEW}`,
-        borderLeft: `2px solid ${p.GOLD}`,
         borderRadius: "16px",
         padding: "1.8rem 1.9rem",
         boxShadow: p.SHADOW,
       }}
     >
+      {/* Corner ticks — the site's architectural annotation device
+          (same bracket pair as the home reel cards). */}
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute", top: ".7rem", left: ".7rem",
+          width: 14, height: 14,
+          borderTop: `1px solid ${p.GOLD}`, borderLeft: `1px solid ${p.GOLD}`,
+          opacity: 0.55,
+        }}
+      />
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute", bottom: ".7rem", right: ".7rem",
+          width: 14, height: 14,
+          borderBottom: `1px solid ${p.GOLD}`, borderRight: `1px solid ${p.GOLD}`,
+          opacity: 0.55,
+        }}
+      />
       <span
         style={{
           fontFamily: p.MONO,

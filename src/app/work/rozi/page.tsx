@@ -231,8 +231,12 @@ export default function RoziPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                   <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: ".4rem" }}>Secondary study</span>
                   {CITATIONS.map((c) => (
-                    <figure key={c.source} style={{ margin: 0, padding: "1.4rem 1.6rem", background: p.GND2, border: `1px solid ${p.LINEW}`, borderLeft: `2px solid ${p.GOLD}`, borderRadius: "14px" }}>
-                      <blockquote style={{ margin: 0, fontSize: ".9rem", color: p.DIM, lineHeight: 1.6 }}>{c.quote}</blockquote>
+                    <figure key={c.source} style={{ margin: 0, padding: "1.4rem 1.6rem", background: p.GND2, border: `1px solid ${p.LINEW}`, borderRadius: "14px" }}>
+                      <blockquote style={{ margin: 0, fontSize: ".9rem", color: p.DIM, lineHeight: 1.6 }}>
+                        {/* Hanging gold serif quote mark — same editorial device as the persona verbatim */}
+                        <span aria-hidden="true" style={{ fontFamily: p.SERIF, fontStyle: "italic", fontSize: "1.45rem", lineHeight: 0, verticalAlign: "-.3em", color: p.GOLDT, marginRight: ".28rem" }}>&ldquo;</span>
+                        {c.quote}
+                      </blockquote>
                       <figcaption style={{ fontFamily: p.MONO, fontSize: ".5rem", letterSpacing: ".14em", textTransform: "uppercase", color: p.FAINT, marginTop: ".9rem" }}>{c.source}</figcaption>
                     </figure>
                   ))}
