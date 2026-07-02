@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useParticle } from "@/lib/particleContext";
+import { useParticle, useWarpNavigate } from "@/lib/particleContext";
 import type { Domain } from "@/data/projects";
 
 interface DomainItem {
@@ -174,6 +174,10 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
     setPreviewDomain(item.slug, isMobile ? 0 : CARD_OFFSET_X);
   }, [slide, domains, setPreviewDomain]);
 
+  /* Clear the preview when the reel unmounts (navigation away) so a stale
+     preview never overrides the route-driven domain on the next page. */
+  useEffect(() => () => setPreviewDomain(null), [setPreviewDomain]);
+
   /* After 2 s idle on the hero slide, nudge the first project card up as a
      "peek-and-retreat" hint, then pull it back — letting visitors know there
      is scrollable content below without any text cue needed. */
@@ -309,11 +313,17 @@ function HeroContent() {
 }
 
 function ProjectContent({ item }: { item: DomainItem }) {
+  const warpNav = useWarpNavigate();
   return (
     <Link
       href={`/work/${item.slug}`}
       className="reel-card"
       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%", pointerEvents: "auto", position: "relative" }}
+      onClick={(e) => {
+        // Enter through the particles: dive-in transition covers the route change.
+        e.preventDefault();
+        warpNav(`/work/${item.slug}`, item.slug);
+      }}
     >
       <div
         className="reel-text"

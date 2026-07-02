@@ -6,7 +6,7 @@ import ParticleField from "./ParticleField";
 import { useParticle } from "@/lib/particleContext";
 
 export default function GlobalCanvas() {
-  const { activeDomain, previewOffsetX } = useParticle();
+  const { activeDomain, previewOffsetX, warping } = useParticle();
 
   return (
     <div
@@ -29,7 +29,9 @@ export default function GlobalCanvas() {
         style={{ width: "100%", height: "100%" }}
       >
         <Suspense fallback={null}>
-          <ParticleField domain={activeDomain} offsetX={previewOffsetX} />
+          {/* During the warp the cluster recenters (offset 0) so the camera
+              dives straight into it rather than past its edge. */}
+          <ParticleField domain={activeDomain} offsetX={warping ? 0 : previewOffsetX} warping={warping} />
         </Suspense>
       </Canvas>
     </div>

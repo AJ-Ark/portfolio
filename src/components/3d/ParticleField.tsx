@@ -11,6 +11,9 @@ interface ParticleFieldProps {
   /** Normalized horizontal offset (-1 left edge .. 0 center .. 1 right edge)
    *  for where the cluster should sit on screen. */
   offsetX?: number;
+  /** Project-entry transition: the camera dives into the cluster and the
+   *  dive doubles as the route-change loader. */
+  warping?: boolean;
 }
 
 const PARTICLE_COUNT = 5000;
@@ -211,10 +214,12 @@ function getDomainColor(domain: Domain | null, dark: boolean): THREE.Color {
   return map[domain ?? "idle"] ?? map.idle;
 }
 
-export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFieldProps) {
+export default function ParticleField({ domain = null, offsetX = 0, warping = false }: ParticleFieldProps) {
   const dark    = useColorScheme();
   const darkRef = useRef(dark);
   darkRef.current = dark;
+  const warpRef = useRef(warping);
+  warpRef.current = warping;
 
   const points  = useRef<THREE.Points>(null!);
   const posAttr = useRef<THREE.BufferAttribute>(null!);
@@ -257,8 +262,17 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
     if (morphRef.current < 1) morphRef.current = Math.min(1, morphRef.current + delta / 1.2);
     const morphEased = morphRef.current < 1 ? 1 - Math.pow(1 - morphRef.current, 3) : 1;
 
-    /* Cursor → world space (project onto z=0 plane) */
+    /* Warp dive — on project entry the camera plunges from its resting
+       z=10 into the heart of the cluster; dots fly past the lens and the
+       dive becomes the loader. When the warp releases on the new page the
+       camera eases back out, revealing the resolved formation. */
     const cam = camera as THREE.PerspectiveCamera;
+    const camZTarget = warpRef.current ? 1.25 : 10;
+    cam.position.z += (camZTarget - cam.position.z) * (warpRef.current ? 0.06 : 0.045);
+    /* 0 at rest → ~1 fully immersed; smooth because camera z is eased. */
+    const dive = Math.max(0, Math.min(1, (10 - cam.position.z) / 8.75));
+
+    /* Cursor → world space (project onto z=0 plane) */
     const fovRad  = (cam.fov * Math.PI) / 180;
     const halfH   = cam.position.z * Math.tan(fovRad / 2);
     const halfW   = halfH * (size.width / size.height);
@@ -340,7 +354,8 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
           : domainRef.current === "rozi"  ? 0.022  // ripple rings — gentle
           : domainRef.current === "rippl" ? 0.015  // orbital — slow, stately
           : 0.025;                                  // default
-        points.current.rotation.y += delta * rotSpeed;
+        // Deeper into the dive → faster spin, so the entry has energy.
+        points.current.rotation.y += delta * rotSpeed * (1 + dive * 2.2);
         points.current.rotation.x  = Math.sin(t * 0.08) * 0.06;
       }
     }
@@ -350,7 +365,8 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
     if (mat) {
       mat.color.lerp(getDomainColor(domainRef.current, darkRef.current), 0.03);
       const baseOpacity = darkRef.current ? 0.72 : 0.80;
-      mat.opacity = baseOpacity + Math.sin(t * 0.35) * 0.1;
+      // Dots solidify as the camera goes in — the dive reads as substance.
+      mat.opacity = Math.min(0.95, baseOpacity + Math.sin(t * 0.35) * 0.1 + dive * 0.25);
     }
   });
 

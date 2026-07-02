@@ -1,6 +1,6 @@
-import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
+import WarpLink from "@/components/ui/WarpLink";
 import { projects } from "@/data/projects";
 import type { Metadata } from "next";
 
@@ -46,9 +46,10 @@ export default function WorkIndex() {
         {/* Project list — flat, no WebGL */}
         <div className="flex flex-col gap-0">
           {projects.map((project, i) => (
-            <Link
+            <WarpLink
               key={project.slug}
               href={`/work/${project.slug}`}
+              domain={project.domain}
               className="group flex flex-col md:flex-row md:items-center gap-4 py-7 transition-all duration-200"
               style={{
                 borderTop: "1px solid #2E2A25",
@@ -125,7 +126,7 @@ export default function WorkIndex() {
               >
                 →
               </span>
-            </Link>
+            </WarpLink>
           ))}
         </div>
       </main>

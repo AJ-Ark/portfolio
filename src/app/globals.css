@@ -424,6 +424,23 @@ html[data-theme="light"] {
   --logo-color: #1A1510;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   WARP TRANSITION — project entry
+   While <html data-warp> is set (see particleContext.startWarp), all page
+   chrome fades away so only the particle canvas remains: the camera dives
+   into the cluster and the dive itself is the loader. The attribute is
+   removed shortly after the new route mounts, fading the page back in.
+   ══════════════════════════════════════════════════════════════════ */
+header, main, footer {
+  transition: opacity .5s var(--ease);
+}
+html[data-warp] header,
+html[data-warp] main,
+html[data-warp] footer {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* AJ logo — single vector shape, recolored per theme via CSS mask (no PNG
    crossfade, no JS, crisp at any size). Size is set inline per usage. */
 .aj-logo {
