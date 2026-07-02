@@ -196,7 +196,7 @@ const DARK_COLORS: Record<string, THREE.Color> = {
   realm:   new THREE.Color("#d9b46a"),
   trmeric: new THREE.Color("#FFA426"),
   rozi:    new THREE.Color("#C2745A"),
-  idle:    new THREE.Color("#7a6e58"),
+  idle:    new THREE.Color("#ac9c7a"),
 };
 const LIGHT_COLORS: Record<string, THREE.Color> = {
   rippl:   new THREE.Color("#246660"),
@@ -349,7 +349,7 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
     const mat = points.current?.material as THREE.PointsMaterial;
     if (mat) {
       mat.color.lerp(getDomainColor(domainRef.current, darkRef.current), 0.03);
-      const baseOpacity = darkRef.current ? 0.65 : 0.80;
+      const baseOpacity = darkRef.current ? 0.72 : 0.80;
       mat.opacity = baseOpacity + Math.sin(t * 0.35) * 0.1;
     }
   });
@@ -368,7 +368,7 @@ export default function ParticleField({ domain = null, offsetX = 0 }: ParticleFi
         size={size.width < 768 ? 0.038 : 0.024}
         color={getDomainColor(domain, dark)}
         transparent
-        opacity={dark ? 0.65 : 0.80}
+        opacity={dark ? 0.72 : 0.80}
         sizeAttenuation
         depthWrite={false}
       />
