@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function Footer() {
   return (
     <footer
@@ -10,41 +8,12 @@ export default function Footer() {
       }}
     >
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div style={{ position: "relative", width: 32, height: 32, flexShrink: 0 }}>
-          {/* Light logo (dark backgrounds — home, realm, rippl) */}
-          <Image
-            src="/images/aj_LOGO_light.png"
-            alt=""
-            width={32}
-            height={32}
-            aria-hidden="true"
-            style={{
-              width: 32,
-              height: 32,
-              objectFit: "contain",
-              position: "absolute",
-              inset: 0,
-              opacity: "var(--logo-light-opacity, 1)",
-              transition: "opacity 0.6s ease",
-            }}
-          />
-          {/* Dark logo (light backgrounds — trmeric) */}
-          <Image
-            src="/images/aj_LOGO_dark.png"
-            alt="Aravind J"
-            width={32}
-            height={32}
-            style={{
-              width: 32,
-              height: 32,
-              objectFit: "contain",
-              position: "absolute",
-              inset: 0,
-              opacity: "var(--logo-dark-opacity, 0)",
-              transition: "opacity 0.6s ease",
-            }}
-          />
-        </div>
+        <span
+          className="aj-logo"
+          role="img"
+          aria-label="Aravind J"
+          style={{ display: "block", width: 32, height: 32, flexShrink: 0 }}
+        />
 
         <div
           style={{

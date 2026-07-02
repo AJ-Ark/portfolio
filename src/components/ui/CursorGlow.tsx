@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function CursorGlow() {
   const dotRef  = useRef<HTMLDivElement>(null);
@@ -8,10 +8,19 @@ export default function CursorGlow() {
   const pos     = useRef({ x: -200, y: -200 });
   const ring    = useRef({ x: -200, y: -200 });
   const raf     = useRef<number>(0);
+  const [enabled, setEnabled] = useState(false);
+
+  /* Only enable on devices with a FINE pointer (mouse/trackpad). On touch/
+     stylus devices we render nothing at all — rendering the dot/ring and
+     simply not animating them would leave them stuck in the top-left corner
+     (their base position before any transform is applied). */
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(pointer: fine)").matches) setEnabled(true);
+  }, []);
 
   useEffect(() => {
-    /* Touch/stylus devices don't have a fine pointer — hide the cursor entirely */
-    if (!window.matchMedia("(pointer: fine)").matches) return;
+    if (!enabled) return;
 
     const onMove = (e: MouseEvent) => {
       pos.current = { x: e.clientX, y: e.clientY };
@@ -39,7 +48,9 @@ export default function CursorGlow() {
       window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(raf.current);
     };
-  }, []);
+  }, [enabled]);
+
+  if (!enabled) return null;
 
   return (
     <>
@@ -59,6 +70,7 @@ export default function CursorGlow() {
           pointerEvents: "none",
           mixBlendMode: "screen",
           willChange: "transform",
+          transform: "translate(-100px, -100px)",
         }}
       />
       {/* Outer lagging ring */}
@@ -77,6 +89,7 @@ export default function CursorGlow() {
           pointerEvents: "none",
           opacity: 0.4,
           willChange: "transform",
+          transform: "translate(-100px, -100px)",
         }}
       />
     </>

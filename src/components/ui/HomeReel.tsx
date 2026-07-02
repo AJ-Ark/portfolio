@@ -209,7 +209,12 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
           .reel-spacer { display: none !important; }
           .reel-text {
             max-width: 100% !important;
-            background: linear-gradient(to top, #0e0b09 28%, rgba(14,11,9,.55) 48%, transparent 78%) !important;
+            /* Fade to the THEME ground (not a hardcoded near-black) so the
+               dark text stays readable in light mode. */
+            background: linear-gradient(to top,
+              var(--color-ground) 28%,
+              color-mix(in srgb, var(--color-ground) 55%, transparent) 48%,
+              transparent 78%) !important;
             justify-content: flex-end !important;
             padding-bottom: 3.5rem !important;
           }

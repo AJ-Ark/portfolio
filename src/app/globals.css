@@ -132,6 +132,9 @@ a     { color: inherit; text-decoration: none; }
   --shadow-lg:            0 30px 70px -30px rgba(26, 24, 20, .22);
   --logo-light-opacity:   0;
   --logo-dark-opacity:    1;
+  /* Rippl's ground is light even in dark mode → ink logo (gold would fail
+     contrast on the light ground). */
+  --logo-color: #1A1510;
   --color-dim:   rgba(26, 24, 20, .62);
   --color-faint: rgba(26, 24, 20, .28);
   --line-weak:   rgba(26, 24, 20, .1);
@@ -161,18 +164,21 @@ a     { color: inherit; text-decoration: none; }
 
 /* ── ROZI — dark / red / social-impact / direct ── */
 [data-domain="rozi"] {
-  --color-ground:         #0c0806;
-  --color-ground-2:       #160d08;
-  --color-paper:          #f0e8d5;
+  --color-ground:         #131110;
+  --color-ground-2:       #1C1917;
+  --color-paper:          #f1e9d8;
   --color-graphite:       #3d2a1f;
   --color-graphite-light: #9a8070;
   --color-accent:         #C94030;
-  --color-accent-bright:  #E85540;
+  --color-accent-bright:  #D66B52;
   --color-accent-deep:    #8F2218;
-  --line:                 rgba(201, 64, 48, .18);
-  --color-dim:   rgba(240, 232, 213, .6);
-  --color-faint: rgba(240, 232, 213, .28);
-  --line-weak:   rgba(240, 232, 213, .1);
+  --color-gold:           #D2A24A;
+  --color-gold-bright:    #EAC178;
+  --color-gold-text:      #E0BB6E;
+  --line:                 rgba(241, 233, 216, .11);
+  --color-dim:   rgba(241, 233, 216, .6);
+  --color-faint: rgba(241, 233, 216, .26);
+  --line-weak:   rgba(241, 233, 216, .07);
   color-scheme: dark;
 }
 
@@ -360,6 +366,9 @@ html[data-theme="light"] [data-domain="rozi"] {
   --color-accent:         #C94030;
   --color-accent-bright:  #E85540;
   --color-accent-deep:    #A02A1C;
+  --color-gold:           #E0920A;
+  --color-gold-bright:    #F2A007;
+  --color-gold-text:      #9A650C;
   --line:                 rgba(12, 8, 6, .1);
   --shadow-sm:            0 4px 20px -8px rgba(12, 8, 6, .12);
   --shadow-lg:            0 30px 70px -30px rgba(12, 8, 6, .18);
@@ -369,4 +378,47 @@ html[data-theme="light"] [data-domain="rozi"] {
   --logo-light-opacity:   0;
   --logo-dark-opacity:    1;
   color-scheme: light;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ROZI case-study palette (consumed by components via makeRoziPalette()).
+   Defined at THEME scope — not per-domain — because data-theme and
+   data-domain both live on <html>, so a "html[data-theme] [data-domain]"
+   descendant selector can never match the same element. Anchoring to
+   data-theme (set flash-free by the blocking script) makes light/dark
+   switch reliably at first paint. Only the Rozi case study reads --rz-*.
+   ══════════════════════════════════════════════════════════════════ */
+html {
+  /* Dark (default): clean warm charcoal, neutral hairlines, honey gold. */
+  --rz-gnd: #131110;  --rz-gnd2: #1C1917;  --rz-gnd3: #24211C;
+  --rz-pap: #f1e9d8;
+  --rz-dim: rgba(241,233,216,.60);  --rz-faint: rgba(241,233,216,.24);
+  --rz-line: rgba(241,233,216,.11); --rz-linew: rgba(241,233,216,.07);
+  --rz-acc: #C94030;  --rz-accb: #D66B52;  --rz-acct: #E08770;
+  --rz-gold: #D2A24A; --rz-goldb: #EAC178; --rz-goldt: #E0BB6E; --rz-amber: #CE9A4E;
+  --rz-shadow: 0 4px 32px -10px rgba(0,0,0,.7);
+  /* AJ logo mark — gold on dark grounds (≈9:1 contrast, WCAG AA+). */
+  --logo-color: #D9B46A;
+}
+html[data-theme="light"] {
+  /* Light: unchanged from the version you approved. */
+  --rz-gnd: #FBF8F5;  --rz-gnd2: #F3EDE6;  --rz-gnd3: #ECE3D8;
+  --rz-pap: #0c0806;
+  --rz-dim: rgba(12,8,6,.62);  --rz-faint: rgba(12,8,6,.30);
+  --rz-line: rgba(201,64,48,.20); --rz-linew: rgba(12,8,6,.09);
+  --rz-acc: #C94030;  --rz-accb: #E85540;  --rz-acct: #B0301F;
+  --rz-gold: #E0920A; --rz-goldb: #F2A007; --rz-goldt: #9A650C; --rz-amber: #D98324;
+  --rz-shadow: 0 6px 30px -12px rgba(12,8,6,.16);
+  /* AJ logo mark — soft ink on light grounds (well past WCAG AAA). */
+  --logo-color: #1A1510;
+}
+
+/* AJ logo — single vector shape, recolored per theme via CSS mask (no PNG
+   crossfade, no JS, crisp at any size). Size is set inline per usage. */
+.aj-logo {
+  display: inline-block;
+  background-color: var(--logo-color, #D9B46A);
+  -webkit-mask: url(/images/aj-logo.svg) center / contain no-repeat;
+          mask: url(/images/aj-logo.svg) center / contain no-repeat;
+  transition: background-color .4s ease;
 }

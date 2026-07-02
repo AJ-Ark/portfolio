@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -38,42 +37,13 @@ export default function Navigation() {
         style={{ padding: "1.1rem var(--spacing-page)" }}
       >
         <Link href="/" className="group flex items-center gap-2.5">
-          {/* AJ logo mark — light version for dark domains, dark for light */}
-          <span style={{ position: "relative", display: "inline-block", width: 28, height: 28, flexShrink: 0 }}>
-            {/* Light logo (dark backgrounds — home, realm, rippl) */}
-            <Image
-              src="/images/aj_LOGO_light.png"
-              alt=""
-              width={28}
-              height={28}
-              aria-hidden="true"
-              style={{
-                width: 28,
-                height: 28,
-                objectFit: "contain",
-                position: "absolute",
-                inset: 0,
-                opacity: "var(--logo-light-opacity, 1)",
-                transition: "opacity 0.6s ease",
-              }}
-            />
-            {/* Dark logo (light backgrounds — trmeric) */}
-            <Image
-              src="/images/aj_LOGO_dark.png"
-              alt="Aravind J"
-              width={28}
-              height={28}
-              style={{
-                width: 28,
-                height: 28,
-                objectFit: "contain",
-                position: "absolute",
-                inset: 0,
-                opacity: "var(--logo-dark-opacity, 0)",
-                transition: "opacity 0.6s ease",
-              }}
-            />
-          </span>
+          {/* AJ logo mark — one vector shape, recolored per theme (gold on
+              dark, ink on light) via CSS mask. Adjacent wordmark names it. */}
+          <span
+            className="aj-logo"
+            aria-hidden="true"
+            style={{ width: 28, height: 28, flexShrink: 0 }}
+          />
           <span
             style={{
               fontFamily: "var(--font-display)",
