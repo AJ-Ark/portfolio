@@ -575,7 +575,7 @@ export default function TrmericPage() {
                 <span style={s.kicker}>Design system, Trmeric DS v3</span>
                 <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-.02em", color: INK, marginBottom: "1.2rem", lineHeight: 1.2 }}>Built from the turmeric plant.</h2>
                 <p style={{ ...s.body, marginBottom: "1rem" }}>Rhizome oranges. Powder golds. Leaf greens. Root browns. The palette references an actual object. That constraint made every color decision easier and the system more coherent.</p>
-                <p style={{ ...s.body, marginBottom: "1.5rem" }}>One rule: <strong style={{ color: INK, fontWeight: 600 }}>no default-AI-generated look.</strong> No heavy left-border accents. No accent rails used as decoration. Hierarchy does the work, not ornament.</p>
+                <p style={{ ...s.body, marginBottom: "1.5rem" }}>One rule: <strong style={{ color: INK, fontWeight: 600 }}>restraint over decoration.</strong> No heavy left-border accents. No accent rails used as decoration. Hierarchy does the work, not ornament.</p>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   {[
                     { d: "Orange is brand, never AI", r: "The AI gradient (#8b5cf6 → #FFA426) appears exclusively in Tango contexts. When users see it, they know intelligence is active. Mixing orange into both buttons and AI collapses this critical signal." },
