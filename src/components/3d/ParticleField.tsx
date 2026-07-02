@@ -235,6 +235,23 @@ export default function ParticleField({ domain = null, offsetX = 0, warping = fa
 
   const seeds = useMemo(() => makeSeeds(PARTICLE_COUNT), []);
 
+  /* Round sprite — PointsMaterial renders square quads by default; a soft
+     radial texture turns every dot into a circle (same device the Realm
+     site's pollen field uses, so the two fields correlate visually). */
+  const dotTexture = useMemo(() => {
+    if (typeof document === "undefined") return null;
+    const c = document.createElement("canvas");
+    c.width = c.height = 64;
+    const g = c.getContext("2d")!;
+    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0,    "rgba(255,255,255,1)");
+    grad.addColorStop(0.45, "rgba(255,255,255,1)");
+    grad.addColorStop(1,    "rgba(255,255,255,0)");
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  }, []);
+
   const initialPositions = useMemo(() => {
     const pos = new Float32Array(PARTICLE_COUNT * 3);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -381,7 +398,10 @@ export default function ParticleField({ domain = null, offsetX = 0, warping = fa
         />
       </bufferGeometry>
       <pointsMaterial
-        size={size.width < 768 ? 0.038 : 0.024}
+        /* Soft edges read ~15% smaller than a hard square — sizes bumped
+           to compensate so the perceived dot size stays the same. */
+        size={size.width < 768 ? 0.044 : 0.028}
+        map={dotTexture}
         color={getDomainColor(domain, dark)}
         transparent
         opacity={dark ? 0.72 : 0.80}

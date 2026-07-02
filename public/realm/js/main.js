@@ -7,14 +7,22 @@ const ScrollTrigger = window.ScrollTrigger;
 /* ============================================================
    PRELOADER
    ============================================================ */
+let preloaderHidden = false;
 function hidePreloader(){
+  if(preloaderHidden) return;
+  preloaderHidden = true;
   const pre = document.getElementById("preloader");
   if(pre){ pre.classList.add("done"); setTimeout(()=>pre.remove(), 900); }
   if(window.__beginWarp) window.__beginWarp();   // launch the portal as the cover fades
 }
-window.addEventListener("load", ()=> setTimeout(hidePreloader, 800));
+/* Fade the cover as soon as the DOM is ready — the particle warp fly-in IS
+   the arrival moment (continuous with the portfolio's dive-in transition),
+   so there is nothing to "wait" for: the field is procedural, not an asset. */
+const armPreloader = ()=> setTimeout(hidePreloader, 150);
+if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", armPreloader);
+else armPreloader();
 // safety net
-setTimeout(hidePreloader, 4000);
+setTimeout(hidePreloader, 2500);
 
 /* ============================================================
    SMOOTH SCROLL (Lenis) + GSAP sync
