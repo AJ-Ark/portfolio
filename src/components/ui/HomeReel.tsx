@@ -280,9 +280,9 @@ function HeroContent() {
       <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: "var(--pad)", width: "1px", background: "var(--line)", opacity: 0.25 }} />
 
       <div style={{ position: "relative", zIndex: 2 }}>
-        <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 300, lineHeight: 0.94, letterSpacing: "-.025em", marginBottom: "2.5rem" }}>
-          <span style={{ display: "block", fontSize: "clamp(3.5rem, 10.5vw, 9.5rem)", color: "var(--color-paper)" }}>Architect</span>
-          <span style={{ display: "block", fontSize: "clamp(3.5rem, 10.5vw, 9.5rem)", fontStyle: "italic", color: "var(--color-accent)", paddingLeft: "clamp(1.5rem, 6vw, 6rem)" }}>by practice.</span>
+        <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 300, lineHeight: 1.0, letterSpacing: "-.025em", marginBottom: "2.5rem" }}>
+          <span style={{ display: "block", fontSize: "clamp(2.6rem, 7.5vw, 6rem)", color: "var(--color-paper)" }}>Architect by training.</span>
+          <span style={{ display: "block", fontSize: "clamp(2.6rem, 7.5vw, 6rem)", fontStyle: "italic", color: "var(--color-accent)", paddingLeft: "clamp(1rem, 4vw, 4rem)" }}>Designer by practice.</span>
           <span style={{ display: "block", fontSize: "clamp(1.1rem, 2.8vw, 2.6rem)", color: "var(--color-graphite-light)", fontStyle: "normal", marginTop: "1.5rem", fontWeight: 300, letterSpacing: "-.01em" }}>
             I build the thing to understand the thing.
           </span>
