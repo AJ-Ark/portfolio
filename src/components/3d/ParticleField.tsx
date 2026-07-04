@@ -204,7 +204,9 @@ const DARK_COLORS: Record<string, THREE.Color> = {
 const LIGHT_COLORS: Record<string, THREE.Color> = {
   rippl:   new THREE.Color("#246660"),
   realm:   new THREE.Color("#6B5020"),
-  trmeric: new THREE.Color("#B87010"),
+  /* Deep turmeric amber — the old #B87010 was far lighter than the other
+     domains' light colors, so its dots washed out on the cream ground. */
+  trmeric: new THREE.Color("#8A4E06"),
   rozi:    new THREE.Color("#7A2A14"),
   idle:    new THREE.Color("#3a352E"),
 };
@@ -381,7 +383,7 @@ export default function ParticleField({ domain = null, offsetX = 0, warping = fa
     const mat = points.current?.material as THREE.PointsMaterial;
     if (mat) {
       mat.color.lerp(getDomainColor(domainRef.current, darkRef.current), 0.03);
-      const baseOpacity = darkRef.current ? 0.72 : 0.80;
+      const baseOpacity = darkRef.current ? 0.72 : 0.86;
       // Dots solidify as the camera goes in — the dive reads as substance.
       mat.opacity = Math.min(0.95, baseOpacity + Math.sin(t * 0.35) * 0.1 + dive * 0.25);
     }
@@ -404,7 +406,7 @@ export default function ParticleField({ domain = null, offsetX = 0, warping = fa
         map={dotTexture}
         color={getDomainColor(domain, dark)}
         transparent
-        opacity={dark ? 0.72 : 0.80}
+        opacity={dark ? 0.72 : 0.86}
         sizeAttenuation
         depthWrite={false}
       />

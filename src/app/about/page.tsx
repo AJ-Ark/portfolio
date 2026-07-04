@@ -42,7 +42,7 @@ export default function AboutPage() {
               color: "var(--color-accent)", opacity: 0.8,
               display: "block", marginBottom: "2rem",
             }}>
-              Aravind Jegajeeva Rajasekar · About
+              Aravind J · About
             </span>
             <h1 style={{
               fontFamily: "var(--font-display)", fontWeight: 300,
@@ -118,7 +118,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               <div style={{
                 position: "relative", width: "100%", aspectRatio: "3/4",
                 borderRadius: "2px", overflow: "hidden",
@@ -126,11 +126,30 @@ export default function AboutPage() {
               }}>
                 <Image
                   src="/images/headshot.jpg"
-                  alt="Portrait of Aravind Jegajeeva Rajasekar"
+                  alt="Portrait of Aravind J"
                   fill
                   style={{ objectFit: "cover", objectPosition: "center top" }}
                 />
               </div>
+              <a
+                href="/Aravind-J-Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="resume-link"
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  gap: "1rem",
+                  fontFamily: "var(--font-mono)", fontSize: ".62rem",
+                  letterSpacing: ".2em", textTransform: "uppercase",
+                  color: "var(--color-accent)",
+                  border: "1px solid var(--line)", borderRadius: "4px",
+                  padding: ".95rem 1.2rem",
+                  transition: "border-color .2s ease, color .2s ease",
+                }}
+              >
+                <span>Download résumé</span>
+                <span aria-hidden="true">↓</span>
+              </a>
             </div>
           </div>
         </section>

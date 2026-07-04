@@ -60,6 +60,21 @@ export default function Footer() {
           >
             LinkedIn
           </a>
+          <a
+            href="/Aravind-J-Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer-link"
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: ".65rem",
+              letterSpacing: ".14em",
+              textTransform: "uppercase",
+              color: "var(--color-graphite-light)",
+            }}
+          >
+            Résumé
+          </a>
           <span
             style={{
               fontFamily: "var(--font-mono)",
