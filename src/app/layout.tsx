@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="prefetch" href="https://unpkg.com/three@0.160.0/build/three.module.js" as="script" crossOrigin="anonymous" />
         <link rel="prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" as="script" />
         <link rel="prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" as="script" />
-        <link rel="prefetch" href="https://unpkg.com/lenis@1.0.42/dist/lenis.min.js" as="script" />
+        <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/lenis@1.0.42/dist/lenis.min.js" as="script" />
       </head>
       <body>
         {/* Skip to content — recruiter bypass, always first */}
