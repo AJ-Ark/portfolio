@@ -152,7 +152,7 @@ A portfolio that reflects how Aravind actually works: deep, research-grounded, s
 - One-liner: "Designing the product experience for an AI-native enterprise platform — from demand intake to portfolio value realization."
 - Role: Senior Product Designer. Sole designer on the founding team — Siddharth Bohra (CEO/Product), Roshan PR (Engineering Lead), and a small cross-functional team.
 - Timeline: 2025–present.
-- Clients referenced: BHP, Kaiser Permanente, EY, Seagate (show as subtle logo marks or text chips).
+- Clients referenced: Talvera, Solace Health, Meridian, Veltrix (show as subtle logo marks or text chips).
 
 #### Context section
 - What Trmeric is: An AI-native B2B SaaS platform for demand management, resource management, and portfolio management. It helps enterprises decide what to build, who builds it, and whether it delivered value.
@@ -211,9 +211,9 @@ A grid of cards linking to individual feature case studies. These are the ones w
 - Kudos / Gamification (no-points streak model, 12 universal badges)
 - Hub redesign (Measure/Mobilize/Magnify three-column structure, persona switching)
 - Tango Personalized Home Screen (data cards from real user JSON)
-- Seagate portfolio review + initiative brief (client deliverable)
+- Veltrix portfolio review + initiative brief (client deliverable)
 - Marketing website (three.js 3D ring scene)
-- KP Lifecycle (18-step SVG lifecycle diagram for Kaiser Permanente)
+- KP Lifecycle (18-step SVG lifecycle diagram for Solace Health)
 
 ### 4.5 Realm of Elementals — Case study
 

@@ -249,7 +249,7 @@ const content: Record<string, {
     ],
     topologies: [
       { name: "Internal EPMO / CIO", subtitle: "Governance hierarchy", desc: "Governs internal change initiatives organised as a governance hierarchy.", hierarchy: "Portfolio → Program → Project → Demand", scale: "50–300 active projects. Asks: are we aligned, on budget, delivering value?" },
-      { name: "IT Services Delivery VP", subtitle: "Account roll-up (LTI, TCS, Infosys)", desc: "Owns a delivery portfolio of client engagements, each with its own P&L.", hierarchy: "Vertical → Account → Engagement → Project", scale: "1,000+ engagements. At this scale: exception-first, rollup-driven. No one reads 1,000 rows." },
+      { name: "IT Services Delivery VP", subtitle: "Account roll-up (Kestrel IT, Northbridge, Solvex)", desc: "Owns a delivery portfolio of client engagements, each with its own P&L.", hierarchy: "Vertical → Account → Engagement → Project", scale: "1,000+ engagements. At this scale: exception-first, rollup-driven. No one reads 1,000 rows." },
     ],
     rituals: [
       { cadence: "Weekly", detail: "Portfolio ops review. Walk reds and ambers. Assign actions." },
@@ -352,7 +352,7 @@ const content: Record<string, {
     decisions: [
       {
         decision: "Cluster by project, not flat node soup.",
-        reasoning: "An undifferentiated cloud of 79 signal dots is unreadable. Clustering by project (Kaiser Migration, BHP Sync, Unified Customer) lets a Portfolio Manager see at a glance which initiative is generating the most noise, with red rings marking clusters that need a decision today.",
+        reasoning: "An undifferentiated cloud of 79 signal dots is unreadable. Clustering by project (Solace Migration, Talvera Sync, Unified Customer) lets a Portfolio Manager see at a glance which initiative is generating the most noise, with red rings marking clusters that need a decision today.",
         before: "Click-to-expand (our first implementation) felt like drilling. You had to commit to exploring a node before seeing its connections.",
         after: "Hover highlights all first-degree connections. Graph remains whole. Pattern recognition is instant.",
       },
@@ -370,7 +370,7 @@ const content: Record<string, {
         title: "Tango flags it before you go looking",
         img: "/images/trmeric/uplevel-grid.png",
         imgAlt: "Projects grid with Tango insights panel surfacing stale and blocked projects, each with an Up-level button, plus a bulk Up-level all with Tango action",
-        caption: "The grid view never makes a PM hunt for what's stale. Tango reads update timestamps and blocker flags directly: \"EY Digital status hasn't been updated in 2 days, UAT milestone is at risk.\" Each flagged row gets its own Up-level button inline, plus a bulk action when several projects have gone quiet at once.",
+        caption: "The grid view never makes a PM hunt for what's stale. Tango reads update timestamps and blocker flags directly: \"Meridian Digital status hasn't been updated in 2 days, UAT milestone is at risk.\" Each flagged row gets its own Up-level button inline, plus a bulk action when several projects have gone quiet at once.",
       },
       {
         num: "02",

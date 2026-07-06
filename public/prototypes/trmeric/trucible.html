@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trmeric — Trucible · EY</title>
+  <title>Trmeric — Trucible · Meridian</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -767,7 +767,7 @@
         </div>
         <span class="bc-sep" style="color:var(--n300);font-size:13px;">›</span>
         <span class="bc-back" id="backBtn" onclick="goRoot()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></span>
-        <span class="bc-part" id="bcRoot" onclick="goRoot()" style="font-size:13px;font-weight:600;color:var(--n900);cursor:pointer;">EY Knowledge Space</span>
+        <span class="bc-part" id="bcRoot" onclick="goRoot()" style="font-size:13px;font-weight:600;color:var(--n900);cursor:pointer;">Meridian Knowledge Space</span>
         <span class="bc-sep" id="bcSep2" style="display:none;color:var(--n300);font-size:13px;">›</span>
         <span class="bc-part current" id="bcFolder" style="display:none;font-size:13px;font-weight:600;color:var(--n900);"></span>
         <span class="tr-meta" id="bcMeta" style="font-size:11px;color:var(--n400);">· 6 clusters · 38 items</span>
@@ -880,14 +880,14 @@
           <!-- Summary card — Wikipedia-style -->
           <div style="border:1px solid var(--n200);border-radius:var(--r-lg);overflow:hidden;margin-bottom:var(--s5);">
             <div style="background:var(--n50);padding:var(--s3) var(--s4);border-bottom:1px solid var(--n200);">
-              <div style="font-size:12px;font-weight:700;color:var(--n900);">EY Knowledge Space</div>
+              <div style="font-size:12px;font-weight:700;color:var(--n900);">Meridian Knowledge Space</div>
               <div style="font-size:10px;color:var(--n400);margin-top:2px;">Enterprise Transformation · 2026</div>
             </div>
             <div style="padding:var(--s3) var(--s4);">
               <table style="width:100%;border-collapse:collapse;font-size:11px;">
                 <tr style="border-bottom:1px solid var(--n100);">
                   <td style="padding:4px 0;color:var(--n400);font-weight:600;width:45%;">Client</td>
-                  <td style="padding:4px 0;color:var(--n800);">EY</td>
+                  <td style="padding:4px 0;color:var(--n800);">Meridian</td>
                 </tr>
                 <tr style="border-bottom:1px solid var(--n100);">
                   <td style="padding:4px 0;color:var(--n400);font-weight:600;">Programme</td>
@@ -992,7 +992,7 @@
       <div class="tp-info" style="flex:1;min-width:0;">
         <div class="tp-nm" id="tangoName">Tango Agent</div>
         <div class="tp-sub" id="tangoSub" style="display:flex;align-items:center;gap:5px;">
-          <span id="tangoCtxLabel">EY Knowledge Space</span>
+          <span id="tangoCtxLabel">Meridian Knowledge Space</span>
         </div>
       </div>
       <div class="tp-r"><button class="tp-cls" onclick="toggleTango()">✕</button></div>
@@ -1016,7 +1016,7 @@
 
     <!-- Input row -->
     <div class="tp-inp-row">
-      <input class="tp-inp" id="tpInp" placeholder="Ask about EY documents…" onkeydown="if(event.key==='Enter')sendMsg()">
+      <input class="tp-inp" id="tpInp" placeholder="Ask about Meridian documents…" onkeydown="if(event.key==='Enter')sendMsg()">
       <button class="tp-send" onclick="sendMsg()">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
@@ -1046,7 +1046,7 @@
   <div class="modal" style="max-width:560px;">
     <div class="mhd"><span class="mtitle">Connect a data source</span><button class="mx" onclick="closeConnectModal()">✕</button></div>
     <div id="connectStep1">
-      <div style="font-size:12px;color:var(--n600);margin-bottom:var(--s4);">Select a source to connect to your EY Knowledge Space</div>
+      <div style="font-size:12px;color:var(--n600);margin-bottom:var(--s4);">Select a source to connect to your Meridian Knowledge Space</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s3);">
         <div onclick="selectSource('Jira')" class="src-tile" style="padding:var(--s4);border:1.5px solid var(--n200);border-radius:var(--r-lg);cursor:pointer;text-align:center;transition:all var(--tf);">
           <div style="width:36px;height:36px;border-radius:var(--r-base);background:#eff6ff;display:flex;align-items:center;justify-content:center;margin:0 auto var(--s2);">
@@ -1106,9 +1106,9 @@
 <!-- UPLOAD MODAL -->
 <div class="overlay" id="uploadOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="mhd"><span class="mtitle">Upload to EY Knowledge Space</span><button class="mx" onclick="closeModal()">✕</button></div>
+    <div class="mhd"><span class="mtitle">Upload to Meridian Knowledge Space</span><button class="mx" onclick="closeModal()">✕</button></div>
     <div class="flbl">Document name</div>
-    <input class="minp" id="mDocName" placeholder="e.g. EY Risk Framework v4">
+    <input class="minp" id="mDocName" placeholder="e.g. Meridian Risk Framework v4">
     <div class="flbl">Upload to section</div>
     <select class="minp" id="mSection" style="cursor:pointer;appearance:auto;">
       <option value="">— Select a section —</option>
@@ -1214,7 +1214,7 @@ function navClickFolder(fid, fname, clusterLabel){
   const bcFolder=document.getElementById('bcFolder');
   const bcMeta=document.getElementById('bcMeta');
   const backBtn=document.getElementById('backBtn');
-  if(bcRoot) bcRoot.textContent='EY Knowledge Space';
+  if(bcRoot) bcRoot.textContent='Meridian Knowledge Space';
   if(bcSep2){bcSep2.style.display='';}
   if(bcFolder){bcFolder.style.display='';bcFolder.textContent=fname;}
   if(bcMeta) bcMeta.textContent='';
@@ -1323,7 +1323,7 @@ const TRIVIA_DATA={
   'sow-v2':   {summary:'Amendment to the original SOW adding a fourth workstream for Data Migration. Extends the timeline by 6 weeks. Signed by both parties.', tags:['Contract','Amendment'], meta:{Owner:'V. Kumar',Updated:'3 weeks ago',Pages:'8',Type:'PDF'}, color:'#FFF8F0',stroke:'#FFA426'},
   'annex':    {summary:'Commercial annexure covering payment terms, IP ownership, and service level agreements. Governs the commercial relationship for the full engagement period.', tags:['Commercial','Legal'], meta:{Owner:'V. Kumar',Updated:'3 months ago',Pages:'12',Type:'PDF'}, color:'#FFF8F0',stroke:'#FFA426'},
   'comp-land':{summary:'Competitive landscape analysis covering 6 ERP vendors. Positions SAP S/4HANA as primary recommendation with Oracle Fusion as secondary. Includes pricing and capability matrix.', tags:['Research','Strategy'], meta:{Owner:'S. Roy',Updated:'2 weeks ago',Pages:'18',Type:'PDF'}, color:'#eff6ff',stroke:'#3B82F6'},
-  'sector-rpt':{summary:'EY Sector Report FY24 covering enterprise technology adoption trends. Key finding: 73% of organisations are accelerating ERP modernisation programmes post-pandemic.', tags:['Research','Industry'], meta:{Owner:'S. Roy',Updated:'1 month ago',Pages:'34',Type:'PDF'}, color:'#eff6ff',stroke:'#3B82F6'},
+  'sector-rpt':{summary:'Meridian Sector Report FY24 covering enterprise technology adoption trends. Key finding: 73% of organisations are accelerating ERP modernisation programmes post-pandemic.', tags:['Research','Industry'], meta:{Owner:'S. Roy',Updated:'1 month ago',Pages:'34',Type:'PDF'}, color:'#eff6ff',stroke:'#3B82F6'},
   'bench':    {summary:'Benchmarking analysis comparing current ERP maturity against industry peers. Current score: 3.2/5. Target: 4.5/5 by FY26. Identifies 12 capability gaps.', tags:['Analysis','Strategy'], meta:{Owner:'K. Patel',Updated:'3 weeks ago',Pages:'22',Type:'XLSX'}, color:'#f0fdfa',stroke:'#0D9488'},
   'tech-trends':{summary:'Technology Trends 2025 report covering AI integration, cloud-native ERP, and low-code platforms. Directly informs the Technology Architecture workstream.', tags:['Research','Technology'], meta:{Owner:'R. Lal',Updated:'1 week ago',Pages:'28',Type:'PDF'}, color:'#eff6ff',stroke:'#3B82F6'},
   'risk-fw':  {summary:'Risk Framework v3 governing all programme risk activities. Defines risk appetite, escalation paths, and treatment strategies. 3 active HIGH risks flagged.', tags:['Risk','Governance'], meta:{Owner:'M. Nair',Updated:'Today',Pages:'16',Type:'PDF'}, color:'#fef2f2',stroke:'#DC2626'},
@@ -1457,7 +1457,7 @@ function setWikiMode(mode){
 const WIKI_SECTIONS=[
   {
     id:'overview', label:'Overview', color:'#FFA426',
-    body:`<p class="wiki-p">The <span class="wiki-link" onclick="openDoc('sow-q1')">EY Knowledge Space</span> is a unified enterprise knowledge foundation synthesising <strong>2.4 million records</strong> across six clusters and five live data sources. It serves as the single source of truth for the EY transformation programme, combining structured data from <span class="wiki-link" onclick="clickSource('jira')">Jira</span>, <span class="wiki-link" onclick="clickSource('sap')">SAP ERP</span>, and <span class="wiki-link" onclick="clickSource('sfdc')">Salesforce</span> with documents, policies, and strategic plans uploaded by the team.</p>
+    body:`<p class="wiki-p">The <span class="wiki-link" onclick="openDoc('sow-q1')">Meridian Knowledge Space</span> is a unified enterprise knowledge foundation synthesising <strong>2.4 million records</strong> across six clusters and five live data sources. It serves as the single source of truth for the Meridian transformation programme, combining structured data from <span class="wiki-link" onclick="clickSource('jira')">Jira</span>, <span class="wiki-link" onclick="clickSource('sap')">SAP ERP</span>, and <span class="wiki-link" onclick="clickSource('sfdc')">Salesforce</span> with documents, policies, and strategic plans uploaded by the team.</p>
     <p class="wiki-p">Tango continuously indexes and cross-references this knowledge, surfacing connections, gaps, and insights across the entire corpus. The space is structured around six thematic clusters — Strategy &amp; Intel, Risk &amp; Compliance, Delivery &amp; Execution, People &amp; Structure, Commercial &amp; Finance, and Technology &amp; Architecture.</p>
     <div class="wiki-tag-row">
       <span class="wiki-tag" style="background:#FFF8F0;color:#E8710A;" onclick="openFolderFromNav('f-strategy')">Strategy &amp; Intel</span>
@@ -1470,8 +1470,8 @@ const WIKI_SECTIONS=[
   },
   {
     id:'strategy', label:'Strategy & Intel', color:'#FFA426',
-    body:`<p class="wiki-p">The strategy cluster anchors the entire engagement. The <span class="wiki-link" onclick="openDoc('sow-q1')">EY Scope of Work Q1 FY25</span> defines three workstreams — Digital Architecture, Process Optimisation, and Organisational Change — running from January to March 2025. This document is referenced by <strong>11 other documents</strong> across the knowledge space.</p>
-    <p class="wiki-p">Market intelligence includes a <span class="wiki-link" onclick="openFolderFromNav('f-intel')">Competitor Landscape</span> and EY Sector Report. Strategic priorities are codified in the <span class="wiki-link" onclick="openDoc('sow-q1')">OKRs FY25</span> which align to the 3-year vision document updated in April 2026.</p>
+    body:`<p class="wiki-p">The strategy cluster anchors the entire engagement. The <span class="wiki-link" onclick="openDoc('sow-q1')">Meridian Scope of Work Q1 FY25</span> defines three workstreams — Digital Architecture, Process Optimisation, and Organisational Change — running from January to March 2025. This document is referenced by <strong>11 other documents</strong> across the knowledge space.</p>
+    <p class="wiki-p">Market intelligence includes a <span class="wiki-link" onclick="openFolderFromNav('f-intel')">Competitor Landscape</span> and Meridian Sector Report. Strategic priorities are codified in the <span class="wiki-link" onclick="openDoc('sow-q1')">OKRs FY25</span> which align to the 3-year vision document updated in April 2026.</p>
     <div class="wiki-callout"><div class="wiki-callout-lbl">✦ Tango observation</div>The Board Deck — Q1 Update was uploaded today. It references three milestones from the SOW that are currently at risk due to the +3 week delay in the Technology workstream.</div>`,
   },
   {
@@ -1487,7 +1487,7 @@ const WIKI_SECTIONS=[
   },
   {
     id:'people', label:'People & Structure', color:'#7C3AED',
-    body:`<p class="wiki-p">The People cluster is currently the most isolated — no cross-cluster document references exist from this section. The <span class="wiki-link" onclick="openDoc('org-chart')">Org Chart EY Team v3</span> was last updated 1 week ago. The <span class="wiki-link" onclick="openFolderFromNav('f-talent')">RACI Matrix</span> has not been updated since SOW v2 was uploaded — roles may have changed.</p>
+    body:`<p class="wiki-p">The People cluster is currently the most isolated — no cross-cluster document references exist from this section. The <span class="wiki-link" onclick="openDoc('org-chart')">Org Chart Meridian Team v3</span> was last updated 1 week ago. The <span class="wiki-link" onclick="openFolderFromNav('f-talent')">RACI Matrix</span> has not been updated since SOW v2 was uploaded — roles may have changed.</p>
     <p class="wiki-p">Resourcing Plan FY25 and the Skills Matrix are managed by T. Rao. The Onboarding Pack was uploaded 1 month ago and has not been revised.</p>
     <div class="wiki-callout"><div class="wiki-callout-lbl">✦ Tango observation</div>Recommend linking the RACI Matrix to the Delivery Playbook — the current assignment of responsibilities in delivery activities is not reflected in the people documentation.</div>`,
   },
@@ -1510,7 +1510,7 @@ function renderWiki(){
 
   let html=`<div class="wiki-body fi">
     <div class="wiki-hero">
-      <h1 class="wiki-title">EY Knowledge Space</h1>
+      <h1 class="wiki-title">Meridian Knowledge Space</h1>
       <div class="wiki-meta">
         <span class="wiki-meta-dot"></span>
         <span>Live · Updated 2 minutes ago</span>
@@ -1519,7 +1519,7 @@ function renderWiki(){
         <span style="color:var(--n200);">|</span>
         <span>38 documents · 2.4M records</span>
       </div>
-      <p class="wiki-lead">A unified knowledge foundation for the EY transformation programme — synthesising strategy, risk, delivery, people, commercial, and technology context into a single living reference.</p>
+      <p class="wiki-lead">A unified knowledge foundation for the Meridian transformation programme — synthesising strategy, risk, delivery, people, commercial, and technology context into a single living reference.</p>
     </div>`;
 
   WIKI_SECTIONS.forEach((sec,i)=>{
@@ -1539,7 +1539,7 @@ function renderWiki(){
     <div class="wiki-ref-title">References</div>`;
 
   const refs=[
-    {id:'sow-q1',    name:'EY Scope of Work — Q1 FY25',    type:'PDF',  bg:'#FFF8F0',stroke:'#FFA426'},
+    {id:'sow-q1',    name:'Meridian Scope of Work — Q1 FY25',    type:'PDF',  bg:'#FFF8F0',stroke:'#FFA426'},
     {id:'audit-fy24',name:'Audit Findings FY24',             type:'PDF',  bg:'#fef2f2',stroke:'#DC2626'},
     {id:'pb-main',   name:'Delivery Playbook v2',            type:'PDF',  bg:'#f0fdfa',stroke:'#0D9488'},
     {id:'arch-hld',  name:'High-Level Design v2',            type:'PDF',  bg:'#fffbeb',stroke:'#B45309'},
@@ -1804,7 +1804,7 @@ function openFolderFromNav(fid){
 // ── Source overview for system sources ──
 const SOURCE_OVERVIEW={
   sap:     {title:'SAP ERP',     color:'#E8710A', stats:[{l:'Records',v:'847K'},{l:'Last sync',v:'2m ago'},{l:'Tables',v:'312'},{l:'Status',v:'Live'}], summary:'SAP ERP is fully synced with 847K records spanning finance, procurement, HR and project data. Last batch ingestion completed 2 minutes ago with no errors.', chips:['Browse records','View schema','Sync history']},
-  sfdc:    {title:'Salesforce',  color:'#0D9488', stats:[{l:'Records',v:'124K'},{l:'Last sync',v:'4m ago'},{l:'Objects',v:'48'},{l:'Status',v:'Live'}],  summary:'Salesforce CRM data is live with 124K records covering accounts, contacts, opportunities and cases. The EY engagement and account data is fully mapped to Trucible knowledge model.', chips:['Browse accounts','View opportunities','Sync history']},
+  sfdc:    {title:'Salesforce',  color:'#0D9488', stats:[{l:'Records',v:'124K'},{l:'Last sync',v:'4m ago'},{l:'Objects',v:'48'},{l:'Status',v:'Live'}],  summary:'Salesforce CRM data is live with 124K records covering accounts, contacts, opportunities and cases. The Meridian engagement and account data is fully mapped to Trucible knowledge model.', chips:['Browse accounts','View opportunities','Sync history']},
   jira:    {title:'Jira',        color:'#3B82F6', stats:[{l:'Records',v:'322K'},{l:'Last sync',v:'2m ago'},{l:'Projects',v:'14'},{l:'Status',v:'Live'}],  summary:'Jira is synced in real time with 322K records across 14 active projects. Epics, stories, and sprints are fully mapped. Trucible can create and push new stories to any board from a conversation.', chips:['Browse projects','View epics','Push story to Jira']},
   snow:    {title:'ServiceNow',  color:'#DC2626', stats:[{l:'Records',v:'98K'}, {l:'Last sync',v:'5m ago'},{l:'Tables',v:'22'}, {l:'Status',v:'Live'}],  summary:'ServiceNow is connected with 98K records covering incidents, change requests, and CMDB. Trucible has indexed the configuration items and can surface ServiceNow data alongside your documents.', chips:['Browse incidents','View CMDB','Sync history']},
   workday: {title:'Workday',     color:'#7C3AED', stats:[{l:'Records',v:'230K'},{l:'Last sync',v:'1h ago'}, {l:'Modules',v:'8'},  {l:'Status',v:'Live'}],  summary:'Workday HR and finance data is synced hourly with 230K records. Headcount, cost centres, and resource data are mapped and available for portfolio and demand analysis in Trucible.', chips:['Browse workforce','View cost centres','Sync history']},
@@ -1905,14 +1905,14 @@ const CLUSTERS = [
             ]},
         ],
         files:[
-          {id:'sow-q1',name:'EY Scope of Work — Q1 FY25',type:'PDF',date:'2d ago',color:'#FFF8F0',stroke:'#FFA426'},
+          {id:'sow-q1',name:'Meridian Scope of Work — Q1 FY25',type:'PDF',date:'2d ago',color:'#FFF8F0',stroke:'#FFA426'},
           {id:'sow-amend',name:'SOW Amendments v2',type:'DOCX',date:'5d ago',color:'#FFF8F0',stroke:'#FFA426'},
           {id:'sow-annex',name:'Commercial Annexure',type:'PDF',date:'1w ago',color:'#FFF8F0',stroke:'#FFA426'},
         ]},
       { id:'f-intel', name:'Market Intelligence', color:'orange', owner:{init:'SR',color:'#3b82f6',name:'S. Rajan'},
         files:[
           {id:'intel-comp',name:'Competitor Landscape Q1',type:'PDF',date:'1w ago',color:'#FFF8F0',stroke:'#FFA426'},
-          {id:'intel-sector',name:'EY Sector Report FY24',type:'PPTX',date:'2w ago',color:'#FFF8F0',stroke:'#FFA426'},
+          {id:'intel-sector',name:'Meridian Sector Report FY24',type:'PPTX',date:'2w ago',color:'#FFF8F0',stroke:'#FFA426'},
           {id:'intel-bench',name:'Benchmarking Analysis',type:'XLSX',date:'3w ago',color:'#FFF8F0',stroke:'#FFA426'},
           {id:'intel-trends',name:'Technology Trends 2025',type:'PDF',date:'1mo ago',color:'#FFF8F0',stroke:'#FFA426'},
         ]},
@@ -1993,7 +1993,7 @@ const CLUSTERS = [
     folders:[
       { id:'f-org', name:'Org Design', color:'purple', owner:{init:'TR',color:'#8b5cf6',name:'T. Rao'},
         files:[
-          {id:'org-chart',name:'Org Chart — EY Team v3',type:'PDF',date:'1w ago',color:'#fdf4ff',stroke:'#8b5cf6'},
+          {id:'org-chart',name:'Org Chart — Meridian Team v3',type:'PDF',date:'1w ago',color:'#fdf4ff',stroke:'#8b5cf6'},
           {id:'org-raci',name:'RACI Matrix',type:'XLSX',date:'2w ago',color:'#fdf4ff',stroke:'#8b5cf6'},
           {id:'org-roles',name:'Role Descriptions',type:'DOCX',date:'3w ago',color:'#fdf4ff',stroke:'#8b5cf6'},
         ]},
@@ -2011,7 +2011,7 @@ const CLUSTERS = [
       { id:'f-contracts', name:'Contracts & MSAs', color:'blue', owner:{init:'VK',color:'#3b82f6',name:'V. Kumar'},
         files:[
           {id:'con-msa',name:'Master Services Agreement',type:'PDF',date:'3mo ago',color:'#eff6ff',stroke:'#3b82f6'},
-          {id:'con-nda',name:'NDA — EY x Client',type:'PDF',date:'4mo ago',color:'#eff6ff',stroke:'#3b82f6'},
+          {id:'con-nda',name:'NDA — Meridian x Client',type:'PDF',date:'4mo ago',color:'#eff6ff',stroke:'#3b82f6'},
           {id:'con-amend1',name:'Contract Amendment 01',type:'DOCX',date:'1mo ago',color:'#eff6ff',stroke:'#3b82f6'},
           {id:'con-order',name:'Work Order — Digital Stream',type:'PDF',date:'2w ago',color:'#eff6ff',stroke:'#3b82f6'},
         ]},
@@ -2067,12 +2067,12 @@ const CLUSTERS = [
 //  DOC CONTENT
 // ═══════════════════════════════════════
 const DOC_BODIES = {
-  'sow-q1':{title:'EY Scope of Work — Q1 FY25',meta:'14 chunks · v3 · PDF · Strategy & Intel › Scope & SOW',
-    body:`<h2>EY Scope of Work — Q1 FY25</h2>
+  'sow-q1':{title:'Meridian Scope of Work — Q1 FY25',meta:'14 chunks · v3 · PDF · Strategy & Intel › Scope & SOW',
+    body:`<h2>Meridian Scope of Work — Q1 FY25</h2>
     <div class="dr-tag-row"><span class="dr-tag">Strategy</span><span class="dr-tag">Q1 FY25</span><span class="dr-tag">Engagement</span></div>
     <div class="dr-hl">✦ Trucible: 3 other documents reference this SOW — Delivery Playbook, Risk Framework v3, and Sprint Plan Q1 are all aligned to the milestones defined here.</div>
     <h3>1. Engagement Overview</h3>
-    <p>EY is engaged to support the client's strategic transformation programme across three workstreams: Digital Architecture, Process Optimisation, and Organisational Change.</p>
+    <p>Meridian is engaged to support the client's strategic transformation programme across three workstreams: Digital Architecture, Process Optimisation, and Organisational Change.</p>
     <h3>2. Key Deliverables</h3>
     <ul><li>Current-state assessment report (Week 3)</li><li>Target operating model recommendation (Week 6)</li><li>Transformation roadmap — 18-month horizon (Week 8)</li><li>Stakeholder engagement plan (Week 4)</li></ul>
     <h3>3. Timeline</h3>
@@ -2302,7 +2302,7 @@ function goRoot(){
   const bcFolder=document.getElementById('bcFolder');
   const bcMeta=document.getElementById('bcMeta');
   const backBtn=document.getElementById('backBtn');
-  if(bcRoot) bcRoot.textContent='EY Knowledge Space';
+  if(bcRoot) bcRoot.textContent='Meridian Knowledge Space';
   if(bcSep2) bcSep2.style.display='none';
   if(bcFolder) bcFolder.style.display='none';
   if(bcMeta) bcMeta.textContent='· 6 clusters · 38 items';
@@ -2431,7 +2431,7 @@ function openDoc(id){
     const _dm=document.getElementById('drMt');if(_dm)_dm.textContent=`${fileObj.type} · ${fileObj.date}`;
     const _dic=document.getElementById('drIc');if(_dic)_dic.style.background=fileObj.color;
     document.getElementById('drIc').innerHTML=fileIcon(fileObj.stroke).replace('stroke-width="2"','stroke-width="2" width="16" height="16"');
-    document.getElementById('drBody').innerHTML=`<h2>${fileObj.name}</h2><div class="dr-tag-row"><span class="dr-tag">${fileObj.type}</span><span class="dr-tag">${fileObj.date}</span></div><div class="dr-hl">✦ Trucible is indexing this document. AI-powered insights will appear here shortly.</div><p>This document has been uploaded and processed into the EY Knowledge Space. Use the Trucible assistant on the right to ask questions about its contents.</p>`;
+    document.getElementById('drBody').innerHTML=`<h2>${fileObj.name}</h2><div class="dr-tag-row"><span class="dr-tag">${fileObj.type}</span><span class="dr-tag">${fileObj.date}</span></div><div class="dr-hl">✦ Trucible is indexing this document. AI-powered insights will appear here shortly.</div><p>This document has been uploaded and processed into the Meridian Knowledge Space. Use the Trucible assistant on the right to ask questions about its contents.</p>`;
     document.getElementById('docReader').classList.add('open');
     const _mf=document.getElementById('mainFab');if(_mf)_mf.style.display='none';
     return;
@@ -2604,7 +2604,7 @@ function initD3Graph(){
   const links=[];
 
   // Root
-  nodes.push({id:'root', type:'root', label:'EY', sub:'Knowledge Space', r:42, color:'#FFA426', fx:W/2, fy:H/2});
+  nodes.push({id:'root', type:'root', label:'Meridian', sub:'Knowledge Space', r:42, color:'#FFA426', fx:W/2, fy:H/2});
 
   clusterData.forEach((cl,ci)=>{
     // Spread clusters in a ring
@@ -2861,7 +2861,7 @@ function initD3Graph(){
     .attr('x',W/2).attr('y',H/2-3)
     .attr('text-anchor','middle').attr('dominant-baseline','middle')
     .attr('font-family','Poppins,sans-serif').attr('font-size',14).attr('font-weight',700)
-    .attr('fill','white').text('EY');
+    .attr('fill','white').text('Meridian');
   rootSel.append('text')
     .attr('x',W/2).attr('y',H/2+12)
     .attr('text-anchor','middle')
@@ -2890,14 +2890,14 @@ function initD3Graph(){
 // ═══════════════════════════════════════
 const EXEC_CONTENT={
   folder:{
-    oneliner:'<strong>EY Knowledge Space</strong> · 38 docs · 6 clusters · Last updated 2m ago · <span style="color:#ef4444;font-weight:600;">2 gaps</span>',
+    oneliner:'<strong>Meridian Knowledge Space</strong> · 38 docs · 6 clusters · Last updated 2m ago · <span style="color:#ef4444;font-weight:600;">2 gaps</span>',
     badges:[{txt:'Live',bg:'var(--success-bg)',c:'var(--success)'},{txt:'2 Gaps',bg:'var(--error-bg)',c:'var(--error)'}],
     cards:[
       {label:'Total documents',val:'38',sub:'Across 6 clusters'},
       {label:'Updated this week',val:'11',sub:'↑ 3 from last week'},
       {label:'Knowledge gaps',val:'2',sub:'ServiceNow · Stale risks'},
     ],
-    narrative:'The EY Knowledge Space has 38 documents across 6 clusters. Strategy & Intel and Delivery are the most active clusters with recent updates. The Risk Register hasn\'t been updated in 14 days — recommend a review. ServiceNow is referenced in 4 documents but no live connection exists.',
+    narrative:'The Meridian Knowledge Space has 38 documents across 6 clusters. Strategy & Intel and Delivery are the most active clusters with recent updates. The Risk Register hasn\'t been updated in 14 days — recommend a review. ServiceNow is referenced in 4 documents but no live connection exists.',
     chips:['Review Risk Register','Connect ServiceNow','Export to PDF'],
   },
   tree:{
@@ -2974,16 +2974,16 @@ function updateExecSummary(view){
 // ── Update Tango context label ──
 const TANGO_CONTEXTS={
   overview:{name:'Trucible',sub:'Knowledge Foundation',ctx:'Overview · All sources',
-    greeting:'EY Knowledge Foundation is healthy. 2.4M records unified across 5 live sources. ServiceNow is your highest-priority gap — connecting it would push onboarding automation to ~94%.'},
-  folder:{name:'Trucible',sub:'EY Knowledge Assistant',ctx:'Workspace · Folder view',
-    greeting:'EY Knowledge Space has 38 documents across 6 clusters. 3 documents were updated in the last 48 hours. The Risk Register hasn\'t been updated in 14 days — want me to flag this?'},
-  tree:{name:'Trucible',sub:'EY Knowledge Assistant',ctx:'Workspace · Tree view',
+    greeting:'Meridian Knowledge Foundation is healthy. 2.4M records unified across 5 live sources. ServiceNow is your highest-priority gap — connecting it would push onboarding automation to ~94%.'},
+  folder:{name:'Trucible',sub:'Meridian Knowledge Assistant',ctx:'Workspace · Folder view',
+    greeting:'Meridian Knowledge Space has 38 documents across 6 clusters. 3 documents were updated in the last 48 hours. The Risk Register hasn\'t been updated in 14 days — want me to flag this?'},
+  tree:{name:'Trucible',sub:'Meridian Knowledge Assistant',ctx:'Workspace · Tree view',
     greeting:'3 folders in the hierarchy are empty — Historical SOWs, Archived Risks, and Diagrams & Visuals. Want me to suggest documents that belong in each?'},
-  list:{name:'Trucible',sub:'EY Knowledge Assistant',ctx:'Workspace · List view',
+  list:{name:'Trucible',sub:'Meridian Knowledge Assistant',ctx:'Workspace · List view',
     greeting:'4 documents haven\'t been updated in over 30 days. K. Patel is the most active contributor. Want me to identify the stale content and suggest owners?'},
   source:{name:'Trucible',sub:'Source Intelligence',ctx:'Connected Source',
     greeting:'This source is live and synced. I can query its records, surface connections to your documents, and answer questions about what\'s in this system. What would you like to know?'},
-  graph:{name:'Trucible',sub:'EY Knowledge Assistant',ctx:'Workspace · Graph view',
+  graph:{name:'Trucible',sub:'Meridian Knowledge Assistant',ctx:'Workspace · Graph view',
     greeting:'Delivery & Execution is the most connected cluster with 3 cross-cluster references. People & Structure is isolated — no document links to other clusters. Want me to suggest connections?'},
 };
 function sendChip(btn, text){

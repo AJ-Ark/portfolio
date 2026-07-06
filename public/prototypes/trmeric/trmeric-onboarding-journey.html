@@ -1319,8 +1319,8 @@ const PERSONAS = {
     chips: [
       { label: 'Needs attention', tooltip: 'See the demands waiting on you', icon: IC.action, answer: `<p>You've got <strong>3 demands</strong> waiting on you right now:</p>
 <div class="ta-links">
-  <button class="ta-link" onclick="handoffToApp('live')"><span class="ta-tag" style="background:#dbeafe;color:#2563eb;">Approve</span><span class="ta-link-tx">Veolia Smart Grid — awaiting your sign-off</span><span class="ta-arrow">→</span></button>
-  <button class="ta-link" onclick="handoffToApp('live')"><span class="ta-tag" style="background:#fef3c7;color:#b45309;">HLD</span><span class="ta-link-tx">BHP WAIO Cloud Upgrade — approve the revised design</span><span class="ta-arrow">→</span></button>
+  <button class="ta-link" onclick="handoffToApp('live')"><span class="ta-tag" style="background:#dbeafe;color:#2563eb;">Approve</span><span class="ta-link-tx">Aquenta Smart Grid — awaiting your sign-off</span><span class="ta-arrow">→</span></button>
+  <button class="ta-link" onclick="handoffToApp('live')"><span class="ta-tag" style="background:#fef3c7;color:#b45309;">HLD</span><span class="ta-link-tx">Talvera NRIO Cloud Upgrade — approve the revised design</span><span class="ta-arrow">→</span></button>
   <button class="ta-link ghost" onclick="handoffToApp('grid')"><span class="ta-link-tx">See all 6 actions in your grid</span><span class="ta-arrow">→</span></button>
 </div>` },
       { label: 'My demands', tooltip: 'A quick read on your demand book', icon: IC.demand, answer: `<p>You own <strong>12 demands</strong> across 5 stages — <strong>2</strong> need attention, <strong>1</strong> is at risk. Cycle time is down 6 days this quarter.</p>
@@ -1854,7 +1854,7 @@ el('chatInput').addEventListener('keydown', e => {
         +'<div class="fc-legend"><span><span class="dot" style="background:#10b981"></span>9 healthy</span><span><span class="dot" style="background:#f59e0b"></span>2</span><span><span class="dot" style="background:#ef4444"></span>1</span></div>' },
     { fc:'#ef4444', fcbg:'#fef2f2', icon:'<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>', name:'At risk', cta:'Review demand', act:'live',
       hero:'<div class="fc-alert">'+ic('<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>')+'</div>'
-        +'<div class="fc-bigname">NAB Risk Data Platform</div><div class="fc-cap">A flagged risk needs your decision before this one slips.</div>' },
+        +'<div class="fc-bigname">NORTHSTONE Risk Data Platform</div><div class="fc-cap">A flagged risk needs your decision before this one slips.</div>' },
     { fc:'#8b5cf6', fcbg:'#f5f3ff', icon:'<path data-fill d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>', name:'Tango’s been busy', cta:'See what Tango did', act:'toast:Tango has handled 43 actions for you this month — drafts, summaries &amp; nudges.',
       hero:'<div class="fc-stat">43</div><div class="fc-statsub">actions handled this month</div>'+spark('#8b5cf6','2,40 24,32 46,34 68,22 90,17 118,7') },
     { fc:'#10b981', fcbg:'#f0fdf4', icon:'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/>', name:'Cycle time', cta:'See analytics', act:'grid',

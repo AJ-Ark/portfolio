@@ -288,7 +288,7 @@ export default function TrmericPage() {
             </PlotInLines>
             <PlotInLines delay={240}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "2rem", marginTop: "2.5rem", paddingTop: "2rem", borderTop: `1px solid ${LINE}` }}>
-                {[["ROLE","Senior Product Designer"],["TEAM","Siddharth Bohra (CEO) · Roshan PR (Eng)"],["CLIENTS","BHP · Veolia · EY · Seagate"],["TIMELINE","2024 – present"]].map(([l,v]) => (
+                {[["ROLE","Senior Product Designer"],["TEAM","Siddharth Bohra (CEO) · Roshan PR (Eng)"],["CLIENTS","Talvera · Aquenta · Meridian · Veltrix"],["TIMELINE","2024 – present"]].map(([l,v]) => (
                   <div key={l}>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: ".3rem" }}>{l}</span>
                     <span style={{ fontSize: ".8rem", color: DIM, lineHeight: 1.5 }}>{v}</span>

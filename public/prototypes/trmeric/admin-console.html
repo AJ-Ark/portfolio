@@ -950,7 +950,7 @@ tr:hover .trow-actions{opacity:1}
   <div class="ph">
     <div class="ph-left">
       <div class="page-title">Admin Console</div>
-      <div class="page-sub">BHP · Aravind Kapoor · Last config change 2h ago</div>
+      <div class="page-sub">Talvera · Aravind Kapoor · Last config change 2h ago</div>
     </div>
     <div class="ph-actions">
       <button class="btn btn-ghost btn-sm" onclick="resetSetup()">↺ Reset setup</button>
@@ -1048,7 +1048,7 @@ tr:hover .trow-actions{opacity:1}
     <div class="scard-body section-hidden" id="tab-paste" style="padding-top:16px">
       <div class="fg">
         <label>Paste any text — user emails, role descriptions, portfolio names, anything</label>
-        <textarea class="fi fi-ta" id="paste-input" style="min-height:120px;font-size:13px" placeholder="e.g.&#10;Users: arjun@bhp.com (Admin), priya@bhp.com (Demand Manager), roshan@bhp.com (Resource Manager)&#10;Portfolios: Digital Transformation, Mining Operations Excellence&#10;Workflows: 4-stage approval for roadmaps: Draft → Review → Approved → Active"></textarea>
+        <textarea class="fi fi-ta" id="paste-input" style="min-height:120px;font-size:13px" placeholder="e.g.&#10;Users: arjun@talvera.com (Admin), priya@talvera.com (Demand Manager), roshan@talvera.com (Resource Manager)&#10;Portfolios: Digital Transformation, Mining Operations Excellence&#10;Workflows: 4-stage approval for roadmaps: Draft → Review → Approved → Active"></textarea>
       </div>
       <button class="btn btn-ai btn-sm" onclick="runParse('paste')">✦ Let Tango parse this</button>
     </div>
@@ -1378,7 +1378,7 @@ tr:hover .trow-actions{opacity:1}
         </div>
       </div>
       <div class="scard-body">
-        <div class="fg"><label>Group Name</label><input class="fi" placeholder="e.g. BHP VESPA Team"></div>
+        <div class="fg"><label>Group Name</label><input class="fi" placeholder="e.g. Talvera VESPA Team"></div>
         <div class="fg"><label>Description</label><textarea class="fi fi-ta" placeholder="Optional description" style="min-height:60px"></textarea></div>
         <div class="row2">
           <div class="fg"><label>Priority</label><input class="fi" type="number" value="0"></div>
@@ -2105,7 +2105,7 @@ tr:hover .trow-actions{opacity:1}
       </svg>
       <div class="tango-hd-text">
         <div class="tango-name">Tango</div>
-        <div class="tango-context" id="tango-ctx">Admin Assistant · BHP</div>
+        <div class="tango-context" id="tango-ctx">Admin Assistant · Talvera</div>
       </div>
       <div class="tango-toggle">‹</div>
     </div>
@@ -2173,16 +2173,16 @@ let selectedColor = '#3b82f6';
 let reportColsSelected = {};
 
 const USERS = [
-  {id:1, name:'Arjun Kapoor',   email:'arjun@bhp.com',    initials:'AK', color:'#FFA426', primary:'Organization Admin',  secondary:[], portfolio:'all', status:'active'},
-  {id:2, name:'Priya Mehta',    email:'priya@bhp.com',    initials:'PM', color:'#8b5cf6', primary:'Demand Manager',      secondary:['Solution Leader'], portfolio:'all', status:'active'},
-  {id:3, name:'Roshan PR',      email:'roshan@bhp.com',   initials:'RP', color:'#10b981', primary:'Resource Manager',    secondary:[], portfolio:'specific', portfolioIds:[4,5,11,12,10], status:'active'},
-  {id:4, name:'Sarah Chen',     email:'sarah@bhp.com',    initials:'SC', color:'#3b82f6', primary:'Portfolio Leader',    secondary:['Project Manager'], portfolio:'specific', portfolioIds:[5,11], status:'active'},
-  {id:5, name:'David Okafor',   email:'david@bhp.com',    initials:'DO', color:'#06b6d4', primary:'Organization Leader', secondary:[], portfolio:'all', status:'active'},
-  {id:6, name:'Anika Sharma',   email:'anika@bhp.com',    initials:'AS', color:'#ec4899', primary:'Solution Leader',     secondary:[], portfolio:'specific', status:'active'},
-  {id:7, name:'Marcus Brown',   email:'marcus@bhp.com',   initials:'MB', color:'#f59e0b', primary:'Project Manager',     secondary:[], portfolio:'specific', status:'active'},
-  {id:8, name:'Emma Walsh',     email:'emma@bhp.com',     initials:'EW', color:'#ef4444', primary:null,                  secondary:[], portfolio:'none', status:'pending'},
-  {id:9, name:'Tom Hayes',      email:'tom@bhp.com',      initials:'TH', color:'#64748b', primary:null,                  secondary:[], portfolio:'none', status:'pending'},
-  {id:10,name:'Lynn Patel',     email:'lynn@bhp.com',     initials:'LP', color:'#84cc16', primary:'Member',              secondary:[], portfolio:'specific', status:'active'},
+  {id:1, name:'Arjun Kapoor',   email:'arjun@talvera.com',    initials:'AK', color:'#FFA426', primary:'Organization Admin',  secondary:[], portfolio:'all', status:'active'},
+  {id:2, name:'Priya Mehta',    email:'priya@talvera.com',    initials:'PM', color:'#8b5cf6', primary:'Demand Manager',      secondary:['Solution Leader'], portfolio:'all', status:'active'},
+  {id:3, name:'Roshan PR',      email:'roshan@talvera.com',   initials:'RP', color:'#10b981', primary:'Resource Manager',    secondary:[], portfolio:'specific', portfolioIds:[4,5,11,12,10], status:'active'},
+  {id:4, name:'Sarah Chen',     email:'sarah@talvera.com',    initials:'SC', color:'#3b82f6', primary:'Portfolio Leader',    secondary:['Project Manager'], portfolio:'specific', portfolioIds:[5,11], status:'active'},
+  {id:5, name:'David Okafor',   email:'david@talvera.com',    initials:'DO', color:'#06b6d4', primary:'Organization Leader', secondary:[], portfolio:'all', status:'active'},
+  {id:6, name:'Anika Sharma',   email:'anika@talvera.com',    initials:'AS', color:'#ec4899', primary:'Solution Leader',     secondary:[], portfolio:'specific', status:'active'},
+  {id:7, name:'Marcus Brown',   email:'marcus@talvera.com',   initials:'MB', color:'#f59e0b', primary:'Project Manager',     secondary:[], portfolio:'specific', status:'active'},
+  {id:8, name:'Emma Walsh',     email:'emma@talvera.com',     initials:'EW', color:'#ef4444', primary:null,                  secondary:[], portfolio:'none', status:'pending'},
+  {id:9, name:'Tom Hayes',      email:'tom@talvera.com',      initials:'TH', color:'#64748b', primary:null,                  secondary:[], portfolio:'none', status:'pending'},
+  {id:10,name:'Lynn Patel',     email:'lynn@talvera.com',     initials:'LP', color:'#84cc16', primary:'Member',              secondary:[], portfolio:'specific', status:'active'},
 ];
 
 const PORTFOLIOS = [
@@ -2194,7 +2194,7 @@ const PORTFOLIOS = [
   {id:9,  name:'Field Mobility Apps',              parent:3,    children:[]},
   {id:4,  name:'Mining Operations Excellence',     parent:null, children:[5,10]},
   {id:5,  name:'VESPA Project',                    parent:4,    children:[11,12]},
-  {id:11, name:'VESPA — Pilbara',                  parent:5,    children:[]},
+  {id:11, name:'VESPA — Kalgan Ranges',                  parent:5,    children:[]},
   {id:12, name:'VESPA — Queensland',               parent:5,    children:[]},
   {id:10, name:'Autonomous Haulage',               parent:4,    children:[]},
   {id:6,  name:'Innovation Pipeline',              parent:null, children:[13]},
@@ -2992,7 +2992,7 @@ function renderFlags() {
         <div class="flag-scope">
           <span class="text-xs text-muted">Global default:</span>
           <label class="tgl" style="width:34px;height:20px"><input type="checkbox" ${f.global?'checked':''} onchange="FLAGS[${i}].global=this.checked"><div class="tgl-track"></div></label>
-          <span class="text-xs text-muted" style="margin-left:8px">BHP override:</span>
+          <span class="text-xs text-muted" style="margin-left:8px">Talvera override:</span>
           <label class="tgl" style="width:34px;height:20px"><input type="checkbox" ${f.org?'checked':''} onchange="FLAGS[${i}].org=this.checked"><div class="tgl-track"></div></label>
         </div>
       </div>
@@ -3029,11 +3029,11 @@ function toggleCol(type, col, el) {
 }
 const REPORT_DATA = {
   users: [
-    ['U001','arjun.k','Arjun','Kapoor','arjun@bhp.com','2024-01-15','2025-05-25','842','No','Yes','2024-01-15','Organization Admin'],
-    ['U002','priya.m','Priya','Mehta','priya@bhp.com','2024-02-01','2025-05-24','612','No','Yes','2024-02-01','Demand Manager'],
-    ['U003','roshan.pr','Roshan','PR','roshan@bhp.com','2024-02-10','2025-05-23','594','No','Yes','2024-02-10','Resource Manager'],
-    ['U008','emma.w','Emma','Walsh','emma@bhp.com','2025-05-18','—','0','No','No','2025-05-18','—'],
-    ['U009','tom.h','Tom','Hayes','tom@bhp.com','2025-05-18','—','0','No','No','2025-05-18','—'],
+    ['U001','arjun.k','Arjun','Kapoor','arjun@talvera.com','2024-01-15','2025-05-25','842','No','Yes','2024-01-15','Organization Admin'],
+    ['U002','priya.m','Priya','Mehta','priya@talvera.com','2024-02-01','2025-05-24','612','No','Yes','2024-02-01','Demand Manager'],
+    ['U003','roshan.pr','Roshan','PR','roshan@talvera.com','2024-02-10','2025-05-23','594','No','Yes','2024-02-10','Resource Manager'],
+    ['U008','emma.w','Emma','Walsh','emma@talvera.com','2025-05-18','—','0','No','No','2025-05-18','—'],
+    ['U009','tom.h','Tom','Hayes','tom@talvera.com','2025-05-18','—','0','No','No','2025-05-18','—'],
   ],
   roadmaps: [
     ['RDM-001','VESPA Platform Integration','Approved','$4.2M','2024-Q3','2025-Q4','Arjun Kapoor','Digital Transformation','High'],
@@ -3245,52 +3245,52 @@ function toggleFieldOpts(val) {
    TANGO
 ════════════════════════════════════════════ */
 const TANGO_CONTEXTS = {
-  'overview':       'Admin Overview · BHP',
-  'user-access':    'User Management · BHP',
-  'user-groups':    'User Groups · BHP',
-  'password-mgmt':  'Password & Invites · BHP',
-  'actions-roles':  'Roles & Permissions · BHP',
-  'workflow':       'Workflow Builder · BHP',
-  'portfolios':     'Portfolio Management · BHP',
-  'reference-ids':  'Reference IDs · BHP',
-  'custom-fields':  'Custom Fields · BHP',
-  'feature-flags':  'Feature Flags · BHP',
-  'reports':        'Reports · BHP',
+  'overview':       'Admin Overview · Talvera',
+  'user-access':    'User Management · Talvera',
+  'user-groups':    'User Groups · Talvera',
+  'password-mgmt':  'Password & Invites · Talvera',
+  'actions-roles':  'Roles & Permissions · Talvera',
+  'workflow':       'Workflow Builder · Talvera',
+  'portfolios':     'Portfolio Management · Talvera',
+  'reference-ids':  'Reference IDs · Talvera',
+  'custom-fields':  'Custom Fields · Talvera',
+  'feature-flags':  'Feature Flags · Talvera',
+  'reports':        'Reports · Talvera',
 };
 
 const TANGO_PROMPTS = {
   'overview':      ['Audit my org config','Summarise what needs fixing','What should I do first?'],
   'user-access':   ['Assign roles to unassigned users','Bulk invite new team','Who has no portfolio access?'],
   'user-groups':   ['Create a VESPA group rule','What groups have access to Finance?'],
-  'password-mgmt': ['Invite 12 BHP contractors','Resend onboarding emails','Who hasn\'t logged in?'],
+  'password-mgmt': ['Invite 12 Talvera contractors','Resend onboarding emails','Who hasn\'t logged in?'],
   'actions-roles': ['What can a Project Manager do?','Restrict budget to Portfolio Leaders only','Create a read-only role'],
   'workflow':      ['Generate a 4-stage approval workflow','Add an "On Hold" status','What\'s the current approval path?'],
   'portfolios':    ['Create a Digital portfolio from template','Set KPIs for Mining Ops','How many sub-portfolios does DT have?'],
   'reference-ids': ['Set up IDs for Projects','What format does VESPA use?'],
   'custom-fields': ['Add a Cost Centre field to Projects','List all required fields for Roadmaps'],
-  'feature-flags': ['Enable bulk ops for BHP','Which beta features are on?','Turn off demand forecasting'],
+  'feature-flags': ['Enable bulk ops for Talvera','Which beta features are on?','Turn off demand forecasting'],
   'reports':       ['Generate a users report','Export all roadmaps as Excel','Who hasn\'t logged in this month?'],
 };
 
 const TANGO_SCRIPTED = {
   'overview-quick': [
-    {role:'ai', text:'<b>Org audit — BHP.</b> Here\'s what I found:<br><ul><li>⚠ 2 users have no primary role (Emma Walsh, Tom Hayes)</li><li>⚠ "Concept to Demand" workflow has 0 statuses — ideas will be stuck</li><li>✓ All 4 portfolios are fully configured</li><li>✓ 10 roles defined (7 core, 3 custom)</li></ul>I\'d recommend fixing the user roles first — they\'re actively blocking access.'},
+    {role:'ai', text:'<b>Org audit — Talvera.</b> Here\'s what I found:<br><ul><li>⚠ 2 users have no primary role (Emma Walsh, Tom Hayes)</li><li>⚠ "Concept to Demand" workflow has 0 statuses — ideas will be stuck</li><li>✓ All 4 portfolios are fully configured</li><li>✓ 10 roles defined (7 core, 3 custom)</li></ul>I\'d recommend fixing the user roles first — they\'re actively blocking access.'},
   ],
   'user-bulk': [
     {role:'ai', text:'<b>Bulk user invitation.</b> You can paste a list of emails below and I\'ll suggest role assignments based on email domain and name patterns. Or upload a CSV with columns: email, first_name, last_name, role.'},
     {role:'ai', text:'How would you like to proceed?', action: 'bulk-method'},
   ],
   'bulk-invite-start': [
-    {role:'ai', text:'<b>Let\'s get your 12 BHP contractors onboarded.</b> Paste their email addresses below (one per line) and I\'ll handle role matching and invites.'},
-    {role:'user', text: 'j.harris@bhp.com\na.patel@bhp.com\nc.kim@bhp.com\nm.jones@contractor.com\nl.garcia@bhp.com\nd.smith@contractor.com'},
+    {role:'ai', text:'<b>Let\'s get your 12 Talvera contractors onboarded.</b> Paste their email addresses below (one per line) and I\'ll handle role matching and invites.'},
+    {role:'user', text: 'j.harris@talvera.com\na.patel@talvera.com\nc.kim@talvera.com\nm.jones@contractor.com\nl.garcia@talvera.com\nd.smith@contractor.com'},
     {role:'thinking'},
     {role:'ai', text:'<b>Parsed 6 users.</b> Here\'s my suggested role mapping:'},
     {role:'ai', text:'', type:'agent-result', items:[
-      {icon:'✓', text:'j.harris@bhp.com → Project Manager'},
-      {icon:'✓', text:'a.patel@bhp.com → Project Manager'},
-      {icon:'✓', text:'c.kim@bhp.com → Member'},
+      {icon:'✓', text:'j.harris@talvera.com → Project Manager'},
+      {icon:'✓', text:'a.patel@talvera.com → Project Manager'},
+      {icon:'✓', text:'c.kim@talvera.com → Member'},
       {icon:'✓', text:'m.jones@contractor.com → Demand Requestor (external domain)'},
-      {icon:'✓', text:'l.garcia@bhp.com → Member'},
+      {icon:'✓', text:'l.garcia@talvera.com → Member'},
       {icon:'⚠', text:'d.smith@contractor.com → Unknown — please confirm role'},
     ]},
     {role:'ai', text:'Ready to send? I\'ll dispatch invitation emails to all 6 addresses.'},
@@ -3310,7 +3310,7 @@ const TANGO_SCRIPTED = {
     {role:'ai', text:'Shall I apply this to the Roadmap entity now? I can also add field gates for the review transition if needed.'},
   ],
   'port-create': [
-    {role:'ai', text:'<b>Portfolio scaffolding.</b> What\'s the name of the portfolio? I can pre-fill industry context, typical KPIs, and strategic goals based on BHP\'s profile.'},
+    {role:'ai', text:'<b>Portfolio scaffolding.</b> What\'s the name of the portfolio? I can pre-fill industry context, typical KPIs, and strategic goals based on Talvera\'s profile.'},
     {role:'user', text:'VESPA Digital Operations — it\'s a mining tech modernisation program'},
     {role:'thinking'},
     {role:'ai', text:'<b>Portfolio pre-filled.</b> Here\'s what I\'ve prepared:'},
@@ -3326,7 +3326,7 @@ const TANGO_SCRIPTED = {
 };
 
 function updateTangoContext(section) {
-  document.getElementById('tango-ctx').textContent = TANGO_CONTEXTS[section] || 'Admin Assistant · BHP';
+  document.getElementById('tango-ctx').textContent = TANGO_CONTEXTS[section] || 'Admin Assistant · Talvera';
   const ctxBar = document.getElementById('tango-ctx-label');
   if (ctxBar) ctxBar.textContent = (TANGO_CONTEXTS[section] || 'Admin Console').split(' · ')[0];
   // Hide static chips when a guided walkthrough will take over
@@ -3345,7 +3345,7 @@ function updateTangoContext(section) {
     divider.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px';
     divider.innerHTML = '<div style="flex:1;height:1px;background:var(--n200)"></div><span style="font-size:9px;font-weight:700;color:var(--n400);white-space:nowrap;text-transform:uppercase;letter-spacing:.08em">Admin Console · Today</span><div style="flex:1;height:1px;background:var(--n200)"></div>';
     msgs.appendChild(divider);
-    addTangoMsg('ai', `<b>Hi, I'm Tango.</b> I'm here to help you manage BHP's org configuration. Ask me anything or pick a quick action below.`);
+    addTangoMsg('ai', `<b>Hi, I'm Tango.</b> I'm here to help you manage Talvera's org configuration. Ask me anything or pick a quick action below.`);
     msgs.dataset.init = '1';
   }
 }
@@ -3460,12 +3460,12 @@ function tangoChip(text) {
   setTimeout(() => {
     document.querySelector('.bubble-ai:last-child, .agent-card:last-child')?.remove?.();
     const responses = {
-      'Audit my org config': 'I\'ve scanned your BHP org. <b>2 issues found:</b> Emma Walsh and Tom Hayes have no primary role, and the "Concept to Demand" workflow has no statuses defined. Everything else looks healthy.',
+      'Audit my org config': 'I\'ve scanned your Talvera org. <b>2 issues found:</b> Emma Walsh and Tom Hayes have no primary role, and the "Concept to Demand" workflow has no statuses defined. Everything else looks healthy.',
       'What should I do first?': 'Top priority: assign roles to Emma Walsh and Tom Hayes — they\'re actively blocked from accessing any module. Head to <b>User Access</b> and search for their names.',
       'What can a Project Manager do?': 'A <b>Project Manager</b> has 48 actions: create/edit roadmaps, view budgets, assign team members, create RAID items, and view reports. They can\'t delete portfolios or configure workflows.',
       'Restrict budget to Portfolio Leaders only': 'I can set a field access policy: budget fields → read_only for Project Manager and Member roles, editable for Portfolio Leaders and above. Want me to apply that now?',
-      'Enable bulk ops for BHP': 'Done. The <b>bulk_operations_ui</b> flag has been enabled for BHP. Bulk invite, CSV upload, and mass role assignment are now available in Password Mgmt.',
-      'Which beta features are on?': 'BHP has 2 beta features active: <b>bulk_operations_ui</b> (on) and <b>demand_forecasting</b> (off). <b>workflow_approvals_v2</b> is globally off.',
+      'Enable bulk ops for Talvera': 'Done. The <b>bulk_operations_ui</b> flag has been enabled for Talvera. Bulk invite, CSV upload, and mass role assignment are now available in Password Mgmt.',
+      'Which beta features are on?': 'Talvera has 2 beta features active: <b>bulk_operations_ui</b> (on) and <b>demand_forecasting</b> (off). <b>workflow_approvals_v2</b> is globally off.',
       'Generate a users report': 'Opening the <b>Reports</b> section with a Users report pre-configured. I\'ve pre-selected all columns except Login Count. Click Preview to see the data.',
     };
     const reply = responses[text] || 'I can help with that. What specifically would you like to know or do?';
@@ -3486,7 +3486,7 @@ function tangoSend() {
   const thinking = addThinking();
   setTimeout(() => {
     thinking.remove();
-    addTangoMsg('ai', 'Noted. I\'m looking into that for the BHP org. In a live environment I\'d query your config and surface the exact data — this is a prototype demo, but the full Tango integration works exactly like this.');
+    addTangoMsg('ai', 'Noted. I\'m looking into that for the Talvera org. In a live environment I\'d query your config and surface the exact data — this is a prototype demo, but the full Tango integration works exactly like this.');
   }, 1100);
 }
 
@@ -3566,11 +3566,11 @@ function showToast(msg) {
 ════════════════════════════════════════════ */
 const PARSE_DATA = {
   users: [
-    {name:'Emma Walsh',     email:'emma@bhp.com',    role:'Member',           note:'New — no role yet'},
-    {name:'Tom Hayes',      email:'tom@bhp.com',     role:'Project Manager',  note:'New — no role yet'},
-    {name:'J. Harris',      email:'j.harris@bhp.com',role:'Project Manager',  note:'From contractor list'},
-    {name:'A. Patel',       email:'a.patel@bhp.com', role:'Demand Manager',   note:'From contractor list'},
-    {name:'C. Kim',         email:'c.kim@bhp.com',   role:'Member',           note:'From contractor list'},
+    {name:'Emma Walsh',     email:'emma@talvera.com',    role:'Member',           note:'New — no role yet'},
+    {name:'Tom Hayes',      email:'tom@talvera.com',     role:'Project Manager',  note:'New — no role yet'},
+    {name:'J. Harris',      email:'j.harris@talvera.com',role:'Project Manager',  note:'From contractor list'},
+    {name:'A. Patel',       email:'a.patel@talvera.com', role:'Demand Manager',   note:'From contractor list'},
+    {name:'C. Kim',         email:'c.kim@talvera.com',   role:'Member',           note:'From contractor list'},
   ],
   roles: [
     {name:'Transformation Lead', key:'transformation_lead', scope:'Portfolios, Roadmaps, Strategy', note:'Detected in brief'},
@@ -4151,7 +4151,7 @@ function guideRefIds() {
 /* ── FEATURE FLAGS GUIDE ── */
 function guideFlags() {
   const flow = [
-    { role:'ai', html:`<b>Feature flags are at global defaults for BHP.</b> This means you\'re getting the standard feature set, but there are a few things worth reviewing — especially the beta features.` },
+    { role:'ai', html:`<b>Feature flags are at global defaults for Talvera.</b> This means you\'re getting the standard feature set, but there are a few things worth reviewing — especially the beta features.` },
     { role:'ai', html:`Want me to give you a quick audit of which flags matter most for your use case?`, chips:["Yes, run a flag audit","Which ones are beta?","Keep global defaults for now"] },
   ];
   playGuideFlow(flow);
@@ -4222,7 +4222,7 @@ function openInviteModal() {
   inviteMode = 'individual';
   openModal({
     title: 'Invite Users',
-    sub: 'Add people to BHP\'s workspace and assign their roles.',
+    sub: 'Add people to Talvera\'s workspace and assign their roles.',
     size: 'lg',
     body: inviteModalBody(),
     footer: `<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
@@ -4247,7 +4247,7 @@ function inviteModalBody() {
         <div class="fg"><label>First name</label><input class="fi" id="inv-fname" placeholder="Jane"></div>
         <div class="fg"><label>Last name</label><input class="fi" id="inv-lname" placeholder="Doe"></div>
       </div>
-      <div class="fg"><label>Email address</label><input class="fi" id="inv-email" placeholder="jane.doe@bhp.com"></div>
+      <div class="fg"><label>Email address</label><input class="fi" id="inv-email" placeholder="jane.doe@talvera.com"></div>
       <div class="row2">
         <div class="fg"><label>Primary role</label>
           <select class="fi fi-sel" id="inv-role">${roleOpts}</select>
@@ -4329,7 +4329,7 @@ function addBulkRow() {
   const row = document.createElement('div');
   row.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;align-items:center';
   row.innerHTML = `
-    <input class="fi" placeholder="email@bhp.com" style="flex:1;font-size:12px;padding:8px 10px">
+    <input class="fi" placeholder="email@talvera.com" style="flex:1;font-size:12px;padding:8px 10px">
     <select class="fi fi-sel" style="width:150px;font-size:12px;padding:8px 26px 8px 10px">${roleOpts}</select>
     <button class="remove-btn" onclick="this.closest('div').remove()" style="flex-shrink:0">✕</button>`;
   document.getElementById('bulk-invite-rows').appendChild(row);
@@ -4741,7 +4741,7 @@ function editFlagModal(i) {
           <label class="tgl"><input type="checkbox" ${f.global?'checked':''}><div class="tgl-track"></div></label>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between">
-          <div><div style="font-size:13px;font-weight:500">BHP override</div><div class="text-xs text-muted">Override for this org only</div></div>
+          <div><div style="font-size:13px;font-weight:500">Talvera override</div><div class="text-xs text-muted">Override for this org only</div></div>
           <label class="tgl"><input type="checkbox" ${f.org?'checked':''}><div class="tgl-track"></div></label>
         </div>
       </div>`,
