@@ -15,6 +15,7 @@ import PhaseRail, { type RailFeature } from "@/components/trmeric/PhaseRail";
 import SurfaceGallery from "@/components/trmeric/SurfaceGallery";
 import { projectsBySlug } from "@/data/projects";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useTranslation } from "@/lib/TranslationContext";
 
 const project = projectsBySlug["trmeric"];
 
@@ -23,12 +24,7 @@ const ACC  = "#FFA426";
 const ACCB = "#FFB84D";
 const LINA = "rgba(255,164,38,.26)";
 
-const PHASES = [
-  { letter: "A", label: "Shape", question: "What should we build?", persona: "Demand Manager", icon: "chat" as const, surfaces: ["Demand intake", "Canvas", "Tango AI scoping", "Ideation"], desc: "Capture intent. Structure the demand. Tango turns an idea into a scoped initiative in 90 seconds instead of 3 months.", anchor: "#demand-owner-flow" },
-  { letter: "B", label: "Plan",  question: "Who builds it, by when?", persona: "Portfolio Planner", icon: "grid" as const, surfaces: ["Resource Manager", "Portfolio Monitor", "Budget", "Potential Hub"], desc: "Assign resources, set timelines, track budget. Force-graph visibility across the whole portfolio from the start.", anchor: "#portfolio-monitor" },
-  { letter: "C", label: "Execute", question: "Are we on track?", persona: "Project Manager", icon: "flag" as const, surfaces: ["Project Manager", "RAID", "Signals", "Trucible", "Action Hub"], desc: "Keep initiatives on track. Surface risks before they become blockers. Knowledge stays close to the work.", anchor: "#project-manager" },
-  { letter: "D", label: "Evaluate", question: "Did it deliver value?", persona: "Executive Sponsor", icon: "eye" as const, surfaces: ["Portfolio Monitor (CIO)", "Action Hub", "Kudos", "Cockpit"], desc: "Outcome tracking, recognition, and portfolio closure. The loop closes back to the next demand.", anchor: "#surfaces" },
-];
+// PHASES moved into component so it can use t() — see line 225
 
 /* Minimal monochrome persona markers — same line-art register as the
    pipeline/schematic diagrams elsewhere on the site, not character illustration. */
@@ -221,6 +217,7 @@ const METRIC_ANCHORS: Record<string, string> = {
 };
 
 export default function TrmericPage() {
+  const { t } = useTranslation();
   const dark = useColorScheme();
   const BASE  = dark ? "#0E0C0A" : "#FAF7F1";
   const BASE2 = dark ? "#1A1613" : "#F1EADC";
@@ -232,6 +229,14 @@ export default function TrmericPage() {
   const SHADOW = dark ? "0 4px 32px -8px rgba(0,0,0,.65)" : "0 4px 24px -8px rgba(23,21,15,.14)";
 
   const C: TrmColors = { base: BASE, base2: BASE2, ink: INK, dim: DIM, faint: FAINT, line: LINE, acc: ACC, accd: ACCD };
+
+  // PHASES translated using t() — keys added to public/messages/{lang}.json
+  const PHASES = [
+    { letter: "A", label: t("trmeric.phase.a.label"), question: t("trmeric.phase.a.question"), persona: t("trmeric.phase.a.persona"), icon: "chat" as const, surfaces: ["Demand intake", "Canvas", "Tango AI scoping", "Ideation"], desc: t("trmeric.phase.a.desc"), anchor: "#demand-owner-flow" },
+    { letter: "B", label: t("trmeric.phase.b.label"), question: t("trmeric.phase.b.question"), persona: t("trmeric.phase.b.persona"), icon: "grid" as const, surfaces: ["Resource Manager", "Portfolio Monitor", "Budget", "Potential Hub"], desc: t("trmeric.phase.b.desc"), anchor: "#portfolio-monitor" },
+    { letter: "C", label: t("trmeric.phase.c.label"), question: t("trmeric.phase.c.question"), persona: t("trmeric.phase.c.persona"), icon: "flag" as const, surfaces: ["Project Manager", "RAID", "Signals", "Trucible", "Action Hub"], desc: t("trmeric.phase.c.desc"), anchor: "#project-manager" },
+    { letter: "D", label: t("trmeric.phase.d.label"), question: t("trmeric.phase.d.question"), persona: t("trmeric.phase.d.persona"), icon: "eye" as const, surfaces: ["Portfolio Monitor (CIO)", "Action Hub", "Kudos", "Cockpit"], desc: t("trmeric.phase.d.desc"), anchor: "#surfaces" },
+  ];
 
   const s = {
     kicker: {
