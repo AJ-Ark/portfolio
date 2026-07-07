@@ -1,22 +1,19 @@
+"use client";
+
 import Image from "next/image";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
-import type { Metadata } from "next";
+import { useTranslation } from "@/lib/TranslationContext";
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "Aravind Jegajeeva Rajasekar, architect by training, designer by practice. B.Arch SPA Vijayawada, M.Des NID Gandhinagar. Senior Product Designer at Trmeric.",
-};
-
-const TIMELINE = [
-  { year: "2024 – now",  event: "Senior Product Designer, Trmeric",         detail: "Founding team. Sole designer." },
-  { year: "2024 – 2026", event: "M.Des New Media Design, NID Gandhinagar",   detail: "Research-led practice. Thesis: Realm of Elementals." },
-  { year: "2018 – 2024", event: "B.Arch, SPA Vijayawada",                   detail: "Six years. Council of Architecture licensed." },
+const TIMELINE_KEYS = [
+  { yearKey: "about.timeline.2024", eventKey: "about.timeline.2024_event", detailKey: "about.timeline.2024_detail" },
+  { yearKey: "about.timeline.2024_2026", eventKey: "about.timeline.2024_2026_event", detailKey: "about.timeline.2024_2026_detail" },
+  { yearKey: "about.timeline.2018", eventKey: "about.timeline.2018_event", detailKey: "about.timeline.2018_detail" },
 ];
 
 export default function AboutPage() {
+  const { t } = useTranslation();
   return (
     <>
       <Navigation />
@@ -42,7 +39,7 @@ export default function AboutPage() {
               color: "var(--color-accent)", opacity: 0.8,
               display: "block", marginBottom: "2rem",
             }}>
-              Aravind J · About
+              {t("about.label")}
             </span>
             <h1 style={{
               fontFamily: "var(--font-display)", fontWeight: 300,
@@ -50,10 +47,10 @@ export default function AboutPage() {
               letterSpacing: "-.025em", color: "var(--color-paper)",
               marginBottom: "2rem",
             }}>
-              Architect by training.
+              {t("about.subtitle")}
               <br />
               <em style={{ fontStyle: "italic", color: "var(--color-accent-bright)" }}>
-                Designer by practice.
+                {t("about.subtitle2")}
               </em>
             </h1>
             <div style={{
@@ -61,14 +58,14 @@ export default function AboutPage() {
               paddingTop: "1.5rem", borderTop: "1px solid var(--line)",
             }}>
               {[
-                "Senior Product Designer · Trmeric",
-                "M.Des New Media Design · NID Gandhinagar",
-              ].map((t) => (
-                <span key={t} style={{
+                t("about.role"),
+                t("about.education"),
+              ].map((role) => (
+                <span key={role} style={{
                   fontFamily: "var(--font-mono)", fontSize: ".55rem",
                   letterSpacing: ".18em", textTransform: "uppercase",
                   color: "var(--color-graphite-light)", opacity: 0.55,
-                }}>{t}</span>
+                }}>{role}</span>
               ))}
             </div>
           </div>
@@ -93,28 +90,16 @@ export default function AboutPage() {
           >
             <div style={{ display: "flex", flexDirection: "column", gap: "1.6rem" }}>
               <p style={{ fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.8 }}>
-                I came to design through architecture. Six years at SPA Vijayawada, licensed by the
-                Council of Architecture, taught me to hold a system in my head at full scale while
-                still caring about the door handle. Buildings are systems. So are interfaces. The
-                patience is the same; the medium is faster.
+                {t("about.bio1")}
               </p>
               <p style={{ fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.8 }}>
-                I taught myself web development between architecture school and NID because I wanted
-                a medium where I could test an idea the same afternoon I had it. My prototypes are
-                not wireframes. They are functional, interactive, data-driven artifacts. When
-                engineering builds from my prototypes directly, that's the intended workflow.
+                {t("about.bio2")}
               </p>
               <p style={{ fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.8 }}>
-                NID Gandhinagar gave me research rigour. The M.Des in New Media Design taught me to
-                know when an instinct is actually an insight, and when it isn't. My graduation
-                project, Realm of Elementals, was that discipline in full: nine months of research
-                on care, decentering, and ecological identity, built into a WebAR experience.
+                {t("about.bio3")}
               </p>
               <p style={{ fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.8 }}>
-                Currently: Senior Product Designer at Trmeric, sole designer on the founding team.
-                I own the full design surface of an AI-native enterprise SaaS platform, from
-                information architecture to production-grade prototypes. I sit in product strategy
-                as an equal, not as a service provider.
+                {t("about.bio4")}
               </p>
             </div>
 
@@ -147,7 +132,7 @@ export default function AboutPage() {
                   transition: "border-color .2s ease, color .2s ease",
                 }}
               >
-                <span>Download résumé</span>
+                <span>{t("about.downloadResume")}</span>
                 <span aria-hidden="true">↓</span>
               </a>
             </div>
@@ -167,11 +152,11 @@ export default function AboutPage() {
             color: "var(--color-accent)", opacity: 0.8,
             display: "block", marginBottom: "3rem",
           }}>
-            Timeline
+            {t("about.timeline.title")}
           </span>
           <div style={{ maxWidth: "800px" }}>
-            {TIMELINE.map((item) => (
-              <div key={item.year} style={{
+            {TIMELINE_KEYS.map((item) => (
+              <div key={item.yearKey} style={{
                 display: "grid", gridTemplateColumns: "9rem 1fr",
                 gap: "2rem", padding: "2rem 0",
                 borderTop: "1px solid var(--line)",
@@ -182,14 +167,14 @@ export default function AboutPage() {
                   letterSpacing: ".18em", textTransform: "uppercase",
                   color: "var(--color-graphite-light)", opacity: 0.55,
                 }}>
-                  {item.year}
+                  {t(item.yearKey)}
                 </span>
                 <div>
                   <div style={{ color: "var(--color-paper)", fontSize: ".9375rem", marginBottom: ".3rem" }}>
-                    {item.event}
+                    {t(item.eventKey)}
                   </div>
                   <div style={{ color: "var(--color-graphite-light)", fontSize: ".8125rem", lineHeight: 1.5 }}>
-                    {item.detail}
+                    {t(item.detailKey)}
                   </div>
                 </div>
               </div>

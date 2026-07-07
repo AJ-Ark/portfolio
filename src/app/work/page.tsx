@@ -1,15 +1,13 @@
+"use client";
+
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import WarpLink from "@/components/ui/WarpLink";
 import { projects } from "@/data/projects";
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Work",
-  description: "All projects: Trmeric, Realm of Elementals, Rippl, Rozi. Product design, UX research, interaction design, service design.",
-};
+import { useTranslation } from "@/lib/TranslationContext";
 
 export default function WorkIndex() {
+  const { t } = useTranslation();
   return (
     <>
       <Navigation />
@@ -21,7 +19,7 @@ export default function WorkIndex() {
         {/* Header */}
         <div className="mb-16 max-w-2xl">
           <span className="label-mono block mb-4" style={{ color: "#4A453E" }}>
-            PLANE 02 · ALL WORK · INDEX
+            {t("work.label")}
           </span>
           <h1
             className="display-serif"
@@ -34,12 +32,10 @@ export default function WorkIndex() {
               marginBottom: "1rem",
             }}
           >
-            Work
+            {t("work.header")}
           </h1>
           <p style={{ color: "var(--color-graphite-light)", fontSize: "0.9375rem", lineHeight: 1.6 }}>
-            Four projects. Professional, academic, and research-led.
-            Each with its own texture, but the same underlying instinct:
-            prototype to understand, not to present.
+            {t("work.headerDescription")}
           </p>
         </div>
 
