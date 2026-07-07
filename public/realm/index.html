@@ -38,6 +38,7 @@
     }
   }
   </script>
+  <script src="js/translate.js"></script>
 </head>
 <body>
 
@@ -85,11 +86,11 @@
 
     <!-- Section links -->
     <nav aria-label="Page sections" style="display:flex;align-items:center;gap:2rem;">
-      <a href="#problem" class="rnav-link">Problem</a>
-      <a href="#pivot"   class="rnav-link">Pivot</a>
-      <a href="#app"     class="rnav-link">The app</a>
-      <a href="#installation" class="rnav-link">Installation</a>
-      <a href="#research"     class="rnav-link">Research</a>
+      <a href="#problem" class="rnav-link" data-i18n="realm.nav.problem">Problem</a>
+      <a href="#pivot"   class="rnav-link" data-i18n="realm.nav.pivot">Pivot</a>
+      <a href="#app"     class="rnav-link" data-i18n="realm.nav.theapp">The app</a>
+      <a href="#installation" class="rnav-link" data-i18n="realm.nav.installation">Installation</a>
+      <a href="#research"     class="rnav-link" data-i18n="realm.nav.research">Research</a>
       <a href="https://realmofelementals.art" target="_blank" rel="noopener" style="
         font-family:'JetBrains Mono','Fira Code',monospace;
         font-size:.65rem; letter-spacing:.14em; text-transform:uppercase;
@@ -119,11 +120,11 @@
     backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
     border-bottom:1px solid rgba(217,180,106,.18);
   ">
-    <a href="#problem" class="rnav-mobile-link">Problem</a>
-    <a href="#pivot" class="rnav-mobile-link">Pivot</a>
-    <a href="#app" class="rnav-mobile-link">The app</a>
-    <a href="#installation" class="rnav-mobile-link">Installation</a>
-    <a href="#research" class="rnav-mobile-link">Research</a>
+    <a href="#problem" class="rnav-mobile-link" data-i18n="realm.nav.problem">Problem</a>
+    <a href="#pivot" class="rnav-mobile-link" data-i18n="realm.nav.pivot">Pivot</a>
+    <a href="#app" class="rnav-mobile-link" data-i18n="realm.nav.theapp">The app</a>
+    <a href="#installation" class="rnav-mobile-link" data-i18n="realm.nav.installation">Installation</a>
+    <a href="#research" class="rnav-mobile-link" data-i18n="realm.nav.research">Research</a>
     <a href="https://realmofelementals.art" target="_blank" rel="noopener" style="
       font-family:'JetBrains Mono','Fira Code',monospace;
       font-size:.7rem; letter-spacing:.14em; text-transform:uppercase;
@@ -187,11 +188,11 @@
       <h1 class="hero__title">
         <span class="hero__title-em reveal" data-d="1">Elementals</span>
       </h1>
-      <p class="hero__tag reveal" data-d="2">Where vanishing wings are kept alive.</p>
-      <p class="hero__meta reveal" data-d="3">An augmented-reality experience &amp; installation · Aravind&nbsp;J</p>
+      <p class="hero__tag reveal" data-d="2" data-i18n="realm.subtitle">Where vanishing wings are kept alive.</p>
+      <p class="hero__meta reveal" data-d="3" data-i18n-html="realm.tagline">An augmented-reality experience &amp; installation · Aravind&nbsp;J</p>
     </div>
     <div class="hero__scroll reveal" data-d="4">
-      <span>Scroll to begin</span>
+      <span data-i18n="realm.scroll">Scroll to begin</span>
       <i></i>
     </div>
   </section>
