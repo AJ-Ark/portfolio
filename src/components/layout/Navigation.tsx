@@ -3,14 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useTranslation } from "@/lib/TranslationContext";
 
-const navLinks = [
-  { href: "/work", label: "Work" },
-  { href: "/about", label: "About" },
+const navLinkKeys = [
+  { href: "/work", key: "nav.work" },
+  { href: "/about", key: "nav.about" },
 ];
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -59,7 +61,7 @@ export default function Navigation() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8" aria-label="Primary">
-          {navLinks.map((link) => (
+          {navLinkKeys.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -75,7 +77,7 @@ export default function Navigation() {
               }}
               aria-current={pathname.startsWith(link.href) ? "page" : undefined}
             >
-              {link.label}
+              {t(link.key)}
             </Link>
           ))}
           <a
@@ -92,7 +94,7 @@ export default function Navigation() {
               transition: "border-color .2s ease, color .2s ease",
             }}
           >
-            Say hello →
+            {t("nav.sayHello")} →
           </a>
         </nav>
 
@@ -125,7 +127,7 @@ export default function Navigation() {
             background: "var(--color-ground)",
           }}
         >
-          {navLinks.map((link) => (
+          {navLinkKeys.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -138,7 +140,7 @@ export default function Navigation() {
                 color: "var(--color-paper)",
               }}
             >
-              {link.label}
+              {t(link.key)}
             </Link>
           ))}
           <a

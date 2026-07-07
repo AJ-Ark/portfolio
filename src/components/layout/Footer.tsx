@@ -1,3 +1,7 @@
+"use client";
+
+import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+
 export default function Footer() {
   return (
     <footer
@@ -86,6 +90,7 @@ export default function Footer() {
           >
             © 2026
           </span>
+          <LanguageSwitcher />
         </div>
       </div>
     </footer>

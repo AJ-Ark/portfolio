@@ -3,6 +3,7 @@ import "./globals.css";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import { ParticleProvider } from "@/lib/particleContext";
 import WebGLLayer from "@/components/3d/WebGLLayer";
+import { TranslationProvider } from "@/lib/TranslationContext";
 
 export const metadata: Metadata = {
   title: {
@@ -65,14 +66,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <ParticleProvider>
-          {/* Global WebGL canvas + route sync — lazy loaded, text paints first */}
-          <WebGLLayer />
-          <SmoothScroll>
-            {/* Page content sits above the canvas */}
-            <div style={{ position: "relative", zIndex: 1 }}>
-              {children}
-            </div>
-          </SmoothScroll>
+          <TranslationProvider>
+            {/* Global WebGL canvas + route sync — lazy loaded, text paints first */}
+            <WebGLLayer />
+            <SmoothScroll>
+              {/* Page content sits above the canvas */}
+              <div style={{ position: "relative", zIndex: 1 }}>
+                {children}
+              </div>
+            </SmoothScroll>
+          </TranslationProvider>
         </ParticleProvider>
       </body>
     </html>
