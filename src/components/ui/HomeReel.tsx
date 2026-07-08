@@ -592,7 +592,7 @@ function HeroContent({ active = true, instant = false }: { active?: boolean; ins
   const phase: LinePhase = held ? "staged" : basePhase;
 
   /* Pointer-reactive Fraunces variable axes: the display lines' wght
-     (±60 around the 300 rest) and opsz shift subtly with pointer position.
+     (±60 around the 260 rest) and opsz shift subtly with pointer position.
      Reads the pointer from the climate store — one write per rendered
      frame on the site's single rAF clock, smoothly lerped, and skipped
      entirely once settled (0.2 threshold). Applied via element.style in
@@ -606,9 +606,11 @@ function HeroContent({ active = true, instant = false }: { active?: boolean; ins
       (el): el is HTMLSpanElement => el !== null,
     );
     if (els.length === 0) return;
-    const REST_WGHT = 300;
+    // Light + moderate optical size = a thin, refined display rather than a
+    // heavy high-contrast one (design review: the bold hero read as chunky).
+    const REST_WGHT = 260;
     const sizePx = parseFloat(window.getComputedStyle(els[0]).fontSize) || 64;
-    const restOpsz = Math.min(144, Math.max(9, sizePx)); // Fraunces opsz axis range
+    const restOpsz = Math.min(56, Math.max(9, sizePx)); // capped low to soften stroke contrast
     let wght = REST_WGHT;
     let opsz = restOpsz;
     let lastW = -1;
@@ -618,8 +620,8 @@ function HeroContent({ active = true, instant = false }: { active?: boolean; ins
       const parked = Math.abs(c.cursorX) > 1.5 || Math.abs(c.cursorY) > 1.5;
       const nx = parked ? 0 : Math.max(-1, Math.min(1, c.cursorX));
       const ny = parked ? 0 : Math.max(-1, Math.min(1, c.cursorY));
-      wght += (REST_WGHT + nx * 60 - wght) * 0.07;
-      opsz += (Math.min(144, Math.max(9, restOpsz + ny * 12)) - opsz) * 0.07;
+      wght += (REST_WGHT + nx * 45 - wght) * 0.07;
+      opsz += (Math.min(56, Math.max(9, restOpsz + ny * 12)) - opsz) * 0.07;
       if (Math.abs(wght - lastW) < 0.2 && Math.abs(opsz - lastO) < 0.2) return;
       lastW = wght;
       lastO = opsz;
@@ -651,7 +653,7 @@ function HeroContent({ active = true, instant = false }: { active?: boolean; ins
         {/* Flex column so the masks' padding/negative-margin pairs cancel
             arithmetically (block-level siblings would margin-collapse and
             add MASK_PAD of extra leading between the display lines). */}
-        <h1 style={{ display: "flex", flexDirection: "column", alignItems: "stretch", fontFamily: "var(--font-display)", fontWeight: 300, lineHeight: 1.0, letterSpacing: "-.025em", marginBottom: "2.5rem" }}>
+        <h1 style={{ display: "flex", flexDirection: "column", alignItems: "stretch", fontFamily: "var(--font-display)", fontWeight: 260, lineHeight: 1.0, letterSpacing: "-.02em", marginBottom: "2.5rem" }}>
           <MaskLine as="span" phase={phase} order={0} style={{ fontSize: "clamp(2.6rem, 7.5vw, 6rem)", color: "var(--color-paper)" }}>
             <span ref={line1Ref}>{t("home.hero.line1")}</span>
           </MaskLine>
