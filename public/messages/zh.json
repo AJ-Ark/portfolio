@@ -260,5 +260,12 @@
   "content.signals.principles.2.title": "永不失去当前位置",
   "content.signals.principles.3.title": "零跳转操作",
   "content.signals.quotes.0": "以前我得靠六份不同的状态报告，在脑子里拼出这张地图。现在我只打开一个界面，地图就已经在那里了。",
-  "content.signals.quotes.1": "中心那个红色集群十秒钟就告诉了我，原本需要花一整周一对一沟通才能拼凑出来的信息。"
+  "content.signals.quotes.1": "中心那个红色集群十秒钟就告诉了我，原本需要花一整周一对一沟通才能拼凑出来的信息。",
+  "route.notFound.title": "这个页面已消散。",
+  "route.notFound.body": "这个链接指向的地方已不存在，或从未存在。其余的一切都还在。",
+  "route.notFound.home": "返回首页",
+  "route.error.title": "出了点问题。",
+  "route.error.body": "一个意外错误中断了此页面。尘埃仍在落定——请重试，或返回首页。",
+  "route.error.reset": "重试",
+  "route.error.home": "返回首页"
 }

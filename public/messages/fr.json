@@ -260,5 +260,12 @@
   "content.signals.principles.2.title": "Ne perdez jamais votre place",
   "content.signals.principles.3.title": "Action sans navigation",
   "content.signals.quotes.0": "Avant, je construisais cette carte dans ma tête à partir de six rapports d'état différents. Maintenant, j'ouvre un seul écran et la carte existe déjà.",
-  "content.signals.quotes.1": "Le cluster rouge au centre m'a appris en dix secondes ce qu'il m'aurait fallu une semaine d'entretiens individuels pour reconstituer."
+  "content.signals.quotes.1": "Le cluster rouge au centre m'a appris en dix secondes ce qu'il m'aurait fallu une semaine d'entretiens individuels pour reconstituer.",
+  "route.notFound.title": "Cette page s'est dissipée.",
+  "route.notFound.body": "Le lien menait vers un endroit qui n'existe plus, ou n'a jamais existé. Tout le reste est toujours là.",
+  "route.notFound.home": "Retour à l'accueil",
+  "route.error.title": "Quelque chose s'est détaché.",
+  "route.error.body": "Une erreur inattendue a interrompu cette page. La poussière retombe encore : réessayez, ou revenez à l'accueil.",
+  "route.error.reset": "Réessayer",
+  "route.error.home": "Retour à l'accueil"
 }

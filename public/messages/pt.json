@@ -260,5 +260,12 @@
   "content.signals.principles.2.title": "Nunca perca seu lugar",
   "content.signals.principles.3.title": "Ação sem navegação",
   "content.signals.quotes.0": "Eu costumava montar esse mapa na minha cabeça a partir de seis relatórios de status diferentes. Agora abro uma única tela e o mapa já existe.",
-  "content.signals.quotes.1": "O cluster vermelho no centro me disse em dez segundos o que levaria uma semana de conversas individuais para reconstituir."
+  "content.signals.quotes.1": "O cluster vermelho no centro me disse em dez segundos o que levaria uma semana de conversas individuais para reconstituir.",
+  "route.notFound.title": "Esta página se dissipou.",
+  "route.notFound.body": "O link levava a um lugar que já não existe, ou que nunca existiu. Todo o resto continua aqui.",
+  "route.notFound.home": "Voltar ao início",
+  "route.error.title": "Algo se soltou.",
+  "route.error.body": "Um erro inesperado interrompeu esta página. A poeira ainda está assentando — tente novamente ou volte ao início.",
+  "route.error.reset": "Tentar novamente",
+  "route.error.home": "Voltar ao início"
 }

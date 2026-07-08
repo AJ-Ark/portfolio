@@ -11,8 +11,21 @@ import { useEffect, useRef, useState } from "react";
    viewport. With `once: true` (the default) it never flips back —
    entrance animations play exactly once.
 
-   SSR-safe: the observer is created inside useEffect, and environments
+   SSR-safe: the observer is pooled/created inside useEffect, and environments
    without IntersectionObserver reveal immediately instead of never.
+
+   OBSERVER POOLING: every distinct (threshold, rootMargin) pair shares ONE
+   IntersectionObserver across all elements that use it (the root is always the
+   viewport). A page like /rozi mounts ~11 useInView hooks with identical
+   options — pooling collapses those 11 observers into 1. A module-level Map
+   keyed by the serialized options holds each pooled observer plus a per-element
+   WeakMap of callbacks; the shared observer's own callback dispatches each
+   entry to the right element's handler. A ref-count retires (disconnects) an
+   observer once its last element unobserves. `once` is handled per-element in
+   the callback (it unobserves just that node), so hooks with different `once`
+   values still share the observer. Return API and observed behavior are
+   unchanged; reduced-motion is handled entirely by the [data-reveal] CSS, so
+   this hook stays motion-neutral.
    ═══════════════════════════════════════════════════════════════════ */
 
 export interface UseInViewOptions {
@@ -22,6 +35,38 @@ export interface UseInViewOptions {
   threshold?: number | number[];
   /** IntersectionObserver rootMargin, e.g. "0px 0px -10% 0px". */
   rootMargin?: string;
+}
+
+/* ── Observer pool (module-level, client-only usage) ── */
+type EntryCallback = (entry: IntersectionObserverEntry) => void;
+
+interface PooledObserver {
+  observer: IntersectionObserver;
+  /** element → its handler. WeakMap: never pins a detached node in memory. */
+  callbacks: WeakMap<Element, EntryCallback>;
+  /** live observed-element count; when it hits 0 the observer is retired. */
+  count: number;
+}
+
+const observerPool = new Map<string, PooledObserver>();
+
+function getPooledObserver(
+  key: string,
+  init: IntersectionObserverInit
+): PooledObserver {
+  let pooled = observerPool.get(key);
+  if (!pooled) {
+    const callbacks = new WeakMap<Element, EntryCallback>();
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const cb = callbacks.get(entry.target);
+        if (cb) cb(entry);
+      }
+    }, init);
+    pooled = { observer, callbacks, count: 0 };
+    observerPool.set(key, pooled);
+  }
+  return pooled;
 }
 
 export function useInView<T extends HTMLElement = HTMLDivElement>(
@@ -47,22 +92,41 @@ export function useInView<T extends HTMLElement = HTMLDivElement>(
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setInView(true);
-            if (once) observer.disconnect();
-          } else if (!once) {
-            setInView(false);
-          }
-        }
-      },
-      { threshold, rootMargin }
-    );
+    /* Pool key: elements sharing options share one observer. The key encodes
+       exactly the fields that define the observer's config (root is always the
+       viewport); `once` is intentionally excluded — it's per-element. */
+    const key = `${thresholdKey}|${rootMargin ?? ""}`;
+    const pooled = getPooledObserver(key, { threshold, rootMargin });
 
-    observer.observe(node);
-    return () => observer.disconnect();
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      pooled.observer.unobserve(node);
+      pooled.callbacks.delete(node);
+      pooled.count -= 1;
+      /* Retire the shared observer once nobody is left using it, so a pooled
+         observer is never leaked for a config that's no longer on the page. */
+      if (pooled.count <= 0) {
+        pooled.observer.disconnect();
+        observerPool.delete(key);
+      }
+    };
+
+    pooled.callbacks.set(node, (entry) => {
+      if (entry.isIntersecting) {
+        setInView(true);
+        /* once: stop observing THIS node only — never disconnect the shared
+           observer out from under other elements still using it. */
+        if (once) release();
+      } else if (!once) {
+        setInView(false);
+      }
+    });
+    pooled.count += 1;
+    pooled.observer.observe(node);
+
+    return release;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [once, thresholdKey, rootMargin]);
 

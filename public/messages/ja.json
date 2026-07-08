@@ -260,5 +260,12 @@
   "content.signals.principles.2.title": "自分の位置を見失わない",
   "content.signals.principles.3.title": "遷移ゼロのアクション",
   "content.signals.quotes.0": "以前は6種類もの異なるステータスレポートから、この地図を頭の中で組み立てていた。今は画面をひとつ開くだけで、地図はすでにそこにある。",
-  "content.signals.quotes.1": "中央の赤いクラスターが、一対一の面談を1週間かけて積み上げなければ分からなかったはずのことを、10秒で教えてくれた。"
+  "content.signals.quotes.1": "中央の赤いクラスターが、一対一の面談を1週間かけて積み上げなければ分からなかったはずのことを、10秒で教えてくれた。",
+  "route.notFound.title": "このページは消えてしまいました。",
+  "route.notFound.body": "リンク先はもう存在しないか、最初から存在しませんでした。それ以外はすべてここにあります。",
+  "route.notFound.home": "最初に戻る",
+  "route.error.title": "何かが外れてしまいました。",
+  "route.error.body": "予期しないエラーでこのページが中断されました。塵はまだ舞っています——もう一度お試しいただくか、最初にお戻りください。",
+  "route.error.reset": "再試行",
+  "route.error.home": "最初に戻る"
 }

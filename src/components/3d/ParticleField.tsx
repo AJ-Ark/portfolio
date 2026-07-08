@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import type { Domain } from "@/data/projects";
@@ -18,30 +18,11 @@ interface ParticleFieldProps {
 
 const PARTICLE_COUNT = 5000;
 
-/* ── Module-level cursor — updated on window, never causes React re-renders ── */
+/* ── Module-level cursor — mutated by the window listeners (registered in an
+   effect scoped to the component's lifetime, below) and read every frame in
+   useFrame. Kept at module scope so the frame loop reads it without a React
+   re-render; only ever one CPU field instance mounts at a time. ── */
 const cursor = { x: 0, y: 9 };
-if (typeof window !== "undefined") {
-  window.addEventListener(
-    "mousemove",
-    (e) => {
-      cursor.x = (e.clientX / window.innerWidth) * 2 - 1;
-      cursor.y = -(e.clientY / window.innerHeight) * 2 + 1;
-    },
-    { passive: true }
-  );
-
-  /* Touch: same NDC mapping — lets fingers scatter particles on mobile */
-  const fromTouch = (e: TouchEvent) => {
-    const t = e.touches[0];
-    if (!t) return;
-    cursor.x = (t.clientX / window.innerWidth)  * 2 - 1;
-    cursor.y = -(t.clientY / window.innerHeight) * 2 + 1;
-  };
-  window.addEventListener("touchstart", fromTouch, { passive: true });
-  window.addEventListener("touchmove",  fromTouch, { passive: true });
-  /* When finger lifts, park the cursor off-screen so repulsion fades out */
-  window.addEventListener("touchend", () => { cursor.x = 9; cursor.y = 9; }, { passive: true });
-}
 
 /* ── Seeds ── */
 function makeSeeds(count: number): Float32Array {
@@ -236,6 +217,36 @@ export default function ParticleField({ domain = null, offsetX = 0, warping = fa
   const { size, camera } = useThree();
 
   const seeds = useMemo(() => makeSeeds(PARTICLE_COUNT), []);
+
+  /* Window cursor/touch tracking — scoped to this component's lifetime so the
+     listeners are torn down on unmount (previously they were added once at
+     module load and leaked forever). Behavior is byte-for-byte identical to
+     the old module-level block: same NDC mapping, same touch-end park, all
+     passive. Only the missing cleanup is fixed. */
+  useEffect(() => {
+    const onMouse = (e: MouseEvent) => {
+      cursor.x = (e.clientX / window.innerWidth) * 2 - 1;
+      cursor.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    };
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      cursor.x = (t.clientX / window.innerWidth) * 2 - 1;
+      cursor.y = -(t.clientY / window.innerHeight) * 2 + 1;
+    };
+    /* When the finger lifts, park the cursor off-screen so repulsion fades. */
+    const onTouchEnd = () => { cursor.x = 9; cursor.y = 9; };
+    window.addEventListener("mousemove", onMouse, { passive: true });
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    window.addEventListener("touchmove", onTouch, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", onMouse);
+      window.removeEventListener("touchstart", onTouch);
+      window.removeEventListener("touchmove", onTouch);
+      window.removeEventListener("touchend", onTouchEnd);
+    };
+  }, []);
 
   /* Round sprite — PointsMaterial renders square quads by default; a soft
      radial texture turns every dot into a circle (same device the Realm

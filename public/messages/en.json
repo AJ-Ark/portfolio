@@ -260,5 +260,12 @@
   "content.signals.principles.2.title": "Never lose your place",
   "content.signals.principles.3.title": "Zero-navigation action",
   "content.signals.quotes.0": "I used to build this map in my head from six different status reports. Now I open one screen and the map already exists.",
-  "content.signals.quotes.1": "The red cluster in the centre told me in ten seconds what would have taken a week of one-on-ones to piece together."
+  "content.signals.quotes.1": "The red cluster in the centre told me in ten seconds what would have taken a week of one-on-ones to piece together.",
+  "route.notFound.title": "This page has settled out of view.",
+  "route.notFound.body": "The link led somewhere that no longer exists — or never did. Everything else is still here.",
+  "route.notFound.home": "Back to the start",
+  "route.error.title": "Something came loose.",
+  "route.error.body": "An unexpected error interrupted this page. The dust is still settling — try again, or head back to the start.",
+  "route.error.reset": "Try again",
+  "route.error.home": "Back to the start"
 }

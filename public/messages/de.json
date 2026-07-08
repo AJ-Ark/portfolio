@@ -260,5 +260,12 @@
   "content.signals.principles.2.title": "Nie den Überblick verlieren",
   "content.signals.principles.3.title": "Aktion ohne Navigation",
   "content.signals.quotes.0": "Früher habe ich mir diese Karte im Kopf aus sechs verschiedenen Statusberichten zusammengebaut. Jetzt öffne ich einen einzigen Bildschirm, und die Karte existiert schon.",
-  "content.signals.quotes.1": "Der rote Cluster in der Mitte hat mir in zehn Sekunden gesagt, wofür ich sonst eine Woche Einzelgespräche gebraucht hätte, um es zusammenzusetzen."
+  "content.signals.quotes.1": "Der rote Cluster in der Mitte hat mir in zehn Sekunden gesagt, wofür ich sonst eine Woche Einzelgespräche gebraucht hätte, um es zusammenzusetzen.",
+  "route.notFound.title": "Diese Seite hat sich verflüchtigt.",
+  "route.notFound.body": "Der Link führte zu einem Ort, den es nicht mehr gibt – oder nie gab. Alles andere ist noch da.",
+  "route.notFound.home": "Zurück zum Anfang",
+  "route.error.title": "Etwas hat sich gelöst.",
+  "route.error.body": "Ein unerwarteter Fehler hat diese Seite unterbrochen. Der Staub legt sich noch – versuchen Sie es erneut oder kehren Sie zum Anfang zurück.",
+  "route.error.reset": "Erneut versuchen",
+  "route.error.home": "Zurück zum Anfang"
 }

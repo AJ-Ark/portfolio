@@ -672,7 +672,7 @@ export default function RipplPage() {
             </p>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "2.5rem", paddingTop: "1.8rem", borderTop: `1px solid ${LINEW}` }}>
-              {[["Role","Research & Design"],["Duration","12 weeks"],["Focus","Learning & memory"],["Prototypes","3 working builds"]].map(([l,v]) => (
+              {[["Role","Research & Design"],["Duration","12 weeks"],["Focus","Learning & memory"],["Prototypes","4 working builds"]].map(([l,v]) => (
                 <div key={l}>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: ".3rem" }}>{l}</span>
                   <span style={{ fontSize: ".8rem", color: DIM }}>{v}</span>
@@ -786,8 +786,8 @@ export default function RipplPage() {
             </Reveal>
 
             <Reveal as="blockquote" style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "clamp(1.1rem, 2.4vw, 1.7rem)", lineHeight: 1.35, color: PAPER, borderLeft: `3px solid ${ACC}`, paddingLeft: "1.8rem", maxWidth: "46ch", marginBottom: "3.5rem" }}>
-              "Picture this: you're all set to hit the books, but before you know it, your phone buzzes, social media beckons, and your focus takes a fall."
-              <footer style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginTop: ".8rem", fontStyle: "normal" }}>Anonymous interviewee · NID research session</footer>
+              The same pattern surfaced across nearly every session: a reader settles in to study, and within minutes a phone notification pulls their attention off the page.
+              <footer style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginTop: ".8rem", fontStyle: "normal" }}>Recurring pattern · NID research sessions</footer>
             </Reveal>
 
             <Reveal style={{ position: "relative", width: "100%", height: "360px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINEW}`, marginBottom: "3rem" }}>
@@ -1277,7 +1277,7 @@ export default function RipplPage() {
             </Reveal>
             {/* Stats strip */}
             <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", borderLeft: `1px solid ${LINEW}` }}>
-              {[["12 weeks","Project duration"],["3","Working prototypes"]].map(([val, label]) => (
+              {[["12 weeks","Project duration"],["4","Working prototypes"]].map(([val, label]) => (
                 <div key={label} style={{ height: "100%", padding: "1.8rem 1.6rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
                   <div style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "2.4rem", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".4rem" }}>{val}</div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT }}>{label}</div>

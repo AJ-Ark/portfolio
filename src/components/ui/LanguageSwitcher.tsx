@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "@/lib/TranslationContext";
 import { SUPPORTED_LANGUAGES, type LanguageCode } from "@/lib/i18n";
 import { EASE_OUT as EASE } from "@/lib/motion";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 export default function LanguageSwitcher() {
   const { language, setLanguage } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const reduceMotion = useReducedMotion();
+  // Our hook (not framer's useReducedMotion) so the in-nav Motion toggle,
+  // not just the OS setting, calms this dropdown too.
+  const reduceMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 

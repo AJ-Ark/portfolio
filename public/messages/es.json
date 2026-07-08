@@ -260,5 +260,12 @@
   "content.signals.principles.2.title": "Nunca pierdas tu lugar",
   "content.signals.principles.3.title": "Acción sin navegación",
   "content.signals.quotes.0": "Antes construía este mapa en mi cabeza a partir de seis informes de estado distintos. Ahora abro una sola pantalla y el mapa ya existe.",
-  "content.signals.quotes.1": "El clúster rojo en el centro me dijo en diez segundos lo que me habría llevado una semana de reuniones individuales reconstruir."
+  "content.signals.quotes.1": "El clúster rojo en el centro me dijo en diez segundos lo que me habría llevado una semana de reuniones individuales reconstruir.",
+  "route.notFound.title": "Esta página se ha desvanecido.",
+  "route.notFound.body": "El enlace llevaba a un lugar que ya no existe, o que nunca existió. Todo lo demás sigue aquí.",
+  "route.notFound.home": "Volver al inicio",
+  "route.error.title": "Algo se ha soltado.",
+  "route.error.body": "Un error inesperado interrumpió esta página. El polvo aún se asienta: inténtalo de nuevo o vuelve al inicio.",
+  "route.error.reset": "Intentar de nuevo",
+  "route.error.home": "Volver al inicio"
 }

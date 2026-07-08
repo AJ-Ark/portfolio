@@ -82,7 +82,11 @@
 
 html {
   color-scheme: dark;
-  scroll-behavior: smooth;
+  /* No `scroll-behavior: smooth` here on purpose: Lenis (SmoothScroll.tsx)
+     owns smooth scrolling. A native smooth rule double-smooths — the browser
+     and Lenis animate the same scroll offset simultaneously, fighting each
+     other into a laggy/rubber-banding feel. JS-disabled visitors fall back to
+     the browser's default instant scroll, which is correct. */
 }
 
 body {
@@ -118,6 +122,27 @@ a     { color: inherit; text-decoration: none; }
     animation-iteration-count: 1    !important;
     transition-duration:      0.01ms !important;
   }
+}
+
+/* ─── Manual motion toggle (a11y) ───
+   The in-page motion toggle (built by the a11y agent) stamps
+   <html data-motion="reduce"> so a visitor whose OS is NOT set to reduce
+   motion can still opt out. These rules mirror the @media(prefers-reduced-
+   motion: reduce) rules above verbatim so the manual path produces the exact
+   same calm result. They do NOT replace the @media block — the OS setting and
+   the toggle each independently trigger the calm state. (JS reads this same
+   attribute via prefersReducedMotionNow(), keeping DOM + canvas in lockstep.) */
+html[data-motion="reduce"] [data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+html[data-motion="reduce"] *,
+html[data-motion="reduce"] *::before,
+html[data-motion="reduce"] *::after {
+  animation-duration:       0.01ms !important;
+  animation-iteration-count: 1    !important;
+  transition-duration:      0.01ms !important;
 }
 
 /* ══════════════════════════════════════════════════════════════════

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useTranslation } from "@/lib/TranslationContext";
 import { EASE_OUT as EASE } from "@/lib/motion";
+import MotionToggle from "@/components/ui/MotionToggle";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const navLinkKeys = [
   { href: "/work", key: "nav.work" },
@@ -15,7 +17,9 @@ const navLinkKeys = [
 export default function Navigation() {
   const pathname = usePathname();
   const { t } = useTranslation();
-  const reduceMotion = useReducedMotion();
+  // Our hook (not framer's useReducedMotion) so the in-nav Motion toggle,
+  // not just the OS setting, calms the menu/hamburger animations too.
+  const reduceMotion = usePrefersReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -47,7 +51,9 @@ export default function Navigation() {
       if (!panel) return;
       const focusables = [
         toggleRef.current,
-        ...Array.from(panel.querySelectorAll<HTMLElement>("a[href]")),
+        ...Array.from(
+          panel.querySelectorAll<HTMLElement>("a[href], button")
+        ),
       ].filter((el): el is HTMLElement => el != null);
       if (focusables.length === 0) return;
       const first = focusables[0];
@@ -143,6 +149,11 @@ export default function Navigation() {
               {t(link.key)}
             </Link>
           ))}
+          {/* Visible reduced-motion switch — honored site-wide via
+              usePrefersReducedMotion's data-motion override. Label hardcoded
+              English; i18n key noted in pending (locale files owned by the
+              route-shell agent this phase). */}
+          <MotionToggle />
           <a
             href="mailto:aravindspav@gmail.com"
             className="cta-link"
@@ -306,6 +317,12 @@ export default function Navigation() {
                 >
                   aravindspav@gmail.com →
                 </motion.a>
+                {/* Motion switch inside the panel too — same override, sized
+                    to the mono links here. Participates in the focus trap via
+                    the "a[href], button" selector above. */}
+                <motion.div variants={itemVariants}>
+                  <MotionToggle style={{ padding: 0 }} />
+                </motion.div>
               </motion.div>
             </motion.div>
           </>
