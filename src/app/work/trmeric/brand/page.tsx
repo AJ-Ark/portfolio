@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import PlotInLines from "@/components/ui/PlotInLines";
+import Reveal from "@/components/ui/Reveal";
 import Shot from "@/components/trmeric/Shot";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
@@ -85,7 +86,7 @@ export default function TrmericBrandPage() {
 
         {/* ── 01: The completed mark ── */}
         <div style={{ background: BASE2, borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
-          <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
+          <Reveal style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
             <Shot
               src="/images/trmeric/logo-story/01.png"
               alt="Trmeric brand vision v1.0, the concentric ring mark paired with the trmeric wordmark, first presentation"
@@ -96,13 +97,13 @@ export default function TrmericBrandPage() {
               caption="Version 1.0 · Brand vision · First complete presentation of mark + wordmark"
               priority
             />
-          </div>
+          </Reveal>
         </div>
 
         {/* ── 02: The positioning ── */}
         <div style={{ borderBottom: `1px solid ${LINE}`, background: BASE2 }}>
           <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1.4fr", gap: "5rem", alignItems: "center" }}>
-            <div>
+            <Reveal>
               <div style={s.stageKicker}>Where it begins</div>
               <h3 style={s.h3}>trmeric, for those who want to ascend.</h3>
               <p style={{ ...s.body, marginBottom: "1rem" }}>
@@ -111,27 +112,11 @@ export default function TrmericBrandPage() {
               <p style={s.body}>
                 The five rings in the final mark are not decorative. Each one carries one of these values, plus a fifth: Unleash potential, the culmination of the other four.
               </p>
-            </div>
-            <Shot
-              src="/images/trmeric/logo-story/02.png"
-              alt="Trmeric brand positioning diagram, four quadrants: Simply essential, Superpower approach, Do it with style, Uplifting experience, with trmeric at centre"
-              ratio="16/9"
-              radius={12}
-              border={`1px solid ${LINE}`}
-              shadow={SHADOW}
-              accent={ACC}
-              sizes="(max-width: 900px) 100vw, 640px"
-            />
-          </div>
-        </div>
-
-        {/* ── 03: The plant ── */}
-        <div style={{ borderBottom: `1px solid ${LINE}` }}>
-          <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "5rem", alignItems: "center" }}>
+            </Reveal>
+            <Reveal delay={0.1}>
               <Shot
-                src="/images/trmeric/logo-story/04.png"
-                alt="Actual turmeric rhizomes photographed, compounding effect and organic shape as core brand concepts"
+                src="/images/trmeric/logo-story/02.png"
+                alt="Trmeric brand positioning diagram, four quadrants: Simply essential, Superpower approach, Do it with style, Uplifting experience, with trmeric at centre"
                 ratio="16/9"
                 radius={12}
                 border={`1px solid ${LINE}`}
@@ -139,7 +124,27 @@ export default function TrmericBrandPage() {
                 accent={ACC}
                 sizes="(max-width: 900px) 100vw, 640px"
               />
-              <div>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* ── 03: The plant ── */}
+        <div style={{ borderBottom: `1px solid ${LINE}` }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
+            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "5rem", alignItems: "center" }}>
+              <Reveal>
+                <Shot
+                  src="/images/trmeric/logo-story/04.png"
+                  alt="Actual turmeric rhizomes photographed, compounding effect and organic shape as core brand concepts"
+                  ratio="16/9"
+                  radius={12}
+                  border={`1px solid ${LINE}`}
+                  shadow={SHADOW}
+                  accent={ACC}
+                  sizes="(max-width: 900px) 100vw, 640px"
+                />
+              </Reveal>
+              <Reveal delay={0.1}>
                 <div style={s.stageKicker}>The source material</div>
                 <h3 style={s.h3}>It started with an actual turmeric plant.</h3>
                 <p style={{ ...s.body, marginBottom: "1rem" }}>
@@ -148,7 +153,7 @@ export default function TrmericBrandPage() {
                 <p style={s.body}>
                   These are not metaphors bolted onto a geometric logo after the fact. They are the literal source of the mark.
                 </p>
-              </div>
+              </Reveal>
             </div>
           </div>
         </div>
@@ -156,21 +161,25 @@ export default function TrmericBrandPage() {
         {/* ── 04: The derivation process ── */}
         <div style={{ borderBottom: `1px solid ${LINE}`, background: BASE2 }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
-            <div style={s.stageKicker}>The derivation</div>
-            <h3 style={{ ...s.h3, marginBottom: ".8rem", maxWidth: "28ch" }}>18 cross-sections. 3 groups. 1 mark.</h3>
-            <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "60ch" }}>
-              Three primary rhizomes were selected. Each was sliced into six cross-sections and photographed at scale. Each group of six was traced and averaged into a single ring form (a, b, c, d, e, f), then paired and superimposed (a+b = X, c+d = Y, e+f = Z) to find the best organic shape. The final outline emerged from X+Y+Z: not a circle, but something that came from real plant geometry.
-            </p>
-            <Shot
-              src="/images/trmeric/logo-story/03.png"
-              alt="Logo derivation process, 18 turmeric cross-sections photographed, traced, grouped, averaged into ring forms X Y Z, then combined into the final mark"
-              ratio="16/9"
-              radius={12}
-              border={`1px solid ${LINE}`}
-              shadow={SHADOW}
-              accent={ACC}
-              caption="Primary rhizome · Cross sections 1–18 · Abstracted forms a–f · Combined to X, Y, Z · Final mark"
-            />
+            <Reveal>
+              <div style={s.stageKicker}>The derivation</div>
+              <h3 style={{ ...s.h3, marginBottom: ".8rem", maxWidth: "28ch" }}>18 cross-sections. 3 groups. 1 mark.</h3>
+              <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "60ch" }}>
+                Three primary rhizomes were selected. Each was sliced into six cross-sections and photographed at scale. Each group of six was traced and averaged into a single ring form (a, b, c, d, e, f), then paired and superimposed (a+b = X, c+d = Y, e+f = Z) to find the best organic shape. The final outline emerged from X+Y+Z: not a circle, but something that came from real plant geometry.
+              </p>
+            </Reveal>
+            <Reveal>
+              <Shot
+                src="/images/trmeric/logo-story/03.png"
+                alt="Logo derivation process, 18 turmeric cross-sections photographed, traced, grouped, averaged into ring forms X Y Z, then combined into the final mark"
+                ratio="16/9"
+                radius={12}
+                border={`1px solid ${LINE}`}
+                shadow={SHADOW}
+                accent={ACC}
+                caption="Primary rhizome · Cross sections 1–18 · Abstracted forms a–f · Combined to X, Y, Z · Final mark"
+              />
+            </Reveal>
           </div>
         </div>
 
@@ -178,71 +187,81 @@ export default function TrmericBrandPage() {
         <div style={{ borderBottom: `1px solid ${LINE}` }}>
           <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
             <div>
-              <div style={s.stageKicker}>The mathematics</div>
-              <h3 style={s.h3}>Every ring is governed by the golden ratio.</h3>
-              <p style={{ ...s.body, marginBottom: "1rem" }}>
-                The outermost stroke of the mark is 12px. Each successive inner ring is sized by multiplying ×0.809, the reciprocal of the golden ratio (1/φ, expressed as sin 54°). Five rings, five strokes, each one mathematically smaller than the last.
-              </p>
-              <p style={s.body}>
-                This is not aesthetic decoration. It means the mark has the same proportional logic as a nautilus shell, a sunflower spiral, or the branching pattern of the very rhizome it depicts. The plant and the ratio share the same geometry.
-              </p>
+              <Reveal>
+                <div style={s.stageKicker}>The mathematics</div>
+                <h3 style={s.h3}>Every ring is governed by the golden ratio.</h3>
+                <p style={{ ...s.body, marginBottom: "1rem" }}>
+                  The outermost stroke of the mark is 12px. Each successive inner ring is sized by multiplying ×0.809, the reciprocal of the golden ratio (1/φ, expressed as sin 54°). Five rings, five strokes, each one mathematically smaller than the last.
+                </p>
+                <p style={s.body}>
+                  This is not aesthetic decoration. It means the mark has the same proportional logic as a nautilus shell, a sunflower spiral, or the branching pattern of the very rhizome it depicts. The plant and the ratio share the same geometry.
+                </p>
+              </Reveal>
               {/* Color swatches */}
-              <div style={{ display: "flex", gap: ".5rem", marginTop: "1.8rem", alignItems: "center" }}>
+              <Reveal stagger delay={0.2} style={{ display: "flex", gap: ".5rem", marginTop: "1.8rem", alignItems: "center" }}>
                 {["#FFA426", "#FF981C", "#FF8C13", "#FF7F0A", "#FF7300"].map((c) => (
                   <div key={c} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".4rem" }}>
                     <div style={{ width: 32, height: 32, borderRadius: "50%", background: c }} />
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".4rem", letterSpacing: ".08em", color: FAINT }}>{c.slice(1)}</span>
                   </div>
                 ))}
-              </div>
+              </Reveal>
             </div>
-            <Shot
-              src="/images/trmeric/logo-story/05.png"
-              alt="Golden ratio applied to the Trmeric mark, construction diagram showing how a = 1.618, b = 1, and the spiral derived from them governs each ring stroke"
-              ratio="16/9"
-              radius={12}
-              border={`1px solid ${LINE}`}
-              shadow={SHADOW}
-              accent={ACC}
-              sizes="(max-width: 900px) 100vw, 550px"
-            />
+            <Reveal delay={0.1}>
+              <Shot
+                src="/images/trmeric/logo-story/05.png"
+                alt="Golden ratio applied to the Trmeric mark, construction diagram showing how a = 1.618, b = 1, and the spiral derived from them governs each ring stroke"
+                ratio="16/9"
+                radius={12}
+                border={`1px solid ${LINE}`}
+                shadow={SHADOW}
+                accent={ACC}
+                sizes="(max-width: 900px) 100vw, 550px"
+              />
+            </Reveal>
           </div>
         </div>
 
         {/* ── 06: Five rings meaning ── */}
         <div style={{ borderBottom: `1px solid ${LINE}`, background: BASE2 }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
-            <div style={s.stageKicker}>The meaning</div>
-            <h3 style={{ ...s.h3, marginBottom: ".8rem", maxWidth: "24ch" }}>Five rings. Five brand promises.</h3>
-            <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "56ch" }}>
-              The five rings within the mark are not concentric for aesthetic reasons. Each ring represents a pillar of what trmeric delivers, and they grow outward the same way trmeric's value compounds in an enterprise: starting small and essential, expanding to something that truly unleashes potential.
-            </p>
-            <Shot
-              src="/images/trmeric/logo-story/06.png"
-              alt="The Five Rings: A Roadmap to Success, five circles of increasing size, each labelled: Simple & Essential, Superpower approach, Do it with style, Uplifting experience, Unleash Potential"
-              ratio="16/9"
-              radius={12}
-              border={`1px solid ${LINE}`}
-              shadow={SHADOW}
-              accent={ACC}
-            />
+            <Reveal>
+              <div style={s.stageKicker}>The meaning</div>
+              <h3 style={{ ...s.h3, marginBottom: ".8rem", maxWidth: "24ch" }}>Five rings. Five brand promises.</h3>
+              <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "56ch" }}>
+                The five rings within the mark are not concentric for aesthetic reasons. Each ring represents a pillar of what trmeric delivers, and they grow outward the same way trmeric's value compounds in an enterprise: starting small and essential, expanding to something that truly unleashes potential.
+              </p>
+            </Reveal>
+            <Reveal>
+              <Shot
+                src="/images/trmeric/logo-story/06.png"
+                alt="The Five Rings: A Roadmap to Success, five circles of increasing size, each labelled: Simple & Essential, Superpower approach, Do it with style, Uplifting experience, Unleash Potential"
+                ratio="16/9"
+                radius={12}
+                border={`1px solid ${LINE}`}
+                shadow={SHADOW}
+                accent={ACC}
+              />
+            </Reveal>
           </div>
         </div>
 
         {/* ── 07: Color system ── */}
         <div style={{ borderBottom: `1px solid ${LINE}` }}>
           <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "5rem", alignItems: "center" }}>
-            <Shot
-              src="/images/trmeric/logo-story/07.png"
-              alt="Trmeric mark with color system, five rings in five amber-to-orange hues (FFA426, FF981C, FF8C13, FF7F0A, FF7300), each stroke width governed by the golden ratio"
-              ratio="16/9"
-              radius={12}
-              border={`1px solid ${LINE}`}
-              shadow={SHADOW}
-              accent={ACC}
-              sizes="(max-width: 900px) 100vw, 640px"
-            />
-            <div>
+            <Reveal>
+              <Shot
+                src="/images/trmeric/logo-story/07.png"
+                alt="Trmeric mark with color system, five rings in five amber-to-orange hues (FFA426, FF981C, FF8C13, FF7F0A, FF7300), each stroke width governed by the golden ratio"
+                ratio="16/9"
+                radius={12}
+                border={`1px solid ${LINE}`}
+                shadow={SHADOW}
+                accent={ACC}
+                sizes="(max-width: 900px) 100vw, 640px"
+              />
+            </Reveal>
+            <Reveal delay={0.1}>
               <div style={s.stageKicker}>Colour and proportion, one ratio</div>
               <h3 style={s.h3}>The turmeric gradient. Five steps, one journey.</h3>
               <p style={{ ...s.body, marginBottom: "1rem" }}>
@@ -251,19 +270,21 @@ export default function TrmericBrandPage() {
               <p style={s.body}>
                 The right-hand diagram is the calculation behind it: the stroke thickness steps inward by the same ratio as the colour. 12px outer, divided by 0.809 (half the golden ratio, a = 1.618) at each ring, down to 4.99px innermost. One number, expressed twice, once in hue and once in thickness, not eyeballed to "look about right."
               </p>
-            </div>
+            </Reveal>
           </div>
         </div>
 
         {/* ── 08 + 09: Final lockup and colorways ── */}
         <div style={{ borderBottom: `1px solid ${LINE}`, background: BASE2 }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
-            <div style={s.stageKicker}>The final form</div>
-            <h3 style={{ ...s.h3, marginBottom: ".8rem", maxWidth: "24ch" }}>Simple shapes. All contexts.</h3>
-            <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "56ch" }}>
-              The logo is constructed from simple shapes so it maintains legibility at every size. Minimum height: 32px. The horizontal lockup is the default. On dark backgrounds the mark renders in amber. On amber backgrounds it reverses to white. The mark was designed to work in all three without modification, because a brand that only works on white backgrounds has not been properly finished.
-            </p>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <Reveal>
+              <div style={s.stageKicker}>The final form</div>
+              <h3 style={{ ...s.h3, marginBottom: ".8rem", maxWidth: "24ch" }}>Simple shapes. All contexts.</h3>
+              <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "56ch" }}>
+                The logo is constructed from simple shapes so it maintains legibility at every size. Minimum height: 32px. The horizontal lockup is the default. On dark backgrounds the mark renders in amber. On amber backgrounds it reverses to white. The mark was designed to work in all three without modification, because a brand that only works on white backgrounds has not been properly finished.
+              </p>
+            </Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               <Shot
                 src="/images/trmeric/logo-story/08.png"
                 alt="Logo horizontal lockup with clearspace rules, minimum size 32px height, construction based on simple geometric shapes"
@@ -286,21 +307,23 @@ export default function TrmericBrandPage() {
                 caption="Three colorways · Primary / Reversed dark / Reversed amber"
                 sizes="(max-width: 900px) 100vw, 550px"
               />
-            </div>
+            </Reveal>
           </div>
         </div>
 
         {/* ── Back to the case study ── */}
         <section style={{ padding: "5rem var(--pad) 6rem", textAlign: "center" }}>
-          <span style={{ ...s.kicker }}>Keep exploring</span>
-          <p style={{ fontSize: ".9375rem", color: DIM, maxWidth: "38ch", margin: ".6rem auto 2rem", lineHeight: 1.65 }}>
-            The mark is one artefact. The product it names has 23 surfaces.
-          </p>
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/work/trmeric" style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".18em", textTransform: "uppercase", color: BASE, background: ACC, borderRadius: "4px", padding: ".8rem 1.8rem", display: "inline-block", textDecoration: "none" }}>
-              ← Back to the case study
-            </Link>
-          </div>
+          <Reveal>
+            <span style={{ ...s.kicker }}>Keep exploring</span>
+            <p style={{ fontSize: ".9375rem", color: DIM, maxWidth: "38ch", margin: ".6rem auto 2rem", lineHeight: 1.65 }}>
+              The mark is one artefact. The product it names has 23 surfaces.
+            </p>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+              <Link href="/work/trmeric" style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".18em", textTransform: "uppercase", color: BASE, background: ACC, borderRadius: "4px", padding: ".8rem 1.8rem", display: "inline-block", textDecoration: "none" }}>
+                ← Back to the case study
+              </Link>
+            </div>
+          </Reveal>
         </section>
 
       </main>

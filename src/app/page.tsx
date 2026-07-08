@@ -5,6 +5,8 @@ import Footer from "@/components/layout/Footer";
 import CursorGlow from "@/components/ui/CursorGlow";
 import Preloader from "@/components/ui/Preloader";
 import HomeReel from "@/components/ui/HomeReel";
+import Reveal from "@/components/ui/Reveal";
+import { useTranslation } from "@/lib/TranslationContext";
 import type { Domain } from "@/data/projects";
 
 const DOMAINS: {
@@ -26,7 +28,7 @@ const DOMAINS: {
   {
     slug: "rippl",
     headline: "Rippl",
-    body: "A projector-lamp that fixes distracted reading and turns notetaking into a two-way interaction.",
+    body: "A projector-lamp that fights distracted reading and turns notetaking into a two-way interaction.",
     label: "Interaction Design · Physical Computing",
     accent: "#4FA8A0",
     coverImage: "/images/rippl/rippl-hero.jpg",
@@ -50,6 +52,7 @@ const DOMAINS: {
 ];
 
 export default function Home() {
+  const { t } = useTranslation();
   return (
     <>
       <Preloader />
@@ -72,8 +75,9 @@ export default function Home() {
             borderTop: "1px solid var(--line)",
           }}
         >
-          <div
+          <Reveal
             className="mobile-stack"
+            stagger
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
@@ -94,7 +98,7 @@ export default function Home() {
                   opacity: 0.7,
                 }}
               >
-                Currently
+                {t("home.currently")}
               </span>
               <p
                 style={{
@@ -103,8 +107,7 @@ export default function Home() {
                   lineHeight: 1.7,
                 }}
               >
-                Senior Product Designer at Trmeric.
-                M.Des New Media Design, NID Gandhinagar (2026).
+                {t("home.currentlyBody")}
               </p>
             </div>
 
@@ -121,7 +124,7 @@ export default function Home() {
                   opacity: 0.7,
                 }}
               >
-                Background
+                {t("home.background")}
               </span>
               <p
                 style={{
@@ -130,9 +133,7 @@ export default function Home() {
                   lineHeight: 1.7,
                 }}
               >
-                B.Arch, SPA Vijayawada. Six years of
-                architecture taught me to hold a system at full
-                scale while still caring about the door handle.
+                {t("home.backgroundBody")}
               </p>
             </div>
 
@@ -149,12 +150,12 @@ export default function Home() {
                   opacity: 0.7,
                 }}
               >
-                Reach
+                {t("home.reach")}
               </span>
               <div style={{ display: "flex", flexDirection: "column", gap: ".6rem" }}>
                 {[
                   { label: "aravindspav@gmail.com →", href: "mailto:aravindspav@gmail.com" },
-                  { label: "LinkedIn →", href: "https://www.linkedin.com/in/aravind-j-5a6b8b136/" },
+                  { label: `${t("footer.linkedin")} →`, href: "https://www.linkedin.com/in/aravind-j-5a6b8b136/" },
                 ].map(({ label, href }) => (
                   <a
                     key={href}
@@ -174,7 +175,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-          </div>
+          </Reveal>
         </section>
 
       </main>

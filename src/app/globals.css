@@ -23,25 +23,54 @@
   --color-rippl:          #4FA8A0;
   --color-trmeric:        #FFA426;
 
-  /* Typography */
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body:    "General Sans", "Inter", system-ui, sans-serif;
-  --font-mono:    "JetBrains Mono", "Fira Code", monospace;
+  /* Typography — families are self-hosted via next/font (src/lib/fonts.ts);
+     each --font-* variable below is stamped on <html> by layout.tsx. */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-body:    var(--font-general-sans), var(--font-inter), system-ui, sans-serif;
+  --font-mono:    var(--font-jetbrains-mono), "Fira Code", monospace;
 
-  /* Compat alias */
-  --spacing-page: clamp(1.5rem, 5vw, 4rem);
+  /* Compat alias — --pad (below) is the canonical page gutter; this token
+     only survives for existing var(--spacing-page) call sites. */
+  --spacing-page: var(--pad);
 }
 
 /* ─── Global custom properties (outside @theme — not Tailwind utilities) ─── */
 :root {
-  --pad:        clamp(20px, 6vw, 120px);
+  --pad:        clamp(20px, 6vw, 120px);   /* canonical page gutter — --spacing-page aliases this */
   --ease:       cubic-bezier(.22, 1, .36, 1);
   --ease-plot:  cubic-bezier(.16, 1, .3, 1);    /* alias for PlotInLines component */
+
+  --dur-base:   0.6s;                        /* standard reveal duration — mirrors DURATION.base in src/lib/motion.ts */
   --rad:        18px;
   --r-sm:       12px;
   --line:       rgba(217, 180, 106, .18);    /* gold-tinted hairline */
   --shadow-sm:  0 4px 20px -8px rgba(6, 4, 2, .5);
   --shadow-lg:  0 30px 70px -30px rgba(6, 4, 2, .6);
+}
+
+/* ─── Reveal primitive (src/components/ui/Reveal.tsx) ───
+   SSR/no-JS-safe: markup ships visible. After hydration the component marks
+   below-fold elements with [data-reveal] and flips them to "in" when they
+   enter the viewport; it removes the attribute once the transition ends, so
+   these rules never linger on an element's own transitions. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(var(--reveal-y, 24px));
+}
+[data-reveal="in"] {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--dur-base) var(--ease-plot),
+    transform var(--dur-base) var(--ease-plot);
+  transition-delay: var(--reveal-delay, 0s);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 /* ─── Base ─── */
@@ -243,6 +272,127 @@ a     { color: inherit; text-decoration: none; }
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   HOVER / FOCUS LAYER
+   One shared grammar: a hairline that wipes in from the left and exits
+   to the right (::after scaleX on --ease). Pseudo-elements are used —
+   not background-size on the element — so the grammar survives the
+   inline style={} props most of these links carry in JSX.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── Underline-slide: nav links + footer links ── */
+.nav-link,
+.footer-link {
+  position: relative;
+}
+.nav-link::after,
+.footer-link::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -0.35em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: 100% 50%;   /* exit stage right… */
+  transition: transform .45s var(--ease);
+}
+.nav-link:hover::after,
+.nav-link:focus-visible::after,
+.footer-link:hover::after,
+.footer-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: 0% 50%;     /* …enter stage left */
+}
+
+/* Nav color states — the current page keeps its underline lit */
+.nav-link {
+  color: var(--color-graphite-light);
+  transition: color .25s var(--ease);
+}
+.nav-link:hover,
+.nav-link:focus-visible,
+.nav-link[aria-current="page"] {
+  color: var(--color-paper);
+}
+.nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+  transform-origin: 0% 50%;
+  background: var(--color-accent);
+}
+
+/* Footer links brighten as the line arrives. !important is deliberate:
+   Footer.tsx sets color inline, which would otherwise beat this rule. */
+.footer-link:hover,
+.footer-link:focus-visible {
+  color: var(--color-paper) !important;
+}
+
+/* ── Bordered CTAs (resume download, nav "say hello"): the same wipe,
+      scaled up to a full accent-tinted fill behind the label ── */
+.resume-link,
+.cta-link {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;            /* keeps the fill under the label only */
+}
+.resume-link::after,
+.cta-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform .5s var(--ease);
+}
+.resume-link:hover::after,
+.resume-link:focus-visible::after,
+.cta-link:hover::after,
+.cta-link:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: 0% 50%;
+}
+/* Border warms toward the accent. !important is deliberate: the about
+   page sets border inline on .resume-link, which would otherwise win. */
+.resume-link:hover,
+.resume-link:focus-visible,
+.cta-link:hover,
+.cta-link:focus-visible {
+  border-color: color-mix(in srgb, var(--color-accent) 55%, transparent) !important;
+}
+/* The ↓ / → glyph leans into the action */
+.resume-link span[aria-hidden="true"],
+.cta-link span[aria-hidden="true"] {
+  display: inline-block;
+  transition: transform .35s var(--ease);
+}
+.resume-link:hover span[aria-hidden="true"],
+.resume-link:focus-visible span[aria-hidden="true"] {
+  transform: translateY(3px);
+}
+.cta-link:hover span[aria-hidden="true"],
+.cta-link:focus-visible span[aria-hidden="true"] {
+  transform: translateX(3px);
+}
+
+/* Nav CTA base look (was inline in Navigation.tsx — moved here so the
+   hover grammar owns border + color without specificity fights) */
+.cta-link {
+  color: var(--color-accent);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: border-color .25s var(--ease), color .25s var(--ease);
+}
+
+/* ── Focus ring — visible, offset, accent-tinted, site-wide.
+      Never remove an outline without a replacement. ── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
    MOBILE GRID STACKING
    Every multi-column inline-style grid on the site carries this class.
    Below 760px every one of them collapses to a single column instead
@@ -301,8 +451,10 @@ html[data-theme="light"] {
   color-scheme: light;
 }
 
-/* ── REALM — light ── */
-html[data-theme="light"] [data-domain="realm"] {
+/* ── REALM — light ──
+   Compound selector (no space): data-theme and data-domain are BOTH
+   stamped on <html>, so a descendant combinator can never match. */
+html[data-theme="light"][data-domain="realm"] {
   --color-ground:         #F2F5EE;
   --color-ground-2:       #E8EDE4;
   --color-paper:          #1a1e1a;
@@ -346,8 +498,35 @@ html[data-theme="dark"][data-domain="rippl"] {
   color-scheme: dark;
 }
 
-/* ── TRMERIC — light ── */
-html[data-theme="light"] [data-domain="trmeric"] {
+/* ── RIPPL — light ──
+   Rippl's BASE palette is already light, but the generic
+   html[data-theme="light"] home block above outranks the plain
+   [data-domain="rippl"] block (0,1,1 vs 0,1,0) and would repaint
+   Rippl's teal with the home gold. Reassert the Rippl palette at
+   compound specificity so light mode keeps the domain's own voice. */
+html[data-theme="light"][data-domain="rippl"] {
+  --color-ground:         #F4F1EA;
+  --color-ground-2:       #E9E3D6;
+  --color-paper:          #1A1814;
+  --color-graphite:       #544f45;
+  --color-graphite-light: #938c7f;
+  --color-accent:         #4FA8A0;
+  --color-accent-bright:  #6FC4BC;
+  --color-accent-deep:    #357A74;
+  --line:                 rgba(26, 24, 20, .14);
+  --shadow-sm:            0 4px 20px -8px rgba(26, 24, 20, .15);
+  --shadow-lg:            0 30px 70px -30px rgba(26, 24, 20, .22);
+  --color-dim:   rgba(26, 24, 20, .62);
+  --color-faint: rgba(26, 24, 20, .28);
+  --line-weak:   rgba(26, 24, 20, .1);
+  --logo-light-opacity:   0;
+  --logo-dark-opacity:    1;
+  --logo-color: #1A1510;
+  color-scheme: light;
+}
+
+/* ── TRMERIC — light ── (compound — both attrs live on <html>) */
+html[data-theme="light"][data-domain="trmeric"] {
   --color-ground:         #FAF7F1;
   --color-ground-2:       #F1EADC;
   --color-paper:          #17150F;
@@ -367,8 +546,8 @@ html[data-theme="light"] [data-domain="trmeric"] {
   color-scheme: light;
 }
 
-/* ── ROZI — light ── */
-html[data-theme="light"] [data-domain="rozi"] {
+/* ── ROZI — light ── (compound — both attrs live on <html>) */
+html[data-theme="light"][data-domain="rozi"] {
   --color-ground:         #FBF8F5;
   --color-ground-2:       #F3EDE6;
   --color-paper:          #0c0806;

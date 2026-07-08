@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
+import Reveal from "@/components/ui/Reveal";
 import TangoConversationDemo from "@/components/ui/TangoConversationDemo";
 import EnrichmentDemo from "@/components/ui/EnrichmentDemo";
 import ConvertToProjectDemo from "@/components/ui/ConvertToProjectDemo";
@@ -468,25 +469,27 @@ export default async function TrmericSubPage({ params }: Props) {
         {/* ═══ HERO ═══ */}
         <section style={{ padding: "9rem var(--pad) 4rem" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Link
-              href="/work/trmeric"
-              style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginBottom: "1.5rem", display: "inline-block" }}
-            >
-              ← Trmeric
-            </Link>
-            <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "1rem" }}>
-              {piece.sandboxSrc ? "Live prototype" : "Showcase"} · Feature deep-dive
-            </div>
-            <h1 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(2rem, 5vw, 3.6rem)", letterSpacing: "-.025em", lineHeight: 1.05, color: INK, marginBottom: "1rem" }}>
-              {piece.title}
-            </h1>
-            <p style={{ fontSize: "1.0625rem", color: DIM, lineHeight: 1.65, maxWidth: "52ch" }}>
-              {piece.oneLiner}
-            </p>
+            <Reveal>
+              <Link
+                href="/work/trmeric"
+                style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginBottom: "1.5rem", display: "inline-block" }}
+              >
+                ← Trmeric
+              </Link>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "1rem" }}>
+                {piece.sandboxSrc ? "Live prototype" : "Showcase"} · Feature deep-dive
+              </div>
+              <h1 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(2rem, 5vw, 3.6rem)", letterSpacing: "-.025em", lineHeight: 1.05, color: INK, marginBottom: "1rem" }}>
+                {piece.title}
+              </h1>
+              <p style={{ fontSize: "1.0625rem", color: DIM, lineHeight: 1.65, maxWidth: "52ch" }}>
+                {piece.oneLiner}
+              </p>
+            </Reveal>
 
             {/* Hero stat, if present */}
             {c?.heroStat && (
-              <div style={{ display: "flex", alignItems: "center", gap: "2rem", marginTop: "2.5rem", paddingTop: "2rem", borderTop: `1px solid ${LINE}` }}>
+              <Reveal delay={0.15} style={{ display: "flex", alignItems: "center", gap: "2rem", marginTop: "2.5rem", paddingTop: "2rem", borderTop: `1px solid ${LINE}` }}>
                 <div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginBottom: ".3rem" }}>Before</div>
                   <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "1.8rem", color: FAINT, fontVariantNumeric: "tabular-nums" }}>{c.heroStat.before}</div>
@@ -499,7 +502,7 @@ export default async function TrmericSubPage({ params }: Props) {
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".1em", textTransform: "uppercase", color: DIM, paddingLeft: "1rem", borderLeft: `1px solid ${LINE}` }}>
                   {c.heroStat.label}
                 </div>
-              </div>
+              </Reveal>
             )}
           </div>
         </section>
@@ -508,9 +511,9 @@ export default async function TrmericSubPage({ params }: Props) {
         {heroImg && (
           <section style={{ padding: "0 var(--pad) 4rem" }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-              <div style={{ position: "relative", width: "100%", height: "480px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
+              <Reveal style={{ position: "relative", width: "100%", height: "480px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
                 <Image src={heroImg} alt={`${piece.title} screenshot`} fill style={{ objectFit: "cover", objectPosition: "top left" }} />
-              </div>
+              </Reveal>
             </div>
           </section>
         )}
@@ -519,7 +522,7 @@ export default async function TrmericSubPage({ params }: Props) {
         {piece.sandboxSrc && (
           <section style={{ padding: "0 var(--pad) 4rem" }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1.2rem", padding: "1.6rem 1.8rem", border: `1px solid ${LINA}`, borderRadius: "14px", background: "rgba(255,164,38,.05)" }}>
+              <Reveal style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1.2rem", padding: "1.6rem 1.8rem", border: `1px solid ${LINA}`, borderRadius: "14px", background: "rgba(255,164,38,.05)" }}>
                 <div>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>
                     Live prototype
@@ -536,7 +539,7 @@ export default async function TrmericSubPage({ params }: Props) {
                 >
                   Access the prototype →
                 </a>
-              </div>
+              </Reveal>
             </div>
           </section>
         )}
@@ -545,24 +548,26 @@ export default async function TrmericSubPage({ params }: Props) {
           <>
             {/* ═══ INTRO ═══ */}
             <section style={{ padding: "4rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
-              <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+              <Reveal stagger style={{ maxWidth: "1100px", margin: "0 auto" }}>
                 {c.intro.split("\n\n").map((para, i) => (
                   <p key={i} style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "62ch", marginBottom: "1.2rem" }}>{para}</p>
                 ))}
-              </div>
+              </Reveal>
             </section>
 
             {/* ═══ WALKTHROUGH SEQUENCE ═══ */}
             {c.walkthrough && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>The actual interaction, screen by screen</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Up-level, end to end</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2.5rem", maxWidth: "60ch" }}>Four real screens from the working prototype, in sequence. Not mockups, this is the actual flow a PM walks through to move a project's status forward.</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>The actual interaction, screen by screen</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Up-level, end to end</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2.5rem", maxWidth: "60ch" }}>Four real screens from the working prototype, in sequence. Not mockups, this is the actual flow a PM walks through to move a project's status forward.</p>
+                  </Reveal>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
                     {c.walkthrough.map((step) => (
-                      <div key={step.num} className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center" }}>
+                      <Reveal key={step.num} className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center" }}>
                         <div style={{ position: "relative", height: "320px", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
                           <Image src={step.img} alt={step.imgAlt} fill style={{ objectFit: "cover", objectPosition: "top left" }} />
                         </div>
@@ -571,7 +576,7 @@ export default async function TrmericSubPage({ params }: Props) {
                           <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.1rem", color: INK, marginBottom: ".8rem" }}>{step.title}</h4>
                           <p style={{ fontSize: ".88rem", color: DIM, lineHeight: 1.7 }}>{step.caption}</p>
                         </div>
-                      </div>
+                      </Reveal>
                     ))}
                   </div>
                 </div>
@@ -582,19 +587,21 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.personaTraits && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Who they are</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.5rem", color: INK, marginBottom: ".6rem" }}>{c.personaName}</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "1.2rem", maxWidth: "60ch" }}>Not a project manager. Not a delivery lead. A governance role, accountable for asking "are we doing the right things?" not "are we doing things right?"</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Who they are</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.5rem", color: INK, marginBottom: ".6rem" }}>{c.personaName}</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "1.2rem", maxWidth: "60ch" }}>Not a project manager. Not a delivery lead. A governance role, accountable for asking "are we doing the right things?" not "are we doing things right?"</p>
+                  </Reveal>
                   {c.personaTags && (
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", marginBottom: "2.5rem" }}>
+                    <Reveal stagger={0.05} delay={0.1} style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", marginBottom: "2.5rem" }}>
                       {c.personaTags.map((t) => (
                         <span key={t} style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".06em", padding: ".35rem .7rem", borderRadius: "100px", border: `1px solid ${LINA}`, color: ACCD, background: "rgba(255,164,38,.06)" }}>{t}</span>
                       ))}
-                    </div>
+                    </Reveal>
                   )}
 
                   <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: "2.5rem" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+                    <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                       {c.personaTraits.map((t) => (
                         <div key={t.label} style={{ display: "flex", gap: "1rem", padding: "1rem 1.2rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE2 }}>
                           <div style={{ width: 6, height: 6, borderRadius: "50%", background: ACC, flexShrink: 0, marginTop: ".4rem" }} />
@@ -604,10 +611,10 @@ export default async function TrmericSubPage({ params }: Props) {
                           </div>
                         </div>
                       ))}
-                    </div>
+                    </Reveal>
 
                     {c.researchStats && (
-                      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                      <Reveal stagger delay={0.1} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                         {c.researchStats.map((s) => (
                           <div key={s.label} style={{ padding: "1.2rem 1.3rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE }}>
                             <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: s.value.length > 12 ? "1.1rem" : "1.6rem", letterSpacing: "-.02em", color: ACC, marginBottom: ".3rem", lineHeight: 1.2 }}>{s.value}</div>
@@ -615,16 +622,16 @@ export default async function TrmericSubPage({ params }: Props) {
                             <p style={{ fontSize: ".72rem", color: FAINT, lineHeight: 1.5 }}>{s.sub}</p>
                           </div>
                         ))}
-                      </div>
+                      </Reveal>
                     )}
                   </div>
 
                   {c.topologies && (
                     <div style={{ marginTop: "2.5rem" }}>
-                      <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginBottom: "1rem" }}>Two operating topologies</div>
-                      <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
+                      <Reveal style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginBottom: "1rem" }}>Two operating topologies</Reveal>
+                      <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
                         {c.topologies.map((t) => (
-                          <div key={t.name} style={{ padding: "1.3rem 1.4rem", borderLeft: `3px solid ${ACC}`, border: `1px solid ${LINE}`, borderLeftWidth: "3px", borderRadius: "8px", background: BASE2 }}>
+                          <div key={t.name} style={{ height: "100%", padding: "1.3rem 1.4rem", borderLeft: `3px solid ${ACC}`, border: `1px solid ${LINE}`, borderLeftWidth: "3px", borderRadius: "8px", background: BASE2 }}>
                             <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: ".92rem", color: INK, marginBottom: ".2rem" }}>{t.name}</div>
                             <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", color: FAINT, marginBottom: ".7rem" }}>{t.subtitle}</div>
                             <p style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.6, marginBottom: ".7rem" }}>{t.desc}</p>
@@ -632,7 +639,7 @@ export default async function TrmericSubPage({ params }: Props) {
                             <p style={{ fontSize: ".72rem", color: FAINT, lineHeight: 1.5 }}>{t.scale}</p>
                           </div>
                         ))}
-                      </div>
+                      </Reveal>
                     </div>
                   )}
                 </div>
@@ -643,34 +650,36 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.rituals && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · How they operate</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>A day in the life</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>They don't open a tool because they're curious. They open it because something demands attention, or to prepare for a room where they'll be questioned.</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · How they operate</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>A day in the life</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>They don't open a tool because they're curious. They open it because something demands attention, or to prepare for a room where they'll be questioned.</p>
+                  </Reveal>
 
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem", marginBottom: "2rem" }}>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: ".8rem", marginBottom: "2rem" }}>
                     {c.rituals.map((r) => (
-                      <div key={r.cadence} style={{ padding: "1.2rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE, textAlign: "center" }}>
+                      <div key={r.cadence} style={{ height: "100%", padding: "1.2rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE, textAlign: "center" }}>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: ACCD, fontWeight: 700, marginBottom: ".5rem" }}>{r.cadence}</div>
                         <p style={{ fontSize: ".74rem", color: DIM, lineHeight: 1.55 }}>{r.detail}</p>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
 
                   {(c.goodDay || c.badDay) && (
-                    <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
+                    <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
                       {c.goodDay && (
-                        <div style={{ padding: "1.3rem 1.5rem", borderTop: "3px solid #3a7a4a", border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
+                        <div style={{ height: "100%", padding: "1.3rem 1.5rem", borderTop: "3px solid #3a7a4a", border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
                           <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: "#3a7a4a", fontWeight: 700, marginBottom: ".8rem" }}>A good day</div>
                           {c.goodDay.map((g) => <div key={g} style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.6, marginBottom: ".4rem" }}>· {g}</div>)}
                         </div>
                       )}
                       {c.badDay && (
-                        <div style={{ padding: "1.3rem 1.5rem", borderTop: "3px solid #b5402a", border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
+                        <div style={{ height: "100%", padding: "1.3rem 1.5rem", borderTop: "3px solid #b5402a", border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
                           <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: "#b5402a", fontWeight: 700, marginBottom: ".8rem" }}>A bad day</div>
                           {c.badDay.map((b) => <div key={b} style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.6, marginBottom: ".4rem" }}>· {b}</div>)}
                         </div>
                       )}
-                    </div>
+                    </Reveal>
                   )}
                 </div>
               </section>
@@ -680,11 +689,13 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.iaPriorities && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · What they need to see</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Information architecture, ranked</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Not everything at once. Signal first, then synthesis, then summary, then drill-down. The density preference is a cascade, not a wall.</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · What they need to see</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Information architecture, ranked</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Not everything at once. Signal first, then synthesis, then summary, then drill-down. The density preference is a cascade, not a wall.</p>
+                  </Reveal>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: ".5rem", marginBottom: "3rem" }}>
+                  <Reveal stagger={0.06} style={{ display: "flex", flexDirection: "column", gap: ".5rem", marginBottom: "3rem" }}>
                     {c.iaPriorities.map((item) => (
                       <div key={item.rank} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: ".8rem 1.1rem", border: `1px solid ${LINE}`, borderRadius: "8px", background: item.rank <= 2 ? "rgba(255,164,38,.04)" : BASE2 }}>
                         <span style={{
@@ -704,18 +715,20 @@ export default async function TrmericSubPage({ params }: Props) {
                         }}>{item.level}</span>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
 
                   {c.temporalModes && (
                     <>
-                      <div style={{ display: "flex", alignItems: "center", gap: ".8rem", marginBottom: ".6rem" }}>
-                        <span style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".08em", padding: ".2rem .5rem", borderRadius: "4px", background: ACC, color: INK, fontWeight: 700 }}>NEW</span>
-                        <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.05rem", color: INK }}>The missing dimension: temporal state</h4>
-                      </div>
-                      <p style={{ fontSize: ".84rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>The portfolio is not one view, it's three completely different mental modes. This is absent from every current PPM tool. It's a major design opportunity.</p>
-                      <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+                      <Reveal>
+                        <div style={{ display: "flex", alignItems: "center", gap: ".8rem", marginBottom: ".6rem" }}>
+                          <span style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".08em", padding: ".2rem .5rem", borderRadius: "4px", background: ACC, color: INK, fontWeight: 700 }}>NEW</span>
+                          <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.05rem", color: INK }}>The missing dimension: temporal state</h4>
+                        </div>
+                        <p style={{ fontSize: ".84rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>The portfolio is not one view, it's three completely different mental modes. This is absent from every current PPM tool. It's a major design opportunity.</p>
+                      </Reveal>
+                      <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
                         {c.temporalModes.map((m) => (
-                          <div key={m.phase} style={{ border: `1px solid ${m.phase.includes("Present") ? LINA : LINE}`, borderRadius: "10px", overflow: "hidden", background: BASE }}>
+                          <div key={m.phase} style={{ height: "100%", border: `1px solid ${m.phase.includes("Present") ? LINA : LINE}`, borderRadius: "10px", overflow: "hidden", background: BASE }}>
                             <div style={{ padding: "1.1rem 1.2rem", borderBottom: `1px solid ${LINE}` }}>
                               <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase", color: ACCD, marginBottom: ".6rem" }}>{m.phase}</div>
                               <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: ".95rem", color: INK }}>{m.question}</div>
@@ -729,7 +742,7 @@ export default async function TrmericSubPage({ params }: Props) {
                             </div>
                           </div>
                         ))}
-                      </div>
+                      </Reveal>
                     </>
                   )}
                 </div>
@@ -740,17 +753,19 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.painPoints && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Current reality</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Why current tools fail</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Planview, Clarity, ServiceNow SPM, Jira Align: all powerful. All abandoned in favour of Excel the day before the board meeting.</p>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Current reality</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Why current tools fail</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Planview, Clarity, ServiceNow SPM, Jira Align: all powerful. All abandoned in favour of Excel the day before the board meeting.</p>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1rem" }}>
                     {c.painPoints.map((p) => (
-                      <div key={p.title} style={{ padding: "1.2rem 1.4rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE }}>
+                      <div key={p.title} style={{ height: "100%", padding: "1.2rem 1.4rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE }}>
                         <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: ".88rem", color: INK, marginBottom: ".5rem" }}>{p.title}</h4>
                         <p style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.6 }}>{p.detail}</p>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -759,13 +774,15 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.valueChain && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · The AI opportunity</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Moving up the value chain</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2.5rem", maxWidth: "58ch" }}>The shift from "show me the data" to "tell me what changed, why it matters, and what to do." Four rungs, and Tango needs to reach all four.</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · The AI opportunity</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Moving up the value chain</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2.5rem", maxWidth: "58ch" }}>The shift from "show me the data" to "tell me what changed, why it matters, and what to do." Four rungs, and Tango needs to reach all four.</p>
+                  </Reveal>
 
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     {c.valueChain.map((rung, i) => (
-                      <div key={rung.num} style={{ display: "flex", gap: "1.4rem", padding: "1.4rem 0", borderBottom: i < c.valueChain!.length - 1 ? `1px solid ${LINE}` : "none" }}>
+                      <Reveal key={rung.num} style={{ display: "flex", gap: "1.4rem", padding: "1.4rem 0", borderBottom: i < c.valueChain!.length - 1 ? `1px solid ${LINE}` : "none" }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 40, flexShrink: 0 }}>
                           <span style={{
                             width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
@@ -787,22 +804,24 @@ export default async function TrmericSubPage({ params }: Props) {
                             fontWeight: rung.isTango ? 600 : 400,
                           }}>{rung.isTango && "✦ "}{rung.example}</span>
                         </div>
-                      </div>
+                      </Reveal>
                     ))}
                   </div>
 
                   {c.trustPillars && (
                     <div style={{ marginTop: "2.5rem" }}>
-                      <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.05rem", color: INK, marginBottom: ".4rem" }}>The trust contract</h4>
-                      <p style={{ fontSize: ".84rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>This persona is politically exposed. Every number they present, they must be able to defend. Tango's authority depends on three non-negotiables.</p>
-                      <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
+                      <Reveal>
+                        <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.05rem", color: INK, marginBottom: ".4rem" }}>The trust contract</h4>
+                        <p style={{ fontSize: ".84rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>This persona is politically exposed. Every number they present, they must be able to defend. Tango's authority depends on three non-negotiables.</p>
+                      </Reveal>
+                      <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem" }}>
                         {c.trustPillars.map((p) => (
-                          <div key={p.title} style={{ padding: "1.3rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE2, textAlign: "center" }}>
+                          <div key={p.title} style={{ height: "100%", padding: "1.3rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE2, textAlign: "center" }}>
                             <h5 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: ".88rem", color: INK, marginBottom: ".5rem" }}>{p.title}</h5>
                             <p style={{ fontSize: ".76rem", color: DIM, lineHeight: 1.6 }}>{p.detail}</p>
                           </div>
                         ))}
-                      </div>
+                      </Reveal>
                     </div>
                   )}
                 </div>
@@ -813,10 +832,12 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.jobs && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Jobs to be done</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>The five core scenarios</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>When do they open the portfolio? What are they trying to accomplish? Design for these, nothing else is priority.</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: ".8rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Jobs to be done</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>The five core scenarios</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>When do they open the portfolio? What are they trying to accomplish? Design for these, nothing else is priority.</p>
+                  </Reveal>
+                  <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: ".8rem" }}>
                     {c.jobs.map((j, i) => (
                       <div key={j.title} style={{ display: "flex", gap: "1.2rem", padding: "1.2rem 1.4rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE }}>
                         <span style={{ width: 32, height: 32, borderRadius: "8px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: ".78rem", fontWeight: 700, color: ACCD, background: "rgba(255,164,38,.08)", border: `1.5px solid ${LINA}` }}>{i + 1}</span>
@@ -827,7 +848,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -836,10 +857,12 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.designBets && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research → Design direction</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Three design bets</h3>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>These are the decisions that determine whether this feature beats Excel and PowerPoint, or becomes another tool people export out of.</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research → Design direction</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>Three design bets</h3>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>These are the decisions that determine whether this feature beats Excel and PowerPoint, or becomes another tool people export out of.</p>
+                  </Reveal>
+                  <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {c.designBets.map((b, i) => (
                       <div key={b.title} style={{ display: "flex", gap: "1.4rem", padding: "1.4rem", borderLeft: `4px solid ${ACC}`, border: `1px solid ${LINE}`, borderLeftWidth: "4px", borderRadius: "8px", background: BASE2 }}>
                         <span style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.2rem", color: "rgba(23,21,15,.14)", lineHeight: 1, flexShrink: 0, width: 44 }}>{String(i + 1).padStart(2, "0")}</span>
@@ -849,7 +872,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -858,11 +881,13 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.engagementModes && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Three modes of engagement</span>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Not one screen. Three distinct purposes, each needing a different visual posture.</p>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.2rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Three modes of engagement</span>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Not one screen. Three distinct purposes, each needing a different visual posture.</p>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.2rem" }}>
                     {c.engagementModes.map((m) => (
-                      <div key={m.title} style={{ padding: "1.4rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE, display: "flex", flexDirection: "column", gap: ".9rem" }}>
+                      <div key={m.title} style={{ height: "100%", padding: "1.4rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE, display: "flex", flexDirection: "column", gap: ".9rem" }}>
                         <div>
                           <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.05rem", color: INK }}>{m.title}</div>
                           <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".06em", color: FAINT, marginTop: ".15rem" }}>{m.cadence}</div>
@@ -880,7 +905,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -890,11 +915,13 @@ export default async function TrmericSubPage({ params }: Props) {
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <div style={{ padding: "2rem 2.2rem", borderRadius: "16px", border: `1.5px solid ${LINA}`, background: `linear-gradient(160deg, rgba(255,164,38,.05), ${BASE})`, marginBottom: c.closingQuote ? "1.5rem" : 0 }}>
-                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.3rem", color: INK, marginBottom: ".6rem" }}>The experience we're building toward</h3>
-                    <p style={{ fontSize: ".88rem", color: DIM, lineHeight: 1.7, marginBottom: "1.8rem", maxWidth: "62ch" }}>Not a chat interface. Not a traditional dashboard. A living briefing surface with a conversation layer, like a financial newspaper that knows you, updates in real time, and you can talk back to. Tango is the editor. The workspace is the publication.</p>
-                    <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                    <Reveal>
+                      <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.3rem", color: INK, marginBottom: ".6rem" }}>The experience we're building toward</h3>
+                      <p style={{ fontSize: ".88rem", color: DIM, lineHeight: 1.7, marginBottom: "1.8rem", maxWidth: "62ch" }}>Not a chat interface. Not a traditional dashboard. A living briefing surface with a conversation layer, like a financial newspaper that knows you, updates in real time, and you can talk back to. Tango is the editor. The workspace is the publication.</p>
+                    </Reveal>
+                    <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                       {c.directionPrinciples.map((p) => (
-                        <div key={p.title} style={{ display: "flex", gap: ".8rem", padding: "1rem 1.1rem", background: "#fff", borderRadius: "8px", border: `1px solid ${LINE}` }}>
+                        <div key={p.title} style={{ height: "100%", display: "flex", gap: ".8rem", padding: "1rem 1.1rem", background: "#fff", borderRadius: "8px", border: `1px solid ${LINE}` }}>
                           <span style={{ width: 7, height: 7, borderRadius: "50%", background: ACC, flexShrink: 0, marginTop: ".4rem" }} />
                           <div>
                             <div style={{ fontSize: ".84rem", fontWeight: 600, color: INK }}>{p.title}</div>
@@ -902,16 +929,16 @@ export default async function TrmericSubPage({ params }: Props) {
                           </div>
                         </div>
                       ))}
-                    </div>
+                    </Reveal>
                   </div>
 
                   {c.closingQuote && (
-                    <div style={{ padding: "1.8rem 2rem", borderRadius: "14px", background: "linear-gradient(135deg, rgba(139,92,246,.05), rgba(255,164,38,.05))", border: "1.5px solid rgba(139,92,246,.18)" }}>
+                    <Reveal style={{ padding: "1.8rem 2rem", borderRadius: "14px", background: "linear-gradient(135deg, rgba(139,92,246,.05), rgba(255,164,38,.05))", border: "1.5px solid rgba(139,92,246,.18)" }}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem", fontFamily: "var(--font-mono)", fontSize: ".6rem", fontWeight: 700, letterSpacing: ".06em", color: INK, background: "linear-gradient(135deg, #8b5cf6, #FFA426)", padding: ".3rem .8rem", borderRadius: "100px", marginBottom: "1rem" }}>✦ Tango</span>
                       <blockquote style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1.05rem", color: INK, lineHeight: 1.7, maxWidth: "64ch" }}>
                         "{c.closingQuote.quote}"
                       </blockquote>
-                    </div>
+                    </Reveal>
                   )}
                 </div>
               </section>
@@ -921,9 +948,11 @@ export default async function TrmericSubPage({ params }: Props) {
             {slug === "demand-owner-flow" && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Try it yourself</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>The actual conversation, recreated</h3>
-                  <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Click through it. This is the real Tango intake flow: three quick choices, an enrichment pass, and a populated demand canvas.</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Try it yourself</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>The actual conversation, recreated</h3>
+                    <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Click through it. This is the real Tango intake flow: three quick choices, an enrichment pass, and a populated demand canvas.</p>
+                  </Reveal>
                   <div style={{ maxWidth: "640px" }}>
                     <TangoConversationDemo />
                   </div>
@@ -935,13 +964,15 @@ export default async function TrmericSubPage({ params }: Props) {
             {(c.oldWay || c.newWay) && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>The transformation</span>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>The transformation</span>
+                  </Reveal>
                   <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}>
                     {c.oldWay && (
                       <div>
-                        <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".18em", textTransform: "uppercase", color: FAINT, marginBottom: "1.2rem" }}>The old way</div>
+                        <Reveal style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".18em", textTransform: "uppercase", color: FAINT, marginBottom: "1.2rem" }}>The old way</Reveal>
                         {c.heroStat && (
-                          <div style={{ marginBottom: "1.4rem" }}>
+                          <Reveal style={{ marginBottom: "1.4rem" }}>
                             <div style={{ display: "flex", height: "10px", borderRadius: "5px", overflow: "hidden", border: `1px solid ${LINE}`, background: BASE2 }}>
                               {c.oldWay.map((s, i) => (
                                 <div key={s.label} style={{ flex: s.weight ?? 1, borderRight: i < c.oldWay!.length - 1 ? `1px solid ${BASE}` : "none", background: `rgba(155,148,136,${0.25 + i * 0.15})` }} />
@@ -950,9 +981,9 @@ export default async function TrmericSubPage({ params }: Props) {
                             <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".06em", color: FAINT, marginTop: ".5rem" }}>
                               {c.heroStat.before} total
                             </div>
-                          </div>
+                          </Reveal>
                         )}
-                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                           {c.oldWay.map((s) => (
                             <div key={s.label} style={{ padding: "1.1rem 1.3rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE2 }}>
                               <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase", color: FAINT, marginBottom: ".4rem" }}>{s.label}</div>
@@ -960,14 +991,14 @@ export default async function TrmericSubPage({ params }: Props) {
                               {s.stat && <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", color: "#b5402a", fontStyle: "italic" }}>{s.stat}</div>}
                             </div>
                           ))}
-                        </div>
+                        </Reveal>
                       </div>
                     )}
                     {c.newWay && (
                       <div>
-                        <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".18em", textTransform: "uppercase", color: ACCD, marginBottom: "1.2rem" }}>Powered by Trmeric</div>
+                        <Reveal style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".18em", textTransform: "uppercase", color: ACCD, marginBottom: "1.2rem" }}>Powered by Trmeric</Reveal>
                         {c.heroStat && (
-                          <div style={{ marginBottom: "1.4rem" }}>
+                          <Reveal style={{ marginBottom: "1.4rem" }}>
                             <div style={{ display: "flex", height: "10px", borderRadius: "5px", overflow: "hidden", border: `1px solid ${LINA}` }}>
                               {c.newWay.map((s, i) => (
                                 <div key={`${s.label}-${i}`} style={{ flex: s.weight ?? 1, borderRight: i < c.newWay!.length - 1 ? `1px solid ${BASE}` : "none", background: ACC, opacity: 0.4 + i * 0.18 }} />
@@ -976,16 +1007,16 @@ export default async function TrmericSubPage({ params }: Props) {
                             <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".06em", color: ACCD, marginTop: ".5rem" }}>
                               {c.heroStat.after} total
                             </div>
-                          </div>
+                          </Reveal>
                         )}
-                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                        <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                           {c.newWay.map((s, i) => (
                             <div key={`${s.label}-${i}`} style={{ padding: "1.1rem 1.3rem", border: `1px solid ${LINA}`, borderRadius: "10px", background: "rgba(255,164,38,.04)" }}>
                               <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase", color: ACC, marginBottom: ".4rem" }}>{s.label}</div>
                               <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.6 }}>{s.detail}</p>
                             </div>
                           ))}
-                        </div>
+                        </Reveal>
                       </div>
                     )}
                   </div>
@@ -997,10 +1028,10 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.emotionalArc && (
               <section style={{ padding: "3rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                  <Reveal style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
                     <div style={{ flexShrink: 0, width: 180, height: 6, borderRadius: 3, background: "linear-gradient(90deg, #d9c9a8 0%, #e8a857 35%, #d9783a 65%, #b5402a 100%)" }} />
                     <p style={{ fontSize: ".85rem", color: DIM, lineHeight: 1.65, fontStyle: "italic", fontFamily: "var(--font-display)" }}>{c.emotionalArc}</p>
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1009,14 +1040,14 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.metrics && (
               <section style={{ padding: "4rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(c.metrics.length, 6)}, 1fr)`, borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(c.metrics.length, 6)}, 1fr)`, borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
                     {c.metrics.map((m) => (
-                      <div key={m.label} style={{ padding: "1.6rem 1.2rem", borderRight: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, background: BASE }}>
+                      <div key={m.label} style={{ height: "100%", padding: "1.6rem 1.2rem", borderRight: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, background: BASE }}>
                         <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "1.7rem", letterSpacing: "-.03em", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".4rem" }}>{m.value}</div>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".1em", textTransform: "uppercase", color: FAINT }}>{m.label}</div>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1025,11 +1056,13 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.personas && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Who we designed for</span>
-                  <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2.5rem", maxWidth: "56ch" }}>Three roles, three completely different mental models. Each needed a different entry point into the same system.</p>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Who we designed for</span>
+                    <p style={{ fontSize: ".9375rem", color: DIM, marginBottom: "2.5rem", maxWidth: "56ch" }}>Three roles, three completely different mental models. Each needed a different entry point into the same system.</p>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
                     {c.personas.map((p) => (
-                      <div key={p.role} style={{ border: `1px solid ${LINE}`, borderRadius: "12px", overflow: "hidden", background: BASE2 }}>
+                      <div key={p.role} style={{ height: "100%", border: `1px solid ${LINE}`, borderRadius: "12px", overflow: "hidden", background: BASE2 }}>
                         <div style={{ padding: "1.4rem", borderBottom: `1px solid ${LINE}` }}>
                           <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".14em", textTransform: "uppercase", color: ACCD, marginBottom: ".6rem" }}>{p.role}</div>
                           <p style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: ".95rem", color: INK, lineHeight: 1.4 }}>"{p.quote}"</p>
@@ -1047,7 +1080,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         </div>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1056,11 +1089,13 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.paths && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>System architecture</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: "2rem" }}>Two paths to execution</h3>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>System architecture</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: "2rem" }}>Two paths to execution</h3>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
                     {c.paths.map((path) => (
-                      <div key={path.name} style={{ border: `1px solid ${LINE}`, borderRadius: "12px", padding: "1.6rem", background: BASE }}>
+                      <div key={path.name} style={{ height: "100%", border: `1px solid ${LINE}`, borderRadius: "12px", padding: "1.6rem", background: BASE }}>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACC, marginBottom: "1.2rem" }}>{path.name}</div>
                         <div style={{ display: "flex", flexDirection: "column", gap: ".7rem", marginBottom: "1.2rem" }}>
                           {path.steps.map((s, i) => (
@@ -1073,10 +1108,10 @@ export default async function TrmericSubPage({ params }: Props) {
                         <p style={{ fontSize: ".78rem", color: FAINT, lineHeight: 1.55, fontStyle: "italic" }}>{path.note}</p>
                       </div>
                     ))}
-                  </div>
-                  <div style={{ textAlign: "center", marginTop: "1.5rem", fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".14em", textTransform: "uppercase", color: ACC }}>
+                  </Reveal>
+                  <Reveal style={{ textAlign: "center", marginTop: "1.5rem", fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".14em", textTransform: "uppercase", color: ACC }}>
                     Both converge on: Execution-ready project · 10 minutes
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1085,9 +1120,11 @@ export default async function TrmericSubPage({ params }: Props) {
             {slug === "demand-owner-flow" && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>The convergence point</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>One click, fully formed</h3>
-                  <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Click convert. Every field an approved demand already has gets inherited; everything else, Tango generates.</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>The convergence point</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>One click, fully formed</h3>
+                    <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Click convert. Every field an approved demand already has gets inherited; everything else, Tango generates.</p>
+                  </Reveal>
                   <div style={{ maxWidth: "560px" }}>
                     <ConvertToProjectDemo />
                   </div>
@@ -1099,10 +1136,12 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.innovations && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2.5rem", display: "block" }}>Key innovations</span>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2.5rem", display: "block" }}>Key innovations</span>
+                  </Reveal>
                   <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
                     {c.innovations.map((inv, i) => (
-                      <div key={inv.title} style={{ paddingTop: i === 0 ? 0 : "2.5rem", borderTop: i === 0 ? "none" : `1px solid ${LINE}` }}>
+                      <Reveal key={inv.title} style={{ paddingTop: i === 0 ? 0 : "2.5rem", borderTop: i === 0 ? "none" : `1px solid ${LINE}` }}>
                         <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.2rem", color: INK, marginBottom: "1.2rem", letterSpacing: "-.01em" }}>
                           {String(i + 1).padStart(2, "0")} · {inv.title}
                         </h3>
@@ -1118,7 +1157,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         </div>
                         <p style={{ fontSize: ".875rem", color: DIM, lineHeight: 1.7, maxWidth: "62ch", marginBottom: ".8rem" }}>{inv.rationale}</p>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", color: ACCD, fontStyle: "italic" }}>{inv.result}</div>
-                      </div>
+                      </Reveal>
                     ))}
                   </div>
                 </div>
@@ -1129,9 +1168,11 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.discoveries && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>AI enrichment, in the open</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>What Tango discovers, on one real project</h3>
-                  <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Run it. Every step is shown, nothing inferred silently. This is the actual sequence: source scan, then insight reveal.</p>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>AI enrichment, in the open</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: ".6rem" }}>What Tango discovers, on one real project</h3>
+                    <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "2rem", maxWidth: "58ch" }}>Run it. Every step is shown, nothing inferred silently. This is the actual sequence: source scan, then insight reveal.</p>
+                  </Reveal>
                   <EnrichmentDemo />
                 </div>
               </section>
@@ -1141,16 +1182,18 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.principles && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Core design principles</span>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Core design principles</span>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
                     {c.principles.map((p, i) => (
-                      <div key={p.title} style={{ padding: "1.6rem 1.4rem", borderRight: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
+                      <div key={p.title} style={{ height: "100%", padding: "1.6rem 1.4rem", borderRight: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}` }}>
                         <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1.6rem", color: ACC, display: "block", marginBottom: ".7rem", opacity: 0.6 }}>{String(i + 1).padStart(2, "0")}</span>
                         <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: ".88rem", color: INK, marginBottom: ".5rem" }}>{p.title}</h4>
                         <p style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.6 }}>{p.detail}</p>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1159,10 +1202,12 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.decisions && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Design decisions</span>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Design decisions</span>
+                  </Reveal>
                   <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                     {c.decisions.map((d, i) => (
-                      <div key={i} style={{ padding: "1.6rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE2 }}>
+                      <Reveal key={i} style={{ padding: "1.6rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE2 }}>
                         <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: "1rem", color: INK, marginBottom: ".8rem" }}>{d.decision}</h3>
                         <p style={{ fontSize: ".875rem", color: DIM, lineHeight: 1.7, marginBottom: d.before ? "1rem" : 0 }}>{d.reasoning}</p>
                         {d.before && d.after && (
@@ -1171,7 +1216,7 @@ export default async function TrmericSubPage({ params }: Props) {
                             <div style={{ fontSize: ".78rem", color: ACCD }}><strong style={{ color: ACC }}>After:</strong> {d.after}</div>
                           </div>
                         )}
-                      </div>
+                      </Reveal>
                     ))}
                   </div>
                 </div>
@@ -1182,15 +1227,17 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.quotes && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>What users say</span>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>What users say</span>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
                     {c.quotes.map((q) => (
-                      <div key={q.attribution} style={{ padding: "1.6rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE }}>
+                      <div key={q.attribution} style={{ height: "100%", padding: "1.6rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE }}>
                         <p style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1rem", color: INK, lineHeight: 1.5, marginBottom: "1rem" }}>"{q.quote}"</p>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".08em", textTransform: "uppercase", color: FAINT }}>{q.attribution}</div>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1199,11 +1246,13 @@ export default async function TrmericSubPage({ params }: Props) {
             {c.learnings && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>For designers building AI products</span>
-                  <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: "2rem" }}>Learnings that apply beyond this project</h3>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.5rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>For designers building AI products</span>
+                    <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.4rem", color: INK, marginBottom: "2rem" }}>Learnings that apply beyond this project</h3>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.5rem" }}>
                     {c.learnings.map((l, i) => (
-                      <div key={l.title} style={{ padding: "1.6rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE2 }}>
+                      <div key={l.title} style={{ height: "100%", padding: "1.6rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE2 }}>
                         <div style={{ display: "flex", alignItems: "baseline", gap: ".8rem", marginBottom: ".9rem" }}>
                           <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1.4rem", color: ACC, opacity: 0.6 }}>{String(i + 1).padStart(2, "0")}</span>
                           <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1rem", color: INK }}>{l.title}</h4>
@@ -1212,7 +1261,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".04em", color: ACCD, fontStyle: "italic", paddingTop: ".8rem", borderTop: `1px solid ${LINE}` }}>{l.stat}</div>
                       </div>
                     ))}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1221,8 +1270,10 @@ export default async function TrmericSubPage({ params }: Props) {
             {(c.reflectionWorked || c.reflectionDifferent) && (
               <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Looking back</span>
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Looking back</span>
+                  </Reveal>
+                  <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}>
                     {c.reflectionWorked && (
                       <div>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACC, marginBottom: "1.2rem" }}>What worked</div>
@@ -1250,7 +1301,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         </div>
                       </div>
                     )}
-                  </div>
+                  </Reveal>
                 </div>
               </section>
             )}
@@ -1260,22 +1311,24 @@ export default async function TrmericSubPage({ params }: Props) {
         {/* ═══ OTHER FEATURES ═══ */}
         <section style={{ padding: "3rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "1.2rem" }}>
-              Other Trmeric features
-            </span>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: ".75rem" }}>
-              {project.subPieces
-                ?.filter((p) => p.slug !== slug)
-                .map((p) => (
-                  <Link
-                    key={p.slug}
-                    href={`/work/trmeric/${p.slug}`}
-                    style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".12em", textTransform: "uppercase", color: DIM, border: `1px solid ${LINE}`, borderRadius: "4px", padding: ".5rem .9rem", display: "inline-block" }}
-                  >
-                    {p.title} →
-                  </Link>
-                ))}
-            </div>
+            <Reveal>
+              <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "1.2rem" }}>
+                Other Trmeric features
+              </span>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".75rem" }}>
+                {project.subPieces
+                  ?.filter((p) => p.slug !== slug)
+                  .map((p) => (
+                    <Link
+                      key={p.slug}
+                      href={`/work/trmeric/${p.slug}`}
+                      style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".12em", textTransform: "uppercase", color: DIM, border: `1px solid ${LINE}`, borderRadius: "4px", padding: ".5rem .9rem", display: "inline-block" }}
+                    >
+                      {p.title} →
+                    </Link>
+                  ))}
+              </div>
+            </Reveal>
           </div>
         </section>
       </main>

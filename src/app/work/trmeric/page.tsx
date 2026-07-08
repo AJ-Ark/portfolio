@@ -6,6 +6,7 @@ import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import WordReveal from "@/components/ui/WordReveal";
 import PlotInLines from "@/components/ui/PlotInLines";
+import Reveal from "@/components/ui/Reveal";
 import Shot from "@/components/trmeric/Shot";
 import PrototypeFrame, { type TrmColors } from "@/components/trmeric/PrototypeFrame";
 import RagDemo from "@/components/trmeric/RagDemo";
@@ -321,7 +322,7 @@ export default function TrmericPage() {
         {/* ═══════════════ 02 · LOGLINE ═══════════════ */}
         <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, background: BASE2 }}>
           <div style={{ maxWidth: "880px", margin: "0 auto" }}>
-            <span style={{ ...s.kicker, marginBottom: ".6rem" }}>The problem</span>
+            <Reveal as="span" style={{ ...s.kicker, marginBottom: ".6rem" }}>The problem</Reveal>
             <WordReveal as="p" delay={0} stagger={55} style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.5rem, 3vw, 2.4rem)", lineHeight: 1.15, letterSpacing: "-.02em", color: INK, maxWidth: "34ch" }}>
               Enterprise demand doesn't fail at the idea. It fails between the idea and the decision.
             </WordReveal>
@@ -331,16 +332,16 @@ export default function TrmericPage() {
         {/* ═══════════════ 03 · CONTEXT ═══════════════ */}
         <section style={{ padding: "6rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={s.kicker}>What Trmeric is</span>
+            <Reveal as="span" style={s.kicker}>What Trmeric is</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start" }}>
-              <div>
+              <Reveal>
                 <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.4rem)", lineHeight: 1.12, letterSpacing: "-.02em", color: INK, marginBottom: "1.4rem" }}>
                   An AI-native B2B SaaS for{" "}<em style={{ fontStyle: "italic", color: ACC }}>demand management, resource management, and portfolio value.</em>
                 </h2>
                 <p style={{ ...s.body, marginBottom: "1rem" }}>Enterprises decide what to build, who builds it, and whether it delivered value, currently across emails, spreadsheets, and quarterly reviews that arrive too late to change anything.</p>
                 <p style={s.body}>Trmeric introduces structured demand intake, Tango (an AI agent that scopes a demand in 90 seconds instead of 3 months), and portfolio-level value tracking that closes the loop from idea to outcome.</p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              </Reveal>
+              <Reveal stagger delay={0.1} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <div style={{ padding: "1.4rem 1.6rem", border: `1px solid ${LINE}`, borderRadius: "12px", background: BASE2 }}>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".18em", textTransform: "uppercase", color: FAINT, marginBottom: ".6rem" }}>Before Trmeric</div>
                   <p style={{ fontSize: ".875rem", color: DIM, lineHeight: 1.6 }}>Demand requests arrive as emails, get lost in spreadsheets, and have no lifecycle visibility. No structured intake. No AI scoping. No portfolio-level value tracking.</p>
@@ -350,7 +351,7 @@ export default function TrmericPage() {
                   <p style={{ fontSize: ".875rem", color: DIM, lineHeight: 1.6 }}>Intake → AI scoping → resource planning → execution → portfolio value. One continuous workflow across all personas with Tango surfacing the right context for each.</p>
                 </div>
                 <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".12em", color: ACCD, fontStyle: "italic", paddingLeft: ".4rem" }}>One rule: prototypes are the spec. Engineering builds from them directly.</div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -358,15 +359,15 @@ export default function TrmericPage() {
         {/* ═══════════════ 04 · LIFECYCLE ═══════════════ */}
         <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={s.kicker}>Four lifecycle phases · 23 surfaces</span>
-            <p style={{ ...s.body, marginBottom: "2.5rem", marginTop: ".5rem" }}>Every surface answers one question. The lifecycle is the spine; every feature is a response to a specific failure mode in how enterprises manage work. Each phase links to the work below.</p>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", border: `1px solid ${LINE}`, borderRadius: "14px", overflow: "hidden" }}>
+            <Reveal as="span" style={s.kicker}>Four lifecycle phases · 23 surfaces</Reveal>
+            <Reveal as="p" style={{ ...s.body, marginBottom: "2.5rem", marginTop: ".5rem" }}>Every surface answers one question. The lifecycle is the spine; every feature is a response to a specific failure mode in how enterprises manage work. Each phase links to the work below.</Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", border: `1px solid ${LINE}`, borderRadius: "14px", overflow: "hidden" }}>
               {PHASES.map(({ letter, label, question, persona, icon, surfaces, desc, anchor }) => (
                 <a
                   key={letter}
                   href={anchor}
                   className="trm-phase-card"
-                  style={{ padding: "1.8rem 1.6rem", background: BASE, borderRight: `1px solid ${LINE}`, textDecoration: "none", display: "block", transition: "background .3s ease" }}
+                  style={{ padding: "1.8rem 1.6rem", background: BASE, borderRight: `1px solid ${LINE}`, textDecoration: "none", display: "block", height: "100%", transition: "background .3s ease" }}
                 >
                   <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.6rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, marginBottom: ".4rem" }}>{letter}</div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCB, marginBottom: ".3rem" }}>{label}</div>
@@ -386,15 +387,15 @@ export default function TrmericPage() {
                   </span>
                 </a>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* ═══════════════ 05 · METRICS ═══════════════ */}
         <section style={{ padding: "4rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ ...s.kicker, marginBottom: "1.5rem" }}>Outcomes, measured not claimed</span>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
+            <Reveal as="span" style={{ ...s.kicker, marginBottom: "1.5rem" }}>Outcomes, measured not claimed</Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
               {(project.metrics ?? []).map(({ value, label }) => {
                 const anchor = METRIC_ANCHORS[label];
                 const inner = (
@@ -406,23 +407,25 @@ export default function TrmericPage() {
                     )}
                   </>
                 );
-                const cellStyle: React.CSSProperties = { padding: "2rem 1.6rem", borderRight: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, textDecoration: "none", display: "block" };
+                const cellStyle: React.CSSProperties = { padding: "2rem 1.6rem", borderRight: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, textDecoration: "none", display: "block", height: "100%" };
                 return anchor
                   ? <a key={label} href={anchor} style={cellStyle}>{inner}</a>
                   : <div key={label} style={cellStyle}>{inner}</div>;
               })}
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* ═══════════════ 06 · SURFACE GALLERY ═══════════════ */}
         <section id="surfaces" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2, scrollMarginTop: "4rem" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={s.kicker}>The surface archive · 12 of 23</span>
-            <p style={{ ...s.body, marginBottom: "2.5rem", marginTop: ".4rem" }}>
+            <Reveal as="span" style={s.kicker}>The surface archive · 12 of 23</Reveal>
+            <Reveal as="p" style={{ ...s.body, marginBottom: "2.5rem", marginTop: ".4rem" }}>
               Every screen is a production-grade prototype, and every tile below is real: click a shot to view it full-size, or open the live prototype it was built as.
-            </p>
-            <SurfaceGallery colors={C} />
+            </Reveal>
+            <Reveal>
+              <SurfaceGallery colors={C} />
+            </Reveal>
           </div>
         </section>
 
@@ -435,10 +438,12 @@ export default function TrmericPage() {
             colors={C}
           />
           <div style={{ padding: "5rem var(--pad) 2rem", maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={s.kicker}>Feature deep-dives</span>
-            <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.4rem)", letterSpacing: "-.02em", color: INK, maxWidth: "28ch", lineHeight: 1.15 }}>
-              Five deep dives. The thought process behind each one.
-            </h2>
+            <Reveal>
+              <span style={s.kicker}>Feature deep-dives</span>
+              <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.6rem, 3vw, 2.4rem)", letterSpacing: "-.02em", color: INK, maxWidth: "28ch", lineHeight: 1.15 }}>
+                Five deep dives. The thought process behind each one.
+              </h2>
+            </Reveal>
           </div>
 
           {FEATURES.map((f, fi) => (
@@ -450,7 +455,7 @@ export default function TrmericPage() {
               <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
 
                 {/* Number + title + headline stat row */}
-                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "1.5rem", alignItems: "end", marginBottom: "2.5rem" }}>
+                <Reveal className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "1.5rem", alignItems: "end", marginBottom: "2.5rem" }}>
                   <div style={{ display: "flex", alignItems: "baseline", gap: "1.2rem" }}>
                     <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "3rem", color: ACC, lineHeight: 1, opacity: 0.5 }}>{f.num}</span>
                     <div>
@@ -465,18 +470,18 @@ export default function TrmericPage() {
                     <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.6rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{f.stat.value}</div>
                     <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT, marginTop: ".4rem", maxWidth: "22ch" }}>{f.stat.label}</div>
                   </div>
-                </div>
+                </Reveal>
 
                 {/* Hero visual: the iteration story for Portfolio Monitor, a true-ratio shot for the rest */}
                 {f.slug === "portfolio-monitor" ? (
-                  <div style={{ marginBottom: "3rem" }}>
+                  <Reveal style={{ marginBottom: "3rem" }}>
                     <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, marginBottom: "1.4rem" }}>
                       The iteration record, shown not narrated
                     </div>
                     <IterationStrip colors={C} />
-                  </div>
+                  </Reveal>
                 ) : (
-                  <div style={{ marginBottom: "3rem" }}>
+                  <Reveal style={{ marginBottom: "3rem" }}>
                     <Shot
                       src={f.img}
                       alt={f.imgAlt}
@@ -485,12 +490,12 @@ export default function TrmericPage() {
                       shadow={SHADOW}
                       accent={ACC}
                     />
-                  </div>
+                  </Reveal>
                 )}
 
                 {/* Body copy + decisions in 2-col */}
                 <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start", marginBottom: "2.5rem" }}>
-                  <div>
+                  <Reveal>
                     <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, marginBottom: ".8rem" }}>Thought process</div>
                     <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, marginBottom: "1.4rem" }}>{f.body}</p>
                     {/* Theory reference */}
@@ -499,42 +504,42 @@ export default function TrmericPage() {
                       <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.65, marginBottom: ".5rem" }}>{f.theory}</p>
                       <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".14em", color: FAINT }}>{f.theoryRef}</div>
                     </div>
-                  </div>
+                  </Reveal>
 
                   <div>
-                    <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, marginBottom: ".8rem" }}>Key design decisions</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <Reveal style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, marginBottom: ".8rem" }}>Key design decisions</Reveal>
+                    <Reveal stagger delay={0.1} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                       {f.decisions.map(({ decision, reasoning }) => (
                         <div key={decision} style={{ padding: "1.1rem 1.3rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: fi % 2 === 0 ? BASE2 : BASE }}>
                           <div style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: ".875rem", color: INK, marginBottom: ".4rem" }}>{decision}</div>
                           <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.65 }}>{reasoning}</p>
                         </div>
                       ))}
-                    </div>
+                    </Reveal>
                   </div>
                 </div>
 
                 {/* Working micro-demos: the claim, demonstrated */}
                 {f.slug === "project-manager" && (
-                  <div style={{ marginBottom: "2.5rem" }}>
+                  <Reveal style={{ marginBottom: "2.5rem" }}>
                     <RagDemo colors={C} />
-                  </div>
+                  </Reveal>
                 )}
                 {f.slug === "signals" && (
-                  <div style={{ marginBottom: "2.5rem" }}>
+                  <Reveal style={{ marginBottom: "2.5rem" }}>
                     <SignalsMiniGraph colors={C} />
-                  </div>
+                  </Reveal>
                 )}
 
                 {/* Live prototype, in place */}
                 {f.protoSrc && (
                   <div style={{ paddingTop: "2rem", borderTop: `1px solid ${LINE}` }}>
                     <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "1rem 3rem", alignItems: "baseline", marginBottom: "1.4rem" }}>
-                      <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD }}>
+                      <Reveal style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD }}>
                         Try it live
-                      </div>
+                      </Reveal>
                       {f.protoHints && (
-                        <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.2rem" }}>
+                        <Reveal className="mobile-stack" stagger delay={0.1} style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.2rem" }}>
                           {f.protoHints.map((hint, hi) => (
                             <div key={hi} style={{ display: "flex", gap: ".6rem", alignItems: "flex-start" }}>
                               <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: ".9rem", color: ACC, lineHeight: 1.4, flexShrink: 0 }}>
@@ -543,18 +548,20 @@ export default function TrmericPage() {
                               <p style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.55, margin: 0 }}>{hint}</p>
                             </div>
                           ))}
-                        </div>
+                        </Reveal>
                       )}
                     </div>
 
-                    <PrototypeFrame
-                      src={f.protoSrc}
-                      poster={f.protoPoster ?? f.img}
-                      title={f.title}
-                      colors={C}
-                    />
+                    <Reveal>
+                      <PrototypeFrame
+                        src={f.protoSrc}
+                        poster={f.protoPoster ?? f.img}
+                        title={f.title}
+                        colors={C}
+                      />
+                    </Reveal>
 
-                    <div style={{ display: "flex", gap: "1.2rem", alignItems: "center", flexWrap: "wrap", marginTop: "1.2rem" }}>
+                    <Reveal style={{ display: "flex", gap: "1.2rem", alignItems: "center", flexWrap: "wrap", marginTop: "1.2rem" }}>
                       <Link
                         href={`/work/trmeric/${f.slug}`}
                         style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".14em", textTransform: "uppercase", color: ACCD, border: `1px solid ${LINA}`, borderRadius: "4px", padding: ".55rem 1rem", display: "inline-block" }}
@@ -564,7 +571,7 @@ export default function TrmericPage() {
                       <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT }}>
                         Prototypes are the spec — this is what engineering builds from
                       </span>
-                    </div>
+                    </Reveal>
                   </div>
                 )}
               </div>
@@ -577,11 +584,13 @@ export default function TrmericPage() {
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "start" }}>
               <div>
-                <span style={s.kicker}>Design system, Trmeric DS v3</span>
-                <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-.02em", color: INK, marginBottom: "1.2rem", lineHeight: 1.2 }}>Built from the turmeric plant.</h2>
-                <p style={{ ...s.body, marginBottom: "1rem" }}>Rhizome oranges. Powder golds. Leaf greens. Root browns. The palette references an actual object. That constraint made every color decision easier and the system more coherent.</p>
-                <p style={{ ...s.body, marginBottom: "1.5rem" }}>One rule: <strong style={{ color: INK, fontWeight: 600 }}>restraint over decoration.</strong> No heavy left-border accents. No accent rails used as decoration. Hierarchy does the work, not ornament.</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                <Reveal>
+                  <span style={s.kicker}>Design system, Trmeric DS v3</span>
+                  <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.4rem, 2.5vw, 2rem)", letterSpacing: "-.02em", color: INK, marginBottom: "1.2rem", lineHeight: 1.2 }}>Built from the turmeric plant.</h2>
+                  <p style={{ ...s.body, marginBottom: "1rem" }}>Rhizome oranges. Powder golds. Leaf greens. Root browns. The palette references an actual object. That constraint made every color decision easier and the system more coherent.</p>
+                  <p style={{ ...s.body, marginBottom: "1.5rem" }}>One rule: <strong style={{ color: INK, fontWeight: 600 }}>restraint over decoration.</strong> No heavy left-border accents. No accent rails used as decoration. Hierarchy does the work, not ornament.</p>
+                </Reveal>
+                <Reveal stagger delay={0.1} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   {[
                     { d: "Orange is brand, never AI", r: "The AI gradient (#8b5cf6 → #FFA426) appears exclusively in Tango contexts. When users see it, they know intelligence is active. Mixing orange into both buttons and AI collapses this critical signal." },
                     { d: "Buttons are pills, never hard rectangles", r: "Pills with border-radius: 9999px. Primary = solid orange, used once per region. This keeps the UI approachable and prevents visual hardness in a dense data product." },
@@ -592,9 +601,9 @@ export default function TrmericPage() {
                       <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.6 }}>{r}</p>
                     </div>
                   ))}
-                </div>
+                </Reveal>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <Reveal delay={0.15} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 <Shot
                   src="/images/trmeric/designsystem.png"
                   alt="Trmeric Design System v3, token system and component library"
@@ -612,7 +621,7 @@ export default function TrmericPage() {
                 >
                   Browse the living design system ↗
                 </a>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -620,7 +629,7 @@ export default function TrmericPage() {
         {/* ═══════════════ 09 · BRAND STORY TEASER ═══════════════ */}
         <section style={{ borderTop: `1px solid ${LINE}`, background: BASE }}>
           <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "6rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "4rem", alignItems: "center" }}>
-            <div>
+            <Reveal>
               <span style={s.kicker}>Brand identity · Logo, Loaded.</span>
               <h2 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", letterSpacing: "-.025em", color: INK, lineHeight: 1.1, maxWidth: "18ch", marginBottom: "1.4rem" }}>
                 The mark is not designed.{" "}
@@ -640,39 +649,41 @@ export default function TrmericPage() {
                   9 boards · derivation · ratio · colorways
                 </span>
               </div>
-            </div>
-            <Shot
-              src="/images/trmeric/logo-story/01.png"
-              alt="Trmeric brand vision v1.0, the concentric ring mark paired with the trmeric wordmark"
-              ratio="16/9"
-              border={`1px solid ${LINE}`}
-              shadow={SHADOW}
-              accent={ACC}
-              sizes="(max-width: 900px) 100vw, 640px"
-            />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <Shot
+                src="/images/trmeric/logo-story/01.png"
+                alt="Trmeric brand vision v1.0, the concentric ring mark paired with the trmeric wordmark"
+                ratio="16/9"
+                border={`1px solid ${LINE}`}
+                shadow={SHADOW}
+                accent={ACC}
+                sizes="(max-width: 900px) 100vw, 640px"
+              />
+            </Reveal>
           </div>
         </section>
 
         {/* ═══════════════ 10 · REFLECTION ═══════════════ */}
         <section style={{ padding: "7rem var(--pad)", borderTop: `1px solid ${LINE}`, textAlign: "center" }}>
-          <div style={{ maxWidth: "580px", margin: "0 auto" }}>
+          <Reveal style={{ maxWidth: "580px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, display: "block", marginBottom: "1.2rem" }}>On the work</span>
             <blockquote style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.15rem, 2.5vw, 1.6rem)", lineHeight: 1.3, letterSpacing: "-.015em", color: INK, margin: "0 0 .8rem" }}>
               "Prototypes are the spec. Engineering builds from them directly. That is the intended workflow, not an accident."
             </blockquote>
             <p style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT }}>Aravind J · Trmeric · 2024–present</p>
-          </div>
+          </Reveal>
         </section>
 
         {/* ═══════════════ 11 · CTA ═══════════════ */}
         <section style={{ padding: "5rem var(--pad) 6rem", borderTop: `1px solid ${LINE}`, background: BASE2, textAlign: "center" }}>
-          <span style={s.kicker}>Explore further</span>
-          <p style={{ fontSize: ".9375rem", color: DIM, maxWidth: "38ch", margin: ".6rem auto 2rem", lineHeight: 1.65 }}>Five deep-dive case studies. Twelve live prototypes. One design system. One grown mark.</p>
-          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+          <Reveal as="span" style={s.kicker}>Explore further</Reveal>
+          <Reveal as="p" style={{ fontSize: ".9375rem", color: DIM, maxWidth: "38ch", margin: ".6rem auto 2rem", lineHeight: 1.65 }}>Five deep-dive case studies. Twelve live prototypes. One design system. One grown mark.</Reveal>
+          <Reveal delay={0.1} style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/work/trmeric/demand-owner-flow" style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".18em", textTransform: "uppercase", color: BASE, background: ACC, borderRadius: "4px", padding: ".8rem 1.8rem", display: "inline-block" }}>Demand Owner Flow →</Link>
             <Link href="/work/trmeric/brand" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD, border: `1px solid ${LINA}`, borderRadius: "4px", padding: ".8rem 1.4rem", display: "inline-block" }}>Brand story →</Link>
             <Link href="/work" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD, border: `1px solid ${LINA}`, borderRadius: "4px", padding: ".8rem 1.4rem", display: "inline-block" }}>← Back to work</Link>
-          </div>
+          </Reveal>
         </section>
 
       </main>

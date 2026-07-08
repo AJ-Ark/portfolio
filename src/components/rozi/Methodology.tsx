@@ -1,3 +1,6 @@
+"use client";
+
+import { useInView } from "@/hooks/useInView";
 import type { RoziPalette } from "@/components/rozi/palette";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -158,8 +161,16 @@ export default function Methodology({
   p: RoziPalette;
   intro?: string;
 }) {
+  /* threshold 0 + bottom rootMargin: fires as the block meaningfully
+     enters, independent of its height (it can exceed one viewport). */
+  const { ref, inView } = useInView({ threshold: 0, rootMargin: "0px 0px -10% 0px" });
+
   return (
-    <div style={{ width: "100%" }}>
+    <div
+      ref={ref}
+      className={`rozi-methodology${inView ? " is-inview" : ""}`}
+      style={{ width: "100%" }}
+    >
       <style>{`
         .rozi-methodology__frame {
           transition: border-color .35s ease, transform .35s ease, box-shadow .35s ease;
@@ -167,8 +178,12 @@ export default function Methodology({
         .rozi-methodology__tile:hover .rozi-methodology__frame {
           transform: translateY(-3px);
         }
+        /* Entrance choreography is gated on .is-inview (useInView) so it
+           plays when the row scrolls into the viewport, not at mount.
+           The resting (pre-JS / no-JS) state stays fully visible — the
+           opacity:0 start only ever applies together with the animation. */
         @media (min-width: 761px) {
-          .rozi-methodology__tile {
+          .rozi-methodology.is-inview .rozi-methodology__tile {
             opacity: 0;
             animation: rozi-methodology-in .5s ease forwards;
           }

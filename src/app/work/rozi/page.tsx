@@ -5,6 +5,8 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
+import InlineVideo from "@/components/ui/InlineVideo";
+import Reveal from "@/components/ui/Reveal";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { makeRoziPalette, type RoziPalette } from "@/components/rozi/palette";
 import FieldNotes from "@/components/rozi/FieldNotes";
@@ -20,11 +22,11 @@ import InfoArchitecture from "@/components/rozi/InfoArchitecture";
 /* ── Content ──────────────────────────────────────────────────────── */
 
 const FLOWS = [
-  { src: "/images/rozi/flow-01-language.gif", label: "Language selection",     desc: "Hindi, regional, English" },
-  { src: "/images/rozi/flow-05-employee.gif", label: "Worker registration",    desc: "OTP-based, no literacy barrier" },
-  { src: "/images/rozi/flow-02-jobs.gif",     label: "Browse jobs by PINCODE", desc: "Location-first discovery" },
-  { src: "/images/rozi/flow-03-contact.gif",  label: "Contact employer",       desc: "Direct, no intermediary" },
-  { src: "/images/rozi/flow-07-confirm.gif",  label: "Confirm assignment",     desc: "Pay and hours upfront" },
+  { src: "/videos/rozi/flow-01-language.mp4", poster: "/videos/rozi/flow-01-language-poster.webp", label: "Language selection",     desc: "Hindi, regional, English" },
+  { src: "/videos/rozi/flow-05-employee.mp4", poster: "/videos/rozi/flow-05-employee-poster.webp", label: "Worker registration",    desc: "OTP-based, no literacy barrier" },
+  { src: "/videos/rozi/flow-02-jobs.mp4",     poster: "/videos/rozi/flow-02-jobs-poster.webp",     label: "Browse jobs by PINCODE", desc: "Location-first discovery" },
+  { src: "/videos/rozi/flow-03-contact.mp4",  poster: "/videos/rozi/flow-03-contact-poster.webp",  label: "Contact employer",       desc: "Direct, no intermediary" },
+  { src: "/videos/rozi/flow-07-confirm.mp4",  poster: "/videos/rozi/flow-07-confirm-poster.webp",  label: "Confirm assignment",     desc: "Pay and hours upfront" },
 ];
 
 const SCREENS = [
@@ -137,7 +139,7 @@ export default function RoziPage() {
             userSelect: "none", pointerEvents: "none",
           }}>Rozi</div>
 
-          <div style={{ position: "relative", zIndex: 3 }}>
+          <Reveal stagger style={{ position: "relative", zIndex: 3 }}>
             <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "1.4rem" }}>
               UX Research · Service Design · SARVA Designathon 2021
             </span>
@@ -166,14 +168,16 @@ export default function RoziPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </Reveal>
         </section>
 
         {/* ═══ 02 · OVERVIEW ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND, padding: "7rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <span style={{ ...kick(p.MONO, p.ACCT), marginBottom: "3.5rem" }}>Overview</span>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "3rem" }}>
+            <Reveal>
+              <span style={{ ...kick(p.MONO, p.ACCT), marginBottom: "3.5rem" }}>Overview</span>
+            </Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "3rem" }}>
               {[
                 { l: "The goal", t: <>Use technology to help a socio-economically backward community meet their everyday needs — and hand them a reliable alternative to the middleman.</> },
                 { l: "Who it's for", t: <>Rozi gives migrant workers control over <em style={{ fontStyle: "italic", color: p.GOLDT }}>what, when and how</em> they work by cutting out the contractor. Anyone seeking work near them can use it.</> },
@@ -188,7 +192,7 @@ export default function RoziPage() {
                   </p>
                 </div>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -196,25 +200,25 @@ export default function RoziPage() {
         <section style={{ borderTop: `1px solid ${p.LINEW}` }}>
           {/* Scale */}
           <div style={{ background: p.GND2, padding: "6rem var(--pad) 5rem", borderBottom: `1px solid ${p.LINEW}` }}>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", maxWidth: "1100px", margin: "0 auto" }}>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", maxWidth: "1100px", margin: "0 auto" }}>
               {[
                 { value: "40 cr", label: "Informal workers in India" },
                 { value: "93%",   label: "Of the workforce is informal" },
                 { value: "₹0",    label: "Legal recourse when wages are skimmed" },
               ].map(({ value, label }, i) => (
-                <div key={label} style={{ padding: "1rem 3rem", borderLeft: i === 0 ? "none" : `1px solid ${p.LINEW}` }}>
+                <div key={label} style={{ height: "100%", padding: "1rem 3rem", borderLeft: i === 0 ? "none" : `1px solid ${p.LINEW}` }}>
                   <div style={{ fontFamily: p.SERIF, fontWeight: 300, fontSize: "clamp(2.6rem, 5.5vw, 4.5rem)", lineHeight: 1, letterSpacing: "-.03em", color: p.ACC, marginBottom: ".6rem" }}>{value}</div>
                   <div style={{ fontFamily: p.MONO, fontSize: ".52rem", letterSpacing: ".18em", textTransform: "uppercase", color: p.DIM }}>{label}</div>
                 </div>
               ))}
-            </div>
+            </Reveal>
           </div>
 
           {/* Statement + citations */}
           <div style={{ padding: "8rem var(--pad)", background: p.GND }}>
             <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
               <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: "5rem", alignItems: "start" }}>
-                <div>
+                <Reveal stagger>
                   <span style={{ ...kick(p.MONO, p.ACCT), marginBottom: "2.5rem" }}>The problem</span>
                   <p style={{ fontFamily: p.SERIF, fontWeight: 400, fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)", lineHeight: 1.15, letterSpacing: "-.02em", color: p.PAP, marginBottom: "2rem" }}>
                     Mashidur needs steady income and healthcare — and a way to find work
@@ -227,8 +231,8 @@ export default function RoziPage() {
                     both sides and pockets a margin from each — with no paperwork, no
                     accountability, and no shared record of what was actually agreed.
                   </p>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+                </Reveal>
+                <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                   <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: ".4rem" }}>Secondary study</span>
                   {CITATIONS.map((c) => (
                     <figure key={c.source} style={{ margin: 0, padding: "1.4rem 1.6rem", background: p.GND2, border: `1px solid ${p.LINEW}`, borderRadius: "14px" }}>
@@ -240,7 +244,7 @@ export default function RoziPage() {
                       <figcaption style={{ fontFamily: p.MONO, fontSize: ".5rem", letterSpacing: ".14em", textTransform: "uppercase", color: p.FAINT, marginTop: ".9rem" }}>{c.source}</figcaption>
                     </figure>
                   ))}
-                </div>
+                </Reveal>
               </div>
             </div>
           </div>
@@ -249,8 +253,10 @@ export default function RoziPage() {
         {/* ═══ 04 · MARKET STUDY ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND2, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <span style={{ ...kick(p.MONO, p.ACCT), marginBottom: "1.4rem" }}>Market study</span>
-            <SectionTitle p={p}>What are the competitors doing?</SectionTitle>
+            <Reveal>
+              <span style={{ ...kick(p.MONO, p.ACCT), marginBottom: "1.4rem" }}>Market study</span>
+              <SectionTitle p={p}>What are the competitors doing?</SectionTitle>
+            </Reveal>
             <div style={{ marginTop: "4rem" }}>
               <MarketStudy p={p} />
             </div>
@@ -260,7 +266,7 @@ export default function RoziPage() {
         {/* ═══ 05 · METHODOLOGY ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND, padding: "8rem var(--pad) 6rem" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "end", marginBottom: "4.5rem" }}>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "end", marginBottom: "4.5rem" }}>
               <div>
                 <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>Research grounding · 24-hour sprint</span>
                 <SectionTitle p={p}>We started in the field, not in the brief.</SectionTitle>
@@ -271,32 +277,34 @@ export default function RoziPage() {
                 process: empathize, define, ideate, then prototype, each phase feeding a
                 concrete output into the next.
               </p>
-            </div>
+            </Reveal>
             <Methodology p={p} intro="" />
           </div>
           {/* research stats */}
           <div style={{ maxWidth: "1200px", margin: "5rem auto 0", borderTop: `1px solid ${p.LINEW}`, paddingTop: "3rem" }}>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
               {[
                 { value: "4+",  label: "Field locations" },
                 { value: "6",   label: "Workers interviewed" },
                 { value: "4",   label: "Design phases in 24h" },
                 { value: "7",   label: "Systemic gaps mapped" },
               ].map(({ value, label }, i) => (
-                <div key={label} style={{ padding: "0 2.5rem", borderLeft: i === 0 ? "none" : `1px solid ${p.LINEW}` }}>
+                <div key={label} style={{ height: "100%", padding: "0 2.5rem", borderLeft: i === 0 ? "none" : `1px solid ${p.LINEW}` }}>
                   <div style={{ fontFamily: p.SERIF, fontWeight: 300, fontSize: "clamp(2rem, 4vw, 3.2rem)", lineHeight: 1, letterSpacing: "-.03em", color: p.GOLDT, marginBottom: ".5rem" }}>{value}</div>
                   <div style={{ fontFamily: p.MONO, fontSize: ".5rem", letterSpacing: ".18em", textTransform: "uppercase", color: p.DIM }}>{label}</div>
                 </div>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
         {/* ═══ 06 · EMPATHIZE ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND2, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <PhaseHeader p={p} num="01" label="Empathize" />
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4rem" }}>
+            <Reveal>
+              <PhaseHeader p={p} num="01" label="Empathize" />
+            </Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4rem" }}>
               <SectionTitle p={p}>We talked to workers, not about them.</SectionTitle>
               <p style={{ fontSize: "1rem", color: p.DIM, lineHeight: 1.7 }}>
                 Life-mapping sessions at railway stations, bus stands and construction
@@ -304,17 +312,21 @@ export default function RoziPage() {
                 their wage until payday, because the contractor negotiates on both sides
                 and keeps the difference. There is no shared ground truth.
               </p>
-            </div>
+            </Reveal>
 
             <FieldNotes p={p} />
 
             <div style={{ marginTop: "5.5rem" }}>
-              <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>Empathy map</span>
+              <Reveal>
+                <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>Empathy map</span>
+              </Reveal>
               <EmpathyMap p={p} />
             </div>
 
             <div style={{ marginTop: "5.5rem" }}>
-              <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>Who we designed for</span>
+              <Reveal>
+                <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>Who we designed for</span>
+              </Reveal>
               <div style={{ maxWidth: "920px" }}>
                 <PersonaCard p={p} />
               </div>
@@ -325,8 +337,10 @@ export default function RoziPage() {
         {/* ═══ 07 · DEFINE ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <PhaseHeader p={p} num="02" label="Define" />
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4.5rem" }}>
+            <Reveal>
+              <PhaseHeader p={p} num="02" label="Define" />
+            </Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4.5rem" }}>
               <SectionTitle p={p}>Four stages, from first job to forced return.</SectionTitle>
               <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
                 <p style={{ fontSize: "1rem", color: p.DIM, lineHeight: 1.7 }}>
@@ -340,7 +354,7 @@ export default function RoziPage() {
                   recourse, and children pulled into the same cycle.
                 </p>
               </div>
-            </div>
+            </Reveal>
             <LifecycleMap p={p} />
           </div>
         </section>
@@ -348,8 +362,10 @@ export default function RoziPage() {
         {/* ═══ 08 · IDEATE ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND2, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <PhaseHeader p={p} num="03" label="Ideate" />
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4.5rem" }}>
+            <Reveal>
+              <PhaseHeader p={p} num="03" label="Ideate" />
+            </Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4.5rem" }}>
               <SectionTitle p={p}>Seven systemic gaps — one rule: don&apos;t become the new middleman.</SectionTitle>
               <p style={{ fontSize: "1rem", color: p.DIM, lineHeight: 1.7 }}>
                 If the contractor extracts value at every node a worker touches, what direct
@@ -357,18 +373,22 @@ export default function RoziPage() {
                 single constraint — the platform must never become a new intermediary
                 controlling a different part of the chain.
               </p>
-            </div>
+            </Reveal>
 
             <OpportunityMindMap p={p} />
 
             {/* HMW */}
             <div style={{ marginTop: "5.5rem" }}>
-              <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2.5rem" }}>How might we…</span>
+              <Reveal>
+                <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2.5rem" }}>How might we…</span>
+              </Reveal>
               <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
-                <p style={{ fontFamily: p.SERIF, fontWeight: 400, fontStyle: "italic", fontSize: "clamp(1.5rem, 3vw, 2.4rem)", lineHeight: 1.25, letterSpacing: "-.01em", color: p.PAP }}>
-                  What, and how, can we design for these socio-economic groups?
-                </p>
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
+                <Reveal>
+                  <p style={{ fontFamily: p.SERIF, fontWeight: 400, fontStyle: "italic", fontSize: "clamp(1.5rem, 3vw, 2.4rem)", lineHeight: 1.25, letterSpacing: "-.01em", color: p.PAP }}>
+                    What, and how, can we design for these socio-economic groups?
+                  </p>
+                </Reveal>
+                <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
                   {HMW.map(({ q, filled }, i) => (
                     <div key={i} style={{
                       padding: "1.7rem 2rem", borderRadius: "20px",
@@ -382,7 +402,7 @@ export default function RoziPage() {
                       {q}
                     </div>
                   ))}
-                </div>
+                </Reveal>
               </div>
             </div>
           </div>
@@ -391,20 +411,24 @@ export default function RoziPage() {
         {/* ═══ 09 · PROTOTYPE / ARCHITECTURE ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <PhaseHeader p={p} num="04" label="Prototype" />
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4.5rem" }}>
+            <Reveal>
+              <PhaseHeader p={p} num="04" label="Prototype" />
+            </Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", marginBottom: "4.5rem" }}>
               <SectionTitle p={p}>A two-sided system with a shared record.</SectionTitle>
               <p style={{ fontSize: "1rem", color: p.DIM, lineHeight: 1.7 }}>
                 Employers post verified requirements; workers browse, apply and get a
                 digital record of the agreed wage. Both sides can withdraw, report and rate.
                 The platform earns by being useful — not by controlling information.
               </p>
-            </div>
+            </Reveal>
 
             <InfoArchitecture p={p} />
 
             <div style={{ marginTop: "5.5rem" }}>
-              <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>The worker&apos;s path</span>
+              <Reveal>
+                <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>The worker&apos;s path</span>
+              </Reveal>
               <UserFlow p={p} />
             </div>
           </div>
@@ -413,7 +437,7 @@ export default function RoziPage() {
         {/* ═══ 10 · PRODUCT IN MOTION ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND2, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem", marginBottom: "4rem" }}>
+            <Reveal stagger style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "2rem", marginBottom: "4rem" }}>
               <div>
                 <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "1rem" }}>The product in motion</span>
                 <SectionTitle p={p} max="18ch">Five key journeys, recorded from the prototype.</SectionTitle>
@@ -422,41 +446,43 @@ export default function RoziPage() {
                 Every flow was designed for low-end Android phones, 2G networks, and users
                 with limited literacy or English.
               </p>
-            </div>
+            </Reveal>
 
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1.5rem", marginBottom: "5rem" }}>
-              {FLOWS.map(({ src, label, desc }) => (
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "1.5rem", marginBottom: "5rem" }}>
+              {FLOWS.map(({ src, poster, label, desc }) => (
                 <div key={src} style={{ display: "flex", flexDirection: "column", gap: ".8rem" }}>
                   <div style={{ borderRadius: "12px", overflow: "hidden", background: p.GND, border: `1px solid ${p.LINE}` }}>
-                    <Image src={src} alt={label} width={280} height={560} style={{ width: "100%", height: "auto", display: "block" }} unoptimized />
+                    <InlineVideo src={src} poster={poster} aria-label={label} style={{ width: "100%", aspectRatio: "668 / 1652" }} />
                   </div>
                   <span style={{ fontFamily: p.MONO, fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: p.GOLDT }}>{label}</span>
                   <span style={{ fontSize: ".75rem", color: p.DIM }}>{desc}</span>
                 </div>
               ))}
-            </div>
+            </Reveal>
 
             {/* Inclusive design */}
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "start", borderTop: `1px solid ${p.LINEW}`, paddingTop: "5rem" }}>
               <div>
-                <span style={{ ...kick(p.MONO, p.ACCT), marginBottom: "1.8rem" }}>Designed for who actually needs it</span>
-                <SectionTitle p={p} max="16ch">Hindi-first. Android-first. Works at a railway kiosk.</SectionTitle>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem", marginTop: "2.5rem" }}>
+                <Reveal>
+                  <span style={{ ...kick(p.MONO, p.ACCT), marginBottom: "1.8rem" }}>Designed for who actually needs it</span>
+                  <SectionTitle p={p} max="16ch">Hindi-first. Android-first. Works at a railway kiosk.</SectionTitle>
+                </Reveal>
+                <Reveal stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem", marginTop: "2.5rem" }}>
                   {PRINCIPLES.map(({ label, text }) => (
                     <div key={label} style={{ padding: "1.5rem", background: p.GND, border: `1px solid ${p.LINE}`, borderRadius: "14px" }}>
                       <span style={{ fontFamily: p.MONO, fontSize: ".5rem", letterSpacing: ".16em", textTransform: "uppercase", color: p.ACCT, display: "block", marginBottom: ".7rem" }}>{label}</span>
                       <p style={{ fontSize: ".8rem", color: p.DIM, lineHeight: 1.6 }}>{text}</p>
                     </div>
                   ))}
-                </div>
+                </Reveal>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+              <Reveal stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 {SCREENS.map((src, i) => (
                   <div key={i} style={{ borderRadius: "12px", overflow: "hidden", background: p.GND, border: `1px solid ${p.LINE}` }}>
                     <Image src={src} alt={`Rozi app screen ${i + 1}`} width={300} height={600} style={{ width: "100%", height: "auto", display: "block" }} />
                   </div>
                 ))}
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -464,7 +490,7 @@ export default function RoziPage() {
         {/* ═══ 11 · OUTCOME + CLOSE ═══ */}
         <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND }}>
           <div style={{ padding: "8rem var(--pad)", borderBottom: `1px solid ${p.LINEW}` }}>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center", maxWidth: "1100px", margin: "0 auto" }}>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center", maxWidth: "1100px", margin: "0 auto" }}>
               <div>
                 <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "2rem" }}>Outcome</span>
                 <p style={{ fontFamily: p.SERIF, fontWeight: 300, fontSize: "clamp(4rem, 10vw, 8rem)", lineHeight: 0.95, letterSpacing: "-.04em", color: p.GOLDB }}>Top 5</p>
@@ -486,19 +512,21 @@ export default function RoziPage() {
                   skimming, no gatekeeping — just a verified record of an agreed transaction.
                 </p>
               </div>
-            </div>
+            </Reveal>
           </div>
 
           <div style={{ padding: "6rem var(--pad)", background: p.GND2 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem", maxWidth: "1100px", margin: "0 auto" }}>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+              <Reveal style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
                 {["UX Research", "Service Design", "Inclusive Design", "Two-sided Platform", "Information Architecture"].map((tag) => (
                   <span key={tag} style={{ fontFamily: p.MONO, fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: p.DIM, border: `1px solid ${p.LINE}`, padding: ".4rem .8rem", borderRadius: "100px" }}>{tag}</span>
                 ))}
-              </div>
-              <Link href="/work" style={{ fontFamily: p.MONO, fontSize: ".62rem", letterSpacing: ".2em", textTransform: "uppercase", color: p.ACCT }}>
-                ← Back to all work
-              </Link>
+              </Reveal>
+              <Reveal delay={0.1}>
+                <Link href="/work" style={{ fontFamily: p.MONO, fontSize: ".62rem", letterSpacing: ".2em", textTransform: "uppercase", color: p.ACCT }}>
+                  ← Back to all work
+                </Link>
+              </Reveal>
             </div>
           </div>
         </section>

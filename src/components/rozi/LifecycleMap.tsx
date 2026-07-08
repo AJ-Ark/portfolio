@@ -1,3 +1,6 @@
+"use client";
+
+import { useInView } from "@/hooks/useInView";
 import type { RoziPalette } from "@/components/rozi/palette";
 import { lifecycleStageColors } from "@/components/rozi/palette";
 
@@ -43,6 +46,9 @@ const STAGES: Stage[] = [
 
 export default function LifecycleMap({ p }: { p: RoziPalette }) {
   const stageColors = lifecycleStageColors(p);
+  /* threshold 0 + bottom rootMargin: fires as the block meaningfully
+     enters, independent of its height (it can exceed one viewport). */
+  const { ref, inView } = useInView({ threshold: 0, rootMargin: "0px 0px -10% 0px" });
 
   /* Text-safe accent per stage (gold family → maroon), mirroring the
      gold→maroon marker sequence. `marker` colors are fill-tuned and too
@@ -77,7 +83,7 @@ export default function LifecycleMap({ p }: { p: RoziPalette }) {
   );
 
   return (
-    <div className="rzlc-root">
+    <div ref={ref} className={`rzlc-root${inView ? " is-inview" : ""}`}>
       <style>{`
         .rzlc-root {
           --rzlc-step: clamp(14px, 2.6vw, 34px);
@@ -129,13 +135,16 @@ export default function LifecycleMap({ p }: { p: RoziPalette }) {
         }
         .rzlc-rail { display: none; }
 
-        /* Entrance: subtle rise + fade, staggered. */
+        /* Entrance: subtle rise + fade, staggered. Gated on .is-inview
+           (useInView) so it plays when the map scrolls into the viewport;
+           the resting state stays fully visible (pre-JS / no-JS safe).
+           Reduced motion never enters this block — cards just sit there. */
         @media (prefers-reduced-motion: no-preference) {
-          .rzlc-card { animation: rzlc-rise .6s both; }
-          .rzlc-cell:nth-child(1) .rzlc-card { animation-delay: .00s; }
-          .rzlc-cell:nth-child(2) .rzlc-card { animation-delay: .09s; }
-          .rzlc-cell:nth-child(3) .rzlc-card { animation-delay: .18s; }
-          .rzlc-cell:nth-child(4) .rzlc-card { animation-delay: .27s; }
+          .rzlc-root.is-inview .rzlc-card { animation: rzlc-rise .6s both; }
+          .rzlc-root.is-inview .rzlc-cell:nth-child(1) .rzlc-card { animation-delay: .00s; }
+          .rzlc-root.is-inview .rzlc-cell:nth-child(2) .rzlc-card { animation-delay: .09s; }
+          .rzlc-root.is-inview .rzlc-cell:nth-child(3) .rzlc-card { animation-delay: .18s; }
+          .rzlc-root.is-inview .rzlc-cell:nth-child(4) .rzlc-card { animation-delay: .27s; }
         }
         @keyframes rzlc-rise {
           from { opacity: 0; transform: translateY(10px); }

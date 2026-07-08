@@ -4,6 +4,7 @@ import Image from "next/image";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import Reveal from "@/components/ui/Reveal";
 import { useTranslation } from "@/lib/TranslationContext";
 
 const TIMELINE_KEYS = [
@@ -32,7 +33,7 @@ export default function AboutPage() {
             background: "linear-gradient(to top, var(--color-ground) 30%, transparent 100%)",
             pointerEvents: "none",
           }} />
-          <div style={{ position: "relative", zIndex: 1 }}>
+          <Reveal stagger style={{ position: "relative", zIndex: 1 }}>
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: ".6rem",
               letterSpacing: ".26em", textTransform: "uppercase",
@@ -68,7 +69,7 @@ export default function AboutPage() {
                 }}>{role}</span>
               ))}
             </div>
-          </div>
+          </Reveal>
         </section>
 
         {/* ── BIO + PORTRAIT — solid bg sits above particle canvas ── */}
@@ -88,7 +89,7 @@ export default function AboutPage() {
               maxWidth: "1200px",
             }}
           >
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.6rem" }}>
+            <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1.6rem" }}>
               <p style={{ fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.8 }}>
                 {t("about.bio1")}
               </p>
@@ -101,9 +102,9 @@ export default function AboutPage() {
               <p style={{ fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.8 }}>
                 {t("about.bio4")}
               </p>
-            </div>
+            </Reveal>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <Reveal stagger delay={0.1} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               <div style={{
                 position: "relative", width: "100%", aspectRatio: "3/4",
                 borderRadius: "2px", overflow: "hidden",
@@ -111,7 +112,7 @@ export default function AboutPage() {
               }}>
                 <Image
                   src="/images/headshot.jpg"
-                  alt="Portrait of Aravind J"
+                  alt={t("about.portraitAlt")}
                   fill
                   style={{ objectFit: "cover", objectPosition: "center top" }}
                 />
@@ -135,7 +136,7 @@ export default function AboutPage() {
                 <span>{t("about.downloadResume")}</span>
                 <span aria-hidden="true">↓</span>
               </a>
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -146,15 +147,15 @@ export default function AboutPage() {
           padding: "8rem var(--pad)",
           position: "relative", zIndex: 1,
         }}>
-          <span style={{
+          <Reveal as="span" style={{
             fontFamily: "var(--font-mono)", fontSize: ".6rem",
             letterSpacing: ".26em", textTransform: "uppercase",
             color: "var(--color-accent)", opacity: 0.8,
             display: "block", marginBottom: "3rem",
           }}>
             {t("about.timeline.title")}
-          </span>
-          <div style={{ maxWidth: "800px" }}>
+          </Reveal>
+          <Reveal stagger style={{ maxWidth: "800px" }}>
             {TIMELINE_KEYS.map((item) => (
               <div key={item.yearKey} style={{
                 display: "grid", gridTemplateColumns: "9rem 1fr",
@@ -179,7 +180,7 @@ export default function AboutPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </Reveal>
         </section>
 
         {/* ── ON THIS SITE ── */}
@@ -189,14 +190,14 @@ export default function AboutPage() {
           padding: "8rem var(--pad)",
           position: "relative", zIndex: 1,
         }}>
-          <div style={{ maxWidth: "760px" }}>
+          <Reveal stagger style={{ maxWidth: "760px" }}>
             <span style={{
               fontFamily: "var(--font-mono)", fontSize: ".6rem",
               letterSpacing: ".26em", textTransform: "uppercase",
               color: "var(--color-accent)", opacity: 0.8,
               display: "block", marginBottom: "1.2rem",
             }}>
-              On this site
+              {t("about.site.label")}
             </span>
             <p style={{
               fontFamily: "var(--font-display)", fontWeight: 400,
@@ -204,16 +205,12 @@ export default function AboutPage() {
               letterSpacing: "-.02em", color: "var(--color-paper)",
               marginBottom: "2rem",
             }}>
-              The form is the argument.
+              {t("about.site.title")}
             </p>
             <p style={{ fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.8, maxWidth: "52ch" }}>
-              The architectural section metaphor, moving inward along a Z-axis, is the SPA
-              Vijayawada self: structure, depth, intentional space. The particle ecosystem,
-              organic and living with distinct behaviours per domain, is the NID self:
-              research, ecology, care. The WebGL binding built in real time is the developer
-              self that learned to build ideas the same day he had them.
+              {t("about.site.body")}
             </p>
-          </div>
+          </Reveal>
         </section>
 
         {/* ── CONTACT ── */}
@@ -223,15 +220,15 @@ export default function AboutPage() {
           padding: "8rem var(--pad) 6rem",
           position: "relative", zIndex: 1,
         }}>
-          <span style={{
+          <Reveal as="span" style={{
             fontFamily: "var(--font-mono)", fontSize: ".6rem",
             letterSpacing: ".26em", textTransform: "uppercase",
             color: "var(--color-accent)", opacity: 0.8,
             display: "block", marginBottom: "2rem",
           }}>
-            Reach
-          </span>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+            {t("about.reach")}
+          </Reveal>
+          <Reveal delay={0.1} style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
             <a
               href="mailto:aravindspav@gmail.com"
               style={{
@@ -253,7 +250,7 @@ export default function AboutPage() {
                 padding: ".7rem 1.4rem", borderRadius: "2px",
               }}
             >
-              LinkedIn ↗
+              {t("footer.linkedin")} ↗
             </a>
             <Link
               href="/work"
@@ -264,9 +261,9 @@ export default function AboutPage() {
                 padding: ".7rem 1.4rem", borderRadius: "2px",
               }}
             >
-              View work →
+              {t("about.viewWork")}
             </Link>
-          </div>
+          </Reveal>
         </section>
 
       </main>

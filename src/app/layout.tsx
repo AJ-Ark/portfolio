@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SmoothScroll from "@/components/layout/SmoothScroll";
+import RealmPrefetch from "@/components/layout/RealmPrefetch";
 import { ParticleProvider } from "@/lib/particleContext";
 import WebGLLayer from "@/components/3d/WebGLLayer";
 import { TranslationProvider } from "@/lib/TranslationContext";
+import { fraunces, generalSans, inter, jetbrainsMono } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: {
@@ -33,37 +35,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${fraunces.variable} ${generalSans.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+    >
       <head>
         {/* Stamp data-theme before first paint — eliminates flash */}
         <script dangerouslySetInnerHTML={{ __html: `try{var d=window.matchMedia('(prefers-color-scheme:dark)').matches;document.documentElement.setAttribute('data-theme',d?'dark':'light')}catch(e){}` }} />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap"
-          rel="stylesheet"
-        />
-        {/* Idle-time prefetch of the standalone Realm site's critical path,
-            so entering Realm (a hard navigation) swaps documents with its
-            dependencies already in cache — no loader gap mid-transition.
-            three.module.js needs crossOrigin to match the module request. */}
-        <link rel="prefetch" href="/realm/index.html" />
-        <link rel="prefetch" href="/realm/css/style.css" as="style" />
-        <link rel="prefetch" href="/realm/js/main.js" />
-        <link rel="prefetch" href="https://unpkg.com/three@0.160.0/build/three.module.js" as="script" crossOrigin="anonymous" />
-        <link rel="prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" as="script" />
-        <link rel="prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" as="script" />
-        <link rel="prefetch" href="https://cdn.jsdelivr.net/npm/lenis@1.0.42/dist/lenis.min.js" as="script" />
       </head>
       <body>
         {/* Skip to content — recruiter bypass, always first */}
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
+
+        {/* Idle-time Realm prefetch — home route only, renders nothing */}
+        <RealmPrefetch />
 
         <ParticleProvider>
           <TranslationProvider>

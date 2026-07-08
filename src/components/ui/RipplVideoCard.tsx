@@ -1,51 +1,67 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useInView } from "@/hooks/useInView";
 
 interface Props {
   src: string;
   num: string;
   accent: string;
   freezeAt?: number;
+  poster?: string;
 }
 
-export default function RipplVideoCard({ src, num, accent, freezeAt = 0.1 }: Props) {
+export default function RipplVideoCard({ src, num, accent, freezeAt = 0.1, poster }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [started, setStarted] = useState(false);
+  const startedRef = useRef(false);
   const seekedOnce = useRef(false);
+  const freezeSeek = useRef(false);
+  const { ref: boxRef, inView } = useInView<HTMLDivElement>({ once: false, threshold: 0 });
+
+  /* Pause playback the moment the card scrolls out of view. Playback is
+     user-initiated, so we never auto-resume — the controls stay available
+     for the reader to pick the video back up. */
+  useEffect(() => {
+    if (!inView) videoRef.current?.pause();
+  }, [inView]);
 
   function handlePlay() {
     const v = videoRef.current;
     if (!v) return;
+    startedRef.current = true;
+    freezeSeek.current = false; // cancel any pending freeze-frame pause
     v.currentTime = 0;
     v.play();
     setStarted(true);
   }
 
   return (
-    <div style={{ position: "relative", height: "220px", background: "#000" }}>
+    <div ref={boxRef} style={{ position: "relative", height: "220px", background: "#000" }}>
       <video
         ref={videoRef}
         src={src}
         controls={started}
-        preload="auto"
+        preload="metadata"
+        poster={poster}
         playsInline
         onLoadedData={(e) => {
-          // "loadeddata" (not "loadedmetadata") guarantees the browser has
-          // actually decoded a frame at the current position, so a seek
-          // issued here reliably paints — seeking right after
-          // "loadedmetadata" can silently fail to render on some videos,
-          // especially when freezeAt is far from 0.
-          if (!seekedOnce.current) {
-            seekedOnce.current = true;
-            e.currentTarget.currentTime = freezeAt;
-          }
+          // Freeze on a representative frame only when no poster exists and
+          // the reader hasn't started playback. With preload="metadata" this
+          // event can fire as late as first play, so both guards matter —
+          // otherwise the seek would yank an in-progress playback to freezeAt.
+          if (poster || startedRef.current || seekedOnce.current) return;
+          seekedOnce.current = true;
+          freezeSeek.current = true;
+          e.currentTarget.currentTime = freezeAt;
         }}
         onSeeked={(e) => {
-          // Belt-and-braces: some browsers need an explicit pause after a
-          // programmatic seek to keep rendering the seeked-to frame instead
-          // of reverting to frame 0.
-          e.currentTarget.pause();
+          // Pause only the programmatic freeze-frame seek — never a user
+          // scrub via the native controls, and never handlePlay's rewind.
+          if (freezeSeek.current) {
+            freezeSeek.current = false;
+            e.currentTarget.pause();
+          }
         }}
         onEnded={() => setStarted(false)}
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}

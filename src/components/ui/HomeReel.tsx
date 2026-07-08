@@ -4,6 +4,12 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParticle, useWarpNavigate } from "@/lib/particleContext";
+import { useTranslation } from "@/lib/TranslationContext";
+import { SPRING } from "@/lib/motion";
+import {
+  prefersReducedMotionNow,
+  usePrefersReducedMotion,
+} from "@/hooks/usePrefersReducedMotion";
 import type { Domain } from "@/data/projects";
 
 interface DomainItem {
@@ -16,13 +22,44 @@ interface DomainItem {
 
 const WHEEL_THRESHOLD = 12;       // px of deltaY to count as an intentional tick
 const TOUCH_THRESHOLD = 50;       // px of swipe distance before it registers
-const TRANSITION_LOCK_MS = 800;   // matches the spring duration below, blocks re-trigger mid-animation
-const SPRING = { type: "spring" as const, stiffness: 300, damping: 34 };
+const TRANSITION_LOCK_MS = 800;   // matches SPRING's settle time (src/lib/motion.ts), blocks re-trigger mid-animation
 
 /* Every card reserves the same right-side zone for its particle figure
    (unlike the old side-by-side grid, there's no left/center/right column
    to account for here — it's always the same single-card layout). */
 const CARD_OFFSET_X = 0.5;
+
+/* Screen-reader-only — globals.css has no .sr-only utility and is owned
+   elsewhere, so the clip pattern lives here inline. */
+const VISUALLY_HIDDEN: React.CSSProperties = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
+};
+
+/* Shared by both render branches (hijacked reel + reduced-motion stack). */
+const MOBILE_CSS = `
+  @media (max-width: 760px) {
+    .reel-spacer { display: none !important; }
+    .reel-text {
+      max-width: 100% !important;
+      /* Fade to the THEME ground (not a hardcoded near-black) so the
+         dark text stays readable in light mode. */
+      background: linear-gradient(to top,
+        var(--color-ground) 28%,
+        color-mix(in srgb, var(--color-ground) 55%, transparent) 48%,
+        transparent 78%) !important;
+      justify-content: flex-end !important;
+      padding-bottom: 3.5rem !important;
+    }
+  }
+`;
 
 /* SmoothScroll creates the Lenis instance in its own effect, which — being
    a parent of this component — commits AFTER this component's effects
@@ -37,16 +74,28 @@ function withLenis(fn: (lenis: NonNullable<Window["__lenis"]>) => void, attempts
   requestAnimationFrame(() => withLenis(fn, attempts - 1));
 }
 
+/* Reduced motion means the reel must not hijack scroll AT ALL — those
+   visitors get the same content as a plain, normally scrollable stack.
+   usePrefersReducedMotion starts false (server/first-render parity), so
+   effects that mutate scroll state (pin to top, stop Lenis) double-check
+   prefersReducedMotionNow() — otherwise they run once for reduced-motion
+   users during the first commit, wiping e.g. the browser's restored
+   scroll position on back-navigation before the state flips. */
+
 /**
  * Hero + the three project cards as one reels-style paginated block.
- * One wheel tick / swipe = exactly one slide, carousel-over transition.
- * Scrolling past the last slide releases control back to normal page
- * scroll (Lenis resumes) so the About section below scrolls in normally;
- * scrolling back up to the top of the page re-engages the hijack.
+ * One wheel tick / swipe / key press = exactly one slide, carousel-over
+ * transition. Scrolling past the last slide releases control back to normal
+ * page scroll (Lenis resumes) so the About section below scrolls in
+ * normally; scrolling back up to the top of the page re-engages the hijack.
+ * With prefers-reduced-motion the whole hijack is skipped and the slides
+ * render as a normally scrollable vertical stack instead.
  */
 export default function HomeReel({ domains }: { domains: DomainItem[] }) {
+  const reducedMotion = usePrefersReducedMotion();
   const totalSlides = domains.length + 1; // +1 for hero
   const { setPreviewDomain } = useParticle();
+  const { t } = useTranslation();
   const [slide, setSlide] = useState(0);
   const [hinting, setHinting] = useState(false);
   const slideRef = useRef(0);
@@ -54,7 +103,6 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
   const activeRef = useRef(true);
   const lockedRef = useRef(false);
   const touchStartY = useRef<number | null>(null);
-  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goTo = useCallback((next: number) => {
     const clamped = Math.max(0, Math.min(totalSlides - 1, next));
@@ -84,15 +132,24 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
      scroll position (already down at About/Footer). Force manual
      restoration and pin scrollY to 0 on every mount. */
   useEffect(() => {
+    if (reducedMotion || prefersReducedMotionNow()) {
+      // The stack scrolls natively; give the browser its default behaviour back.
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = "auto";
+      }
+      return;
+    }
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
     window.scrollTo(0, 0);
     withLenis((lenis) => { lenis.scrollTo(0, { immediate: true }); lenis.stop(); });
     return () => { withLenis((lenis) => lenis.start()); };
-  }, []);
+  }, [reducedMotion]);
 
   useEffect(() => {
+    if (reducedMotion || prefersReducedMotionNow()) return;
+
     function handleWheel(e: WheelEvent) {
       if (!activeRef.current) return;
       // Block real scroll for every wheel event while hijacking, not just
@@ -102,7 +159,10 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
       // the slide we think is showing.
       const goingDown = e.deltaY > 0;
       const atEnd = goingDown && slideRef.current >= totalSlides - 1;
-      if (!atEnd) e.preventDefault();
+      // While the transition lock is running the reel is still engaged, so
+      // even the at-end press must be swallowed — otherwise it leaks a
+      // native scroll without release() and desyncs scrollY from the reel.
+      if (!atEnd || lockedRef.current) e.preventDefault();
       if (lockedRef.current) return;
       if (Math.abs(e.deltaY) < WHEEL_THRESHOLD) return;
 
@@ -125,7 +185,7 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
       const dy = touchStartY.current - e.touches[0].clientY;
       const goingDown = dy > 0;
       const atEnd = goingDown && slideRef.current >= totalSlides - 1;
-      if (!atEnd) e.preventDefault();
+      if (!atEnd || lockedRef.current) e.preventDefault();
       if (lockedRef.current) return;
       if (Math.abs(dy) < TOUCH_THRESHOLD) return;
 
@@ -142,29 +202,79 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
       }
     }
 
+    /* Keyboard drives the exact same code path as wheel. While the reel is
+       engaged the browser's native key-scroll MUST be preventDefault-ed —
+       Lenis.stop() does not intercept keyboard scrolling, so without this
+       Space/PageDown silently scroll the real document underneath the
+       hijack and desync scrollY from the slide state. */
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!activeRef.current) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const target = e.target as HTMLElement | null;
+      // Let form controls and buttons keep their native key behaviour
+      // (Space activates buttons, arrows move carets).
+      if (target && target.closest("input, textarea, select, button, [contenteditable='true']")) return;
+
+      if (e.key === "Home" || e.key === "End") {
+        e.preventDefault();
+        if (lockedRef.current) return;
+        goTo(e.key === "Home" ? 0 : totalSlides - 1);
+        return;
+      }
+
+      let dir = 0;
+      if (e.key === "ArrowDown" || e.key === "PageDown") dir = 1;
+      else if (e.key === "ArrowUp" || e.key === "PageUp") dir = -1;
+      else if (e.key === " ") dir = e.shiftKey ? -1 : 1;
+      else return;
+
+      // Same policy as wheel: swallow the native scroll for every handled
+      // press — except the final downward press on the last slide, which
+      // releases the reel and lets the browser carry that same event on
+      // into the page below. During the transition lock even that press is
+      // swallowed: release() wouldn't run, so letting it through would
+      // native-scroll the document while the reel is still engaged.
+      const atEnd = dir > 0 && slideRef.current >= totalSlides - 1;
+      if (!atEnd || lockedRef.current) e.preventDefault();
+      if (lockedRef.current) return;
+
+      if (dir > 0) {
+        if (slideRef.current < totalSlides - 1) {
+          goTo(slideRef.current + 1);
+        } else {
+          release();
+        }
+      } else if (slideRef.current > 0) {
+        goTo(slideRef.current - 1);
+      }
+    }
+
     window.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [goTo, release, totalSlides]);
+  }, [goTo, release, totalSlides, reducedMotion]);
 
   /* Re-engage once the user scrolls back up to the very top of the page,
      i.e. back to where this block naturally sits. */
   useEffect(() => {
+    if (reducedMotion) return;
     function handleScroll() {
       if (activeRef.current) return;
       if (window.scrollY <= 2) engage(totalSlides - 1);
     }
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [engage, totalSlides]);
+  }, [engage, totalSlides, reducedMotion]);
 
   useEffect(() => {
-    if (slide === 0) {
+    if (reducedMotion || slide === 0) {
       setPreviewDomain(null);
       return;
     }
@@ -172,7 +282,7 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
     if (!item) return;
     const isMobile = typeof window !== "undefined" && window.innerWidth <= 760;
     setPreviewDomain(item.slug, isMobile ? 0 : CARD_OFFSET_X);
-  }, [slide, domains, setPreviewDomain]);
+  }, [slide, domains, setPreviewDomain, reducedMotion]);
 
   /* Clear the preview when the reel unmounts (navigation away) so a stale
      preview never overrides the route-driven domain on the next page. */
@@ -182,55 +292,116 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
      "peek-and-retreat" hint, then pull it back — letting visitors know there
      is scrollable content below without any text cue needed. */
   useEffect(() => {
-    if (slide !== 0) { setHinting(false); return; }
+    if (reducedMotion || slide !== 0) { setHinting(false); return; }
     const t = window.setTimeout(() => setHinting(true), 2000);
     return () => window.clearTimeout(t);
-  }, [slide]);
+  }, [slide, reducedMotion]);
 
-  /* Cancel the hint the moment the user touches anything. */
+  /* Cancel the hint the moment the user touches anything. Listeners are
+     attached only while the hint is showing — not for the reel's lifetime. */
   useEffect(() => {
+    if (!hinting) return;
     function cancel() { setHinting(false); }
     window.addEventListener("wheel", cancel, { passive: true });
     window.addEventListener("touchstart", cancel, { passive: true });
+    window.addEventListener("keydown", cancel, { passive: true });
     return () => {
       window.removeEventListener("wheel", cancel);
       window.removeEventListener("touchstart", cancel);
+      window.removeEventListener("keydown", cancel);
     };
-  }, []);
+  }, [hinting]);
+
+  /* ── Reduced-motion branch: a real alternative render, not shorter
+        animations. Plain vertically stacked sections, native scrolling,
+        no springs, no wheel/keyboard interception, no warp dive. ── */
+  if (reducedMotion) {
+    return (
+      <div>
+        <section style={{ height: "100dvh", position: "relative" }}>
+          <HeroContent />
+        </section>
+        {domains.map((item) => (
+          <section key={item.slug} style={{ height: "100dvh", position: "relative" }}>
+            <ProjectContent item={item} instant />
+          </section>
+        ))}
+        <style>{MOBILE_CSS}</style>
+      </div>
+    );
+  }
+
+  const slideTitle = slide === 0 ? t("home.hero.line1") : domains[slide - 1]?.headline ?? "";
 
   return (
-    <div style={{ height: "100dvh", position: "relative", overflow: "hidden" }}>
-      <Slide index={0} active={slide}>
+    <section
+      aria-roledescription="carousel"
+      aria-label={t("home.reel.ariaLabel")}
+      style={{ height: "100dvh", position: "relative", overflow: "hidden" }}
+    >
+      <Slide index={0} active={slide} total={totalSlides}>
         <HeroContent />
       </Slide>
       {domains.map((item, i) => (
-        <Slide key={item.slug} index={i + 1} active={slide} hinting={hinting && i === 0}>
+        <Slide key={item.slug} index={i + 1} active={slide} total={totalSlides} hinting={hinting && i === 0}>
           <ProjectContent item={item} />
         </Slide>
       ))}
-      <style>{`
-        @media (max-width: 760px) {
-          .reel-spacer { display: none !important; }
-          .reel-text {
-            max-width: 100% !important;
-            /* Fade to the THEME ground (not a hardcoded near-black) so the
-               dark text stays readable in light mode. */
-            background: linear-gradient(to top,
-              var(--color-ground) 28%,
-              color-mix(in srgb, var(--color-ground) 55%, transparent) 48%,
-              transparent 78%) !important;
-            justify-content: flex-end !important;
-            padding-bottom: 3.5rem !important;
-          }
-        }
-      `}</style>
+
+      <ProgressRail current={slide} total={totalSlides} />
+
+      {/* Announce slide position to screen readers on every index change.
+          Numerals stay language-neutral; the slide word is translated. */}
+      <div aria-live="polite" style={VISUALLY_HIDDEN}>
+        {`${t("home.reel.slide")} ${slide + 1} / ${totalSlides} — ${slideTitle}`}
+      </div>
+
+      <style>{MOBILE_CSS}</style>
+    </section>
+  );
+}
+
+/* Quiet editorial progress indicator — mono numerals around a hairline
+   whose fill rides the same spring as the slides. Bottom-left, below the
+   content band of every slide (hero copy and .reel-text both keep a
+   3.5rem bottom padding, so 1.6rem is always clear). */
+function ProgressRail({ current, total }: { current: number; total: number }) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        left: "var(--pad)",
+        bottom: "1.6rem",
+        zIndex: 20,
+        display: "flex",
+        alignItems: "center",
+        gap: ".7rem",
+        pointerEvents: "none",
+      }}
+    >
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".18em", color: "var(--color-accent)", opacity: 0.9, fontVariantNumeric: "tabular-nums" }}>
+        {pad(current + 1)}
+      </span>
+      <span style={{ position: "relative", display: "block", width: "3rem", height: "1px", background: "var(--line)", overflow: "hidden" }}>
+        <motion.span
+          animate={{ scaleX: (current + 1) / total }}
+          transition={SPRING}
+          style={{ position: "absolute", inset: 0, display: "block", background: "var(--color-accent)", opacity: 0.8, transformOrigin: "left center" }}
+        />
+      </span>
+      <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".18em", color: "var(--color-graphite-light)", opacity: 0.45, fontVariantNumeric: "tabular-nums" }}>
+        {pad(total)}
+      </span>
     </div>
   );
 }
 
-function Slide({ index, active, hinting = false, children }: {
+function Slide({ index, active, total, hinting = false, children }: {
   index: number;
   active: number;
+  total: number;
   hinting?: boolean;
   children: React.ReactNode;
 }) {
@@ -248,6 +419,9 @@ function Slide({ index, active, hinting = false, children }: {
 
   return (
     <motion.div
+      role="group"
+      aria-roledescription="slide"
+      aria-label={`${index + 1} / ${total}`}
       animate={{ y: yValue }}
       transition={transition}
       aria-hidden={!isActive}
@@ -268,6 +442,7 @@ function Slide({ index, active, hinting = false, children }: {
 }
 
 function HeroContent() {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -285,19 +460,19 @@ function HeroContent() {
 
       <div style={{ position: "relative", zIndex: 2 }}>
         <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 300, lineHeight: 1.0, letterSpacing: "-.025em", marginBottom: "2.5rem" }}>
-          <span style={{ display: "block", fontSize: "clamp(2.6rem, 7.5vw, 6rem)", color: "var(--color-paper)" }}>Architect by training.</span>
-          <span style={{ display: "block", fontSize: "clamp(2.6rem, 7.5vw, 6rem)", fontStyle: "italic", color: "var(--color-accent)", paddingLeft: "clamp(1rem, 4vw, 4rem)" }}>Designer by practice.</span>
+          <span style={{ display: "block", fontSize: "clamp(2.6rem, 7.5vw, 6rem)", color: "var(--color-paper)" }}>{t("home.hero.line1")}</span>
+          <span style={{ display: "block", fontSize: "clamp(2.6rem, 7.5vw, 6rem)", fontStyle: "italic", color: "var(--color-accent)", paddingLeft: "clamp(1rem, 4vw, 4rem)" }}>{t("home.hero.line2")}</span>
           <span style={{ display: "block", fontSize: "clamp(1.1rem, 2.8vw, 2.6rem)", color: "var(--color-graphite-light)", fontStyle: "normal", marginTop: "1.5rem", fontWeight: 300, letterSpacing: "-.01em" }}>
-            I build the thing to understand the thing.
+            {t("home.tagline")}
           </span>
         </h1>
 
         <div style={{ display: "flex", alignItems: "center", gap: "2rem", paddingTop: "1.5rem", borderTop: "1px solid var(--line)", flexWrap: "wrap" }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--color-graphite-light)", opacity: 0.6 }}>
-            Product Designer & UX Researcher
+            {t("home.role1")}
           </span>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--color-graphite-light)", opacity: 0.6 }}>
-            M.Des New Media Design · NID Gandhinagar
+            {t("home.role2")}
           </span>
         </div>
       </div>
@@ -305,22 +480,26 @@ function HeroContent() {
       <div aria-hidden="true" style={{ position: "absolute", bottom: "2rem", right: "var(--pad)", display: "flex", flexDirection: "column", alignItems: "center", gap: ".5rem" }}>
         <div style={{ width: "1px", height: "48px", background: "linear-gradient(to bottom, var(--color-accent), transparent)", opacity: 0.5 }} />
         <span style={{ fontFamily: "var(--font-mono)", fontSize: ".45rem", letterSpacing: ".2em", textTransform: "uppercase", color: "var(--color-graphite-light)", writingMode: "vertical-rl", opacity: 0.4 }}>
-          Scroll
+          {t("home.scroll")}
         </span>
       </div>
     </div>
   );
 }
 
-function ProjectContent({ item }: { item: DomainItem }) {
+function ProjectContent({ item, instant = false }: { item: DomainItem; instant?: boolean }) {
   const warpNav = useWarpNavigate();
+  const { t } = useTranslation();
   return (
     <Link
       href={`/work/${item.slug}`}
       className="reel-card"
       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%", pointerEvents: "auto", position: "relative" }}
       onClick={(e) => {
-        // Enter through the particles: dive-in transition covers the route change.
+        // Enter through the particles: dive-in transition covers the route
+        // change. With reduced motion (instant) the Link navigates natively —
+        // no warp dive.
+        if (instant) return;
         e.preventDefault();
         warpNav(`/work/${item.slug}`, item.slug);
       }}
@@ -353,7 +532,7 @@ function ProjectContent({ item }: { item: DomainItem }) {
           {item.label}
         </span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: item.accent, opacity: 0.9 }}>
-          Enter →
+          {t("home.reel.enter")}
         </span>
 
         <div aria-hidden="true" style={{ position: "absolute", bottom: "2rem", right: "1.5rem", width: 18, height: 18, borderBottom: `1px solid ${item.accent}`, borderRight: `1px solid ${item.accent}`, opacity: 0.6 }} />

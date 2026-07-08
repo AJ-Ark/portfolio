@@ -1,3 +1,6 @@
+"use client";
+
+import { useInView } from "@/hooks/useInView";
 import type { RoziPalette } from "@/components/rozi/palette";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -121,6 +124,10 @@ const SPINE: { label: string; kind: "maroon" | "gold" | "neutral" }[] = [
 ];
 
 export default function InfoArchitecture({ p }: { p: RoziPalette }) {
+  /* threshold 0 + bottom rootMargin: fires as the block meaningfully
+     enters, independent of its height (it can exceed one viewport). */
+  const { ref, inView } = useInView({ threshold: 0, rootMargin: "0px 0px -10% 0px" });
+
   /* translucent tint helpers derived from brand hexes */
   const goldFill = "color-mix(in srgb, var(--color-gold) 12%, transparent)";
   const goldFillSoft = "color-mix(in srgb, var(--color-gold) 7%, transparent)";
@@ -145,6 +152,8 @@ export default function InfoArchitecture({ p }: { p: RoziPalette }) {
 
   return (
     <div
+      ref={ref}
+      className={`ia-rozi${inView ? " is-inview" : ""}`}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -156,14 +165,18 @@ export default function InfoArchitecture({ p }: { p: RoziPalette }) {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .ia-rozi-panel { animation: ia-rozi-rise .5s ease both; }
-        .ia-rozi-panel:nth-child(2) { animation-delay: .08s; }
+        /* Entrance choreography is gated on .is-inview (useInView) so it
+           plays when the IA scrolls into the viewport, not at mount.
+           The resting (pre-JS / no-JS) state stays fully visible. */
+        .ia-rozi.is-inview .ia-rozi-panel { animation: ia-rozi-rise .5s ease both; }
+        .ia-rozi.is-inview .ia-rozi-panel:nth-child(2) { animation-delay: .08s; }
         .ia-rozi-chip {
           transition: border-color .18s ease, transform .18s ease;
         }
         .ia-rozi-chip:hover { transform: translateY(-1px); }
+        /* Reduced motion: panels appear instantly, fully visible. */
         @media (prefers-reduced-motion: reduce) {
-          .ia-rozi-panel { animation: none; }
+          .ia-rozi.is-inview .ia-rozi-panel { animation: none; }
           .ia-rozi-chip { transition: none; }
           .ia-rozi-chip:hover { transform: none; }
         }

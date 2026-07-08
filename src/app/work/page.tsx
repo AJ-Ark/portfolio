@@ -2,6 +2,7 @@
 
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
+import Reveal from "@/components/ui/Reveal";
 import WarpLink from "@/components/ui/WarpLink";
 import { projects } from "@/data/projects";
 import { useTranslation } from "@/lib/TranslationContext";
@@ -16,9 +17,9 @@ export default function WorkIndex() {
         id="main-content"
         style={{ padding: "8rem var(--spacing-page) 4rem" }}
       >
-        {/* Header */}
-        <div className="mb-16 max-w-2xl">
-          <span className="label-mono block mb-4" style={{ color: "#4A453E" }}>
+        {/* Header — label, title and intro rise in sequence */}
+        <Reveal className="mb-16 max-w-2xl" stagger>
+          <span className="label-mono block mb-4" style={{ color: "var(--color-graphite-light)" }}>
             {t("work.label")}
           </span>
           <h1
@@ -37,10 +38,10 @@ export default function WorkIndex() {
           <p style={{ color: "var(--color-graphite-light)", fontSize: "0.9375rem", lineHeight: 1.6 }}>
             {t("work.headerDescription")}
           </p>
-        </div>
+        </Reveal>
 
-        {/* Project list — flat, no WebGL */}
-        <div className="flex flex-col gap-0">
+        {/* Project list — flat, no WebGL; rows enter on the shared stagger beat */}
+        <Reveal className="flex flex-col gap-0" stagger delay={0.15}>
           {projects.map((project, i) => (
             <WarpLink
               key={project.slug}
@@ -48,14 +49,14 @@ export default function WorkIndex() {
               domain={project.domain}
               className="group flex flex-col md:flex-row md:items-center gap-4 py-7 transition-all duration-200"
               style={{
-                borderTop: "1px solid #2E2A25",
-                borderBottom: i === projects.length - 1 ? "1px solid #2E2A25" : "none",
+                borderTop: "1px solid var(--line)",
+                borderBottom: i === projects.length - 1 ? "1px solid var(--line)" : "none",
               }}
             >
               {/* Index number */}
               <span
                 className="label-mono shrink-0"
-                style={{ color: "#3A352E", width: 32, fontSize: "0.55rem" }}
+                style={{ color: "var(--color-graphite)", width: 32, fontSize: "0.55rem" }}
               >
                 0{i + 1}
               </span>
@@ -110,7 +111,7 @@ export default function WorkIndex() {
                 >
                   {project.type.toUpperCase()}
                 </span>
-                <span className="label-mono" style={{ color: "#4A453E", fontSize: "0.55rem" }}>
+                <span className="label-mono" style={{ color: "var(--color-graphite-light)", fontSize: "0.55rem" }}>
                   {project.year}
                 </span>
               </div>
@@ -124,7 +125,7 @@ export default function WorkIndex() {
               </span>
             </WarpLink>
           ))}
-        </div>
+        </Reveal>
       </main>
 
       <Footer />

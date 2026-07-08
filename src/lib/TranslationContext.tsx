@@ -2,8 +2,11 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState,
   ReactNode,
 } from "react";
@@ -13,6 +16,7 @@ import {
   isRTL,
   type LanguageCode,
 } from "./i18n";
+import en from "../../public/messages/en.json";
 
 interface TranslationContextType {
   language: LanguageCode;
@@ -28,64 +32,54 @@ const TranslationContext = createContext<TranslationContextType | undefined>(
 
 export function TranslationProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<LanguageCode>("en");
-  const [translations, setTranslations] = useState<Record<string, string>>({});
+  // English ships in the bundle so SSR/prerender and first paint always have
+  // real strings — detected-language messages swap in after hydration.
+  const [translations, setTranslations] = useState<Record<string, string>>(en);
   const [isRTLMode, setIsRTLMode] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  // Monotonic token: only the most recent load may commit its messages, so a
+  // slow earlier fetch can't clobber the strings of a faster later switch.
+  const loadSeq = useRef(0);
 
-  useEffect(() => {
-    const detectedLang = detectBrowserLanguage();
-    setLanguageState(detectedLang);
-    setIsRTLMode(isRTL(detectedLang));
-    loadTranslations(detectedLang).then(setTranslations);
-    setMounted(true);
-
-    // Apply RTL to HTML element if needed
-    if (typeof document !== "undefined") {
-      if (isRTL(detectedLang)) {
-        document.documentElement.dir = "rtl";
-        document.documentElement.lang = detectedLang;
-      } else {
-        document.documentElement.dir = "ltr";
-        document.documentElement.lang = detectedLang;
-      }
-    }
-  }, []);
-
-  const setLanguage = async (lang: LanguageCode) => {
+  const applyLanguage = useCallback((lang: LanguageCode) => {
     setLanguageState(lang);
     setIsRTLMode(isRTL(lang));
-    const msgs = await loadTranslations(lang);
-    setTranslations(msgs);
+    const seq = ++loadSeq.current;
+    if (lang === "en") {
+      setTranslations(en);
+    } else {
+      loadTranslations(lang).then((msgs) => {
+        if (seq === loadSeq.current) setTranslations(msgs);
+      });
+    }
+    document.documentElement.dir = isRTL(lang) ? "rtl" : "ltr";
+    document.documentElement.lang = lang;
+  }, []);
 
-    // Save to localStorage
-    if (typeof window !== "undefined") {
+  useEffect(() => {
+    applyLanguage(detectBrowserLanguage());
+  }, [applyLanguage]);
+
+  const setLanguage = useCallback(
+    (lang: LanguageCode) => {
+      applyLanguage(lang);
       localStorage.setItem("__portfolio_lang", lang);
-    }
+    },
+    [applyLanguage]
+  );
 
-    // Update HTML attributes
-    if (typeof document !== "undefined") {
-      if (isRTL(lang)) {
-        document.documentElement.dir = "rtl";
-      } else {
-        document.documentElement.dir = "ltr";
-      }
-      document.documentElement.lang = lang;
-    }
-  };
+  const t = useCallback(
+    (key: string): string =>
+      translations[key] || (en as Record<string, string>)[key] || key,
+    [translations]
+  );
 
-  const t = (key: string): string => {
-    return translations[key] || key;
-  };
-
-  // Don't render until client-side hydration is complete
-  if (!mounted) {
-    return <>{children}</>;
-  }
+  const value = useMemo(
+    () => ({ language, setLanguage, translations, t, isRTL: isRTLMode }),
+    [language, setLanguage, translations, t, isRTLMode]
+  );
 
   return (
-    <TranslationContext.Provider
-      value={{ language, setLanguage, translations, t, isRTL: isRTLMode }}
-    >
+    <TranslationContext.Provider value={value}>
       {children}
     </TranslationContext.Provider>
   );

@@ -5,7 +5,9 @@ import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import WordReveal from "@/components/ui/WordReveal";
+import Reveal from "@/components/ui/Reveal";
 import RipplVideoCard from "@/components/ui/RipplVideoCard";
+import InlineVideo from "@/components/ui/InlineVideo";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 /* ── Palette — CSS vars so sub-components auto-adapt to dark/light ── */
@@ -303,7 +305,7 @@ export default function RipplPage() {
             }} aria-hidden="true">Rippl</div>
           </div>
 
-          <div style={{ position: "relative", zIndex: 3 }}>
+          <Reveal stagger style={{ position: "relative", zIndex: 3 }}>
             <div style={{
               fontFamily: "var(--font-mono)", fontSize: ".6rem",
               letterSpacing: ".28em", textTransform: "uppercase",
@@ -335,7 +337,7 @@ export default function RipplPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </Reveal>
         </section>
 
         {/* ═══════════════════════════════════════════
@@ -343,7 +345,7 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "8rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "980px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2.5rem" }}>The premise</span>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2.5rem" }}>The premise</Reveal>
             <WordReveal as="p" delay={0} stagger={38} style={{
               fontFamily: "var(--font-display)", fontWeight: 400,
               fontSize: "clamp(2rem, 5.5vw, 5rem)", lineHeight: 1.0,
@@ -351,14 +353,14 @@ export default function RipplPage() {
             }}>
               Reading asks for attention. Technology keeps taking it.
             </WordReveal>
-            <div style={{ borderLeft: `2px solid ${ACC}`, paddingLeft: "1.8rem", maxWidth: "46ch" }}>
+            <Reveal style={{ borderLeft: `2px solid ${ACC}`, paddingLeft: "1.8rem", maxWidth: "46ch" }}>
               <p style={{ fontSize: "clamp(.9rem, 1.4vw, 1.1rem)", color: DIM, lineHeight: 1.7 }}>
                 I observed distracted reading among my peers at NID and began an
                 ambiguous journey: could emerging technology improve learning without
                 interrupting its most natural ritual?
               </p>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, display: "block", marginTop: ".8rem" }}>Initial observation / NID Gandhinagar</span>
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -367,14 +369,14 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "0 var(--pad) 6rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: FAINT, opacity: 0.6, display: "block", marginBottom: "2rem" }}>Who needs this</span>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: FAINT, opacity: 0.6, display: "block", marginBottom: "2rem" }}>Who needs this</Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
               {[
                 { who: "Medical students", context: "Dense terminology, high-stakes recall, limited time.", need: "Instant definitions beside the text, without losing place." },
                 { who: "Civil exam aspirants", context: "Months of multi-subject revision, cross-referencing sources.", need: "Linked notes that surface related material automatically." },
                 { who: "Research scholars", context: "Annotating papers, connecting ideas across books and journals.", need: "Projection layer that keeps context visible while reading." },
               ].map(({ who, context, need }) => (
-                <div key={who} style={{ padding: "2rem 1.8rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
+                <div key={who} style={{ height: "100%", padding: "2rem 1.8rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
                   <div style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1.1rem", color: ACCB, marginBottom: ".6rem" }}>{who}</div>
                   <p style={{ fontSize: ".8125rem", color: FAINT, lineHeight: 1.6, marginBottom: ".8rem" }}>{context}</p>
                   <div style={{ borderTop: `1px solid ${LINE}`, paddingTop: ".6rem" }}>
@@ -383,7 +385,7 @@ export default function RipplPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -392,9 +394,9 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>02 / The object</span>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>02 / The object</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
-              <div>
+              <Reveal stagger>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>What is Rippl?</span>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2rem, 4.5vw, 3.8rem)", lineHeight: 1.05, letterSpacing: "-.01em", color: PAPER, marginBottom: "1.4rem" }}>
                   A lamp that{" "}<em style={{ fontStyle: "italic", color: ACCB }}>thinks with you.</em>
@@ -410,10 +412,10 @@ export default function RipplPage() {
                     <span key={t} style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".12em", textTransform: "uppercase", color: ACC, background: `rgba(79,168,160,.08)`, border: `1px solid ${LINE}`, borderRadius: "4px", padding: ".3rem .7rem" }}>{t}</span>
                   ))}
                 </div>
-              </div>
+              </Reveal>
 
               {/* Device schematic + photo */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <div style={{ display: "flex", justifyContent: "center", padding: "2rem", background: BASE, borderRadius: "14px", border: `1px solid ${LINEW}` }}>
                   <DeviceSchematicSVG />
                 </div>
@@ -423,7 +425,7 @@ export default function RipplPage() {
                     01 · Table lamp mode · Physical form study
                   </div>
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -433,36 +435,36 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>03 / Research</span>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2rem, 5vw, 4.2rem)", lineHeight: 1.08, letterSpacing: "-.015em", color: PAPER, maxWidth: "22ch", marginBottom: "3rem" }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>03 / Research</Reveal>
+            <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2rem, 5vw, 4.2rem)", lineHeight: 1.08, letterSpacing: "-.015em", color: PAPER, maxWidth: "22ch", marginBottom: "3rem" }}>
               We reach for a book. Then the internet{" "}<em style={{ fontStyle: "italic", color: ACC }}>reaches back.</em>
-            </h2>
+            </Reveal>
 
-            <blockquote style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "clamp(1.1rem, 2.4vw, 1.7rem)", lineHeight: 1.35, color: PAPER, borderLeft: `3px solid ${ACC}`, paddingLeft: "1.8rem", maxWidth: "46ch", marginBottom: "3.5rem" }}>
+            <Reveal as="blockquote" style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "clamp(1.1rem, 2.4vw, 1.7rem)", lineHeight: 1.35, color: PAPER, borderLeft: `3px solid ${ACC}`, paddingLeft: "1.8rem", maxWidth: "46ch", marginBottom: "3.5rem" }}>
               "Picture this: you're all set to hit the books, but before you know it, your phone buzzes, social media beckons, and your focus takes a fall."
               <footer style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginTop: ".8rem", fontStyle: "normal" }}>Anonymous interviewee · NID research session</footer>
-            </blockquote>
+            </Reveal>
 
-            <div style={{ position: "relative", width: "100%", height: "360px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINEW}`, marginBottom: "3rem" }}>
+            <Reveal style={{ position: "relative", width: "100%", height: "360px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINEW}`, marginBottom: "3rem" }}>
               <Image src="/images/rippl/findings.png" alt="Research synthesis: what emerged from studying distracted reading patterns across NID students and peers" fill style={{ objectFit: "contain", background: BASE2, padding: "1rem" }} />
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: ".6rem 1rem", background: "rgba(13,9,4,.8)", borderTop: `1px solid ${LINEW}`, fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT }}>
                 01 · Research findings synthesis
               </div>
-            </div>
+            </Reveal>
 
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
               {[
                 { num: "01", h: "Impaired focus", b: "Technological interruptions reduce comprehension and make it harder to remain inside the material. The cost isn't just time. It's the depth of understanding that forms while uninterrupted." },
                 { num: "02", h: "Limited recall", b: "Passive reading makes essential information harder to retrieve when it matters. Without an active encoding mechanism, information enters short-term memory and exits before it's used." },
                 { num: "03", h: "Low engagement", b: "Traditional reading offers few moments for active, two-way participation. The book gives; the reader takes. There is no feedback loop that signals whether understanding has formed." },
               ].map(({ num, h, b }) => (
-                <div key={num} style={{ padding: "2.2rem 1.8rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
+                <div key={num} style={{ height: "100%", padding: "2.2rem 1.8rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
                   <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "2rem", color: ACC, display: "block", lineHeight: 1, marginBottom: ".8rem" }}>{num}</span>
                   <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: ".9375rem", color: PAPER, letterSpacing: "-.01em", marginBottom: ".6rem" }}>{h}</h3>
                   <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.7 }}>{b}</p>
                 </div>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -471,16 +473,16 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "5rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1rem" }}>The transformation</span>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)", lineHeight: 1.1, color: PAPER, marginBottom: "2.5rem", maxWidth: "28ch" }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1rem" }}>The transformation</Reveal>
+            <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)", lineHeight: 1.1, color: PAPER, marginBottom: "2.5rem", maxWidth: "28ch" }}>
               What changes when notes ripple back.
-            </h2>
-            <div style={{ padding: "2rem", background: BASE, borderRadius: "14px", border: `1px solid ${LINEW}` }}>
+            </Reveal>
+            <Reveal style={{ padding: "2rem", background: BASE, borderRadius: "14px", border: `1px solid ${LINEW}` }}>
               <ReadingJourneySVG />
-            </div>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT, marginTop: "1rem" }}>
+            </Reveal>
+            <Reveal as="p" delay={0.1} style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT, marginTop: "1rem" }}>
               The intervention happens at the moment of marking, the gesture that already exists in every reader's practice.
-            </p>
+            </Reveal>
           </div>
         </section>
 
@@ -489,15 +491,15 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "7rem var(--pad)", borderTop: `1px solid ${LINEW}`, textAlign: "center" }}>
           <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1.5rem" }}>The design question</span>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.5rem, 3.5vw, 2.6rem)", lineHeight: 1.25, letterSpacing: "-.01em", color: PAPER, marginBottom: "3rem" }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1.5rem" }}>The design question</Reveal>
+            <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.5rem, 3.5vw, 2.6rem)", lineHeight: 1.25, letterSpacing: "-.01em", color: PAPER, marginBottom: "3rem" }}>
               How might we create an engaging learning experience that combats distraction, improves retention, and deepens understanding?
-            </h2>
-            <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+            </Reveal>
+            <Reveal stagger delay={0.15} style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
               {["Focus better","Retrieve effortlessly","Interact naturally"].map(o => (
                 <span key={o} style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".18em", textTransform: "uppercase", color: ACC, border: `1px solid ${LINE}`, borderRadius: "100px", padding: ".55rem 1.4rem" }}>{o}</span>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -506,9 +508,9 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>04 / How it works</span>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>04 / How it works</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start", marginBottom: "3rem" }}>
-              <div>
+              <Reveal stagger>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.1, color: PAPER, marginBottom: "1.4rem" }}>
                   The recognition<br /><em style={{ fontStyle: "italic", color: ACCB }}>pipeline.</em>
                 </h2>
@@ -518,8 +520,8 @@ export default function RipplPage() {
                 <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "44ch" }}>
                   The handwriting recognition model was trained separately to handle margin annotations and personal notes, treating the reader's own writing as input, not just the printed text.
                 </p>
-              </div>
-              <div>
+              </Reveal>
+              <Reveal stagger>
                 <div style={{ padding: "2rem 1.5rem", background: BASE, borderRadius: "14px", border: `1px solid ${LINEW}` }}>
                   <PipelineSVG />
                 </div>
@@ -536,7 +538,7 @@ export default function RipplPage() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -546,9 +548,9 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>05 / Experience</span>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>05 / Experience</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: "4rem", alignItems: "start" }}>
-              <div>
+              <Reveal stagger>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>A natural gesture</span>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2.2rem, 4.5vw, 4rem)", lineHeight: 0.96, letterSpacing: "-.015em", color: PAPER, marginBottom: "1.4rem" }}>
                   Mark it.<br /><em style={{ fontStyle: "italic", color: ACCB }}>Meet more.</em>
@@ -556,8 +558,8 @@ export default function RipplPage() {
                 <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "38ch" }}>
                   Highlight a term as you already would. Rippl recognises the mark, projects relevant information, and lets you keep what matters beside the original page, without switching context.
                 </p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              </Reveal>
+              <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {[
                   { num: "01", label: "Mark a passage", src: "/images/rippl/interaction-mark.png", alt: "Reader highlighting a term in a book" },
                   { num: "02", label: "Explore the projection", src: "/images/rippl/interaction-project.png", alt: "Rippl projecting learning assistance beside the open book" },
@@ -572,7 +574,7 @@ export default function RipplPage() {
                     </div>
                   </div>
                 ))}
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -582,12 +584,12 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>06 / Interface</span>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: ".8rem" }}>The projected layer</span>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 4vw, 3.2rem)", lineHeight: 1.1, color: PAPER, marginBottom: "2.5rem" }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>06 / Interface</Reveal>
+            <Reveal as="span" delay={0.1} style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: ".8rem" }}>The projected layer</Reveal>
+            <Reveal as="h2" delay={0.2} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 4vw, 3.2rem)", lineHeight: 1.1, color: PAPER, marginBottom: "2.5rem" }}>
               Information,{" "}<em style={{ fontStyle: "italic", color: ACCB }}>where attention is.</em>
-            </h2>
-            <div style={{ padding: "1.8rem 2rem", border: `1px solid ${LINEW}`, borderRadius: "14px", background: BASE2, overflowX: "auto", marginBottom: "3.5rem" }}>
+            </Reveal>
+            <Reveal style={{ padding: "1.8rem 2rem", border: `1px solid ${LINEW}`, borderRadius: "14px", background: BASE2, overflowX: "auto", marginBottom: "3.5rem" }}>
               <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCB, marginBottom: "1.4rem", display: "block" }}>
                 Recognise · retrieve · retain
               </span>
@@ -606,11 +608,11 @@ export default function RipplPage() {
                   ],
                 ]}
               />
-            </div>
+            </Reveal>
 
             {/* One object, two modes */}
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center", paddingTop: "3rem", borderTop: `1px solid ${LINEW}` }}>
-              <div>
+              <Reveal stagger>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>One object, two modes</span>
                 <h3 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.6rem, 3vw, 2.4rem)", lineHeight: 1.12, color: PAPER, marginBottom: "1rem" }}>
                   Study light.<br /><em style={{ fontStyle: "italic", color: ACCB }}>Portable projector.</em>
@@ -618,10 +620,10 @@ export default function RipplPage() {
                 <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "40ch" }}>
                   The same device serves two modes: a reading lamp with projection intelligence, and a standalone portable projector you can carry to a classroom or lecture. No compromise on either. No settings to switch. The device reads the context.
                 </p>
-              </div>
-              <div style={{ position: "relative", height: "360px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
+              </Reveal>
+              <Reveal style={{ position: "relative", height: "360px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
                 <Image src="/images/rippl/projector-mode.png" alt="Rippl in standalone portable projector mode, tilted and freestanding" fill style={{ objectFit: "cover" }} />
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -631,20 +633,19 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>07 / Information architecture</span>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.08, color: PAPER, marginBottom: ".8rem" }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>07 / Information architecture</Reveal>
+            <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.08, color: PAPER, marginBottom: ".8rem" }}>
               Every flow, mapped before it was built.
-            </h2>
-            <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "52ch", marginBottom: "3.5rem" }}>
+            </Reveal>
+            <Reveal as="p" delay={0.2} style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "52ch", marginBottom: "3.5rem" }}>
               Each interaction was diagrammed end to end before a single screen was wired up: every state, every branch, every fallback. The three flows below were carried through to working prototypes, captured here exactly as they run.
-            </p>
+            </Reveal>
 
             {/* ── Marking & Annotating ── */}
             <div style={{ marginBottom: "3.5rem" }}>
-              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
+              <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
                 <div style={{ position: "relative", height: "280px", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/rippl/gifs/marking.gif" alt="Recorded interaction: marking a passage and choosing Annotate to generate an AI summary" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <InlineVideo src="/videos/rippl/flows/marking.mp4" poster="/videos/rippl/flows/marking-poster.webp" aria-label="Recorded interaction: marking a passage and choosing Annotate to generate an AI summary" style={{ width: "100%", height: "100%" }} />
                 </div>
                 <div>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCB, marginBottom: ".6rem", display: "block" }}>01 · Marking &amp; annotating</span>
@@ -652,8 +653,8 @@ export default function RipplPage() {
                     A mark on the page is the only gesture required. Everything past that, what kind of help to generate, in what form, is chosen after the fact, never before.
                   </p>
                 </div>
-              </div>
-              <div style={{ padding: "1.6rem 1.8rem", border: `1px solid ${LINEW}`, borderRadius: "12px", background: BASE2, overflowX: "auto" }}>
+              </Reveal>
+              <Reveal style={{ padding: "1.6rem 1.8rem", border: `1px solid ${LINEW}`, borderRadius: "12px", background: BASE2, overflowX: "auto" }}>
                 <FlowFork
                   trunk={{ label: "Marks\ncontent" }}
                   branches={[
@@ -666,12 +667,12 @@ export default function RipplPage() {
                     ],
                   ]}
                 />
-              </div>
+              </Reveal>
             </div>
 
             {/* ── Sorting & Categorizing ── */}
             <div style={{ marginBottom: "3.5rem" }}>
-              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
+              <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
                 <div>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCB, marginBottom: ".6rem", display: "block" }}>02 · Sorting &amp; categorizing</span>
                   <p style={{ fontSize: ".88rem", color: DIM, lineHeight: 1.68 }}>
@@ -679,11 +680,10 @@ export default function RipplPage() {
                   </p>
                 </div>
                 <div style={{ position: "relative", height: "280px", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/rippl/gifs/sorting.gif" alt="Recorded interaction: marking a passage and choosing Categorize to file it under an existing category" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <InlineVideo src="/videos/rippl/flows/sorting.mp4" poster="/videos/rippl/flows/sorting-poster.webp" aria-label="Recorded interaction: marking a passage and choosing Categorize to file it under an existing category" style={{ width: "100%", height: "100%" }} />
                 </div>
-              </div>
-              <div style={{ padding: "1.6rem 1.8rem", border: `1px solid ${LINEW}`, borderRadius: "12px", background: BASE2, overflowX: "auto" }}>
+              </Reveal>
+              <Reveal style={{ padding: "1.6rem 1.8rem", border: `1px solid ${LINEW}`, borderRadius: "12px", background: BASE2, overflowX: "auto" }}>
                 <FlowFork
                   trunk={{ label: "Marks\ncontent" }}
                   branches={[
@@ -695,15 +695,14 @@ export default function RipplPage() {
                     ],
                   ]}
                 />
-              </div>
+              </Reveal>
             </div>
 
             {/* ── Navigating history ── */}
             <div>
-              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
+              <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center", marginBottom: "1.6rem" }}>
                 <div style={{ position: "relative", height: "280px", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/rippl/gifs/history.gif" alt="Recorded interaction: opening history and navigating previously marked, saved, and flash-carded content" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                  <InlineVideo src="/videos/rippl/flows/history.mp4" poster="/videos/rippl/flows/history-poster.webp" aria-label="Recorded interaction: opening history and navigating previously marked, saved, and flash-carded content" style={{ width: "100%", height: "100%" }} />
                 </div>
                 <div>
                   <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCB, marginBottom: ".6rem", display: "block" }}>03 · Navigating history</span>
@@ -711,8 +710,8 @@ export default function RipplPage() {
                     Three ways back into past work, previously marked passages, saved content, or flash cards, all converging on the same view, edit, or find actions. The reader never has to remember which bucket something landed in.
                   </p>
                 </div>
-              </div>
-              <div style={{ padding: "1.6rem 1.8rem", border: `1px solid ${LINEW}`, borderRadius: "12px", background: BASE2, overflowX: "auto" }}>
+              </Reveal>
+              <Reveal style={{ padding: "1.6rem 1.8rem", border: `1px solid ${LINEW}`, borderRadius: "12px", background: BASE2, overflowX: "auto" }}>
                 <FlowFork
                   trunk={{ label: "Clicks\nhistory" }}
                   branches={[
@@ -721,15 +720,15 @@ export default function RipplPage() {
                     [{ label: "Flash card", kind: "option" }, { label: "View, edit, or find", kind: "option" }],
                   ]}
                 />
-              </div>
+              </Reveal>
             </div>
 
             {/* ── Also mapped: startup, search, settings (no GIF, diagram only) ── */}
             <div style={{ marginTop: "3.5rem", paddingTop: "2.5rem", borderTop: `1px solid ${LINEW}` }}>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginBottom: "1.6rem", display: "block" }}>
+              <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, marginBottom: "1.6rem", display: "block" }}>
                 Also mapped, before being built
-              </span>
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
+              </Reveal>
+              <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
                 <div style={{ padding: "1.3rem 1.5rem", border: `1px solid ${LINEW}`, borderRadius: "10px", overflowX: "auto" }}>
                   <div style={{ fontSize: ".7rem", color: FAINT, marginBottom: ".9rem", fontFamily: "var(--font-mono)", letterSpacing: ".06em" }}>STARTUP</div>
                   <FlowFork
@@ -758,7 +757,7 @@ export default function RipplPage() {
                     ]}
                   />
                 </div>
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -768,15 +767,15 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / Prototype demonstrations</span>
-            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.08, color: PAPER, marginBottom: ".8rem" }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / Prototype demonstrations</Reveal>
+            <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.08, color: PAPER, marginBottom: ".8rem" }}>
               Four demonstrations.<br /><em style={{ fontStyle: "italic", color: ACC }}>Four stages of learning.</em>
-            </h2>
-            <p style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "48ch", marginBottom: "2.5rem" }}>
+            </Reveal>
+            <Reveal as="p" delay={0.2} style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "48ch", marginBottom: "2.5rem" }}>
               Each prototype was built to test a specific hypothesis. They were run publicly, not in a lab, to capture unscripted reactions from real readers.
-            </p>
+            </Reveal>
 
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
               {[
                 {
                   num: "01",
@@ -784,6 +783,7 @@ export default function RipplPage() {
                   desc: "A physical book with a taped marker triggers a projected video walkthrough of the highlighted concept. Tests whether projected video assistance deepens comprehension versus text alone.",
                   tag: "Video assistance · OCR trigger",
                   src: "/videos/rippl/video-assistance.mp4",
+                  poster: "/videos/rippl/video-assistance-poster.webp",
                   freezeAt: 6,
                 },
                 {
@@ -791,7 +791,8 @@ export default function RipplPage() {
                   title: "Projector Camera Swivel",
                   desc: "Visualisation of the mechanical head: how the projector-camera unit rotates to follow the marked region across different page positions. The swivel eliminates the need to reposition the device.",
                   tag: "Hardware · Mechanism study",
-                  src: "/videos/rippl/projector-camera.mov",
+                  src: "/videos/rippl/projector-camera.mp4",
+                  poster: "/videos/rippl/projector-camera-poster.webp",
                   freezeAt: 0.1,
                 },
                 {
@@ -800,6 +801,7 @@ export default function RipplPage() {
                   desc: "A Python handwriting model trained on margin annotations. The reader writes a note in their own hand; Rippl reads it, identifies related content, and surfaces connections to other pages.",
                   tag: "Python · Custom model · Handwriting",
                   src: "/videos/rippl/handwriting.mp4",
+                  poster: "/videos/rippl/handwriting-poster.webp",
                   freezeAt: 18,
                 },
                 {
@@ -808,13 +810,14 @@ export default function RipplPage() {
                   desc: "Core OCR pipeline operating in real time: the camera reads the highlighted passage, passes it to the recognition engine, and projects contextual information beside the page within two seconds.",
                   tag: "OCR · Real-time · Live demo",
                   src: "/videos/rippl/text-recognition.mp4",
+                  poster: "/videos/rippl/text-recognition-poster.webp",
                   freezeAt: 12,
                 },
-              ].map(({ num, title, desc, tag, src, freezeAt }) => (
-                <div key={num} style={{ border: `1px solid ${LINEW}`, borderRadius: "14px", overflow: "hidden" }}>
+              ].map(({ num, title, desc, tag, src, poster, freezeAt }) => (
+                <div key={num} style={{ height: "100%", border: `1px solid ${LINEW}`, borderRadius: "14px", overflow: "hidden" }}>
                   {/* Video */}
                   <div style={{ borderBottom: `1px solid ${LINEW}` }}>
-                    <RipplVideoCard src={src} num={num} accent={ACC} freezeAt={freezeAt} />
+                    <RipplVideoCard src={src} num={num} accent={ACC} freezeAt={freezeAt} poster={poster} />
                   </div>
                   <div style={{ padding: "1.4rem 1.4rem 1.6rem" }}>
                     <div style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: ".9rem", color: PAPER, marginBottom: ".5rem" }}>{title}</div>
@@ -823,7 +826,7 @@ export default function RipplPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -832,9 +835,9 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / Design process</span>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / Design process</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
-              <div>
+              <Reveal stagger>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.1, color: PAPER, marginBottom: "1.4rem" }}>
                   From daily objects to a{" "}<em style={{ fontStyle: "italic", color: ACC }}>new form factor.</em>
                 </h2>
@@ -852,10 +855,10 @@ export default function RipplPage() {
                     </div>
                   ))}
                 </div>
-              </div>
-              <div style={{ position: "relative", height: "400px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
+              </Reveal>
+              <Reveal style={{ position: "relative", height: "400px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINEW}` }}>
                 <Image src="/images/rippl/design-process.png" alt="Rippl design process, ideation sketches, form studies, and component selection" fill style={{ objectFit: "contain", background: BASE, padding: "1.5rem" }} />
-              </div>
+              </Reveal>
             </div>
           </div>
         </section>
@@ -865,29 +868,29 @@ export default function RipplPage() {
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2rem" }}>Built around the reader</span>
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}`, marginBottom: "0" }}>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2rem" }}>Built around the reader</Reveal>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}`, marginBottom: "0" }}>
               {[
                 { num: "01", h: "Clear projection", b: "Sharp, legible information exactly where it is useful: beside the text you just marked, not on a separate screen competing for attention." },
                 { num: "02", h: "Automatic recognition", b: "Text capture that turns a familiar mark into a doorway. You highlight. Rippl does the rest. No buttons, no modes, no app to open." },
                 { num: "03", h: "Quiet compatibility", b: "A layer that works with books and notes instead of competing with them. It enhances the reading ritual; it does not replace it." },
               ].map(({ num, h, b }) => (
-                <div key={num} style={{ padding: "2.2rem 1.8rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
+                <div key={num} style={{ height: "100%", padding: "2.2rem 1.8rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
                   <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "2rem", color: ACC, display: "block", lineHeight: 1, marginBottom: ".8rem" }}>{num}</span>
                   <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: "1rem", color: PAPER, letterSpacing: "-.01em", marginBottom: ".6rem" }}>{h}</h3>
                   <p style={{ fontSize: ".875rem", color: DIM, lineHeight: 1.7 }}>{b}</p>
                 </div>
               ))}
-            </div>
+            </Reveal>
             {/* Stats strip */}
-            <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", borderLeft: `1px solid ${LINEW}` }}>
+            <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", borderLeft: `1px solid ${LINEW}` }}>
               {[["12 weeks","Project duration"],["3","Working prototypes"]].map(([val, label]) => (
-                <div key={label} style={{ padding: "1.8rem 1.6rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
+                <div key={label} style={{ height: "100%", padding: "1.8rem 1.6rem", borderRight: `1px solid ${LINEW}`, borderBottom: `1px solid ${LINEW}` }}>
                   <div style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "2.4rem", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".4rem" }}>{val}</div>
                   <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT }}>{label}</div>
                 </div>
               ))}
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -895,7 +898,7 @@ export default function RipplPage() {
             14 · REFLECTION
         ═══════════════════════════════════════════ */}
         <section style={{ padding: "8rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}`, textAlign: "center" }}>
-          <div style={{ maxWidth: "680px", margin: "0 auto" }}>
+          <Reveal stagger style={{ maxWidth: "680px", margin: "0 auto" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".22em", textTransform: "uppercase", color: ACC, display: "block", marginBottom: "1.5rem", opacity: 0.8 }}>Reflection</span>
             <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.6rem, 3.8vw, 3rem)", lineHeight: 1.15, letterSpacing: "-.01em", color: PAPER, marginBottom: "2rem" }}>
               Learning becomes meaningful when it crosses the distance from{" "}
@@ -908,13 +911,13 @@ export default function RipplPage() {
             <p style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".18em", textTransform: "uppercase", color: FAINT }}>
               Aravind J · NID Gandhinagar · 2023
             </p>
-          </div>
+          </Reveal>
         </section>
 
         {/* ═══════════════════════════════════════════
             15 · CTA
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "5rem var(--pad) 6rem", borderTop: `1px solid ${LINEW}`, display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+        <Reveal as="section" stagger style={{ padding: "5rem var(--pad) 6rem", borderTop: `1px solid ${LINEW}`, display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
           <Link href="/work/trmeric" style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".18em", textTransform: "uppercase", color: BASE, background: ACC, borderRadius: "4px", padding: ".85rem 1.8rem", display: "inline-block" }}>
             Next: Trmeric →
           </Link>
@@ -924,7 +927,7 @@ export default function RipplPage() {
           <Link href="/work" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, borderRadius: "4px", padding: ".85rem 1.4rem", display: "inline-block" }}>
             ← All work
           </Link>
-        </section>
+        </Reveal>
 
       </main>
       <Footer />

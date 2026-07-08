@@ -7,12 +7,16 @@ const DEFAULT_LANG = 'en';
 
 // Detect browser language
 function getBrowserLanguage() {
+  // Must mirror SUPPORTED_LANGUAGES in src/lib/i18n.ts — only these
+  // /messages/{lang}.json files exist.
+  const supported = ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ar', 'pt'];
+
+  // Stored values are validated too: a code stored before a language was
+  // removed would otherwise 404 and silently skip translation forever.
   const stored = localStorage.getItem('__realm_lang');
-  if (stored) return stored;
+  if (stored && supported.includes(stored)) return stored;
 
   const lang = navigator.language.toLowerCase().split('-')[0];
-  const supported = ['es', 'fr', 'de', 'zh', 'ja', 'ar', 'pt', 'ru', 'hi', 'ko', 'it', 'id', 'nl', 'tr', 'en'];
-
   return supported.includes(lang) ? lang : DEFAULT_LANG;
 }
 

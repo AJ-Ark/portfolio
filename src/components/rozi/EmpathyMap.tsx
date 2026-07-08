@@ -1,3 +1,6 @@
+"use client";
+
+import { useInView } from "@/hooks/useInView";
 import type { RoziPalette } from "@/components/rozi/palette";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -52,10 +55,14 @@ const QUADRANTS: Quadrant[] = [
 
 export default function EmpathyMap({ p }: { p: RoziPalette }) {
   const dashed = `1px dashed ${p.FAINT}`;
+  /* threshold 0 + bottom rootMargin: fires as the block meaningfully
+     enters, independent of its height (it can exceed one viewport). */
+  const { ref, inView } = useInView({ threshold: 0, rootMargin: "0px 0px -10% 0px" });
 
   return (
     <div
-      className="rozi-empathy"
+      ref={ref}
+      className={`rozi-empathy${inView ? " is-inview" : ""}`}
       style={{
         position: "relative",
         borderRadius: 20,
@@ -72,13 +79,18 @@ export default function EmpathyMap({ p }: { p: RoziPalette }) {
           gap: clamp(.85rem, 2.4vw, 1.35rem);
           position: relative;
         }
-        .rozi-empathy .rozi-empathy-quad {
+        /* Entrance choreography is gated on .is-inview (useInView) so it
+           plays when the map scrolls into the viewport, not at mount.
+           The resting (pre-JS / no-JS) state stays fully visible. */
+        .rozi-empathy.is-inview .rozi-empathy-quad {
           animation: roziEmpathyRise .5s cubic-bezier(.22,.61,.36,1) both;
         }
-        .rozi-empathy .rozi-empathy-quad:nth-child(2) { animation-delay: .06s; }
-        .rozi-empathy .rozi-empathy-quad:nth-child(3) { animation-delay: .12s; }
-        .rozi-empathy .rozi-empathy-quad:nth-child(4) { animation-delay: .18s; }
-        .rozi-empathy .rozi-empathy-badge { animation: roziEmpathyPop .55s cubic-bezier(.34,1.56,.64,1) both; }
+        /* The two cross-hair axes are spans, so the quads are the grid's
+           1st–4th divs: stagger by div order, not raw child index. */
+        .rozi-empathy.is-inview div.rozi-empathy-quad:nth-of-type(2) { animation-delay: .06s; }
+        .rozi-empathy.is-inview div.rozi-empathy-quad:nth-of-type(3) { animation-delay: .12s; }
+        .rozi-empathy.is-inview div.rozi-empathy-quad:nth-of-type(4) { animation-delay: .18s; }
+        .rozi-empathy.is-inview .rozi-empathy-badge { animation: roziEmpathyPop .55s cubic-bezier(.34,1.56,.64,1) both; }
         @keyframes roziEmpathyRise {
           from { opacity: 0; transform: translateY(10px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -99,9 +111,11 @@ export default function EmpathyMap({ p }: { p: RoziPalette }) {
           .rozi-empathy .rozi-empathy-badge-wrap { display: none; }
           .rozi-empathy .rozi-empathy-badge-top { display: flex; }
         }
+        /* Reduced motion: no entrance choreography, content simply
+           visible (the resting state is already fully opaque). */
         @media (prefers-reduced-motion: reduce) {
-          .rozi-empathy .rozi-empathy-quad,
-          .rozi-empathy .rozi-empathy-badge { animation: none; }
+          .rozi-empathy.is-inview .rozi-empathy-quad,
+          .rozi-empathy.is-inview .rozi-empathy-badge { animation: none; }
         }
       `}</style>
 

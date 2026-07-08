@@ -1,3 +1,6 @@
+"use client";
+
+import { useInView } from "@/hooks/useInView";
 import type { RoziPalette } from "@/components/rozi/palette";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -44,6 +47,10 @@ const STEPS: Step[] = [
 ];
 
 export default function UserFlow({ p }: { p: RoziPalette }) {
+  /* threshold 0 + bottom rootMargin: fires as the block meaningfully
+     enters, independent of its height (it can exceed one viewport). */
+  const { ref, inView } = useInView({ threshold: 0, rootMargin: "0px 0px -10% 0px" });
+
   // Dark warm ink for text on GOLD nodes. Gold is a mid/light fill in BOTH
   // themes, so the ink must stay dark regardless of theme — hence it is NOT
   // switched on p.dark. Derived from the brand gold (mixed toward black) so it
@@ -148,7 +155,8 @@ export default function UserFlow({ p }: { p: RoziPalette }) {
 
   return (
     <div
-      className="rzuf"
+      ref={ref}
+      className={`rzuf${inView ? " is-inview" : ""}`}
       style={{
         background: p.GND3,
         border: "1px solid " + p.LINE,
@@ -180,8 +188,11 @@ export default function UserFlow({ p }: { p: RoziPalette }) {
           padding: .55rem 0;
         }
         .rzuf-vline { width: 1.5px; height: 1.35rem; }
-        .rzuf-node { animation: rzuf-rise .5s cubic-bezier(.2,.7,.3,1) both; }
-        .rzuf-branch { animation: rzuf-rise .5s cubic-bezier(.2,.7,.3,1) both; }
+        /* Entrance choreography is gated on .is-inview (useInView) so it
+           plays when the flow scrolls into the viewport, not at mount.
+           The resting (pre-JS / no-JS) state stays fully visible. */
+        .rzuf.is-inview .rzuf-node { animation: rzuf-rise .5s cubic-bezier(.2,.7,.3,1) both; }
+        .rzuf.is-inview .rzuf-branch { animation: rzuf-rise .5s cubic-bezier(.2,.7,.3,1) both; }
 
         @keyframes rzuf-rise {
           from { opacity: 0; transform: translateY(8px); }
@@ -216,8 +227,10 @@ export default function UserFlow({ p }: { p: RoziPalette }) {
           border-left: 1.5px solid ${p.LINEW};
         }
 
+        /* Reduced motion: nodes appear instantly, fully visible. */
         @media (prefers-reduced-motion: reduce) {
-          .rzuf-node, .rzuf-branch { animation: none; }
+          .rzuf.is-inview .rzuf-node,
+          .rzuf.is-inview .rzuf-branch { animation: none; }
         }
       `}</style>
 

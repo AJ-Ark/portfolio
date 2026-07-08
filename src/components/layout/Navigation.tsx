@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 import { useTranslation } from "@/lib/TranslationContext";
+import { EASE_OUT as EASE } from "@/lib/motion";
 
 const navLinkKeys = [
   { href: "/work", key: "nav.work" },
@@ -13,14 +15,78 @@ const navLinkKeys = [
 export default function Navigation() {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  /* Route change closes the menu */
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  /* While open: Escape closes (focus returns to the toggle), and Tab is
+     trapped inside the toggle + menu links loop. */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        toggleRef.current?.focus();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      const panel = menuRef.current;
+      if (!panel) return;
+      const focusables = [
+        toggleRef.current,
+        ...Array.from(panel.querySelectorAll<HTMLElement>("a[href]")),
+      ].filter((el): el is HTMLElement => el != null);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
+  /* Move focus into the menu once it opens */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const raf = requestAnimationFrame(() => {
+      menuRef.current
+        ?.querySelector<HTMLElement>("a[href]")
+        ?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [menuOpen]);
+
+  const itemVariants: Variants = {
+    closed: {
+      opacity: 0,
+      y: reduceMotion ? 0 : 14,
+      transition: { duration: reduceMotion ? 0.01 : 0.2, ease: "easeIn" },
+    },
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: reduceMotion ? 0.01 : 0.5, ease: EASE },
+    },
+  };
 
   return (
     <header
@@ -65,15 +131,12 @@ export default function Navigation() {
             <Link
               key={link.href}
               href={link.href}
+              className="nav-link"
               style={{
                 fontFamily: "var(--font-mono)",
                 fontSize: ".68rem",
                 letterSpacing: ".16em",
                 textTransform: "uppercase",
-                color: pathname.startsWith(link.href)
-                  ? "var(--color-paper)"
-                  : "var(--color-graphite-light)",
-                transition: "color .2s ease",
               }}
               aria-current={pathname.startsWith(link.href) ? "page" : undefined}
             >
@@ -82,27 +145,26 @@ export default function Navigation() {
           ))}
           <a
             href="mailto:aravindspav@gmail.com"
+            className="cta-link"
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: ".65rem",
               letterSpacing: ".14em",
               textTransform: "uppercase",
-              color: "var(--color-accent)",
-              border: "1px solid var(--line)",
-              borderRadius: "4px",
               padding: ".4rem .9rem",
-              transition: "border-color .2s ease, color .2s ease",
             }}
           >
-            {t("nav.sayHello")} →
+            <span>{t("nav.sayHello")}</span> <span aria-hidden="true">→</span>
           </a>
         </nav>
 
         <button
+          ref={toggleRef}
           className="md:hidden"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: ".65rem",
@@ -112,51 +174,141 @@ export default function Navigation() {
             background: "none",
             border: "none",
             cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: ".55rem",
           }}
         >
-          {menuOpen ? "✕ CLOSE" : "≡ MENU"}
+          {/* Glyph — two hairlines that morph ≡ → ✕ */}
+          <span
+            aria-hidden="true"
+            style={{ display: "inline-flex", flexDirection: "column", gap: 5, width: 16 }}
+          >
+            <motion.span
+              animate={menuOpen ? { rotate: 45, y: 3.25 } : { rotate: 0, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.35, ease: EASE }}
+              style={{
+                display: "block",
+                height: 1.5,
+                width: "100%",
+                background: "currentColor",
+                borderRadius: 1,
+              }}
+            />
+            <motion.span
+              animate={menuOpen ? { rotate: -45, y: -3.25 } : { rotate: 0, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.35, ease: EASE }}
+              style={{
+                display: "block",
+                height: 1.5,
+                width: "100%",
+                background: "currentColor",
+                borderRadius: 1,
+              }}
+            />
+          </span>
+          {menuOpen ? "Close" : "Menu"}
         </button>
       </div>
 
-      {menuOpen && (
-        <div
-          className="md:hidden flex flex-col gap-6"
-          style={{
-            padding: "2rem var(--spacing-page) 2.5rem",
-            borderTop: "1px solid var(--line)",
-            background: "var(--color-ground)",
-          }}
-        >
-          {navLinkKeys.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            {/* Backdrop — dims the page behind the panel; click closes.
+                z:-1 keeps it under the header bar within its stacking
+                context while still covering the page content. */}
+            <motion.div
+              key="backdrop"
+              className="md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reduceMotion ? 0.01 : 0.35, ease: "easeOut" }}
               onClick={() => setMenuOpen(false)}
               style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontSize: "1.5rem",
-                fontWeight: 400,
-                color: "var(--color-paper)",
+                position: "fixed",
+                inset: 0,
+                zIndex: -1,
+                background: "color-mix(in srgb, var(--color-ground) 72%, transparent)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
+              }}
+            />
+
+            <motion.div
+              key="menu"
+              id="mobile-menu"
+              ref={menuRef}
+              className="md:hidden"
+              initial={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              animate={reduceMotion ? { opacity: 1 } : { opacity: 1, height: "auto" }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              transition={{ duration: reduceMotion ? 0.01 : 0.5, ease: EASE }}
+              style={{
+                overflow: "hidden",
+                borderTop: "1px solid var(--line)",
+                background: "var(--color-ground)",
               }}
             >
-              {t(link.key)}
-            </Link>
-          ))}
-          <a
-            href="mailto:aravindspav@gmail.com"
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: ".68rem",
-              letterSpacing: ".16em",
-              textTransform: "uppercase",
-              color: "var(--color-accent)",
-            }}
-          >
-            aravindspav@gmail.com →
-          </a>
-        </div>
-      )}
+              <motion.div
+                className="flex flex-col gap-6"
+                style={{ padding: "2rem var(--spacing-page) 2.5rem" }}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                variants={{
+                  open: {
+                    transition: {
+                      staggerChildren: reduceMotion ? 0 : 0.06,
+                      delayChildren: reduceMotion ? 0 : 0.08,
+                    },
+                  },
+                  closed: {},
+                }}
+              >
+                {navLinkKeys.map((link) => {
+                  const isCurrent = pathname.startsWith(link.href);
+                  return (
+                    <motion.div key={link.href} variants={itemVariants}>
+                      <Link
+                        href={link.href}
+                        onClick={() => setMenuOpen(false)}
+                        aria-current={isCurrent ? "page" : undefined}
+                        style={{
+                          fontFamily: "var(--font-display)",
+                          fontStyle: "italic",
+                          fontSize: "1.5rem",
+                          fontWeight: 400,
+                          /* Current page reads accent — mirrors the desktop
+                             .nav-link aria-current underline state */
+                          color: isCurrent
+                            ? "var(--color-accent)"
+                            : "var(--color-paper)",
+                        }}
+                      >
+                        {t(link.key)}
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+                <motion.a
+                  variants={itemVariants}
+                  href="mailto:aravindspav@gmail.com"
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: ".68rem",
+                    letterSpacing: ".16em",
+                    textTransform: "uppercase",
+                    color: "var(--color-accent)",
+                  }}
+                >
+                  aravindspav@gmail.com →
+                </motion.a>
+              </motion.div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

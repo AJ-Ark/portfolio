@@ -1,8 +1,10 @@
 "use client";
 
 import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
+import { useTranslation } from "@/lib/TranslationContext";
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer
       style={{
@@ -31,8 +33,8 @@ export default function Footer() {
           }}
           className="hidden md:block"
         >
-          <div>PORTFOLIO · 2026</div>
-          <div>REV 01 · NTS</div>
+          <div>{t("footer.portfolio")}</div>
+          <div>{t("footer.revision")}</div>
         </div>
 
         <div className="flex items-center gap-6">
@@ -47,7 +49,7 @@ export default function Footer() {
               color: "var(--color-graphite-light)",
             }}
           >
-            Email
+            {t("footer.email")}
           </a>
           <a
             href="https://www.linkedin.com/in/aravind-j-5a6b8b136/"
@@ -62,7 +64,7 @@ export default function Footer() {
               color: "var(--color-graphite-light)",
             }}
           >
-            LinkedIn
+            {t("footer.linkedin")}
           </a>
           <a
             href="/Aravind-J-Resume.pdf"
@@ -77,7 +79,7 @@ export default function Footer() {
               color: "var(--color-graphite-light)",
             }}
           >
-            Résumé
+            {t("footer.resume")}
           </a>
           <span
             style={{
@@ -88,7 +90,7 @@ export default function Footer() {
               opacity: .35,
             }}
           >
-            © 2026
+            {t("footer.copyright")}
           </span>
           <LanguageSwitcher />
         </div>

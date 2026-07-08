@@ -12,13 +12,6 @@ export const SUPPORTED_LANGUAGES = {
   ja: "日本語",
   ar: "العربية",
   pt: "Português",
-  ru: "Русский",
-  hi: "हिन्दी",
-  ko: "한국어",
-  it: "Italiano",
-  id: "Bahasa Indonesia",
-  nl: "Nederlands",
-  tr: "Türkçe",
 } as const;
 
 export type LanguageCode = keyof typeof SUPPORTED_LANGUAGES;
@@ -53,7 +46,7 @@ export function setLanguage(lang: LanguageCode) {
 }
 
 /* Load translation file for a language */
-let translationCache: Partial<Record<LanguageCode, Record<string, string>>> = {};
+const translationCache: Partial<Record<LanguageCode, Record<string, string>>> = {};
 
 export async function loadTranslations(
   lang: LanguageCode
@@ -66,14 +59,16 @@ export async function loadTranslations(
     const response = await fetch(`/messages/${lang}.json`);
     if (!response.ok) {
       console.warn(`Translation file for ${lang} not found, using English`);
-      return await loadTranslations("en");
+      // Base case: if English itself is unavailable, return {} — t() falls
+      // back to the bundled en.json, and recursing here would loop forever.
+      return lang === "en" ? {} : await loadTranslations("en");
     }
     const messages = await response.json();
     translationCache[lang] = messages;
     return messages;
   } catch (error) {
     console.error(`Failed to load translations for ${lang}:`, error);
-    return await loadTranslations("en");
+    return lang === "en" ? {} : await loadTranslations("en");
   }
 }
 

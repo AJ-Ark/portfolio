@@ -1,3 +1,6 @@
+"use client";
+
+import { useInView } from "@/hooks/useInView";
 import type { RoziPalette } from "@/components/rozi/palette";
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -27,6 +30,9 @@ const COMPETITORS: readonly Competitor[] = [
 ];
 
 export default function MarketStudy({ p }: { p: RoziPalette }) {
+  /* threshold 0 + bottom rootMargin: fires as the block meaningfully
+     enters, independent of its height (it can exceed one viewport). */
+  const { ref, inView } = useInView({ threshold: 0, rootMargin: "0px 0px -10% 0px" });
   const goldTint = "color-mix(in srgb, var(--color-gold, #E0920A) 14%, transparent)";
   const maroonTint = "color-mix(in srgb, var(--color-maroon, #C94030) 13%, transparent)";
 
@@ -39,22 +45,26 @@ export default function MarketStudy({ p }: { p: RoziPalette }) {
   };
 
   return (
-    <div>
+    <div ref={ref} className={`marketstudy${inView ? " is-inview" : ""}`}>
       <style>{`
         @keyframes marketstudy-rise {
           from { opacity: 0; transform: translateY(8px); }
           to   { opacity: 1; transform: translateY(0); }
         }
-        .marketstudy-row {
+        /* Entrance choreography is gated on .is-inview (useInView) so it
+           plays when the rows scroll into the viewport, not at mount.
+           The resting (pre-JS / no-JS) state stays fully visible. */
+        .marketstudy.is-inview .marketstudy-row {
           animation: marketstudy-rise .5s cubic-bezier(.22,.61,.36,1) both;
         }
-        .marketstudy-row:nth-child(1) { animation-delay: .04s; }
-        .marketstudy-row:nth-child(2) { animation-delay: .10s; }
-        .marketstudy-row:nth-child(3) { animation-delay: .16s; }
-        .marketstudy-row:nth-child(4) { animation-delay: .22s; }
-        .marketstudy-row:nth-child(5) { animation-delay: .28s; }
+        .marketstudy.is-inview .marketstudy-row:nth-child(1) { animation-delay: .04s; }
+        .marketstudy.is-inview .marketstudy-row:nth-child(2) { animation-delay: .10s; }
+        .marketstudy.is-inview .marketstudy-row:nth-child(3) { animation-delay: .16s; }
+        .marketstudy.is-inview .marketstudy-row:nth-child(4) { animation-delay: .22s; }
+        .marketstudy.is-inview .marketstudy-row:nth-child(5) { animation-delay: .28s; }
+        /* Reduced motion: rows appear instantly, fully visible. */
         @media (prefers-reduced-motion: reduce) {
-          .marketstudy-row { animation: none; }
+          .marketstudy.is-inview .marketstudy-row { animation: none; }
         }
       `}</style>
 
