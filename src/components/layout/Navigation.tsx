@@ -160,7 +160,11 @@ export default function Navigation() {
 
         <button
           ref={toggleRef}
-          className="md:hidden"
+          /* flex on mobile, hidden from md up. The flex/align live in classes,
+             NOT inline style — an inline `display:flex` would beat md:hidden's
+             `display:none` and leave this button visible (but inert, since the
+             panel below is correctly md:hidden) on desktop. */
+          className="md:hidden flex items-center"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
@@ -174,8 +178,6 @@ export default function Navigation() {
             background: "none",
             border: "none",
             cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
             gap: ".55rem",
           }}
         >
