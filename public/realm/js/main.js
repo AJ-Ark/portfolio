@@ -451,7 +451,9 @@ if(gsap && ScrollTrigger && !reduceMotion){
       // no-JS / failed-GSAP visitor never gets blank stages.
       pin.classList.add("is-scrub");
 
-      const N = window.innerWidth < 760 ? 380 : 680;
+      // Dense enough that the egg/caterpillar/chrysalis/butterfly read as
+      // legible silhouettes, not a faint scatter (was 380/680 — too sparse).
+      const N = window.innerWidth < 760 ? 1100 : 2400;
       const hash = (i, s) => { const x = Math.sin(i*127.1 + s*311.7)*43758.5453; return x - Math.floor(x); };
 
       function buildShape(kind){
@@ -501,10 +503,14 @@ if(gsap && ScrollTrigger && !reduceMotion){
       const mGeo = new THREE.BufferGeometry();
       mGeo.setAttribute("position", new THREE.BufferAttribute(positions,3));
       const mMat = new THREE.PointsMaterial({
-        size:0.5, map:dotTex, transparent:true, depthWrite:false,
+        size:0.55, map:dotTex, transparent:true, depthWrite:false,
         blending:THREE.AdditiveBlending, color:0xf1d8a3, sizeAttenuation:true, opacity:0
       });
       const morphPoints = new THREE.Points(mGeo, mMat);
+      // Scale the figure up a touch so the silhouette extends beyond the
+      // centered heading and reads as a distinct shape rather than a blur
+      // hidden behind the text.
+      morphPoints.scale.setScalar(1.25);
       scene.add(morphPoints);
       lifecycleMat = mMat;
 
@@ -542,8 +548,8 @@ if(gsap && ScrollTrigger && !reduceMotion){
         pin: true,
         scrub: 0.5,
         onUpdate(self){ setProgress(self.progress); },
-        onEnter(){ gsap.to(mMat, {opacity:0.85, duration:.6, overwrite:true}); },
-        onEnterBack(){ gsap.to(mMat, {opacity:0.85, duration:.6, overwrite:true}); },
+        onEnter(){ gsap.to(mMat, {opacity:0.95, duration:.6, overwrite:true}); },
+        onEnterBack(){ gsap.to(mMat, {opacity:0.95, duration:.6, overwrite:true}); },
         onLeave(){ gsap.to(mMat, {opacity:0, duration:.6, overwrite:true}); },
         onLeaveBack(){ gsap.to(mMat, {opacity:0, duration:.6, overwrite:true}); }
       });
@@ -628,7 +634,7 @@ if(gsap && ScrollTrigger && !reduceMotion){
   function ambient(t, dt, damp, driftEase){
     // while the metamorphosis pin is scrubbing, ease the ambient field back
     // so its own particles read clearly — same material, one shared spotlight
-    const dim = lifecycleMat ? lifecycleMat.opacity/0.85 : 0;   // 0..1
+    const dim = lifecycleMat ? lifecycleMat.opacity/0.95 : 0;   // 0..1 (0.95 = metamorphosis peak opacity)
 
     butterflies.forEach(s=>{
       const u = s.userData;
