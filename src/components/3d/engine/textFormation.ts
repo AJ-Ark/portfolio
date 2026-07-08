@@ -80,7 +80,10 @@ export async function bakeTextFormation(
   const out = new Float32Array(count * 4);
   try {
     const family = displayFontFamily();
-    const fontStyle = `${opts.italic === false ? "" : "italic "}${opts.weight ?? 600} ${FONT_PX}px ${family}`;
+    // Upright (roman) by default — italic only when explicitly requested. The
+    // wordmark/monogram read as solid initials; italic glyphs sampled into
+    // dust smeared illegibly (design review).
+    const fontStyle = `${opts.italic ? "italic " : ""}${opts.weight ?? 700} ${FONT_PX}px ${family}`;
 
     /* Wait for the real face — fonts.load() also kicks lazy loads. */
     try {
@@ -108,7 +111,7 @@ export async function bakeTextFormation(
     canvas.width = w;
     canvas.height = h;
     /* Canvas size reset clears state — set the font again (scaled). */
-    ctx.font = `${opts.italic === false ? "" : "italic "}${opts.weight ?? 600} ${Math.floor(FONT_PX * scaleDown)}px ${family}`;
+    ctx.font = `${opts.italic ? "italic " : ""}${opts.weight ?? 700} ${Math.floor(FONT_PX * scaleDown)}px ${family}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#fff";

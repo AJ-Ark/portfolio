@@ -3,7 +3,7 @@
 /* ═══════════════════════════════════════════════════════════════════
    THE SETTLING — every page ends with the material at rest.
 
-   The closing band rendered by <Footer>: an oversized Fraunces-italic
+   The closing band rendered by <Footer>: an oversized Fraunces
    "Say hello" mailto, beneath it a quiet mono line with the visitor's
    LOCAL time, and the old 0.5rem "PORTFOLIO · 2026 / REV 01 · NTS"
    drawing-annotation whisper scaled up into a legible title-block
@@ -166,8 +166,8 @@ const SETTLING_CSS = `
 .settling-hello {
   position: relative;
   display: inline-block;
-  font-style: italic;
-  font-weight: 430;
+  font-style: normal;
+  font-weight: 520;
   font-size: clamp(2.9rem, 9vw, 7.25rem);
   line-height: 1.08;
   letter-spacing: -0.02em;

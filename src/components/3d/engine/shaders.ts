@@ -204,9 +204,11 @@ void main() {
     * (1.0 + uExcitement * 0.35 + uDive * 0.6)
     * uPixelScale / max(depth, 0.1);
 
-  /* Brightness by depth — near dust is brighter and warmer. */
+  /* Brightness by depth — near dust is brighter and warmer, but even the
+     far field keeps a strong floor so the whole cloud reads as present
+     (0.6 floor, was 0.35 — the field looked too faint on review). */
   float near = clamp(1.0 - (depth - 2.0) / 16.0, 0.0, 1.0);
-  vAlpha = min(uAlpha * (0.35 + near * 0.75) * (1.0 + uDive * 0.35), 1.0);
+  vAlpha = min(uAlpha * (0.6 + near * 0.55) * (1.0 + uDive * 0.35), 1.0);
   vColor = mix(uColorA, uColorB, clamp(aSeed.y * 0.6 + near * 0.5, 0.0, 1.0));
 }
 `;
@@ -222,7 +224,7 @@ void main() {
   float d2 = dot(c, c);
   if (d2 > 1.0) discard;
   float a = 1.0 - d2;
-  a *= a; /* soft quadratic falloff with a hot core */
+  a = pow(a, 1.5); /* soft falloff with a fuller, brighter core */
   gl_FragColor = vec4(vColor, a * vAlpha);
 }
 `;

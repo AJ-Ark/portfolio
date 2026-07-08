@@ -82,8 +82,8 @@ const FORMATION_OWNER = "loader";
 const SEEN_KEY = "aj_seen";
 
 const HARD_TIMEOUT_MS = 4000; // ceiling for WAITING on readiness — disarmed once it resolves
-const CONDENSE_MS = 1250; // the engine's 1.2s cubic-out morph, fully landed
-const HOLD_MS = 900; // the wordmark holds, legible
+const CONDENSE_MS = 1050; // the engine's morph, mostly landed (shortened on review)
+const HOLD_MS = 400; // the wordmark holds, legible — brief, the entrance shouldn't stall
 const QUIET_VEIL_MS = 600; // non-gpu tiers: a beat of held veil (no condense) instead of an empty stage
 const VEIL_FADE_MS = 600; // veil dissolves while the dust condenses
 const CALM_FADE_MS = 350; // reduced-motion / lift quick fade

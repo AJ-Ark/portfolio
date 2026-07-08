@@ -447,20 +447,22 @@ export default function DustField({
     u.uScrollVel.value = rm ? 0 : Math.max(-1.2, Math.min(1.2, clim.scrollVelocity));
     u.uScatter.value = rm ? 0 : clim.scatter;
 
-    /* Size / alpha — scaled down as count scales up so total coverage
-       and additive brightness stay in the CPU field's register. */
+    /* Size / alpha — still eased down as count rises (so dense additive
+       overlap doesn't clip to white), but with a much gentler exponent and
+       higher base than the CPU field: the dust should read as a present,
+       luminous material, not a faint haze. Tuned brighter on design review. */
     const dpr = state.viewport.dpr;
     u.uPixelScale.value = (state.size.height * dpr) / (2 * tanHalf);
     const mobile = state.size.width < 768;
     const countScale = 5000 / count;
-    u.uSize.value = (mobile ? 0.05 : 0.03) * Math.pow(countScale, 0.4);
+    u.uSize.value = (mobile ? 0.06 : 0.042) * Math.pow(countScale, 0.32);
 
     const darkNow = darkRef.current;
     const alphaBase = darkNow
-      ? 0.65 * Math.pow(countScale, 0.45) /* additive accumulates */
-      : 0.85 * Math.pow(countScale, 0.3);
+      ? 1.0 * Math.pow(countScale, 0.3) /* additive accumulates */
+      : 1.05 * Math.pow(countScale, 0.22);
     u.uAlpha.value =
-      Math.min(0.95, alphaBase + Math.sin(t * 0.35) * 0.06 + dive * 0.25) * (rm ? 0.8 : 1);
+      Math.min(1.0, alphaBase + Math.sin(t * 0.35) * 0.06 + dive * 0.25) * (rm ? 0.85 : 1);
 
     /* Blending per theme: additive glow on dark grounds, normal ink on
        light grounds (additive washes out on cream). State-only change,
