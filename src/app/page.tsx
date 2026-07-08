@@ -2,7 +2,6 @@
 
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
-import CursorGlow from "@/components/ui/CursorGlow";
 import Preloader from "@/components/ui/Preloader";
 import HomeReel from "@/components/ui/HomeReel";
 import Reveal from "@/components/ui/Reveal";
@@ -56,10 +55,11 @@ export default function Home() {
   return (
     <>
       <Preloader />
-      <CursorGlow />
       <Navigation />
 
-      <main id="main-content" style={{ cursor: "none" }}>
+      {/* Native-cursor suppression now lives in globals.css, gated on the
+          global CursorGlow (layout.tsx) being active — no inline override. */}
+      <main id="main-content">
 
         {/* ═══════════════════════════════════════════════
             HERO + DOMAINS — reels-style paginated block

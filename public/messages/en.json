@@ -143,5 +143,15 @@
   "about.site.body": "The architectural section metaphor, moving inward along a Z-axis, is the SPA Vijayawada self: structure, depth, intentional space. The particle ecosystem, organic and living with distinct behaviours per domain, is the NID self: research, ecology, care. The WebGL binding built in real time is the developer self that learned to build ideas the same day he had them.",
   "about.reach": "Reach",
   "about.viewWork": "View work →",
-  "about.portraitAlt": "Portrait of Aravind J"
+  "about.portraitAlt": "Portrait of Aravind J",
+  "loader.wordmark": "ARAVIND J",
+  "loader.loading": "Loading",
+  "settling.hello": "Say hello",
+  "settling.localTime": "Your local time",
+  "cursor.enter": "Enter",
+  "cursor.drag": "Drag",
+  "work.overlook.hint": "Hover or tab across a project — the field takes its shape. Enter dives in.",
+  "next.label": "Next",
+  "next.allWork": "All work",
+  "realm.next.label": "Next project"
 }

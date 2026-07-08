@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import type { CSSProperties } from "react";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import InlineVideo from "@/components/ui/InlineVideo";
 import Reveal from "@/components/ui/Reveal";
+import NextProject from "@/components/ui/NextProject";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { makeRoziPalette, type RoziPalette } from "@/components/rozi/palette";
 import FieldNotes from "@/components/rozi/FieldNotes";
@@ -522,14 +522,12 @@ export default function RoziPage() {
                   <span key={tag} style={{ fontFamily: p.MONO, fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: p.DIM, border: `1px solid ${p.LINE}`, padding: ".4rem .8rem", borderRadius: "100px" }}>{tag}</span>
                 ))}
               </Reveal>
-              <Reveal delay={0.1}>
-                <Link href="/work" style={{ fontFamily: p.MONO, fontSize: ".62rem", letterSpacing: ".2em", textTransform: "uppercase", color: p.ACCT }}>
-                  ← Back to all work
-                </Link>
-              </Reveal>
             </div>
           </div>
         </section>
+
+        {/* ═══ 12 · EPILOGUE — match-cut into Realm of Elementals ═══ */}
+        <NextProject current="rozi" />
 
       </main>
       <Footer />

@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import WordReveal from "@/components/ui/WordReveal";
 import Reveal from "@/components/ui/Reveal";
+import NextProject from "@/components/ui/NextProject";
 import RipplVideoCard from "@/components/ui/RipplVideoCard";
 import InlineVideo from "@/components/ui/InlineVideo";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -915,19 +915,9 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
-            15 · CTA
+            15 · EPILOGUE — match-cut into Trmeric
         ═══════════════════════════════════════════ */}
-        <Reveal as="section" stagger style={{ padding: "5rem var(--pad) 6rem", borderTop: `1px solid ${LINEW}`, display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
-          <Link href="/work/trmeric" style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".18em", textTransform: "uppercase", color: BASE, background: ACC, borderRadius: "4px", padding: ".85rem 1.8rem", display: "inline-block" }}>
-            Next: Trmeric →
-          </Link>
-          <Link href="/work/realm" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, border: `1px solid ${LINEW}`, borderRadius: "4px", padding: ".85rem 1.4rem", display: "inline-block" }}>
-            Realm of Elementals →
-          </Link>
-          <Link href="/work" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT, borderRadius: "4px", padding: ".85rem 1.4rem", display: "inline-block" }}>
-            ← All work
-          </Link>
-        </Reveal>
+        <NextProject current="rippl" />
 
       </main>
       <Footer />

@@ -253,6 +253,32 @@ if(gsap && ScrollTrigger && !reduceMotion){
 })();
 
 /* ============================================================
+   EPILOGUE — "Next project: Rippl" hands the tour back to the
+   portfolio. Same no-hard-cuts grammar: the field scatters, a dark
+   veil settles (CSS in index.html), then the document swaps.
+   ============================================================ */
+(function epilogueDeparture(){
+  const link = document.getElementById("nextProject");
+  if(!link) return;
+  link.addEventListener("click",(e)=>{
+    // new-tab / modified clicks belong to the browser; reduced motion
+    // navigates instantly with no ceremony.
+    if(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    if(reduceMotion) return;
+    e.preventDefault();
+    if(document.body.classList.contains("leaving")) return; // double-click guard
+    const r = link.getBoundingClientRect();
+    if(window.__scatterAt) window.__scatterAt(r.left + r.width/2, r.top + r.height/2);
+    document.body.classList.add("leaving");
+    setTimeout(()=>{ window.location.href = link.href; }, 520);
+  });
+  // bfcache: never resurrect the page behind the departure veil
+  window.addEventListener("pageshow",(e)=>{
+    if(e.persisted) document.body.classList.remove("leaving");
+  });
+})();
+
+/* ============================================================
    THREE.JS HERO — golden pollen field + butterflies
    ============================================================ */
 (function heroScene(){
@@ -444,6 +470,8 @@ if(gsap && ScrollTrigger && !reduceMotion){
       scatter(e.clientX, e.clientY);
     });
   }
+  // the footer epilogue borrows the scatter impulse for its departure moment
+  window.__scatterAt = scatter;
 
   // shared ambient pass: butterflies emerging, core breathing, camera drift.
   // driftEase (0→1) lets the camera ease into its drift after the warp rather

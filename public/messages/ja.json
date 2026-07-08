@@ -143,5 +143,15 @@
   "about.site.body": "Z軸に沿って内へと進む建築断面のメタファーは、SPA Vijayawadaの自分——構造、深さ、意図された空間。ドメインごとに異なるふるまいを持つ、有機的で生きた粒子のエコシステムは、NIDの自分——リサーチ、生態、ケア。リアルタイムに構築されたWebGLの結びつきは、思いついたその日にアイデアをかたちにすることを学んだ開発者の自分。",
   "about.reach": "連絡先",
   "about.viewWork": "作品を見る →",
-  "about.portraitAlt": "Aravind Jのポートレート"
+  "about.portraitAlt": "Aravind Jのポートレート",
+  "loader.wordmark": "ARAVIND J",
+  "loader.loading": "読み込み中",
+  "settling.hello": "ごあいさつを",
+  "settling.localTime": "あなたの現地時間",
+  "cursor.enter": "入る",
+  "cursor.drag": "ドラッグ",
+  "work.overlook.hint": "プロジェクトにホバーまたはTabで移動すると、フィールドがその形に変わります。Enterで飛び込みます。",
+  "next.label": "次へ",
+  "next.allWork": "すべての作品",
+  "realm.next.label": "次のプロジェクト"
 }

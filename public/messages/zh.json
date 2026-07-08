@@ -143,5 +143,15 @@
   "about.site.body": "建筑剖面的隐喻——沿 Z 轴向内推进——是 SPA Vijayawada 的我：结构、纵深、有意图的空间。粒子生态系统——有机、鲜活、每个领域各有习性——是 NID 的我：研究、生态、关怀。实时构建的 WebGL 联结，是那个学会当天想到、当天造出的开发者的我。",
   "about.reach": "联系",
   "about.viewWork": "查看作品 →",
-  "about.portraitAlt": "Aravind J 的肖像"
+  "about.portraitAlt": "Aravind J 的肖像",
+  "loader.wordmark": "ARAVIND J",
+  "loader.loading": "加载中",
+  "settling.hello": "打个招呼",
+  "settling.localTime": "你的当地时间",
+  "cursor.enter": "进入",
+  "cursor.drag": "拖动",
+  "work.overlook.hint": "悬停或用 Tab 选中一个项目，粒子场便会化作它的形态。按 Enter 进入。",
+  "next.label": "接下来",
+  "next.allWork": "所有作品",
+  "realm.next.label": "下一个项目"
 }

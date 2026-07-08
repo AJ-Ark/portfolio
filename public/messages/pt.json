@@ -143,5 +143,15 @@
   "about.site.body": "A metáfora do corte arquitetônico, avançando para dentro ao longo de um eixo Z, é o eu da SPA Vijayawada: estrutura, profundidade, espaço intencional. O ecossistema de partículas, orgânico e vivo, com comportamentos próprios por domínio, é o eu do NID: pesquisa, ecologia, cuidado. O vínculo WebGL construído em tempo real é o eu desenvolvedor que aprendeu a construir ideias no mesmo dia em que as tinha.",
   "about.reach": "Contato",
   "about.viewWork": "Ver trabalhos →",
-  "about.portraitAlt": "Retrato de Aravind J"
+  "about.portraitAlt": "Retrato de Aravind J",
+  "loader.wordmark": "ARAVIND J",
+  "loader.loading": "Carregando",
+  "settling.hello": "Diga olá",
+  "settling.localTime": "Sua hora local",
+  "cursor.enter": "Entrar",
+  "cursor.drag": "Arrastar",
+  "work.overlook.hint": "Passe o cursor ou navegue com Tab por um projeto — o campo assume a sua forma. Enter mergulha.",
+  "next.label": "A seguir",
+  "next.allWork": "Todos os trabalhos",
+  "realm.next.label": "Próximo projeto"
 }

@@ -143,5 +143,15 @@
   "about.site.body": "La métaphore de la coupe architecturale, qui avance vers l'intérieur le long d'un axe Z, c'est le moi de SPA Vijayawada : structure, profondeur, espace intentionnel. L'écosystème de particules, organique et vivant, avec des comportements propres à chaque domaine, c'est le moi du NID : recherche, écologie, soin. La liaison WebGL construite en temps réel, c'est le moi développeur qui a appris à construire ses idées le jour même où il les avait.",
   "about.reach": "Contact",
   "about.viewWork": "Voir les travaux →",
-  "about.portraitAlt": "Portrait d'Aravind J"
+  "about.portraitAlt": "Portrait d'Aravind J",
+  "loader.wordmark": "ARAVIND J",
+  "loader.loading": "Chargement",
+  "settling.hello": "Dites bonjour",
+  "settling.localTime": "Votre heure locale",
+  "cursor.enter": "Entrer",
+  "cursor.drag": "Glisser",
+  "work.overlook.hint": "Survolez un projet ou parcourez-le au clavier : le champ prend sa forme. Entrée pour plonger.",
+  "next.label": "À suivre",
+  "next.allWork": "Tous les projets",
+  "realm.next.label": "Projet suivant"
 }

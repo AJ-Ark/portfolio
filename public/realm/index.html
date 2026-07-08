@@ -612,11 +612,60 @@
   </section>
 
   <!-- ===================== FOOTER ===================== -->
+  <style>
+    /* Epilogue — the tour continues: realm hands over to Rippl.
+       Same grammar as the portfolio's match-cut epilogues, spoken in this
+       site's own language (mono kicker, Fraunces italic, gold hairlines). */
+    .footer__next{
+      margin:3.4rem auto 3rem; padding-top:3rem; max-width:640px;
+      border-top:1px solid rgba(217,180,106,.16);
+    }
+    .footer__next-kicker{
+      display:block;
+      font-family:'JetBrains Mono','Fira Code',monospace;
+      font-size:.62rem; letter-spacing:.24em; text-transform:uppercase;
+      color:rgba(236,230,214,.45); margin-bottom:1rem;
+    }
+    .footer__next-link{
+      display:inline-flex; align-items:baseline; gap:.4em;
+      font-family:'Fraunces',Georgia,serif; font-style:italic; font-weight:400;
+      font-size:clamp(2.2rem,6vw,3.6rem); line-height:1.05; letter-spacing:-.02em;
+      color:rgba(236,230,214,1); text-decoration:none;
+      transition:color .3s ease;
+    }
+    .footer__next-arrow{
+      color:#d9b46a; font-size:.6em;
+      transition:transform .35s cubic-bezier(.22,1,.36,1), color .3s ease;
+    }
+    .footer__next-link:hover, .footer__next-link:focus-visible{ color:#4FA8A0; }
+    .footer__next-link:hover .footer__next-arrow,
+    .footer__next-link:focus-visible .footer__next-arrow{ transform:translateX(.35em); color:#4FA8A0; }
+    /* Departure cover — main.js adds .leaving right before the navigation,
+       so the swap happens under a calm dark veil instead of a hard cut. */
+    body.leaving::after{
+      content:""; position:fixed; inset:0; z-index:2000; background:#060a06;
+      animation:realmLeave .5s ease forwards; pointer-events:none;
+    }
+    @keyframes realmLeave{ from{opacity:0} to{opacity:1} }
+    @media (prefers-reduced-motion: reduce){
+      .footer__next-link, .footer__next-arrow{ transition:none; }
+      body.leaving::after{ animation:none; opacity:1; }
+    }
+  </style>
   <footer class="footer">
     <div class="wrap">
       <svg viewBox="0 0 100 100" class="footer__bf"><use href="#bf-glyph"></use></svg>
       <p class="footer__tag">Where vanishing wings are kept alive.</p>
       <a href="https://realmofelementals.art" target="_blank" rel="noopener" class="footer__enter">Enter the realm →</a>
+
+      <!-- epilogue: continue the portfolio tour → Rippl -->
+      <div class="footer__next">
+        <span class="footer__next-kicker" data-i18n="realm.next.label">Next project</span>
+        <a class="footer__next-link" id="nextProject" href="/work/rippl">
+          <em>Rippl</em><span class="footer__next-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
       <p class="footer__meta">Realm of Elementals · Aravind J · 2026</p>
     </div>
   </footer>

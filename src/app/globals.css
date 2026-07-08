@@ -641,3 +641,140 @@ html[data-warp] footer {
           mask: url(/images/aj-logo.svg) center / contain no-repeat;
   transition: background-color .4s ease;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   THE CURSOR IS ONE PARTICLE  (src/components/ui/CursorGlow.tsx)
+   A 6px dot borrowed from the dust field plus a trailing halo that
+   becomes a hairline ring over links/buttons and an "Enter"/"Drag"
+   lens over [data-cursor] targets.
+
+   The UA cursor is suppressed ONLY while the component is mounted and
+   active — it stamps <html data-custom-cursor="1"> from a client
+   effect. Coarse/touch pointers, reduced-motion users, and no-JS
+   visitors never get that attribute, so their native cursors are left
+   completely alone. Keyboard focus outlines are untouched.
+   ══════════════════════════════════════════════════════════════════ */
+
+@media (pointer: fine) {
+  /* Suppress the native cursor wherever the particle stands in for it.
+     !important is deliberate: many components set cursor:pointer inline,
+     which would otherwise beat this rule and paint a double cursor. */
+  html[data-custom-cursor="1"],
+  html[data-custom-cursor="1"] * {
+    cursor: none !important;
+  }
+  /* …but NEVER suppress the I-beam / native affordances of text entry.
+     Higher specificity than the blanket rule above, so it always wins. */
+  html[data-custom-cursor="1"] input,
+  html[data-custom-cursor="1"] textarea,
+  html[data-custom-cursor="1"] select,
+  html[data-custom-cursor="1"] [contenteditable]:not([contenteditable="false"]) {
+    cursor: auto !important;
+  }
+}
+
+.cg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+}
+.cg-dot,
+.cg-halo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* The particle: the domain accent with a soft glow built from
+   color-mix — reads on BOTH themes (no blend modes; mix-blend-mode:
+   screen vanishes on light grounds). The accent var itself flips with
+   data-theme/data-domain, so the dot is always the field's color. */
+.cg-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-accent);
+  box-shadow:
+    0 0 10px 2px color-mix(in srgb, var(--color-accent) 40%, transparent),
+    0 0 2px  0   color-mix(in srgb, var(--color-accent) 80%, transparent);
+  transition:
+    width  .28s var(--ease),
+    height .28s var(--ease),
+    opacity .28s var(--ease);
+}
+
+/* The lens: invisible at rest; a hairline ring over interactives; a
+   worded ring over [data-cursor="enter"|"drag"] targets. */
+.cg-halo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+  opacity: 0;
+  transition:
+    width  .3s var(--ease),
+    height .3s var(--ease),
+    opacity .3s var(--ease),
+    background-color .3s var(--ease),
+    border-color .3s var(--ease);
+}
+
+.cg-label {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: .52rem;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-accent);
+  opacity: 0;
+  transition: opacity .25s var(--ease) .08s;
+}
+
+/* ── Contextual states — data-mode is written by event delegation in
+      CursorGlow.tsx (no React re-render). ── */
+
+/* Links / buttons / [role=button]: hairline ring around the particle. */
+.cg[data-mode="link"] .cg-halo {
+  opacity: .55;
+}
+
+/* Enter / Drag lens: the ring swells, the particle stays small at its
+   center, the word fades in. A ground-tinted fill keeps the label
+   legible over photography in either theme (no backdrop-filter). */
+.cg[data-mode="enter"] .cg-halo,
+.cg[data-mode="drag"] .cg-halo {
+  width: 64px;
+  height: 64px;
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--color-accent) 70%, transparent);
+  background: color-mix(in srgb, var(--color-ground) 46%, transparent);
+}
+.cg[data-mode="enter"] .cg-dot,
+.cg[data-mode="drag"] .cg-dot {
+  width: 3px;
+  height: 3px;
+}
+.cg[data-mode="enter"] .cg-label--enter { opacity: 1; }
+.cg[data-mode="drag"]  .cg-label--drag  { opacity: 1; }
+
+/* Text entry — the particle steps aside; the restored native I-beam
+   (rules above) is the only cursor. */
+.cg[data-mode="native"] .cg-dot,
+.cg[data-mode="native"] .cg-halo {
+  opacity: 0;
+}
+
+/* Pointer off-window / window blurred — nothing floats in the corner.
+   Last in source so it beats every mode's opacity at equal specificity. */
+.cg[data-hidden] .cg-dot,
+.cg[data-hidden] .cg-halo {
+  opacity: 0;
+}

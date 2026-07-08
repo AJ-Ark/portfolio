@@ -143,5 +143,15 @@
   "about.site.body": "Die Metapher des Architekturschnitts, die sich entlang einer Z-Achse nach innen bewegt, ist das SPA-Vijayawada-Ich: Struktur, Tiefe, bewusster Raum. Das Partikel-Ökosystem, organisch und lebendig, mit eigenem Verhalten je Domäne, ist das NID-Ich: Forschung, Ökologie, Fürsorge. Die in Echtzeit gebaute WebGL-Bindung ist das Entwickler-Ich, das gelernt hat, Ideen noch am selben Tag zu bauen.",
   "about.reach": "Kontakt",
   "about.viewWork": "Arbeiten ansehen →",
-  "about.portraitAlt": "Porträt von Aravind J"
+  "about.portraitAlt": "Porträt von Aravind J",
+  "loader.wordmark": "ARAVIND J",
+  "loader.loading": "Wird geladen",
+  "settling.hello": "Sag Hallo",
+  "settling.localTime": "Deine Ortszeit",
+  "cursor.enter": "Öffnen",
+  "cursor.drag": "Ziehen",
+  "work.overlook.hint": "Mit Zeiger oder Tab über ein Projekt — das Feld nimmt seine Form an. Enter taucht ein.",
+  "next.label": "Als Nächstes",
+  "next.allWork": "Alle Arbeiten",
+  "realm.next.label": "Nächstes Projekt"
 }

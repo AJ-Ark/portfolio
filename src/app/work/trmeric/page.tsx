@@ -7,6 +7,8 @@ import Footer from "@/components/layout/Footer";
 import WordReveal from "@/components/ui/WordReveal";
 import PlotInLines from "@/components/ui/PlotInLines";
 import Reveal from "@/components/ui/Reveal";
+import WarpLink from "@/components/ui/WarpLink";
+import NextProject from "@/components/ui/NextProject";
 import Shot from "@/components/trmeric/Shot";
 import PrototypeFrame, { type TrmColors } from "@/components/trmeric/PrototypeFrame";
 import RagDemo from "@/components/trmeric/RagDemo";
@@ -258,10 +260,13 @@ export default function TrmericPage() {
   };
 
   return (
-    <div style={{ background: BASE, color: INK, minHeight: "100vh" }}>
+    /* Ground paint lives on <main> (like rippl/rozi), NOT this wrapper —
+       html[data-warp] fades header/main/footer during warp dives, so paint
+       outside <main> would hide the dust field for the whole transition. */
+    <div style={{ color: INK, minHeight: "100vh" }}>
       <Navigation />
 
-      <main id="main-content">
+      <main id="main-content" style={{ background: BASE }}>
 
         {/* ═══════════════ 01 · HERO ═══════════════ */}
         <section className="mobile-stack" style={{ minHeight: "88vh", display: "grid", gridTemplateColumns: "55% 45%", alignItems: "center", padding: "8rem var(--pad) 5rem", gap: "3rem" }}>
@@ -680,11 +685,13 @@ export default function TrmericPage() {
           <Reveal as="span" style={s.kicker}>Explore further</Reveal>
           <Reveal as="p" style={{ fontSize: ".9375rem", color: DIM, maxWidth: "38ch", margin: ".6rem auto 2rem", lineHeight: 1.65 }}>Five deep-dive case studies. Twelve live prototypes. One design system. One grown mark.</Reveal>
           <Reveal delay={0.1} style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="/work/trmeric/demand-owner-flow" style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".18em", textTransform: "uppercase", color: BASE, background: ACC, borderRadius: "4px", padding: ".8rem 1.8rem", display: "inline-block" }}>Demand Owner Flow →</Link>
-            <Link href="/work/trmeric/brand" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD, border: `1px solid ${LINA}`, borderRadius: "4px", padding: ".8rem 1.4rem", display: "inline-block" }}>Brand story →</Link>
-            <Link href="/work" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD, border: `1px solid ${LINA}`, borderRadius: "4px", padding: ".8rem 1.4rem", display: "inline-block" }}>← Back to work</Link>
+            <WarpLink href="/work/trmeric/demand-owner-flow" variant="settle" style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".18em", textTransform: "uppercase", color: BASE, background: ACC, borderRadius: "4px", padding: ".8rem 1.8rem", display: "inline-block" }}>Demand Owner Flow →</WarpLink>
+            <WarpLink href="/work/trmeric/brand" variant="settle" style={{ fontFamily: "var(--font-mono)", fontSize: ".65rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD, border: `1px solid ${LINA}`, borderRadius: "4px", padding: ".8rem 1.4rem", display: "inline-block" }}>Brand story →</WarpLink>
           </Reveal>
         </section>
+
+        {/* ═══════════════ 12 · EPILOGUE — match-cut into Rozi ═══════════════ */}
+        <NextProject current="trmeric" />
 
       </main>
       <Footer />

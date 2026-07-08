@@ -4,6 +4,7 @@ import SmoothScroll from "@/components/layout/SmoothScroll";
 import RealmPrefetch from "@/components/layout/RealmPrefetch";
 import { ParticleProvider } from "@/lib/particleContext";
 import WebGLLayer from "@/components/3d/WebGLLayer";
+import CursorGlow from "@/components/ui/CursorGlow";
 import { TranslationProvider } from "@/lib/TranslationContext";
 import { fraunces, generalSans, inter, jetbrainsMono } from "@/lib/fonts";
 
@@ -57,6 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <TranslationProvider>
             {/* Global WebGL canvas + route sync — lazy loaded, text paints first */}
             <WebGLLayer />
+            {/* One particle follows the pointer on every route (fine
+                pointers only; renders nothing on touch/reduced-motion) */}
+            <CursorGlow />
             <SmoothScroll>
               {/* Page content sits above the canvas */}
               <div style={{ position: "relative", zIndex: 1 }}>
