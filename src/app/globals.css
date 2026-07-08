@@ -495,6 +495,12 @@ html[data-theme="dark"][data-domain="rippl"] {
   --line-weak:   rgba(236, 230, 214, .1);
   --logo-light-opacity:   1;
   --logo-dark-opacity:    0;
+  /* Re-assert a light logo: the base [data-domain="rippl"] block forces an
+     ink --logo-color (correct for the LIGHT rippl page), which outranks the
+     bare-html gold default — so without this the mark was ink-on-dark
+     (invisible) in the nav AND the footer/end section on the dark rippl
+     page. Gold matches every other dark ground. */
+  --logo-color: #D9B46A;
   color-scheme: dark;
 }
 
