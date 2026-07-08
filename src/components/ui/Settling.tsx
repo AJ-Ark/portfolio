@@ -3,39 +3,32 @@
 /* ═══════════════════════════════════════════════════════════════════
    THE SETTLING — every page ends with the material at rest.
 
-   The closing band rendered by <Footer>: an oversized Fraunces
-   "Say hello" mailto, beneath it a quiet mono line with the visitor's
-   LOCAL time, and the old 0.5rem "PORTFOLIO · 2026 / REV 01 · NTS"
-   drawing-annotation whisper scaled up into a legible title-block
-   signature.
+   The closing band rendered by <Footer>: the AJ logo as a playful
+   physics object (PlayfulLogo — leans toward the cursor and stirs the
+   dust field on approach), an oversized Fraunces "Say hello" mailto,
+   a quiet mono line with the visitor's LOCAL time, and the old 0.5rem
+   "PORTFOLIO · 2026 / REV 01 · NTS" drawing-annotation whisper scaled
+   up into a legible title-block signature.
 
-   While the band is in view the dust field morphs into the AJ
-   monogram behind the text (requestFormation("monogram", { owner:
-   "settling" })) and control is ALWAYS handed back (release with the
-   SAME owner) when it leaves view or unmounts — the owner keeps this
-   release from ever clobbering a different feature's concurrently-held
-   override (e.g. a hovered work row, or NextProject's own preview
-   pushed above us). On the CPU fallback the engine degrades this to
-   the idle/domain formation by itself — the band needs no special
-   casing.
+   (The dust field no longer forms an "AJ" monogram here — the real
+   logo carries the sign-off instead, and the field stays its ambient
+   route self behind it.)
 
    SSR: the full band ships visible (Reveal never bakes opacity:0);
    only the clock is client-filled — the server renders a placeholder
    and the first client render matches it, so there is no hydration
    mismatch and the band still reads with JS disabled.
 
-   Reduced motion: static band — no formation call, no per-second
-   tick (the clock calms to minute precision), Reveal no-ops.
+   Reduced motion: static band — the logo is a plain masked glyph with
+   no listeners, no per-second tick (the clock calms to minute
+   precision), Reveal no-ops.
    ═══════════════════════════════════════════════════════════════════ */
 
 import { useEffect, useState } from "react";
 import Reveal from "@/components/ui/Reveal";
+import PlayfulLogo from "@/components/ui/PlayfulLogo";
 import { useInView } from "@/hooks/useInView";
-import {
-  prefersReducedMotionNow,
-  usePrefersReducedMotion,
-} from "@/hooks/usePrefersReducedMotion";
-import { useParticle } from "@/lib/particleContext";
+import { prefersReducedMotionNow } from "@/hooks/usePrefersReducedMotion";
 import { useTranslation } from "@/lib/TranslationContext";
 
 /* The address every other call site uses (Navigation, About, Home). */
@@ -50,25 +43,13 @@ interface Clock {
 
 export default function Settling() {
   const { t, language } = useTranslation();
-  const { requestFormation } = useParticle();
-  const reducedMotion = usePrefersReducedMotion();
-  /* once:false — the field must settle when the band arrives AND be
-     released when the visitor scrolls back up. */
+  /* once:false — the clock ticks (and the logo reacts) only while the
+     band is actually on screen. */
   const { ref, inView } = useInView<HTMLDivElement>({
     once: false,
     threshold: 0.25,
   });
   const [clock, setClock] = useState<Clock | null>(null);
-
-  /* THE SETTLING — morph the field into the AJ monogram while the
-     band is on screen; hand control back on exit/unmount. Reduced
-     motion never touches the engine (designed calm path = the static
-     band below). */
-  useEffect(() => {
-    if (!inView || reducedMotion || prefersReducedMotionNow()) return;
-    requestFormation("monogram", { offsetX: 0, owner: "settling" });
-    return () => requestFormation(null, { owner: "settling" });
-  }, [inView, reducedMotion, requestFormation]);
 
   /* Visitor's LOCAL time — client-only by design. The server renders
      the placeholder and the first client render matches it (clock
@@ -106,7 +87,7 @@ export default function Settling() {
     tick();
     const id = window.setInterval(tick, seconds ? 1000 : 30_000);
     return () => window.clearInterval(id);
-  }, [inView, language, reducedMotion]);
+  }, [inView, language]);
 
   return (
     <div
@@ -121,12 +102,18 @@ export default function Settling() {
     >
       <style>{SETTLING_CSS}</style>
 
-      <Reveal>
+      {/* The logo is the playful focal sign-off: it leans toward the cursor
+          and stirs the dust field on approach (PlayfulLogo). Active only
+          while the band is in view. */}
+      <Reveal className="settling-logo-row">
+        <PlayfulLogo size={88} active={inView} />
+      </Reveal>
+
+      <Reveal delay={0.06}>
         <a
           href={`mailto:${EMAIL}`}
           className="display-serif settling-hello"
           data-cursor="enter"
-          data-magnetic
         >
           {t("settling.hello")}
         </a>
@@ -163,6 +150,9 @@ export default function Settling() {
    set). Hover/press transitions inherit the site's reduced-motion
    kill-switch in globals.css. */
 const SETTLING_CSS = `
+.settling-logo-row {
+  margin-bottom: clamp(1.4rem, 4vh, 2.6rem);
+}
 .settling-hello {
   position: relative;
   display: inline-block;
