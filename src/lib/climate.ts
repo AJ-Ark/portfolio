@@ -88,7 +88,7 @@ const WEATHER: Record<FormationName | "idle", { turbulence: number; density: num
   rippl:    { turbulence: 0.25, density: 0.92, wind: 0.05, gravity: 0 },
   rozi:     { turbulence: 0.60, density: 0.95, wind: 0.30, gravity: 0.06 },
   realm:    { turbulence: 0.45, density: 0.92, wind: 0.18, gravity: -0.02 },
-  trmeric:  { turbulence: 0.15, density: 1.00, wind: 0.04, gravity: 0 },
+  trmeric:  { turbulence: 0.08, density: 1.00, wind: 0.02, gravity: 0 },  // low drift — the lattice must read precise/structured
   wordmark: { turbulence: 0.06, density: 1.00, wind: 0.02, gravity: 0 },
   monogram: { turbulence: 0.08, density: 1.00, wind: 0.02, gravity: 0 },
 };

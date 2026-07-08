@@ -711,7 +711,7 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
      the instant check is belt and braces). Focus gets the same energy so
      keyboard users see the field respond too. */
   const wake = () => {
-    if (!instant && !prefersReducedMotionNow()) excite(0.5);
+    if (!instant && !prefersReducedMotionNow()) excite(0.28);
   };
 
   return (
@@ -736,7 +736,7 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
       <div
         className="reel-text"
         style={{
-          maxWidth: "min(44ch, 55%)",
+          maxWidth: "min(52ch, 64%)",
           flexShrink: 0,
           height: "100%",
           display: "flex",
@@ -770,7 +770,7 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
         <MaskLine
           phase={phase}
           order={0}
-          style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2.2rem, 5vw, 4.5rem)", lineHeight: 1.0, letterSpacing: "-.02em", color: "var(--color-paper)" }}
+          style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2rem, 4.4vw, 4rem)", lineHeight: 1.0, letterSpacing: "-.02em", color: "var(--color-paper)" }}
           maskStyle={{ marginBottom: `calc(1.4rem - ${MASK_PAD})` }}
         >
           {/* Typography lives on the mask (see MaskLine); the heading inherits
