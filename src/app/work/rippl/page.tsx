@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
@@ -8,7 +9,8 @@ import Reveal from "@/components/ui/Reveal";
 import NextProject from "@/components/ui/NextProject";
 import RipplVideoCard from "@/components/ui/RipplVideoCard";
 import InlineVideo from "@/components/ui/InlineVideo";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import HeroGradientOverlay from "./HeroGradientOverlay";
+import { prefersReducedMotionNow, usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 /* ── Palette — CSS vars so sub-components auto-adapt to dark/light ── */
 const BASE  = "var(--color-ground)";
@@ -21,8 +23,298 @@ const ACCB  = "var(--color-accent-bright)";
 const LINE  = "var(--line)";
 const LINEW = "var(--line-weak)";
 
-/* ── SVG: Before / After reading journey ── */
+/* ══════════════════════════════════════════════════════════════════
+   useEnterAnimation — shared scroll-choreography primitive for this
+   page's bespoke SVG animations (stroke-draw, staged sequences).
+
+   Mirrors Reveal.tsx's SSR-safety contract: the element ships in its
+   FINAL/played state (server HTML, first paint, reduced-motion users,
+   anything already inside the fold at mount) and only rewinds to a
+   "not yet played" state for content that starts below the fold on a
+   motion-allowing browser — then flips back to played once it scrolls
+   into view. Nothing is ever invisible without JS.
+   ══════════════════════════════════════════════════════════════════ */
+function useEnterAnimation<T extends Element>(options?: {
+  threshold?: number;
+  rootMargin?: string;
+}) {
+  const ref = useRef<T | null>(null);
+  const [play, setPlay] = useState(true);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || prefersReducedMotionNow()) return;
+
+    const fold = window.innerHeight * 0.9;
+    if (el.getBoundingClientRect().top < fold) return; // already visible — stays played
+
+    setPlay(false);
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        setPlay(true);
+      },
+      { rootMargin: options?.rootMargin ?? "0px 0px -10% 0px", threshold: options?.threshold ?? 0.15 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return { ref, play };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   LightCone — the hero lamp's beam, projected across the whole page.
+
+   A fixed, pointer-events-none conic wedge (the "cone") masked to a
+   soft radial falloff, swept by scroll progress: as the reader moves
+   through the page, the beam swivels and travels, visually "lighting
+   up" whatever section is passing beneath it. Position/angle are
+   plain CSS custom properties written imperatively (no React state)
+   so the sweep costs nothing beyond one scroll listener.
+
+   Reduced motion: no listener is attached at all — the cone renders
+   once as a static gradient anchored near the hero and never moves.
+   ══════════════════════════════════════════════════════════════════ */
+function LightCone() {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    if (reduced) return;
+    const el = ref.current;
+    if (!el) return;
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      const angle = 55 + progress * 250; // the lamp swivels through its arc as you read
+      const x = 42 + Math.sin(progress * Math.PI * 2.2) * 12;
+      el.style.setProperty("--cone-angle", `${angle}deg`);
+      el.style.setProperty("--cone-x", `${x}%`);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [reduced]);
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden="true"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 4,
+        pointerEvents: "none",
+        mixBlendMode: "soft-light",
+        opacity: reduced ? 0.55 : 0.85,
+        background: reduced
+          ? "radial-gradient(ellipse 65% 42% at 50% 4%, color-mix(in srgb, var(--color-accent-bright) 45%, transparent), transparent 72%)"
+          : "conic-gradient(from var(--cone-angle, 165deg) at var(--cone-x, 50%) -14%, transparent 0deg, transparent 26deg, color-mix(in srgb, var(--color-accent-bright) 42%, transparent) 40deg, transparent 55deg, transparent 360deg)",
+        WebkitMaskImage: reduced
+          ? undefined
+          : "radial-gradient(circle at var(--cone-x, 50%) 22%, black 0%, black 42%, transparent 78%)",
+        maskImage: reduced
+          ? undefined
+          : "radial-gradient(circle at var(--cone-x, 50%) 22%, black 0%, black 42%, transparent 78%)",
+      }}
+    />
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   Chapter rail — a proper sequential index, replacing the page's old
+   ad hoc "some sections get a number, some don't, one got 08 twice"
+   scheme. One source of truth (CHAPTERS) drives both this fixed rail
+   and every section's eyebrow badge below.
+   ══════════════════════════════════════════════════════════════════ */
+interface Chapter { id: string; num: string; label: string; }
+
+const CHAPTERS: Chapter[] = [
+  { id: "ch-01", num: "01", label: "Hero" },
+  { id: "ch-02", num: "02", label: "The premise" },
+  { id: "ch-03", num: "03", label: "Who needs this" },
+  { id: "ch-04", num: "04", label: "The object" },
+  { id: "ch-05", num: "05", label: "Research" },
+  { id: "ch-06", num: "06", label: "The transformation" },
+  { id: "ch-07", num: "07", label: "The design question" },
+  { id: "ch-08", num: "08", label: "How it works" },
+  { id: "ch-09", num: "09", label: "Experience" },
+  { id: "ch-10", num: "10", label: "Interface" },
+  { id: "ch-11", num: "11", label: "Information architecture" },
+  { id: "ch-12", num: "12", label: "Prototype demonstrations" },
+  { id: "ch-13", num: "13", label: "Design process" },
+  { id: "ch-14", num: "14", label: "Built around the reader" },
+  { id: "ch-15", num: "15", label: "Reflection" },
+];
+
+function ChapterRail() {
+  const [active, setActive] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.6);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const els = CHAPTERS.map((c) => document.getElementById(c.id)).filter(
+      (el): el is HTMLElement => el !== null
+    );
+    if (els.length === 0) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: "-30% 0px -55% 0px", threshold: 0 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  const jump = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <>
+      <style>{`
+        .rippl-rail { display: none; }
+        @media (min-width: 1200px) { .rippl-rail { display: block; } }
+      `}</style>
+      <nav
+        className="rippl-rail"
+        aria-label="Rippl case study chapters"
+        style={{
+          position: "fixed",
+          left: "1.4rem",
+          top: "50%",
+          transform: `translateY(-50%) translateX(${visible ? 0 : -14}px)`,
+          opacity: visible ? 1 : 0,
+          pointerEvents: visible ? "auto" : "none",
+          transition: "opacity .4s var(--ease), transform .4s var(--ease)",
+          zIndex: 40,
+          maxHeight: "82vh",
+          overflowY: "auto",
+          scrollbarWidth: "none",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", gap: ".38rem", padding: ".3rem .2rem" }}>
+          {CHAPTERS.map((c) => {
+            const on = active === c.id;
+            return (
+              <button
+                key={c.id}
+                onClick={() => jump(c.id)}
+                aria-current={on ? "true" : undefined}
+                aria-label={`Chapter ${c.num}: ${c.label}`}
+                title={`${c.num} — ${c.label}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: ".55rem",
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: ".18rem 0",
+                  textAlign: "left",
+                  fontFamily: "var(--font-mono)",
+                }}
+              >
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: on ? 16 : 6,
+                    height: 1.5,
+                    background: on ? ACC : LINEW,
+                    transition: "width .3s var(--ease), background .3s var(--ease)",
+                    flexShrink: 0,
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: ".5rem",
+                    letterSpacing: ".08em",
+                    color: on ? ACCB : FAINT,
+                    opacity: on ? 1 : 0.55,
+                    transition: "color .3s var(--ease), opacity .3s var(--ease)",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {c.num}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+    </>
+  );
+}
+
+/* ── SVG: Before / After reading journey ──
+   Plays as a triggered sequence on scroll-into-view: row A (without
+   Rippl) starts lit and flickers dead node by node; row B (with
+   Rippl) starts dark and lights up node by node, one tick behind.
+   The stepped transition timing (steps()) reads as a flicker rather
+   than a smooth cross-fade. Reduced motion / SSR / already-in-view at
+   mount: `stage` stays at its default (settled), so both rows render
+   their final look immediately — identical to the original artwork. */
 function ReadingJourneySVG() {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [stage, setStage] = useState(Infinity);
+
+  useEffect(() => {
+    const el = svgRef.current;
+    if (!el || prefersReducedMotionNow()) return;
+    const fold = window.innerHeight * 0.9;
+    if (el.getBoundingClientRect().top < fold) return; // already visible — stays settled
+
+    setStage(-1); // rewind: no node has had its turn yet
+
+    const STEP = 230; // ms between each node's turn
+    const LAST_STEP = 6; // nodesB (the longer row) has 6 nodes, indices 0..5
+    const timers: number[] = [];
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        for (let i = 0; i <= LAST_STEP; i++) {
+          timers.push(window.setTimeout(() => setStage(i), i * STEP));
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.2 }
+    );
+    io.observe(el);
+
+    return () => {
+      io.disconnect();
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, []);
+
+  const settled = (i: number) => stage >= i;
+  const flicker = "steps(6, jump-start)";
+
   const nodeR = 22;
   const cols  = [150, 290, 430, 570, 710, 850];
   const rowA  = 60;   // without Rippl
@@ -45,8 +337,39 @@ function ReadingJourneySVG() {
     { x: cols[5], label: "Notes saved", sub: "Recall ready" },
   ];
 
+  /* Row A: "alive" pre-state (brighter) until its turn, then no
+     override — falling back to the original muted/dead artwork. */
+  const aCircle = (i: number): CSSProperties => ({
+    transition: `stroke .4s ${flicker}`,
+    ...(settled(i) ? {} : { stroke: DIM }),
+  });
+  const aText = (i: number): CSSProperties => ({
+    transition: `fill .4s ${flicker}`,
+    ...(settled(i) ? {} : { fill: DIM }),
+  });
+  const aSub = (i: number): CSSProperties => ({
+    transition: `fill .4s ${flicker}, opacity .3s var(--ease)`,
+    ...(settled(i) ? {} : { fill: DIM, opacity: 1 }),
+  });
+
+  /* Row B: "off" pre-state (dim, no fill) until its turn, then no
+     override — falling back to the original lit/accent artwork. */
+  const bCircle = (i: number): CSSProperties => ({
+    transition: `stroke .4s ${flicker}, fill .4s ${flicker}`,
+    ...(settled(i) ? {} : { stroke: FAINT, fill: "none" }),
+  });
+  const bText = (i: number): CSSProperties => ({
+    transition: `fill .4s ${flicker}`,
+    ...(settled(i) ? {} : { fill: FAINT }),
+  });
+  const bSub = (i: number): CSSProperties => ({
+    transition: `fill .4s ${flicker}, opacity .3s var(--ease)`,
+    ...(settled(i) ? {} : { fill: FAINT, opacity: 0.5 }),
+  });
+
   return (
     <svg
+      ref={svgRef}
       viewBox="0 0 1020 260"
       style={{ width: "100%", maxWidth: 1020, display: "block" }}
       aria-label="Before and after comparison of reading experience with and without Rippl"
@@ -60,32 +383,34 @@ function ReadingJourneySVG() {
         <line key={i} x1={n.x + nodeR} y1={rowA} x2={nodesA[i + 1].x - nodeR} y2={rowA}
           stroke={FAINT} strokeWidth="1" strokeDasharray="4 3" />
       ))}
-      {nodesA.map((n) => (
+      {nodesA.map((n, i) => (
         <g key={n.x}>
-          <circle cx={n.x} cy={rowA} r={nodeR} fill="none" stroke={FAINT} strokeWidth="1" />
-          <text x={n.x} y={rowA + 4} fontFamily="var(--font-mono)" fontSize="7.5" fill={FAINT} textAnchor="middle">{n.label.split(" ")[0]}</text>
-          <text x={n.x} y={rowA + 13} fontFamily="var(--font-mono)" fontSize="7.5" fill={FAINT} textAnchor="middle">{n.label.split(" ")[1] ?? ""}</text>
-          <text x={n.x} y={rowA + nodeR + 14} fontFamily="var(--font-mono)" fontSize="7" fill={FAINT} textAnchor="middle" opacity="0.6">{n.sub}</text>
+          <circle cx={n.x} cy={rowA} r={nodeR} fill="none" stroke={FAINT} strokeWidth="1" style={aCircle(i)} />
+          <text x={n.x} y={rowA + 4} fontFamily="var(--font-mono)" fontSize="7.5" fill={FAINT} textAnchor="middle" style={aText(i)}>{n.label.split(" ")[0]}</text>
+          <text x={n.x} y={rowA + 13} fontFamily="var(--font-mono)" fontSize="7.5" fill={FAINT} textAnchor="middle" style={aText(i)}>{n.label.split(" ")[1] ?? ""}</text>
+          <text x={n.x} y={rowA + nodeR + 14} fontFamily="var(--font-mono)" fontSize="7" fill={FAINT} textAnchor="middle" opacity="0.6" style={aSub(i)}>{n.sub}</text>
         </g>
       ))}
-      {/* Outcome A */}
-      <text x={nodesA[4].x + nodeR + 16} y={rowA + 5} fontFamily="var(--font-display)" fontSize="16" fontStyle="italic" fill={FAINT}>→ Forgotten</text>
+      {/* Outcome A — settles in once every node has had its turn */}
+      <text x={nodesA[4].x + nodeR + 16} y={rowA + 5} fontFamily="var(--font-display)" fontSize="16" fontStyle="italic" fill={FAINT}
+        style={{ opacity: stage >= 5 ? 1 : 0, transition: "opacity .5s var(--ease)" }}>→ Forgotten</text>
 
       {/* Path B — orange */}
       {nodesB.slice(0, -1).map((n, i) => (
         <line key={i} x1={n.x + nodeR} y1={rowB} x2={nodesB[i + 1].x - nodeR} y2={rowB}
           stroke={ACC} strokeWidth="1.5" />
       ))}
-      {nodesB.map((n) => (
+      {nodesB.map((n, i) => (
         <g key={n.x}>
-          <circle cx={n.x} cy={rowB} r={nodeR} fill={n.sub === "Natural gesture" || n.sub === "Recognition" ? "color-mix(in srgb, var(--color-accent) 13%, transparent)" : "none"} stroke={n.x === cols[0] ? FAINT : ACC} strokeWidth="1.5" />
-          <text x={n.x} y={rowB + 4} fontFamily="var(--font-mono)" fontSize="7.5" fill={n.x === cols[0] ? FAINT : PAPER} textAnchor="middle">{n.label.split(" ")[0]}</text>
-          <text x={n.x} y={rowB + 13} fontFamily="var(--font-mono)" fontSize="7.5" fill={n.x === cols[0] ? FAINT : PAPER} textAnchor="middle">{n.label.split(" ")[1] ?? ""}</text>
-          <text x={n.x} y={rowB + nodeR + 14} fontFamily="var(--font-mono)" fontSize="7" fill={ACC} textAnchor="middle" opacity="0.8">{n.sub}</text>
+          <circle cx={n.x} cy={rowB} r={nodeR} fill={n.sub === "Natural gesture" || n.sub === "Recognition" ? "color-mix(in srgb, var(--color-accent) 13%, transparent)" : "none"} stroke={n.x === cols[0] ? FAINT : ACC} strokeWidth="1.5" style={bCircle(i)} />
+          <text x={n.x} y={rowB + 4} fontFamily="var(--font-mono)" fontSize="7.5" fill={n.x === cols[0] ? FAINT : PAPER} textAnchor="middle" style={bText(i)}>{n.label.split(" ")[0]}</text>
+          <text x={n.x} y={rowB + 13} fontFamily="var(--font-mono)" fontSize="7.5" fill={n.x === cols[0] ? FAINT : PAPER} textAnchor="middle" style={bText(i)}>{n.label.split(" ")[1] ?? ""}</text>
+          <text x={n.x} y={rowB + nodeR + 14} fontFamily="var(--font-mono)" fontSize="7" fill={ACC} textAnchor="middle" opacity="0.8" style={bSub(i)}>{n.sub}</text>
         </g>
       ))}
-      {/* Outcome B */}
-      <text x={nodesB[5].x + nodeR + 16} y={rowB + 5} fontFamily="var(--font-display)" fontSize="16" fontStyle="italic" fill={ACC}>→ Retained</text>
+      {/* Outcome B — settles in one tick after row B's last node */}
+      <text x={nodesB[5].x + nodeR + 16} y={rowB + 5} fontFamily="var(--font-display)" fontSize="16" fontStyle="italic" fill={ACC}
+        style={{ opacity: stage >= 6 ? 1 : 0, transition: "opacity .5s var(--ease)" }}>→ Retained</text>
 
       {/* Divider */}
       <line x1="0" y1="120" x2="1020" y2="120" stroke={LINEW} strokeWidth="1" />
@@ -146,44 +471,67 @@ function PipelineSVG() {
   );
 }
 
-/* ── SVG: Device schematic ── */
+/* ── SVG: Device schematic ──
+   Draws itself in on scroll-into-view: every stroked shape is given a
+   normalized pathLength of 100 (SVG2), so a single strokeDasharray/
+   strokeDashoffset pair works regardless of each shape's real geometry.
+   Reduced motion / SSR / already-in-view at mount: `play` is true from
+   the start, so every shape renders fully drawn immediately. */
 function DeviceSchematicSVG() {
+  const { ref, play } = useEnterAnimation<SVGSVGElement>({ threshold: 0.25 });
+
+  const draw = (delay: number, dur = 0.8): CSSProperties => ({
+    strokeDasharray: 100,
+    strokeDashoffset: play ? 0 : 100,
+    transition: `stroke-dashoffset ${dur}s var(--ease) ${delay}s`,
+  });
+  const fade = (delay: number, dur = 0.45): CSSProperties => ({
+    opacity: play ? 1 : 0,
+    transition: `opacity ${dur}s var(--ease) ${delay}s`,
+  });
+  const drawFill = (delay: number, fillDelay: number): CSSProperties => ({
+    strokeDasharray: 100,
+    strokeDashoffset: play ? 0 : 100,
+    fillOpacity: play ? 1 : 0,
+    transition: `stroke-dashoffset .8s var(--ease) ${delay}s, fill-opacity .5s var(--ease) ${fillDelay}s`,
+  });
+
   return (
-    <svg viewBox="0 0 320 400" style={{ width: "100%", maxWidth: 280, display: "block" }}
+    <svg ref={ref} viewBox="0 0 320 400" style={{ width: "100%", maxWidth: 280, display: "block" }}
       aria-label="Rippl device schematic showing lamp body, camera module, and projector module">
       {/* Base */}
-      <rect x="110" y="360" width="100" height="14" rx="4" fill="none" stroke={LINEW} strokeWidth="1.5" />
+      <rect x="110" y="360" width="100" height="14" rx="4" fill="none" stroke={LINEW} strokeWidth="1.5" pathLength={100} style={draw(0)} />
       {/* Stem */}
-      <rect x="152" y="200" width="16" height="162" fill="none" stroke={LINEW} strokeWidth="1.5" />
+      <rect x="152" y="200" width="16" height="162" fill="none" stroke={LINEW} strokeWidth="1.5" pathLength={100} style={draw(0.1)} />
       {/* Arm curve */}
-      <path d="M160,200 Q160,130 210,120" fill="none" stroke={LINEW} strokeWidth="1.5" />
+      <path d="M160,200 Q160,130 210,120" fill="none" stroke={LINEW} strokeWidth="1.5" pathLength={100} style={draw(0.2)} />
       {/* Lamp head */}
-      <ellipse cx="220" cy="110" rx="34" ry="20" fill="none" stroke={PAPER} strokeWidth="1.5" opacity="0.6" />
-      <line x1="196" y1="116" x2="186" y2="160" stroke={PAPER} strokeWidth="1" opacity="0.3" />
-      <line x1="220" y1="130" x2="220" y2="160" stroke={PAPER} strokeWidth="1" opacity="0.3" />
-      <line x1="244" y1="116" x2="254" y2="160" stroke={PAPER} strokeWidth="1" opacity="0.3" />
+      <ellipse cx="220" cy="110" rx="34" ry="20" fill="none" stroke={PAPER} strokeWidth="1.5" opacity="0.6" pathLength={100} style={draw(0.32)} />
+      <line x1="196" y1="116" x2="186" y2="160" stroke={PAPER} strokeWidth="1" opacity="0.3" pathLength={100} style={draw(0.42, 0.5)} />
+      <line x1="220" y1="130" x2="220" y2="160" stroke={PAPER} strokeWidth="1" opacity="0.3" pathLength={100} style={draw(0.46, 0.5)} />
+      <line x1="244" y1="116" x2="254" y2="160" stroke={PAPER} strokeWidth="1" opacity="0.3" pathLength={100} style={draw(0.5, 0.5)} />
 
       {/* Camera module — attached to arm */}
-      <rect x="130" y="178" width="36" height="26" rx="4" fill="none" stroke={ACC} strokeWidth="1.5" />
-      <circle cx="148" cy="191" r="7" fill="none" stroke={ACC} strokeWidth="1" />
-      <circle cx="148" cy="191" r="3" fill="color-mix(in srgb, var(--color-accent) 25%, transparent)" stroke={ACC} strokeWidth="1" />
+      <rect x="130" y="178" width="36" height="26" rx="4" fill="none" stroke={ACC} strokeWidth="1.5" pathLength={100} style={draw(0.62)} />
+      <circle cx="148" cy="191" r="7" fill="none" stroke={ACC} strokeWidth="1" pathLength={100} style={draw(0.72, 0.5)} />
+      <circle cx="148" cy="191" r="3" fill="color-mix(in srgb, var(--color-accent) 25%, transparent)" stroke={ACC} strokeWidth="1" style={fade(0.82)} />
 
       {/* Projector cone — projects downward */}
-      <path d="M130,210 L94,290 L176,290 L162,210 Z" fill="color-mix(in srgb, var(--color-accent) 6%, transparent)" stroke={LINE} strokeWidth="1" />
-      <text x="135" y="255" fontFamily="var(--font-mono)" fontSize="8" fill={ACC} opacity="0.7">PROJECTION</text>
+      <path d="M130,210 L94,290 L176,290 L162,210 Z" fill="color-mix(in srgb, var(--color-accent) 6%, transparent)" stroke={LINE} strokeWidth="1" pathLength={100} style={drawFill(0.9, 1.15)} />
+      <text x="135" y="255" fontFamily="var(--font-mono)" fontSize="8" fill={ACC} opacity="0.7" style={fade(1.3, 0.4)}>PROJECTION</text>
 
       {/* Labels */}
-      <line x1="254" y1="110" x2="290" y2="90" stroke={LINEW} strokeWidth="1" />
-      <text x="292" y="88" fontFamily="var(--font-mono)" fontSize="9" fill={FAINT}>Lamp head</text>
+      <line x1="254" y1="110" x2="290" y2="90" stroke={LINEW} strokeWidth="1" pathLength={100} style={draw(1.4, 0.45)} />
+      <text x="292" y="88" fontFamily="var(--font-mono)" fontSize="9" fill={FAINT} style={fade(1.75, 0.35)}>Lamp head</text>
 
-      <line x1="166" y1="191" x2="185" y2="170" stroke={LINE} strokeWidth="1" />
-      <text x="187" y="168" fontFamily="var(--font-mono)" fontSize="9" fill={ACC}>Camera</text>
+      <line x1="166" y1="191" x2="185" y2="170" stroke={LINE} strokeWidth="1" pathLength={100} style={draw(1.5, 0.45)} />
+      <text x="187" y="168" fontFamily="var(--font-mono)" fontSize="9" fill={ACC} style={fade(1.85, 0.35)}>Camera</text>
 
-      <line x1="130" y1="230" x2="84" y2="215" stroke={LINE} strokeWidth="1" />
-      <text x="12" y="213" fontFamily="var(--font-mono)" fontSize="9" fill={ACC}>Projector</text>
+      <line x1="130" y1="230" x2="84" y2="215" stroke={LINE} strokeWidth="1" pathLength={100} style={draw(1.6, 0.45)} />
+      <text x="12" y="213" fontFamily="var(--font-mono)" fontSize="9" fill={ACC} style={fade(1.95, 0.35)}>Projector</text>
 
-      <line x1="160" y1="360" x2="160" y2="390" stroke={LINEW} strokeWidth="1" />
-      <text x="112" y="398" fontFamily="var(--font-mono)" fontSize="9" fill={FAINT}>Weighted base</text>
+      <line x1="160" y1="360" x2="160" y2="390" stroke={LINEW} strokeWidth="1" pathLength={100} style={draw(1.7, 0.45)} />
+      <text x="112" y="398" fontFamily="var(--font-mono)" fontSize="9" fill={FAINT} style={fade(2.05, 0.35)}>Weighted base</text>
     </svg>
   );
 }
@@ -267,20 +615,17 @@ function FlowFork({ trunk, branches }: { trunk: FStep; branches: FStep[][] }) {
 }
 
 export default function RipplPage() {
-  const dark = useColorScheme();
-  const GRAD_BASE = dark ? "#0d0904" : "#F7F3EC";
-  const GRAD_88   = dark ? "rgba(13,9,4,.88)"  : "rgba(247,243,236,.88)";
-  const GRAD_45   = dark ? "rgba(13,9,4,.45)"  : "rgba(247,243,236,.45)";
-
   return (
     <>
       <Navigation />
+      <LightCone />
+      <ChapterRail />
       <main id="main-content" style={{ background: BASE, color: PAPER }}>
 
         {/* ═══════════════════════════════════════════
             01 · HERO — massive type, full-bleed image
         ═══════════════════════════════════════════ */}
-        <section style={{
+        <section id="ch-01" style={{
           minHeight: "100dvh", display: "flex", flexDirection: "column",
           justifyContent: "flex-end", position: "relative", overflow: "hidden",
           padding: "0 var(--pad) 4rem",
@@ -290,10 +635,7 @@ export default function RipplPage() {
               alt="Rippl projector lamp on a study desk, illuminating an open book" fill
               style={{ objectFit: "cover", objectPosition: "center 40%" }} priority />
           </div>
-          <div aria-hidden="true" style={{
-            position: "absolute", inset: 0,
-            background: `linear-gradient(to top, ${GRAD_BASE} 0%, ${GRAD_88} 35%, ${GRAD_45} 65%, transparent 100%)`,
-          }} />
+          <HeroGradientOverlay />
 
           {/* Huge title — top-left, cropped */}
           <div style={{ position: "absolute", top: "10vh", left: "var(--pad)", zIndex: 2 }}>
@@ -343,9 +685,9 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             02 · MANIFESTO
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "8rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-02" style={{ padding: "8rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "980px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2.5rem" }}>The premise</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2.5rem" }}>02 / The premise</Reveal>
             <WordReveal as="p" delay={0} stagger={38} style={{
               fontFamily: "var(--font-display)", fontWeight: 400,
               fontSize: "clamp(2rem, 5.5vw, 5rem)", lineHeight: 1.0,
@@ -367,9 +709,9 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             03 · WHO NEEDS THIS — PERSONAS
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "0 var(--pad) 6rem var(--pad)" }}>
+        <section id="ch-03" style={{ padding: "0 var(--pad) 6rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: FAINT, opacity: 0.6, display: "block", marginBottom: "2rem" }}>Who needs this</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: FAINT, opacity: 0.6, display: "block", marginBottom: "2rem" }}>03 / Who needs this</Reveal>
             <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}` }}>
               {[
                 { who: "Medical students", context: "Dense terminology, high-stakes recall, limited time.", need: "Instant definitions beside the text, without losing place." },
@@ -392,9 +734,9 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             04 · THE OBJECT + SCHEMATIC
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-04" style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>02 / The object</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>04 / The object</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
               <Reveal stagger>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>What is Rippl?</span>
@@ -433,9 +775,12 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             05 · RESEARCH
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
+        {/* Seam cut: no hairline here — the object and the research that
+            justifies it are one continuous argument; the BASE2→BASE
+            background shift alone marks the turn. */}
+        <section id="ch-05" style={{ padding: "6rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>03 / Research</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>05 / Research</Reveal>
             <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2rem, 5vw, 4.2rem)", lineHeight: 1.08, letterSpacing: "-.015em", color: PAPER, maxWidth: "22ch", marginBottom: "3rem" }}>
               We reach for a book. Then the internet{" "}<em style={{ fontStyle: "italic", color: ACC }}>reaches back.</em>
             </Reveal>
@@ -469,11 +814,35 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
+            PACING BREAK — no chapter number. The pivot: the reader
+            has just absorbed why the old way fails; give it a beat
+            before the transformation begins.
+        ═══════════════════════════════════════════ */}
+        <section aria-label="Pacing break" style={{
+          position: "relative", minHeight: "72vh", display: "flex",
+          alignItems: "center", justifyContent: "center", textAlign: "center",
+          padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}`, overflow: "hidden",
+        }}>
+          <div aria-hidden="true" style={{
+            position: "absolute", inset: 0,
+            background: "radial-gradient(ellipse 60% 50% at 50% 50%, color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 72%)",
+          }} />
+          <WordReveal as="p" stagger={26} style={{
+            position: "relative",
+            fontFamily: "var(--font-display)", fontWeight: 400, fontStyle: "italic",
+            fontSize: "clamp(2.2rem, 6.5vw, 5.5rem)", lineHeight: 1.08,
+            letterSpacing: "-.02em", color: PAPER, maxWidth: "22ch", margin: "0 auto",
+          }}>
+            {"The gesture already exists.\nRippl just answers it."}
+          </WordReveal>
+        </section>
+
+        {/* ═══════════════════════════════════════════
             06 · READING JOURNEY — SVG DIAGRAM
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "5rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-06" style={{ padding: "5rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1rem" }}>The transformation</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1rem" }}>06 / The transformation</Reveal>
             <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)", lineHeight: 1.1, color: PAPER, marginBottom: "2.5rem", maxWidth: "28ch" }}>
               What changes when notes ripple back.
             </Reveal>
@@ -489,9 +858,9 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             07 · DESIGN QUESTION
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "7rem var(--pad)", borderTop: `1px solid ${LINEW}`, textAlign: "center" }}>
+        <section id="ch-07" style={{ padding: "7rem var(--pad)", borderTop: `1px solid ${LINEW}`, textAlign: "center" }}>
           <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1.5rem" }}>The design question</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "1.5rem" }}>07 / The design question</Reveal>
             <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.5rem, 3.5vw, 2.6rem)", lineHeight: 1.25, letterSpacing: "-.01em", color: PAPER, marginBottom: "3rem" }}>
               How might we create an engaging learning experience that combats distraction, improves retention, and deepens understanding?
             </Reveal>
@@ -506,9 +875,9 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             08 · RECOGNITION PIPELINE
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-08" style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>04 / How it works</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / How it works</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start", marginBottom: "3rem" }}>
               <Reveal stagger>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.1, color: PAPER, marginBottom: "1.4rem" }}>
@@ -546,9 +915,9 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             09 · THE INTERACTION
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-09" style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>05 / Experience</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>09 / Experience</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: "4rem", alignItems: "start" }}>
               <Reveal stagger>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>A natural gesture</span>
@@ -582,9 +951,9 @@ export default function RipplPage() {
         {/* ═══════════════════════════════════════════
             10 · INTERFACE + MODES
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-10" style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>06 / Interface</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>10 / Interface</Reveal>
             <Reveal as="span" delay={0.1} style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: ".8rem" }}>The projected layer</Reveal>
             <Reveal as="h2" delay={0.2} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 4vw, 3.2rem)", lineHeight: 1.1, color: PAPER, marginBottom: "2.5rem" }}>
               Information,{" "}<em style={{ fontStyle: "italic", color: ACCB }}>where attention is.</em>
@@ -629,11 +998,35 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
-            07 · INFORMATION ARCHITECTURE — recreated flows + real GIFs
+            PACING BREAK — no chapter number. Cinematic full-bleed
+            callback to the object itself: the reader has just seen
+            the finished interface; before the build details, a beat
+            to re-anchor on the physical thing.
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
+        {/* Seam cut: the hard hairline that used to open every section is
+            dropped here — the photo should bleed straight out of the
+            Interface chapter, not sit behind a drawn line. */}
+        <section aria-label="Pacing break" style={{ position: "relative", minHeight: "85vh", display: "flex", alignItems: "flex-end", overflow: "hidden" }}>
+          <div style={{ position: "absolute", inset: 0 }} aria-hidden="true">
+            <Image src="/images/rippl/rippl-device.jpg" alt="" fill style={{ objectFit: "cover", objectPosition: "center 35%" }} />
+          </div>
+          <div aria-hidden="true" style={{ position: "absolute", inset: 0, background: `linear-gradient(to top, ${BASE} 0%, rgba(13,9,4,.55) 42%, transparent 78%)` }} />
+          <Reveal style={{ position: "relative", padding: "0 var(--pad) 5rem", maxWidth: "1100px", margin: "0 auto", width: "100%" }}>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.85, display: "block", marginBottom: "1rem" }}>Behind the object</span>
+            <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontStyle: "italic", fontSize: "clamp(2rem, 5.5vw, 4.5rem)", lineHeight: 1.05, color: PAPER, maxWidth: "18ch" }}>
+              The interface you just saw started as lines on paper.
+            </h2>
+          </Reveal>
+        </section>
+
+        {/* ═══════════════════════════════════════════
+            11 · INFORMATION ARCHITECTURE — recreated flows + real GIFs
+            Seam cut: the pacing break's own photo-to-BASE gradient
+            already closes out the previous beat — no hairline needed.
+        ═══════════════════════════════════════════ */}
+        <section id="ch-11" style={{ padding: "6rem var(--pad)" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>07 / Information architecture</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>11 / Information architecture</Reveal>
             <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.08, color: PAPER, marginBottom: ".8rem" }}>
               Every flow, mapped before it was built.
             </Reveal>
@@ -763,11 +1156,11 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
-            08 · PROTOTYPE DEMOS — video placeholders
+            12 · PROTOTYPE DEMOS — video placeholders
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-12" style={{ padding: "6rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / Prototype demonstrations</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>12 / Prototype demonstrations</Reveal>
             <Reveal as="h2" delay={0.1} style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.08, color: PAPER, marginBottom: ".8rem" }}>
               Four demonstrations.<br /><em style={{ fontStyle: "italic", color: ACC }}>Four stages of learning.</em>
             </Reveal>
@@ -831,11 +1224,11 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
-            12 · DESIGN PROCESS
+            13 · DESIGN PROCESS
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-13" style={{ padding: "6rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>08 / Design process</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: FAINT, display: "block", marginBottom: "3rem" }}>13 / Design process</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "center" }}>
               <Reveal stagger>
                 <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.8rem, 3.5vw, 3rem)", lineHeight: 1.1, color: PAPER, marginBottom: "1.4rem" }}>
@@ -864,11 +1257,11 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
-            13 · PRINCIPLES + METRICS
+            14 · PRINCIPLES + METRICS
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
+        <section id="ch-14" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINEW}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2rem" }}>Built around the reader</Reveal>
+            <Reveal as="span" style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", color: ACC, opacity: 0.8, display: "block", marginBottom: "2rem" }}>14 / Built around the reader</Reveal>
             <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${LINEW}`, borderLeft: `1px solid ${LINEW}`, marginBottom: "0" }}>
               {[
                 { num: "01", h: "Clear projection", b: "Sharp, legible information exactly where it is useful: beside the text you just marked, not on a separate screen competing for attention." },
@@ -895,11 +1288,11 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
-            14 · REFLECTION
+            15 · REFLECTION
         ═══════════════════════════════════════════ */}
-        <section style={{ padding: "8rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}`, textAlign: "center" }}>
+        <section id="ch-15" style={{ padding: "8rem var(--pad)", background: BASE2, borderTop: `1px solid ${LINEW}`, textAlign: "center" }}>
           <Reveal stagger style={{ maxWidth: "680px", margin: "0 auto" }}>
-            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".22em", textTransform: "uppercase", color: ACC, display: "block", marginBottom: "1.5rem", opacity: 0.8 }}>Reflection</span>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".22em", textTransform: "uppercase", color: ACC, display: "block", marginBottom: "1.5rem", opacity: 0.8 }}>15 / Reflection</span>
             <h2 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(1.6rem, 3.8vw, 3rem)", lineHeight: 1.15, letterSpacing: "-.01em", color: PAPER, marginBottom: "2rem" }}>
               Learning becomes meaningful when it crosses the distance from{" "}
               <em style={{ fontStyle: "italic", color: ACCB }}>knowing</em>{" "}to{" "}
@@ -915,7 +1308,8 @@ export default function RipplPage() {
         </section>
 
         {/* ═══════════════════════════════════════════
-            15 · EPILOGUE — match-cut into Trmeric
+            16 · EPILOGUE — match-cut into Trmeric (unnumbered in the
+            chapter rail; a transition, not a chapter)
         ═══════════════════════════════════════════ */}
         <NextProject current="rippl" />
 

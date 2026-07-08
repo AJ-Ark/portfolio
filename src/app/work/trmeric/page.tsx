@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
@@ -14,56 +12,36 @@ import PrototypeFrame, { type TrmColors } from "@/components/trmeric/PrototypeFr
 import RagDemo from "@/components/trmeric/RagDemo";
 import SignalsMiniGraph from "@/components/trmeric/SignalsMiniGraph";
 import IterationStrip from "@/components/trmeric/IterationStrip";
-import PhaseRail, { type RailFeature } from "@/components/trmeric/PhaseRail";
+import { type RailFeature } from "@/components/trmeric/PhaseRail";
 import SurfaceGallery from "@/components/trmeric/SurfaceGallery";
+import TrmericTheme from "@/components/trmeric/TrmericTheme";
+import ChapterSeam from "@/components/trmeric/ChapterSeam";
+import CountUp from "@/components/trmeric/CountUp";
+import PhaseCard from "@/components/trmeric/PhaseCard";
+import PhaseLabelText from "@/components/trmeric/PhaseLabelText";
+import TrmericPhaseRailNav from "@/components/trmeric/TrmericPhaseRailNav";
+import { PHASE_META } from "@/components/trmeric/trmericPhaseMeta";
 import { projectsBySlug } from "@/data/projects";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { useTranslation } from "@/lib/TranslationContext";
 
 const project = projectsBySlug["trmeric"];
 
-/* ── Accent is the same in dark + light ── */
+/* ── Accent is the same in dark + light — the rest read from the CSS
+   custom properties TrmericTheme (a client component) sets from
+   useColorScheme(), so this whole page can be a server component. Values
+   are byte-identical to what used to be computed inline per render. ── */
 const ACC  = "#FFA426";
 const ACCB = "#FFB84D";
 const LINA = "rgba(255,164,38,.26)";
+const BASE  = "var(--trm-base)";
+const BASE2 = "var(--trm-base2)";
+const INK   = "var(--trm-ink)";
+const DIM   = "var(--trm-dim)";
+const FAINT = "var(--trm-faint)";
+const ACCD  = "var(--trm-accd)";
+const LINE  = "var(--trm-line)";
+const SHADOW = "var(--trm-shadow)";
 
-// PHASES moved into component so it can use t() — see line 225
-
-/* Minimal monochrome persona markers — same line-art register as the
-   pipeline/schematic diagrams elsewhere on the site, not character illustration. */
-function PersonaIcon({ kind }: { kind: "chat" | "grid" | "flag" | "eye" }) {
-  const common = { fill: "none", stroke: ACC, strokeWidth: 1.3, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
-  return (
-    <svg width="15" height="15" viewBox="0 0 16 16" {...common}>
-      {kind === "chat" && (
-        <>
-          <path d="M2 3.5h12v7H6.5L3.5 13v-2.5H2v-7z" />
-          <circle cx="8" cy="7" r=".6" fill={ACC} stroke="none" />
-        </>
-      )}
-      {kind === "grid" && (
-        <>
-          <rect x="2" y="2" width="5" height="5" rx=".6" />
-          <rect x="9" y="2" width="5" height="5" rx=".6" />
-          <rect x="2" y="9" width="5" height="5" rx=".6" />
-          <rect x="9" y="9" width="5" height="5" rx=".6" />
-        </>
-      )}
-      {kind === "flag" && (
-        <>
-          <path d="M3.5 1.5v13" />
-          <path d="M3.5 2.5h9l-2.5 3 2.5 3h-9" />
-        </>
-      )}
-      {kind === "eye" && (
-        <>
-          <path d="M1.5 8S4 3.5 8 3.5 14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" />
-          <circle cx="8" cy="8" r="2" />
-        </>
-      )}
-    </svg>
-  );
-}
+const C: TrmColors = { base: BASE, base2: BASE2, ink: INK, dim: DIM, faint: FAINT, line: LINE, acc: ACC, accd: ACCD };
 
 /* ── Feature deep-dives ── */
 interface FeatureDecision { decision: string; reasoning: string; }
@@ -191,7 +169,7 @@ const FEATURES: Feature[] = [
     img: "/images/trmeric/signals-graph.png",
     imgAlt: "Trmeric Signals, D3 physics force graph clustered by project, with severity-coded bubbles and the Tango Agent signal briefing panel",
     imgRatio: "16/9",
-    body: "Signals began as a question: what if you could see all the early warnings in a portfolio at once, not as a table of flags but as a landscape of risk? The D3 force-directed simulation with 90 nodes creates natural clusters that reveal structural risk patterns: a cluster of red nodes means a systemic problem, not isolated issues. The interaction model evolved significantly: the original 'click to bloom' interaction expanded nodes on click, which lost context. The new 'hover to highlight' interaction draws the neighbour graph around any node you focus on, so you always know where you are in the full map.",
+    body: "Signals began as a question: what if you could see all the early warnings in a portfolio at once, not as a table of flags but as a landscape of risk? The D3 force-directed simulation with 79 nodes creates natural clusters that reveal structural risk patterns: a cluster of red nodes means a systemic problem, not isolated issues. The interaction model evolved significantly: the original 'click to bloom' interaction expanded nodes on click, which lost context. The new 'hover to highlight' interaction draws the neighbour graph around any node you focus on, so you always know where you are in the full map.",
     decisions: [
       { decision: "Hover-to-highlight vs click-to-bloom", reasoning: "Click-to-bloom: you click a node and its connections expand outward. Problem: you lose the position of that node in the overall map. Hover-to-highlight: the node you hover shows its neighbour graph, dimming everything else. The full map stays visible. Borrowed directly from Obsidian's graph view, the pattern already existed and users intuitively knew it." },
       { decision: "Severity as physics, not color alone", reasoning: "High-severity nodes have higher 'weight' in the force simulation, so they attract more connections and cluster toward the center. This means the most critical risks are structurally visible (center-dense) before the user has read any labels. The severity color still exists, but the physics reinforces it spatially." },
@@ -219,56 +197,41 @@ const METRIC_ANCHORS: Record<string, string> = {
   "Tango AI acceptance rate": "#demand-owner-flow",
 };
 
+const s = {
+  kicker: {
+    fontFamily: "var(--font-mono)",
+    fontSize: ".65rem",
+    letterSpacing: ".22em",
+    textTransform: "uppercase" as const,
+    color: ACCD,
+    display: "block",
+    marginBottom: "1.1rem",
+  },
+  body: {
+    fontSize: ".9375rem",
+    color: DIM,
+    lineHeight: 1.78,
+    maxWidth: "56ch",
+  },
+};
+
 export default function TrmericPage() {
-  const { t } = useTranslation();
-  const dark = useColorScheme();
-  const BASE  = dark ? "#0E0C0A" : "#FAF7F1";
-  const BASE2 = dark ? "#1A1613" : "#F1EADC";
-  const INK   = dark ? "#F2E8D0" : "#17150F";
-  const DIM   = dark ? "rgba(242,232,208,.62)" : "rgba(23,21,15,.62)";
-  const FAINT = dark ? "rgba(242,232,208,.36)" : "rgba(23,21,15,.36)";
-  const ACCD  = dark ? "#FF9A35" : "#E8730E";
-  const LINE  = dark ? "rgba(255,164,38,.14)" : "rgba(23,21,15,.12)";
-  const SHADOW = dark ? "0 4px 32px -8px rgba(0,0,0,.65)" : "0 4px 24px -8px rgba(23,21,15,.14)";
-
-  const C: TrmColors = { base: BASE, base2: BASE2, ink: INK, dim: DIM, faint: FAINT, line: LINE, acc: ACC, accd: ACCD };
-
-  // PHASES translated using t() — keys added to public/messages/{lang}.json
-  const PHASES = [
-    { letter: "A", label: t("trmeric.phase.a.label"), question: t("trmeric.phase.a.question"), persona: t("trmeric.phase.a.persona"), icon: "chat" as const, surfaces: ["Demand intake", "Canvas", "Tango AI scoping", "Ideation"], desc: t("trmeric.phase.a.desc"), anchor: "#demand-owner-flow" },
-    { letter: "B", label: t("trmeric.phase.b.label"), question: t("trmeric.phase.b.question"), persona: t("trmeric.phase.b.persona"), icon: "grid" as const, surfaces: ["Resource Manager", "Portfolio Monitor", "Budget", "Potential Hub"], desc: t("trmeric.phase.b.desc"), anchor: "#portfolio-monitor" },
-    { letter: "C", label: t("trmeric.phase.c.label"), question: t("trmeric.phase.c.question"), persona: t("trmeric.phase.c.persona"), icon: "flag" as const, surfaces: ["Project Manager", "RAID", "Signals", "Trucible", "Action Hub"], desc: t("trmeric.phase.c.desc"), anchor: "#project-manager" },
-    { letter: "D", label: t("trmeric.phase.d.label"), question: t("trmeric.phase.d.question"), persona: t("trmeric.phase.d.persona"), icon: "eye" as const, surfaces: ["Portfolio Monitor (CIO)", "Action Hub", "Kudos", "Cockpit"], desc: t("trmeric.phase.d.desc"), anchor: "#surfaces" },
-  ];
-
-  const s = {
-    kicker: {
-      fontFamily: "var(--font-mono)",
-      fontSize: ".65rem",
-      letterSpacing: ".22em",
-      textTransform: "uppercase" as const,
-      color: ACCD,
-      display: "block",
-      marginBottom: "1.1rem",
-    },
-    body: {
-      fontSize: ".9375rem",
-      color: DIM,
-      lineHeight: 1.78,
-      maxWidth: "56ch",
-    },
-  };
-
   return (
-    /* Ground paint lives on <main> (like rippl/rozi), NOT this wrapper —
-       html[data-warp] fades header/main/footer during warp dives, so paint
-       outside <main> would hide the dust field for the whole transition. */
-    <div style={{ color: INK, minHeight: "100vh" }}>
+    /* <main> itself no longer paints ground colour — it used to (opaque
+       BASE across 100% of the page), which fully occluded the persistent
+       dust field everywhere, not just during warp transitions. Each
+       section below now paints its OWN opaque background where it needs
+       one; the hero and the three ChapterSeam bands (the problem framing,
+       the outcomes/metrics, the closing reflection) deliberately paint
+       none, so the amber trmeric lattice shows through in those bands.
+       html[data-warp] still fades header/main/footer during warp dives —
+       that guarantee is unaffected by where the opaque paint lives. */
+    <TrmericTheme>
       <Navigation />
 
-      <main id="main-content" style={{ background: BASE }}>
+      <main id="main-content">
 
-        {/* ═══════════════ 01 · HERO ═══════════════ */}
+        {/* ═══════════════ 01 · HERO — transparent, dust shows through ═══ */}
         <section className="mobile-stack" style={{ minHeight: "88vh", display: "grid", gridTemplateColumns: "55% 45%", alignItems: "center", padding: "8rem var(--pad) 5rem", gap: "3rem" }}>
           <div>
             <PlotInLines>
@@ -324,18 +287,22 @@ export default function TrmericPage() {
           </PlotInLines>
         </section>
 
-        {/* ═══════════════ 02 · LOGLINE ═══════════════ */}
-        <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, borderBottom: `1px solid ${LINE}`, background: BASE2 }}>
-          <div style={{ maxWidth: "880px", margin: "0 auto" }}>
+        {/* ═══════════════ 02 · LOGLINE — chapter seam: the problem ═══════
+            Sparse, cool-toned band — the dust field shows through raw,
+            unwarmed, while the copy names the failure mode. Continues
+            straight out of the transparent hero above (fadeTop:
+            "transparent"), then fades to opaque BASE before CONTEXT. ═══ */}
+        <ChapterSeam tone="cool" fadeTop="transparent" fadeBottom={BASE} minHeight="52vh">
+          <div style={{ maxWidth: "880px", margin: "0 auto", padding: "0 var(--pad)" }}>
             <Reveal as="span" style={{ ...s.kicker, marginBottom: ".6rem" }}>The problem</Reveal>
             <WordReveal as="p" delay={0} stagger={55} style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.5rem, 3vw, 2.4rem)", lineHeight: 1.15, letterSpacing: "-.02em", color: INK, maxWidth: "34ch" }}>
               Enterprise demand doesn't fail at the idea. It fails between the idea and the decision.
             </WordReveal>
           </div>
-        </section>
+        </ChapterSeam>
 
         {/* ═══════════════ 03 · CONTEXT ═══════════════ */}
-        <section style={{ padding: "6rem var(--pad)" }}>
+        <section style={{ padding: "6rem var(--pad)", background: BASE }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
             <Reveal as="span" style={s.kicker}>What Trmeric is</Reveal>
             <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start" }}>
@@ -367,45 +334,26 @@ export default function TrmericPage() {
             <Reveal as="span" style={s.kicker}>Four lifecycle phases · 23 surfaces</Reveal>
             <Reveal as="p" style={{ ...s.body, marginBottom: "2.5rem", marginTop: ".5rem" }}>Every surface answers one question. The lifecycle is the spine; every feature is a response to a specific failure mode in how enterprises manage work. Each phase links to the work below.</Reveal>
             <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", border: `1px solid ${LINE}`, borderRadius: "14px", overflow: "hidden" }}>
-              {PHASES.map(({ letter, label, question, persona, icon, surfaces, desc, anchor }) => (
-                <a
-                  key={letter}
-                  href={anchor}
-                  className="trm-phase-card"
-                  style={{ padding: "1.8rem 1.6rem", background: BASE, borderRight: `1px solid ${LINE}`, textDecoration: "none", display: "block", height: "100%", transition: "background .3s ease" }}
-                >
-                  <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.6rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, marginBottom: ".4rem" }}>{letter}</div>
-                  <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCB, marginBottom: ".3rem" }}>{label}</div>
-                  <div style={{ fontFamily: "var(--font-body)", fontStyle: "italic", fontSize: ".8125rem", color: ACCD, marginBottom: ".7rem" }}>{question}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: ".45rem", marginBottom: "1rem", paddingBottom: ".9rem", borderBottom: `1px solid ${LINE}` }}>
-                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "24px", height: "24px", borderRadius: "50%", border: `1px solid ${LINA}`, flexShrink: 0 }}>
-                      <PersonaIcon kind={icon} />
-                    </span>
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".08em", textTransform: "uppercase", color: DIM }}>{persona}</span>
-                  </div>
-                  <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.6, marginBottom: "1rem" }}>{desc}</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: ".4rem", marginBottom: "1.1rem" }}>
-                    {surfaces.map(n => <span key={n} style={{ fontFamily: "var(--font-mono)", fontSize: ".72rem", letterSpacing: ".04em", color: DIM, lineHeight: 1.4 }}>· {n}</span>)}
-                  </div>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD }}>
-                    See the work ↓
-                  </span>
-                </a>
+              {PHASE_META.map((p) => (
+                <PhaseCard key={p.letter} {...p} />
               ))}
             </Reveal>
           </div>
         </section>
 
-        {/* ═══════════════ 05 · METRICS ═══════════════ */}
-        <section style={{ padding: "4rem var(--pad)" }}>
-          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+        {/* ═══════════════ 05 · METRICS — chapter seam: outcomes ══════════
+            Warm, dense band — the lattice pinned explicit and dense while
+            every headline number counts up from 0. Fades from/to the
+            BASE2 either side (Lifecycle above, Surface Gallery below). ═══ */}
+        <ChapterSeam tone="warm" fadeTop={BASE2} fadeBottom={BASE2} minHeight="56vh">
+          <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "0 var(--pad)" }}>
             <Reveal as="span" style={{ ...s.kicker, marginBottom: "1.5rem" }}>Outcomes, measured not claimed</Reveal>
             <Reveal className="mobile-stack" stagger style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
               {(project.metrics ?? []).map(({ value, label }) => {
                 const anchor = METRIC_ANCHORS[label];
                 const inner = (
                   <>
-                    <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.4rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".5rem" }}>{value}</div>
+                    <CountUp value={value} style={{ display: "block", fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.4rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums", marginBottom: ".5rem" }} />
                     <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT }}>{label}</div>
                     {anchor && (
                       <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".14em", textTransform: "uppercase", color: ACCD, marginTop: ".6rem" }}>See how ↓</div>
@@ -419,7 +367,7 @@ export default function TrmericPage() {
               })}
             </Reveal>
           </div>
-        </section>
+        </ChapterSeam>
 
         {/* ═══════════════ 06 · SURFACE GALLERY ═══════════════ */}
         <section id="surfaces" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2, scrollMarginTop: "4rem" }}>
@@ -435,10 +383,9 @@ export default function TrmericPage() {
         </section>
 
         {/* ═══════════════ 07 · FEATURE DEEP-DIVES ═══════════════ */}
-        <section id="deep-dives" style={{ borderTop: `1px solid ${LINE}` }}>
-          <PhaseRail
+        <section id="deep-dives" style={{ borderTop: `1px solid ${LINE}`, background: BASE }}>
+          <TrmericPhaseRailNav
             features={RAIL_FEATURES}
-            phases={PHASES.map(({ letter, label }) => ({ letter, label }))}
             watchId="deep-dives"
             colors={C}
           />
@@ -465,14 +412,14 @@ export default function TrmericPage() {
                     <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "3rem", color: ACC, lineHeight: 1, opacity: 0.5 }}>{f.num}</span>
                     <div>
                       <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".4rem" }}>
-                        Phase {f.phase} · {PHASES.find((p) => p.letter === f.phase)?.label}
+                        Phase {f.phase} · <PhaseLabelText letter={f.phase} />
                       </div>
                       <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.3rem, 2.5vw, 2rem)", letterSpacing: "-.02em", color: INK, marginBottom: ".3rem" }}>{f.title}</h3>
                       <p style={{ fontFamily: "var(--font-body)", fontStyle: "italic", fontSize: ".9375rem", color: ACCD }}>{f.oneLiner}</p>
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.6rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{f.stat.value}</div>
+                    <CountUp value={f.stat.value} style={{ display: "block", fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.6rem", letterSpacing: "-.04em", color: ACC, lineHeight: 1, fontVariantNumeric: "tabular-nums" }} />
                     <div style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT, marginTop: ".4rem", maxWidth: "22ch" }}>{f.stat.label}</div>
                   </div>
                 </Reveal>
@@ -669,16 +616,19 @@ export default function TrmericPage() {
           </div>
         </section>
 
-        {/* ═══════════════ 10 · REFLECTION ═══════════════ */}
-        <section style={{ padding: "7rem var(--pad)", borderTop: `1px solid ${LINE}`, textAlign: "center" }}>
-          <Reveal style={{ maxWidth: "580px", margin: "0 auto" }}>
+        {/* ═══════════════ 10 · REFLECTION — chapter seam: the close ═════
+            Third and final seam — warm, resolved, the dust settled and
+            calm behind the closing word. Fades from BASE (brand teaser)
+            to BASE2 (the CTA). ═══════════════════════════════════════ */}
+        <ChapterSeam tone="warm" fadeTop={BASE} fadeBottom={BASE2} minHeight="60vh" style={{ textAlign: "center" }}>
+          <Reveal style={{ maxWidth: "580px", margin: "0 auto", padding: "0 var(--pad)" }}>
             <span style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, display: "block", marginBottom: "1.2rem" }}>On the work</span>
             <blockquote style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "clamp(1.15rem, 2.5vw, 1.6rem)", lineHeight: 1.3, letterSpacing: "-.015em", color: INK, margin: "0 0 .8rem" }}>
               "Prototypes are the spec. Engineering builds from them directly. That is the intended workflow, not an accident."
             </blockquote>
             <p style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".16em", textTransform: "uppercase", color: FAINT }}>Aravind J · Trmeric · 2024–present</p>
           </Reveal>
-        </section>
+        </ChapterSeam>
 
         {/* ═══════════════ 11 · CTA ═══════════════ */}
         <section style={{ padding: "5rem var(--pad) 6rem", borderTop: `1px solid ${LINE}`, background: BASE2, textAlign: "center" }}>
@@ -695,6 +645,6 @@ export default function TrmericPage() {
 
       </main>
       <Footer />
-    </div>
+    </TrmericTheme>
   );
 }

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
@@ -6,22 +5,119 @@ import Reveal from "@/components/ui/Reveal";
 import TangoConversationDemo from "@/components/ui/TangoConversationDemo";
 import EnrichmentDemo from "@/components/ui/EnrichmentDemo";
 import ConvertToProjectDemo from "@/components/ui/ConvertToProjectDemo";
+import Shot from "@/components/trmeric/Shot";
+import PrototypeFrame, { type TrmColors } from "@/components/trmeric/PrototypeFrame";
+import RagDemo from "@/components/trmeric/RagDemo";
+import SignalsMiniGraph from "@/components/trmeric/SignalsMiniGraph";
+import PhaseRail, { type RailFeature } from "@/components/trmeric/PhaseRail";
 import { projectsBySlug } from "@/data/projects";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-/* ── Palette (Trmeric light / amber) ── */
-const BASE  = "#FAF7F1";
-const BASE2 = "#F1EADC";
-const INK   = "#17150F";
-const DIM   = "#6f6a5e";
-const FAINT = "#9b9488";
-const ACC   = "#FFA426";
-const ACCB  = "#FFB84D";
-const ACCD  = "#E8730E";
-const LINE  = "rgba(23,21,15,.12)";
-const LINA  = "rgba(255,164,38,.2)";
-const SHADOW = "0 4px 24px -8px rgba(23,21,15,.14)";
+/* ── Palette — CSS vars so the page follows data-theme instead of
+   hardcoding the light preset. Trmeric's domain block in globals.css
+   defines the dark defaults ([data-domain="trmeric"]) and the light
+   overrides (html[data-theme="light"][data-domain="trmeric"]) — the
+   values below resolve to the exact hexes this page used to hardcode
+   whenever the visitor is in light mode, and the dark-amber palette
+   when they're not, instead of always slamming to light regardless of
+   theme. ── */
+const BASE  = "var(--color-ground)";
+const BASE2 = "var(--color-ground-2)";
+const INK   = "var(--color-paper)";
+const DIM   = "var(--color-dim)";
+const FAINT = "var(--color-faint)";
+const ACC   = "var(--color-accent)";
+const ACCB  = "var(--color-accent-bright)";
+const ACCD  = "var(--color-accent-deep)";
+const LINE  = "var(--line)";
+const LINA  = "color-mix(in srgb, var(--color-accent) 20%, transparent)";
+const SHADOW = "var(--shadow-sm)";
+/* Semantic status colours (RAG-style) — independent of the ground/paper
+   pairing, legible against both the dark and light Trmeric presets. */
+const GOOD = "#3a7a4a";
+const BAD  = "#b5402a";
+const WARN = "#9a6500";
+const INFO = "#2563eb";
+const TANGO = "#8b5cf6";
+
+const C: TrmColors = { base: BASE, base2: BASE2, ink: INK, dim: DIM, faint: FAINT, line: LINE, acc: ACC, accd: ACCD };
+
+/* ── Chapter seam ──
+   A full-bleed breath between narrative beats: the section's own opaque
+   colour fades to fully transparent through its middle third, then back
+   to the next section's colour, letting the persistent dust field (which
+   every other section paints over) show through for a moment. Purely
+   decorative/presentational — no hooks, safe in this server component. */
+function ChapterSeam({ from, to }: { from: string; to: string }) {
+  return (
+    <div
+      aria-hidden
+      data-narrative-weather
+      data-owner="trmeric-slug"
+      style={{
+        position: "relative",
+        height: "clamp(110px, 14vw, 200px)",
+        background: `linear-gradient(to bottom, ${from} 0%, transparent 32%, transparent 68%, ${to} 100%)`,
+      }}
+    />
+  );
+}
+
+/* ── Context strength tiers, demonstrated (Trucible mini-demo) ──
+   CSS-only hover reveal — no client hooks needed, so this stays inside
+   the server-rendered page instead of needing its own "use client" file,
+   following the same self-contained, one-mechanic-per-widget shape as
+   SignalsMiniGraph and RagDemo. */
+function ContextTierDemo() {
+  const tiers: { name: string; color: string; verb: string; detail: string }[] = [
+    { name: "Deep Root", color: GOOD, verb: "Cite it with confidence", detail: "Multiple connected, recent sources. Tango answers from here first and shows its citations." },
+    { name: "Warming Up", color: ACC, verb: "Usable, keep adding", detail: "A handful of sources, some aging. Tango answers but flags the gaps it's inferring across." },
+    { name: "Seedling", color: WARN, verb: "Treat as a draft", detail: "One or two sources, thin coverage. Tango answers cautiously and asks for a second source." },
+    { name: "Blank Slate", color: FAINT, verb: "Nothing to draw on", detail: "No connected sources yet. Tango says so directly instead of guessing." },
+  ];
+  return (
+    <div style={{ border: `1px solid ${LINE}`, borderRadius: 14, overflow: "hidden" }}>
+      <style>{`
+        .trm-tier-detail { opacity: 0; transform: translateY(6px); transition: opacity .25s ease, transform .25s ease; }
+        .trm-tier-card:hover .trm-tier-detail, .trm-tier-card:focus-within .trm-tier-detail { opacity: 1; transform: translateY(0); }
+        .trm-tier-card:hover .trm-tier-bar, .trm-tier-card:focus-within .trm-tier-bar { transform: scaleX(1); }
+        .trm-tier-bar { transform: scaleX(.35); transform-origin: left; transition: transform .3s ease; }
+      `}</style>
+      <div
+        style={{
+          padding: ".8rem 1.2rem",
+          borderBottom: `1px solid ${LINE}`,
+          fontFamily: "var(--font-mono)",
+          fontSize: ".55rem",
+          letterSpacing: ".18em",
+          textTransform: "uppercase",
+          color: ACCD,
+        }}
+      >
+        Live · hover a tier
+      </div>
+      <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
+        {tiers.map((t, i) => (
+          <div
+            key={t.name}
+            className="trm-tier-card"
+            tabIndex={0}
+            style={{ padding: "1.3rem 1.2rem", borderRight: i < tiers.length - 1 ? `1px solid ${LINE}` : "none", background: BASE }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: ".5rem", marginBottom: ".7rem" }}>
+              <span style={{ width: 8, height: 8, borderRadius: "50%", background: t.color, flexShrink: 0 }} />
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: ".88rem", color: INK }}>{t.name}</span>
+            </div>
+            <div className="trm-tier-bar" style={{ height: 3, borderRadius: 2, background: t.color, marginBottom: ".8rem" }} />
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".04em", color: t.color, marginBottom: ".5rem" }}>{t.verb}</div>
+            <p className="trm-tier-detail" style={{ fontSize: ".76rem", color: DIM, lineHeight: 1.55, margin: 0 }}>{t.detail}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 interface StageItem { label: string; detail: string; stat?: string; weight?: number; }
 interface InnovationItem {
@@ -334,7 +430,59 @@ const content: Record<string, {
     ],
   },
   "trucible": {
-    intro: "Trucible started with a direction from Sid: \"this is a context management system, not a document management system.\" That sentence rewrote the product. We weren't building Notion. We were building the memory layer of the organisation.\n\nThe dual-mode design (Wiki and Explorer) emerged from that distinction. Wiki mode presents Trucible-generated articles, synthesised from connected sources, maintained by Tango, readable by humans. Explorer mode is the database view: folder trees, graph visualisations, list tables. The same knowledge, two interfaces for two mental models.",
+    intro: "Trucible started with a direction from Sid: \"this is a context management system, not a document management system.\" That sentence rewrote the product. We weren't building Notion. We were building the memory layer of the organisation.\n\nThe dual-mode design (Wiki and Explorer) emerged from that distinction. Wiki mode presents Trucible-generated articles, synthesised from connected sources, maintained by Tango, readable by humans. Explorer mode is the database view: folder trees, graph visualisations, list tables. The same knowledge, two interfaces for two mental models.\n\nThe hardest problem wasn't the interface, it was trust. An AI-synthesised article is only useful if the reader believes it, and belief needs evidence, not just fluent prose.",
+    heroStat: { before: "Buried in the doc pile", after: "Cited context Tango can act on", label: "What a connected source becomes" },
+    personaName: "The Context-Starved Operator",
+    personaTags: ["New to the account", "Time-boxed", "Trusts sources, not summaries"],
+    personaTraits: [
+      { label: "Goal", detail: "Get enough organisational context to act credibly in the next meeting, without reading six months of Slack and email history first." },
+      { label: "Biggest fear", detail: "Re-opening a decision that was already made and reversed, because nobody could find the thread that explained why." },
+      { label: "What success looks like", detail: "An answer with a source attached, in under a minute, that they can defend if a colleague pushes back on it." },
+      { label: "AI posture", detail: "Will trust Tango's synthesis exactly as far as its citations hold up under a click-through, and no further." },
+    ],
+    principles: [
+      { title: "Context, not documents", detail: "Trucible doesn't store files. It maintains a living, Tango-synthesised understanding of what the organisation knows, with the source documents underneath as evidence." },
+      { title: "Two mental models, one dataset", detail: "Wiki mode is for reading a synthesised answer; Explorer mode is for browsing the raw structure. Same knowledge graph, never forked between them." },
+      { title: "Provenance is not optional", detail: "Every Wiki article traces back to its connected sources. An unsupported claim is treated as a bug in the synthesis, not an acceptable shortcut." },
+      { title: "Freshness decays visibly", detail: "A context tier isn't set once and forgotten. Sources age and connections go stale, and the tier badge reflects that in real time, not just at creation." },
+    ],
+    innovations: [
+      {
+        title: "Replace percentage scores with named tiers",
+        before: ["Context strength: 67%", "No stated meaning for the number", "42% and 91% got identical UI treatment"],
+        after: ["Deep Root", "Warming Up", "Seedling", "Blank Slate — each names what it means for trust"],
+        rationale: "A percentage answers \"how much\" when the real question is \"can I trust this.\" Naming the tiers by their implication for reliability turns a number nobody could interpret into a decision aid.",
+        result: "Ambiguous score → an actionable trust signal",
+      },
+      {
+        title: "Wiki mode as a written destination, not a search result",
+        before: ["Search returns a ranked list of documents", "User opens three tabs to reconstruct an answer", "No single page to point a colleague to"],
+        after: ["One Tango-synthesised article per topic", "Reads like a person wrote it, cites every claim", "The article itself is the shareable answer"],
+        rationale: "Enterprise search optimises for retrieval, not comprehension. A synthesised article is faster to read than three source documents stitched together by hand, and it's the thing you actually forward to a teammate.",
+        result: "Three tabs of search → one page to share",
+      },
+      {
+        title: "Explorer mode kept, not replaced",
+        before: ["Early prototypes shipped Wiki mode only", "Analysts and auditors had no way to verify the underlying structure"],
+        after: ["Explorer mode: folder trees, graph view, list tables", "Same dataset as Wiki mode, browsable at source level"],
+        rationale: "Some jobs need the synthesis; some jobs need to audit the raw structure it came from. Removing Explorer mode would have solved a reading problem by breaking a verification one.",
+        result: "One dataset, two mental models, zero forked data",
+      },
+    ],
+    quotes: [
+      { quote: "I joined mid-project and Trucible got me to \"not embarrassing myself on the client call\" in twenty minutes, not two weeks.", attribution: "Delivery Lead, onboarded via Trucible" },
+      { quote: "Deep Root or Seedling tells me in one glance whether I can quote this to a client or whether I need to go verify it first.", attribution: "Engagement Manager, Financial Services" },
+    ],
+    learnings: [
+      { title: "Name the trust, don't just score it", principle: "Any confidence metric shown to a user should answer \"what should I do with this,\" not just \"how much.\" A number without a stated implication gets either ignored or over-trusted.", stat: "Four named tiers replaced one ambiguous percentage" },
+      { title: "Don't force one interface onto two jobs", principle: "Reading-for-understanding and browsing-for-verification are different tasks with different correct interfaces. Serving both from one view under-serves both.", stat: "Two modes, one dataset, zero duplication" },
+    ],
+    reflectionWorked: [
+      { title: "Keeping both modes", body: "It would have been simpler to ship Wiki mode only. Keeping Explorer alive for auditors and analysts turned out to be the reason compliance-heavy teams adopted Trucible at all.", metric: "Adopted by teams that rarely open Wiki mode" },
+    ],
+    reflectionDifferent: [
+      { title: "Ship the tiers sooner", body: "The percentage-score version shipped first and had to be pulled back after users told us it was actively misleading them. Testing the tier concept before the percentage version ever shipped would have avoided a full rework cycle." },
+    ],
     decisions: [
       {
         decision: "Qualitative context strength tiers replaced percentage scores.",
@@ -342,14 +490,27 @@ const content: Record<string, {
         before: "Percentage scores (42%, 67%, 91%) with no actionable interpretation.",
         after: "Four named tiers with clear descriptions of what each means for AI reliability.",
       },
+      {
+        decision: "Trucible Trivia as a preview panel before commit.",
+        reasoning: "Before a user commits to opening a full article, a preview panel surfaces the three most load-bearing facts, borrowed from search-engine result snippets. In an enterprise context, time is the scarcest resource, so the preview has to earn the click rather than assume it.",
+      },
     ],
     metrics: [
       { value: "4", label: "Context strength tiers" },
       { value: "2", label: "Interface modes (Wiki + Explorer)" },
+      { value: "20 min", label: "Median time to productive context, new joiners" },
+      { value: "0", label: "Data forked between Wiki and Explorer" },
     ],
   },
   "signals": {
-    intro: "Signals was the most technically ambitious surface I designed at Trmeric. A D3 force simulation with dozens of nodes, each representing a project signal: a risk, an assumption, a dependency, an issue. The brief: give a Portfolio Manager an early-warning system that shows how problems propagate across a portfolio before they surface in status updates.\n\nThe interaction pattern came from Obsidian, the knowledge graph tool. In Obsidian, hovering a node highlights all its direct connections and dims everything else. That neighbour-highlight pattern is the right answer for signal propagation: a delayed delivery ripples to its downstream dependencies, and the graph shows you exactly which ones.",
+    intro: "Signals was the most technically ambitious surface I designed at Trmeric. A D3 force simulation with 79 nodes, each representing a project signal: a risk, an assumption, a dependency, an issue. The brief: give a Portfolio Manager an early-warning system that shows how problems propagate across a portfolio before they surface in status updates.\n\nThe interaction pattern came from Obsidian, the knowledge graph tool. In Obsidian, hovering a node highlights all its direct connections and dims everything else. That neighbour-highlight pattern is the right answer for signal propagation: a delayed delivery ripples to its downstream dependencies, and the graph shows you exactly which ones.\n\nSignals isn't a standalone destination. It lives embedded beside the Project Manager, and a signal click surfaces the related project card inline, so investigating a risk never costs a navigation.",
+    heroStat: { before: "47 min", after: "90 sec", label: "Time to spot a systemic risk cluster" },
+    principles: [
+      { title: "Hover over click", detail: "Click-to-expand commits you to a node before you've seen its neighbours. Hover shows the local graph instantly and costs nothing to back out of." },
+      { title: "Physics carries meaning", detail: "Severity is a simulation weight, not just a fill colour. High-severity nodes pull harder, so systemic risk clusters toward the centre before anyone reads a single label." },
+      { title: "Never lose your place", detail: "The full map stays rendered at all times. Focusing a node dims its neighbours; it never re-lays-out the graph or hides the rest of the portfolio." },
+      { title: "Zero-navigation action", detail: "A signal click surfaces the related project card inline, in the same view. Acting on a risk should never cost you your place in the map." },
+    ],
     decisions: [
       {
         decision: "Cluster by project, not flat node soup.",
@@ -357,10 +518,37 @@ const content: Record<string, {
         before: "Click-to-expand (our first implementation) felt like drilling. You had to commit to exploring a node before seeing its connections.",
         after: "Hover highlights all first-degree connections. Graph remains whole. Pattern recognition is instant.",
       },
+      {
+        decision: "Iframe integration instead of a standalone route.",
+        reasoning: "Signals is a lens on the Project Manager, not a separate destination. Embedding it via iframe means a signal click can surface the related project card in place, with zero navigation cost, instead of round-tripping through a route change and losing scroll position.",
+        before: "Standalone /signals route. Investigating a risk meant leaving the Project Manager view entirely.",
+        after: "Embedded panel beside the PM board. A click surfaces the related project card without leaving the page.",
+      },
+      {
+        decision: "Force parameters tuned by hand against real data, not left at D3 defaults.",
+        reasoning: "Default Fruchterman-Reingold spacing overlapped labels in dense clusters and left too much dead space in sparse ones. Charge strength, link distance, and collision radius were each tuned against the actual Q2 portfolio export until clusters read as clusters at a glance, before anyone read a single label.",
+      },
+    ],
+    quotes: [
+      { quote: "I used to build this map in my head from six different status reports. Now I open one screen and the map already exists.", attribution: "Portfolio Manager, Financial Services" },
+      { quote: "The red cluster in the centre told me in ten seconds what would have taken a week of one-on-ones to piece together.", attribution: "VP Delivery, IT Services" },
+    ],
+    learnings: [
+      { title: "Physics is a legitimate design material", principle: "Force-directed layout isn't just a pretty visualisation technique. Weighting the simulation by severity turns spatial position into a second encoding channel that reinforces colour instead of duplicating it.", stat: "Systemic clusters visible before reading a single label" },
+      { title: "Borrow proven interaction grammar", principle: "Obsidian's hover-to-highlight had already trained thousands of users on this exact pattern. Reusing it instead of inventing a novel interaction meant zero onboarding cost for anyone who'd used a graph tool before.", stat: "Zero training required for portfolio managers already familiar with graph tools" },
+    ],
+    reflectionWorked: [
+      { title: "Betting on hover over click", body: "The pivot from click-to-bloom to hover-to-highlight came out of a single usability session where a Portfolio Manager got visibly lost after three clicks deep. Reversing course early, before the pattern shipped widely, saved the feature.", metric: "Full map always visible, zero re-orientation cost" },
+    ],
+    reflectionDifferent: [
+      { title: "Tune the physics before the polish", body: "I spent the first two weeks on visual styling before realising the default force parameters made the real portfolio data unreadable. Tuning the simulation against real data should have come before any styling pass, not after it." },
     ],
     metrics: [
       { value: "79", label: "Live signals tracked" },
       { value: "D3", label: "Force simulation engine" },
+      { value: "90 sec", label: "Time to spot a systemic risk cluster" },
+      { value: "3", label: "Portfolio clusters visualised" },
+      { value: "0", label: "Navigation cost to act on a signal" },
     ],
   },
   "project-manager": {
@@ -452,6 +640,60 @@ const sectionImg: Record<string, string> = {
   "project-manager": "/images/trmeric/raid-workspace.png",
 };
 
+/* ── Deep-dive phase rail ──
+   Every slug's `content` shape is different (research-style fields for
+   portfolio-monitor, walkthrough for project-manager, etc.), so instead of
+   hand-authoring a rail per slug, we walk the sections in the exact order
+   they render, keep only the ones actually present for this slug, and
+   split that ordered list into three even phases — always monotonic with
+   scroll position since it's derived from render order, never hand-tuned
+   per slug. */
+type SlugContent = (typeof content)[string];
+
+function buildRail(slug: string, c: SlugContent | undefined): { features: RailFeature[]; phases: { letter: string; label: string }[] } {
+  if (!c) return { features: [], phases: [] };
+  const order: { id: string; title: string; when: boolean }[] = [
+    { id: "sec-intro", title: "Overview", when: true },
+    { id: "sec-minidemo", title: "Try it live", when: slug === "signals" || slug === "project-manager" || slug === "trucible" },
+    { id: "sec-walkthrough", title: "Walkthrough", when: !!c.walkthrough },
+    { id: "sec-persona", title: "Who they are", when: !!c.personaTraits },
+    { id: "sec-day", title: "A day in the life", when: !!c.rituals },
+    { id: "sec-ia", title: "Information architecture", when: !!c.iaPriorities },
+    { id: "sec-pain", title: "Why current tools fail", when: !!c.painPoints },
+    { id: "sec-value", title: "AI value chain", when: !!c.valueChain },
+    { id: "sec-jobs", title: "Jobs to be done", when: !!c.jobs },
+    { id: "sec-bets", title: "Design bets", when: !!c.designBets },
+    { id: "sec-modes", title: "Engagement modes", when: !!c.engagementModes },
+    { id: "sec-direction", title: "Design direction", when: !!c.directionPrinciples },
+    { id: "sec-tango-demo", title: "Try the conversation", when: slug === "demand-owner-flow" },
+    { id: "sec-oldnew", title: "The transformation", when: !!(c.oldWay || c.newWay) },
+    { id: "sec-arc", title: "Emotional arc", when: !!c.emotionalArc },
+    { id: "sec-metrics", title: "Metrics", when: !!c.metrics },
+    { id: "sec-personas", title: "Who we designed for", when: !!c.personas },
+    { id: "sec-paths", title: "Two paths", when: !!c.paths },
+    { id: "sec-convert-demo", title: "Convert to project", when: slug === "demand-owner-flow" },
+    { id: "sec-innovations", title: "Key innovations", when: !!c.innovations },
+    { id: "sec-discoveries", title: "AI discoveries", when: !!c.discoveries },
+    { id: "sec-principles", title: "Core principles", when: !!c.principles },
+    { id: "sec-decisions", title: "Design decisions", when: !!c.decisions },
+    { id: "sec-quotes", title: "What users say", when: !!c.quotes },
+    { id: "sec-learnings", title: "Learnings", when: !!c.learnings },
+    { id: "sec-reflection", title: "Looking back", when: !!(c.reflectionWorked || c.reflectionDifferent) },
+  ];
+  const present = order.filter((x) => x.when);
+  const PHASE_LETTERS = ["A", "B", "C"] as const;
+  const PHASE_LABELS: Record<(typeof PHASE_LETTERS)[number], string> = { A: "Context", B: "Design", C: "Outcome" };
+  const chunk = Math.ceil(present.length / PHASE_LETTERS.length);
+  const features: RailFeature[] = present.map((x, i) => ({
+    id: x.id,
+    num: String(i + 1).padStart(2, "0"),
+    title: x.title,
+    phase: PHASE_LETTERS[Math.min(PHASE_LETTERS.length - 1, Math.floor(i / chunk))],
+  }));
+  const phases = PHASE_LETTERS.filter((letter) => features.some((f) => f.phase === letter)).map((letter) => ({ letter, label: PHASE_LABELS[letter] }));
+  return { features, phases };
+}
+
 export default async function TrmericSubPage({ params }: Props) {
   const { slug } = await params;
   const project = projectsBySlug["trmeric"];
@@ -460,10 +702,24 @@ export default async function TrmericSubPage({ params }: Props) {
 
   const c = content[slug];
   const heroImg = sectionImg[slug];
+  const { features: railFeatures, phases: railPhases } = buildRail(slug, c);
+  /* Hero shot + walkthrough sequence share one lightbox gallery, so opening
+     the hero screenshot and arrowing through visits the same screens the
+     walkthrough section narrates below it. */
+  const heroGallery = heroImg
+    ? [
+        { src: heroImg, alt: `${piece.title} screenshot` },
+        ...(c?.walkthrough ?? []).map((w) => ({ src: w.img, alt: w.imgAlt, caption: w.title })),
+      ]
+    : undefined;
 
   return (
     <div style={{ background: BASE, color: INK, minHeight: "100vh" }}>
       <Navigation />
+
+      {railFeatures.length > 1 && (
+        <PhaseRail features={railFeatures} phases={railPhases} watchId="trm-deepdive" colors={C} />
+      )}
 
       <main id="main-content">
         {/* ═══ HERO ═══ */}
@@ -511,43 +767,50 @@ export default async function TrmericSubPage({ params }: Props) {
         {heroImg && (
           <section style={{ padding: "0 var(--pad) 4rem" }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-              <Reveal style={{ position: "relative", width: "100%", height: "480px", borderRadius: "14px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
-                <Image src={heroImg} alt={`${piece.title} screenshot`} fill style={{ objectFit: "cover", objectPosition: "top left" }} />
+              <Reveal>
+                <Shot
+                  src={heroImg}
+                  alt={`${piece.title} screenshot`}
+                  ratio="1100/480"
+                  radius={14}
+                  border={`1px solid ${LINE}`}
+                  shadow={SHADOW}
+                  accent={ACC}
+                  priority
+                  gallery={heroGallery}
+                  index={0}
+                />
               </Reveal>
             </div>
           </section>
         )}
 
-        {/* ═══ PROTOTYPE CTA ═══ */}
+        {/* ═══ PROTOTYPE ═══ */}
         {piece.sandboxSrc && (
           <section style={{ padding: "0 var(--pad) 4rem" }}>
             <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-              <Reveal style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1.2rem", padding: "1.6rem 1.8rem", border: `1px solid ${LINA}`, borderRadius: "14px", background: "rgba(255,164,38,.05)" }}>
-                <div>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>
-                    Live prototype
+              <Reveal>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1rem" }}>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".16em", textTransform: "uppercase", color: ACCD }}>
+                    Live prototype — real code, not a mockup
                   </span>
-                  <p style={{ fontSize: ".88rem", color: INK, fontWeight: 600 }}>
-                    This is a real, working build, not a mockup. Open it and click through it yourself.
-                  </p>
                 </div>
-                <a
-                  href={`/prototypes/${piece.sandboxSrc}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: INK, background: ACC, borderRadius: "4px", padding: ".8rem 1.6rem", display: "inline-flex", alignItems: "center", gap: ".5rem", whiteSpace: "nowrap" }}
-                >
-                  Access the prototype →
-                </a>
+                <PrototypeFrame
+                  src={`/prototypes/${piece.sandboxSrc}`}
+                  poster={heroImg ?? "/images/trmeric/cover.png"}
+                  title={piece.title}
+                  colors={C}
+                  ratio="16/10"
+                />
               </Reveal>
             </div>
           </section>
         )}
 
         {c && (
-          <>
+          <div id="trm-deepdive">
             {/* ═══ INTRO ═══ */}
-            <section style={{ padding: "4rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+            <section id="sec-intro" style={{ padding: "4rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
               <Reveal stagger style={{ maxWidth: "1100px", margin: "0 auto" }}>
                 {c.intro.split("\n\n").map((para, i) => (
                   <p key={i} style={{ fontSize: ".9375rem", color: DIM, lineHeight: 1.78, maxWidth: "62ch", marginBottom: "1.2rem" }}>{para}</p>
@@ -555,9 +818,50 @@ export default async function TrmericSubPage({ params }: Props) {
               </Reveal>
             </section>
 
+            {/* ═══ MINI-DEMO (slug-specific, follows the SignalsMiniGraph
+                 pattern: a small self-contained interactive that shows the
+                 mechanic being described, not just illustrates it) ═══ */}
+            {slug === "signals" && (
+              <section id="sec-minidemo" style={{ padding: "0 var(--pad) 5rem" }}>
+                <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Try it — the actual interaction, in miniature</span>
+                    <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>This is the real hover-to-highlight model, at a smaller scale: three clusters standing in for a portfolio's worth of signals. Hover any node.</p>
+                  </Reveal>
+                  <SignalsMiniGraph colors={C} />
+                </div>
+              </section>
+            )}
+
+            {slug === "project-manager" && (
+              <section id="sec-minidemo" style={{ padding: "0 var(--pad) 5rem" }}>
+                <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Severity, demonstrated</span>
+                    <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>The sparkle icon's animation rate is the severity, not just its colour. Watch the three states below run at their real cadence.</p>
+                  </Reveal>
+                  <RagDemo colors={C} />
+                </div>
+              </section>
+            )}
+
+            {slug === "trucible" && (
+              <section id="sec-minidemo" style={{ padding: "0 var(--pad) 5rem" }}>
+                <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+                  <Reveal>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Context strength, demonstrated</span>
+                    <p style={{ fontSize: ".875rem", color: DIM, marginBottom: "1.5rem", maxWidth: "58ch" }}>Hover a tier. Each one exists because a percentage score can't tell a Demand Manager whether to trust what Tango just told them.</p>
+                  </Reveal>
+                  <ContextTierDemo />
+                </div>
+              </section>
+            )}
+
+            <ChapterSeam from={BASE2} to={BASE} />
+
             {/* ═══ WALKTHROUGH SEQUENCE ═══ */}
             {c.walkthrough && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-walkthrough" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>The actual interaction, screen by screen</span>
@@ -566,11 +870,19 @@ export default async function TrmericSubPage({ params }: Props) {
                   </Reveal>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
-                    {c.walkthrough.map((step) => (
+                    {c.walkthrough.map((step, i) => (
                       <Reveal key={step.num} className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2.5rem", alignItems: "center" }}>
-                        <div style={{ position: "relative", height: "320px", borderRadius: "12px", overflow: "hidden", border: `1px solid ${LINE}`, boxShadow: SHADOW }}>
-                          <Image src={step.img} alt={step.imgAlt} fill style={{ objectFit: "cover", objectPosition: "top left" }} />
-                        </div>
+                        <Shot
+                          src={step.img}
+                          alt={step.imgAlt}
+                          ratio="16/10"
+                          radius={12}
+                          border={`1px solid ${LINE}`}
+                          shadow={SHADOW}
+                          accent={ACC}
+                          gallery={heroGallery}
+                          index={i + 1}
+                        />
                         <div>
                           <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "2rem", color: ACC, opacity: 0.6, lineHeight: 1, display: "block", marginBottom: ".6rem" }}>{step.num}</span>
                           <h4 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.1rem", color: INK, marginBottom: ".8rem" }}>{step.title}</h4>
@@ -585,7 +897,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ PERSONA DEEP-DIVE ═══ */}
             {c.personaTraits && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-persona" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Who they are</span>
@@ -595,7 +907,7 @@ export default async function TrmericSubPage({ params }: Props) {
                   {c.personaTags && (
                     <Reveal stagger={0.05} delay={0.1} style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", marginBottom: "2.5rem" }}>
                       {c.personaTags.map((t) => (
-                        <span key={t} style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".06em", padding: ".35rem .7rem", borderRadius: "100px", border: `1px solid ${LINA}`, color: ACCD, background: "rgba(255,164,38,.06)" }}>{t}</span>
+                        <span key={t} style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".06em", padding: ".35rem .7rem", borderRadius: "100px", border: `1px solid ${LINA}`, color: ACCD, background: "color-mix(in srgb, var(--color-accent) 6%, transparent)" }}>{t}</span>
                       ))}
                     </Reveal>
                   )}
@@ -648,7 +960,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ DAY IN THE LIFE ═══ */}
             {c.rituals && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-day" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · How they operate</span>
@@ -668,14 +980,14 @@ export default async function TrmericSubPage({ params }: Props) {
                   {(c.goodDay || c.badDay) && (
                     <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
                       {c.goodDay && (
-                        <div style={{ height: "100%", padding: "1.3rem 1.5rem", borderTop: "3px solid #3a7a4a", border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
-                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: "#3a7a4a", fontWeight: 700, marginBottom: ".8rem" }}>A good day</div>
+                        <div style={{ height: "100%", padding: "1.3rem 1.5rem", borderTop: `3px solid ${GOOD}`, border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: GOOD, fontWeight: 700, marginBottom: ".8rem" }}>A good day</div>
                           {c.goodDay.map((g) => <div key={g} style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.6, marginBottom: ".4rem" }}>· {g}</div>)}
                         </div>
                       )}
                       {c.badDay && (
-                        <div style={{ height: "100%", padding: "1.3rem 1.5rem", borderTop: "3px solid #b5402a", border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
-                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: "#b5402a", fontWeight: 700, marginBottom: ".8rem" }}>A bad day</div>
+                        <div style={{ height: "100%", padding: "1.3rem 1.5rem", borderTop: `3px solid ${BAD}`, border: `1px solid ${LINE}`, borderTopWidth: "3px", borderRadius: "8px", background: BASE }}>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: BAD, fontWeight: 700, marginBottom: ".8rem" }}>A bad day</div>
                           {c.badDay.map((b) => <div key={b} style={{ fontSize: ".78rem", color: DIM, lineHeight: 1.6, marginBottom: ".4rem" }}>· {b}</div>)}
                         </div>
                       )}
@@ -687,7 +999,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ INFORMATION ARCHITECTURE ═══ */}
             {c.iaPriorities && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-ia" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · What they need to see</span>
@@ -697,11 +1009,11 @@ export default async function TrmericSubPage({ params }: Props) {
 
                   <Reveal stagger={0.06} style={{ display: "flex", flexDirection: "column", gap: ".5rem", marginBottom: "3rem" }}>
                     {c.iaPriorities.map((item) => (
-                      <div key={item.rank} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: ".8rem 1.1rem", border: `1px solid ${LINE}`, borderRadius: "8px", background: item.rank <= 2 ? "rgba(255,164,38,.04)" : BASE2 }}>
+                      <div key={item.rank} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: ".8rem 1.1rem", border: `1px solid ${LINE}`, borderRadius: "8px", background: item.rank <= 2 ? "color-mix(in srgb, var(--color-accent) 4%, transparent)" : BASE2 }}>
                         <span style={{
                           width: 26, height: 26, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
                           fontFamily: "var(--font-mono)", fontSize: ".68rem", fontWeight: 700,
-                          background: item.rank === 1 ? ACC : item.rank === 2 ? "rgba(255,164,38,.25)" : BASE2,
+                          background: item.rank === 1 ? ACC : item.rank === 2 ? ACCB : BASE2,
                           color: item.rank <= 2 ? "#5a3c10" : FAINT,
                           border: item.rank > 2 ? `1px solid ${LINE}` : "none",
                         }}>{item.rank}</span>
@@ -710,8 +1022,8 @@ export default async function TrmericSubPage({ params }: Props) {
                         <span style={{
                           fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".08em", textTransform: "uppercase", fontWeight: 700,
                           padding: ".25rem .6rem", borderRadius: "100px", flexShrink: 0,
-                          color: item.level === "critical" ? "#b5402a" : item.level === "high" ? "#9a6500" : "#2563eb",
-                          background: item.level === "critical" ? "rgba(181,64,42,.08)" : item.level === "high" ? "rgba(154,101,0,.08)" : "rgba(37,99,235,.08)",
+                          color: item.level === "critical" ? BAD : item.level === "high" ? WARN : INFO,
+                          background: item.level === "critical" ? `color-mix(in srgb, ${BAD} 8%, transparent)` : item.level === "high" ? `color-mix(in srgb, ${WARN} 8%, transparent)` : `color-mix(in srgb, ${INFO} 8%, transparent)`,
                         }}>{item.level}</span>
                       </div>
                     ))}
@@ -751,7 +1063,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ WHY CURRENT TOOLS FAIL ═══ */}
             {c.painPoints && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-pain" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Current reality</span>
@@ -772,7 +1084,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ AI VALUE CHAIN ═══ */}
             {c.valueChain && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-value" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · The AI opportunity</span>
@@ -787,18 +1099,18 @@ export default async function TrmericSubPage({ params }: Props) {
                           <span style={{
                             width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
                             fontFamily: "var(--font-mono)", fontSize: ".72rem", fontWeight: 700,
-                            background: rung.isTango ? "linear-gradient(135deg, #8b5cf6, #FFA426)" : "#fff",
-                            color: rung.isTango ? "#fff" : FAINT,
+                            background: rung.isTango ? `linear-gradient(135deg, ${TANGO}, ${ACC})` : BASE,
+                            color: rung.isTango ? "#17150F" : FAINT,
                             border: rung.isTango ? "none" : `2px solid ${LINE}`,
                           }}>{rung.num}</span>
                         </div>
                         <div>
-                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase", color: rung.isTango ? "#8b5cf6" : FAINT, marginBottom: ".3rem" }}>{rung.label}</div>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase", color: rung.isTango ? TANGO : FAINT, marginBottom: ".3rem" }}>{rung.label}</div>
                           <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1rem", color: INK, marginBottom: ".4rem" }}>{rung.title}</div>
                           <p style={{ fontSize: ".82rem", color: DIM, lineHeight: 1.65, marginBottom: ".6rem", maxWidth: "58ch" }}>{rung.desc}</p>
                           <span style={{
                             display: "inline-block", fontFamily: "var(--font-mono)", fontSize: ".68rem", padding: ".35rem .8rem", borderRadius: "100px",
-                            background: rung.isTango ? "rgba(255,164,38,.08)" : BASE2,
+                            background: rung.isTango ? "color-mix(in srgb, var(--color-accent) 8%, transparent)" : BASE2,
                             color: rung.isTango ? ACCD : DIM,
                             fontStyle: rung.isTango ? "normal" : "italic",
                             fontWeight: rung.isTango ? 600 : 400,
@@ -830,7 +1142,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ JOBS TO BE DONE ═══ */}
             {c.jobs && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-jobs" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research · Jobs to be done</span>
@@ -840,7 +1152,7 @@ export default async function TrmericSubPage({ params }: Props) {
                   <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: ".8rem" }}>
                     {c.jobs.map((j, i) => (
                       <div key={j.title} style={{ display: "flex", gap: "1.2rem", padding: "1.2rem 1.4rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE }}>
-                        <span style={{ width: 32, height: 32, borderRadius: "8px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: ".78rem", fontWeight: 700, color: ACCD, background: "rgba(255,164,38,.08)", border: `1.5px solid ${LINA}` }}>{i + 1}</span>
+                        <span style={{ width: 32, height: 32, borderRadius: "8px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-mono)", fontSize: ".78rem", fontWeight: 700, color: ACCD, background: "color-mix(in srgb, var(--color-accent) 8%, transparent)", border: `1.5px solid ${LINA}` }}>{i + 1}</span>
                         <div>
                           <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: ".92rem", color: INK, marginBottom: ".3rem" }}>{j.title}</div>
                           <p style={{ fontSize: ".82rem", color: DIM, lineHeight: 1.6, marginBottom: ".4rem" }}>{j.desc}</p>
@@ -855,7 +1167,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ DESIGN BETS ═══ */}
             {c.designBets && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-bets" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Research → Design direction</span>
@@ -865,7 +1177,7 @@ export default async function TrmericSubPage({ params }: Props) {
                   <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                     {c.designBets.map((b, i) => (
                       <div key={b.title} style={{ display: "flex", gap: "1.4rem", padding: "1.4rem", borderLeft: `4px solid ${ACC}`, border: `1px solid ${LINE}`, borderLeftWidth: "4px", borderRadius: "8px", background: BASE2 }}>
-                        <span style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.2rem", color: "rgba(23,21,15,.14)", lineHeight: 1, flexShrink: 0, width: 44 }}>{String(i + 1).padStart(2, "0")}</span>
+                        <span style={{ fontFamily: "var(--font-body)", fontWeight: 800, fontSize: "2.2rem", color: "color-mix(in srgb, var(--color-paper) 14%, transparent)", lineHeight: 1, flexShrink: 0, width: 44 }}>{String(i + 1).padStart(2, "0")}</span>
                         <div>
                           <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: ".96rem", color: INK, marginBottom: ".5rem" }}>{b.title}</div>
                           <p style={{ fontSize: ".82rem", color: DIM, lineHeight: 1.68 }}>{b.desc}</p>
@@ -879,7 +1191,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ ENGAGEMENT MODES ═══ */}
             {c.engagementModes && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-modes" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Three modes of engagement</span>
@@ -912,16 +1224,16 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ DESIGN DIRECTION PRINCIPLES + CLOSING QUOTE ═══ */}
             {c.directionPrinciples && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-direction" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-                  <div style={{ padding: "2rem 2.2rem", borderRadius: "16px", border: `1.5px solid ${LINA}`, background: `linear-gradient(160deg, rgba(255,164,38,.05), ${BASE})`, marginBottom: c.closingQuote ? "1.5rem" : 0 }}>
+                  <div style={{ padding: "2rem 2.2rem", borderRadius: "16px", border: `1.5px solid ${LINA}`, background: `linear-gradient(160deg, color-mix(in srgb, var(--color-accent) 5%, transparent), ${BASE})`, marginBottom: c.closingQuote ? "1.5rem" : 0 }}>
                     <Reveal>
                       <h3 style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: "1.3rem", color: INK, marginBottom: ".6rem" }}>The experience we're building toward</h3>
                       <p style={{ fontSize: ".88rem", color: DIM, lineHeight: 1.7, marginBottom: "1.8rem", maxWidth: "62ch" }}>Not a chat interface. Not a traditional dashboard. A living briefing surface with a conversation layer, like a financial newspaper that knows you, updates in real time, and you can talk back to. Tango is the editor. The workspace is the publication.</p>
                     </Reveal>
                     <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                       {c.directionPrinciples.map((p) => (
-                        <div key={p.title} style={{ height: "100%", display: "flex", gap: ".8rem", padding: "1rem 1.1rem", background: "#fff", borderRadius: "8px", border: `1px solid ${LINE}` }}>
+                        <div key={p.title} style={{ height: "100%", display: "flex", gap: ".8rem", padding: "1rem 1.1rem", background: BASE, borderRadius: "8px", border: `1px solid ${LINE}` }}>
                           <span style={{ width: 7, height: 7, borderRadius: "50%", background: ACC, flexShrink: 0, marginTop: ".4rem" }} />
                           <div>
                             <div style={{ fontSize: ".84rem", fontWeight: 600, color: INK }}>{p.title}</div>
@@ -933,8 +1245,13 @@ export default async function TrmericSubPage({ params }: Props) {
                   </div>
 
                   {c.closingQuote && (
-                    <Reveal style={{ padding: "1.8rem 2rem", borderRadius: "14px", background: "linear-gradient(135deg, rgba(139,92,246,.05), rgba(255,164,38,.05))", border: "1.5px solid rgba(139,92,246,.18)" }}>
-                      <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem", fontFamily: "var(--font-mono)", fontSize: ".6rem", fontWeight: 700, letterSpacing: ".06em", color: INK, background: "linear-gradient(135deg, #8b5cf6, #FFA426)", padding: ".3rem .8rem", borderRadius: "100px", marginBottom: "1rem" }}>✦ Tango</span>
+                    <Reveal style={{ padding: "1.8rem 2rem", borderRadius: "14px", background: `linear-gradient(135deg, color-mix(in srgb, ${TANGO} 5%, transparent), color-mix(in srgb, var(--color-accent) 5%, transparent))`, border: `1.5px solid color-mix(in srgb, ${TANGO} 18%, transparent)` }}>
+                      {/* Fixed dark ink, not the theme-adaptive INK var: this chip's
+                          purple→amber gradient never changes with data-theme, and
+                          light theme's INK ink-on-amber contrast is the only combo
+                          that reads on both stops — dark theme's near-white INK
+                          would wash out against the amber end. */}
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: ".4rem", fontFamily: "var(--font-mono)", fontSize: ".6rem", fontWeight: 700, letterSpacing: ".06em", color: "#17150F", background: `linear-gradient(135deg, ${TANGO}, ${ACC})`, padding: ".3rem .8rem", borderRadius: "100px", marginBottom: "1rem" }}>✦ Tango</span>
                       <blockquote style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1.05rem", color: INK, lineHeight: 1.7, maxWidth: "64ch" }}>
                         "{c.closingQuote.quote}"
                       </blockquote>
@@ -946,7 +1263,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ TRY THE CONVERSATION (interactive, demand-owner-flow only) ═══ */}
             {slug === "demand-owner-flow" && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-tango-demo" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Try it yourself</span>
@@ -962,7 +1279,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ OLD WAY / NEW WAY ═══ */}
             {(c.oldWay || c.newWay) && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-oldnew" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>The transformation</span>
@@ -975,7 +1292,7 @@ export default async function TrmericSubPage({ params }: Props) {
                           <Reveal style={{ marginBottom: "1.4rem" }}>
                             <div style={{ display: "flex", height: "10px", borderRadius: "5px", overflow: "hidden", border: `1px solid ${LINE}`, background: BASE2 }}>
                               {c.oldWay.map((s, i) => (
-                                <div key={s.label} style={{ flex: s.weight ?? 1, borderRight: i < c.oldWay!.length - 1 ? `1px solid ${BASE}` : "none", background: `rgba(155,148,136,${0.25 + i * 0.15})` }} />
+                                <div key={s.label} style={{ flex: s.weight ?? 1, borderRight: i < c.oldWay!.length - 1 ? `1px solid ${BASE}` : "none", background: `color-mix(in srgb, ${FAINT} ${Math.round((0.25 + i * 0.15) * 100)}%, transparent)` }} />
                               ))}
                             </div>
                             <div style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".06em", color: FAINT, marginTop: ".5rem" }}>
@@ -988,7 +1305,7 @@ export default async function TrmericSubPage({ params }: Props) {
                             <div key={s.label} style={{ padding: "1.1rem 1.3rem", border: `1px solid ${LINE}`, borderRadius: "10px", background: BASE2 }}>
                               <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase", color: FAINT, marginBottom: ".4rem" }}>{s.label}</div>
                               <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.6, marginBottom: s.stat ? ".5rem" : 0 }}>{s.detail}</p>
-                              {s.stat && <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", color: "#b5402a", fontStyle: "italic" }}>{s.stat}</div>}
+                              {s.stat && <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", color: BAD, fontStyle: "italic" }}>{s.stat}</div>}
                             </div>
                           ))}
                         </Reveal>
@@ -1011,7 +1328,7 @@ export default async function TrmericSubPage({ params }: Props) {
                         )}
                         <Reveal stagger style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                           {c.newWay.map((s, i) => (
-                            <div key={`${s.label}-${i}`} style={{ padding: "1.1rem 1.3rem", border: `1px solid ${LINA}`, borderRadius: "10px", background: "rgba(255,164,38,.04)" }}>
+                            <div key={`${s.label}-${i}`} style={{ padding: "1.1rem 1.3rem", border: `1px solid ${LINA}`, borderRadius: "10px", background: "color-mix(in srgb, var(--color-accent) 4%, transparent)" }}>
                               <div style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".1em", textTransform: "uppercase", color: ACC, marginBottom: ".4rem" }}>{s.label}</div>
                               <p style={{ fontSize: ".8125rem", color: DIM, lineHeight: 1.6 }}>{s.detail}</p>
                             </div>
@@ -1026,7 +1343,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ EMOTIONAL ARC ═══ */}
             {c.emotionalArc && (
-              <section style={{ padding: "3rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-arc" style={{ padding: "3rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
                     <div style={{ flexShrink: 0, width: 180, height: 6, borderRadius: 3, background: "linear-gradient(90deg, #d9c9a8 0%, #e8a857 35%, #d9783a 65%, #b5402a 100%)" }} />
@@ -1036,9 +1353,11 @@ export default async function TrmericSubPage({ params }: Props) {
               </section>
             )}
 
+            <ChapterSeam from={BASE} to={BASE2} />
+
             {/* ═══ METRICS ═══ */}
             {c.metrics && (
-              <section style={{ padding: "4rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-metrics" style={{ padding: "4rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal stagger className="mobile-stack" style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(c.metrics.length, 6)}, 1fr)`, borderTop: `1px solid ${LINE}`, borderLeft: `1px solid ${LINE}` }}>
                     {c.metrics.map((m) => (
@@ -1054,7 +1373,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ PERSONAS ═══ */}
             {c.personas && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-personas" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>Who we designed for</span>
@@ -1068,13 +1387,13 @@ export default async function TrmericSubPage({ params }: Props) {
                           <p style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: ".95rem", color: INK, lineHeight: 1.4 }}>"{p.quote}"</p>
                         </div>
                         <div style={{ padding: "1.2rem 1.4rem" }}>
-                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".12em", textTransform: "uppercase", color: "#b5402a", marginBottom: ".5rem" }}>Frustrated by</div>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".12em", textTransform: "uppercase", color: BAD, marginBottom: ".5rem" }}>Frustrated by</div>
                           {p.frustrations.map((f) => <div key={f} style={{ fontSize: ".76rem", color: DIM, lineHeight: 1.55, marginBottom: ".4rem" }}>· {f}</div>)}
-                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".12em", textTransform: "uppercase", color: "#3a7a4a", marginTop: ".9rem", marginBottom: ".5rem" }}>Wants</div>
+                          <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".12em", textTransform: "uppercase", color: GOOD, marginTop: ".9rem", marginBottom: ".5rem" }}>Wants</div>
                           {p.wants.map((w) => <div key={w} style={{ fontSize: ".76rem", color: DIM, lineHeight: 1.55, marginBottom: ".4rem" }}>· {w}</div>)}
                           <div style={{ display: "flex", flexWrap: "wrap", gap: ".4rem", marginTop: "1rem", paddingTop: ".9rem", borderTop: `1px solid ${LINE}` }}>
                             {p.uses.map((u) => (
-                              <span key={u} style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".06em", padding: ".3rem .6rem", borderRadius: "100px", border: `1px solid ${LINA}`, color: ACCD, background: "rgba(255,164,38,.06)" }}>{u}</span>
+                              <span key={u} style={{ fontFamily: "var(--font-mono)", fontSize: ".52rem", letterSpacing: ".06em", padding: ".3rem .6rem", borderRadius: "100px", border: `1px solid ${LINA}`, color: ACCD, background: "color-mix(in srgb, var(--color-accent) 6%, transparent)" }}>{u}</span>
                             ))}
                           </div>
                         </div>
@@ -1087,7 +1406,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ TWO PATHS ═══ */}
             {c.paths && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-paths" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>System architecture</span>
@@ -1118,7 +1437,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ CONVERT TO PROJECT (interactive, demand-owner-flow only) ═══ */}
             {slug === "demand-owner-flow" && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-convert-demo" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>The convergence point</span>
@@ -1134,7 +1453,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ KEY INNOVATIONS ═══ */}
             {c.innovations && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-innovations" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2.5rem", display: "block" }}>Key innovations</span>
@@ -1150,7 +1469,7 @@ export default async function TrmericSubPage({ params }: Props) {
                             <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".14em", textTransform: "uppercase", color: FAINT, marginBottom: ".6rem" }}>Before</div>
                             {inv.before.map((b) => <div key={b} style={{ fontSize: ".78rem", color: DIM, marginBottom: ".35rem" }}>{b}</div>)}
                           </div>
-                          <div style={{ padding: "1rem 1.2rem", border: `1px solid ${LINA}`, borderRadius: "10px", background: "rgba(255,164,38,.04)" }}>
+                          <div style={{ padding: "1rem 1.2rem", border: `1px solid ${LINA}`, borderRadius: "10px", background: "color-mix(in srgb, var(--color-accent) 4%, transparent)" }}>
                             <div style={{ fontFamily: "var(--font-mono)", fontSize: ".5rem", letterSpacing: ".14em", textTransform: "uppercase", color: ACC, marginBottom: ".6rem" }}>After</div>
                             {inv.after.map((a) => <div key={a} style={{ fontSize: ".78rem", color: INK, marginBottom: ".35rem" }}>{a}</div>)}
                           </div>
@@ -1166,7 +1485,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ AI DISCOVERIES (interactive) ═══ */}
             {c.discoveries && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-discoveries" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>AI enrichment, in the open</span>
@@ -1180,7 +1499,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ CORE PRINCIPLES ═══ */}
             {c.principles && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-principles" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Core design principles</span>
@@ -1200,7 +1519,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ DECISIONS (legacy format, other slugs) ═══ */}
             {c.decisions && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-decisions" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Design decisions</span>
@@ -1225,7 +1544,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ QUOTES ═══ */}
             {c.quotes && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
+              <section id="sec-quotes" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>What users say</span>
@@ -1244,7 +1563,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ LEARNINGS ═══ */}
             {c.learnings && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-learnings" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: ".5rem", display: "block" }}>For designers building AI products</span>
@@ -1268,7 +1587,7 @@ export default async function TrmericSubPage({ params }: Props) {
 
             {/* ═══ REFLECTION ═══ */}
             {(c.reflectionWorked || c.reflectionDifferent) && (
-              <section style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
+              <section id="sec-reflection" style={{ padding: "5rem var(--pad)", borderTop: `1px solid ${LINE}` }}>
                 <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
                   <Reveal>
                     <span style={{ fontFamily: "var(--font-mono)", fontSize: ".6rem", letterSpacing: ".2em", textTransform: "uppercase", color: ACCD, marginBottom: "2rem", display: "block" }}>Looking back</span>
@@ -1305,8 +1624,10 @@ export default async function TrmericSubPage({ params }: Props) {
                 </div>
               </section>
             )}
-          </>
+          </div>
         )}
+
+        {c && <ChapterSeam from={BASE} to={BASE2} />}
 
         {/* ═══ OTHER FEATURES ═══ */}
         <section style={{ padding: "3rem var(--pad)", borderTop: `1px solid ${LINE}`, background: BASE2 }}>

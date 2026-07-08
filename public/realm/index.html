@@ -14,27 +14,28 @@
   <meta property="og:image" content="assets/poster.jpg" />
   <meta property="og:type" content="website" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- Fonts — self-hosted (see vendor/fonts/fonts.css); no more render-blocking
+       requests to fonts.googleapis.com. -->
+  <link rel="preload" as="font" type="font/woff2" href="vendor/fonts/fraunces-normal-variable.woff2" crossorigin />
+  <link rel="preload" as="font" type="font/woff2" href="vendor/fonts/fraunces-italic-variable.woff2" crossorigin />
+  <link rel="stylesheet" href="vendor/fonts/fonts.css" />
 
   <link rel="stylesheet" href="css/style.css" />
 
   <!-- Fetch the particle field's dependencies EARLY — three.js is the
        critical path to the first rendered warp frame, so it must not wait
-       for the parser to reach the bottom-of-body script tags. -->
-  <link rel="preconnect" href="https://unpkg.com" crossorigin />
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
-  <link rel="modulepreload" href="https://unpkg.com/three@0.160.0/build/three.module.js" />
-  <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" />
-  <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" />
+       for the parser to reach the bottom-of-body script tags. Self-hosted
+       (see vendor/) at the exact pinned versions this page was built against
+       (three 0.160.0, GSAP + ScrollTrigger 3.12.5) — no CDN round-trip. -->
+  <link rel="modulepreload" href="vendor/three/three.module.js" />
+  <link rel="preload" as="script" href="vendor/gsap/gsap.min.js" />
+  <link rel="preload" as="script" href="vendor/gsap/ScrollTrigger.min.js" />
 
   <!-- Three.js (ES module) -->
   <script type="importmap">
   {
     "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      "three": "./vendor/three/three.module.js"
     }
   }
   </script>
@@ -237,7 +238,11 @@
         </div>
       </div>
       <figure class="problem__plate reveal">
-        <img src="assets/sketch-confrontation.png" loading="lazy" decoding="async" alt="A storyboard sketch: a hand holds a phone where a grey butterfly asks, 'I don't feel well. Do you know why we are disappearing?'" />
+        <picture>
+          <source type="image/avif" srcset="assets/sketch-confrontation-sm.avif 564w, assets/sketch-confrontation.avif 1024w" sizes="(max-width:680px) 92vw, 620px" />
+          <source type="image/webp" srcset="assets/sketch-confrontation-sm.webp 564w, assets/sketch-confrontation.webp 1024w" sizes="(max-width:680px) 92vw, 620px" />
+          <img src="assets/sketch-confrontation.png" width="1024" height="1024" loading="lazy" decoding="async" alt="A storyboard sketch: a hand holds a phone where a grey butterfly asks, 'I don't feel well. Do you know why we are disappearing?'" />
+        </picture>
         <figcaption>An early concept asked the user to confront a dying creature directly.</figcaption>
       </figure>
     </div>
@@ -292,32 +297,58 @@
     <div class="screens" id="screens">
       <div class="screens__track" id="screensTrack">
         <figure class="screen">
-          <img src="assets/ui-naming.png" loading="lazy" decoding="async" alt="App screen: a Common Jezebel butterfly, 'Who am I?' and a field to name her." />
+          <picture>
+            <source type="image/avif" srcset="assets/ui-naming-sm.avif 812w, assets/ui-naming.avif 1476w" sizes="300px" />
+            <source type="image/webp" srcset="assets/ui-naming-sm.webp 812w, assets/ui-naming.webp 1476w" sizes="300px" />
+            <img src="assets/ui-naming.png" width="1476" height="2680" loading="lazy" decoding="async" alt="App screen: a Common Jezebel butterfly, 'Who am I?' and a field to name her." />
+          </picture>
           <figcaption><b>Meet her</b>A real species, named by you.</figcaption>
         </figure>
         <figure class="screen">
-          <img src="assets/ui-egg.png" loading="lazy" decoding="async" alt="App screen: a golden egg in your care, growth at 53%." />
+          <picture>
+            <!-- No AVIF source: this image has genuine transparency and the
+                 encoder available at build time strips alpha from AVIF. WebP
+                 (alpha preserved) and the PNG fallback keep it. -->
+            <source type="image/webp" srcset="assets/ui-egg-sm.webp 812w, assets/ui-egg.webp 1476w" sizes="300px" />
+            <img src="assets/ui-egg.png" width="1476" height="2680" loading="lazy" decoding="async" alt="App screen: a golden egg in your care, growth at 53%." />
+          </picture>
           <figcaption><b>Raise her</b>From an egg, day by day.</figcaption>
         </figure>
         <figure class="screen">
-          <img src="assets/ui-offering.png" loading="lazy" decoding="async" alt="App screen: Today's Offering, small real-world acts of care." />
+          <picture>
+            <source type="image/avif" srcset="assets/ui-offering-sm.avif 812w, assets/ui-offering.avif 1476w" sizes="300px" />
+            <source type="image/webp" srcset="assets/ui-offering-sm.webp 812w, assets/ui-offering.webp 1476w" sizes="300px" />
+            <img src="assets/ui-offering.png" width="1476" height="2882" loading="lazy" decoding="async" alt="App screen: Today's Offering, small real-world acts of care." />
+          </picture>
           <figcaption><b>Today's offering</b>One real act, every day.</figcaption>
         </figure>
         <figure class="screen">
-          <img src="assets/ui-chrysalis.png" loading="lazy" decoding="async" alt="App screen: a green chrysalis. 'She's becoming something new. Three breaths. That's all she asks.'" />
+          <picture>
+            <source type="image/avif" srcset="assets/ui-chrysalis-sm.avif 812w, assets/ui-chrysalis.avif 1476w" sizes="300px" />
+            <source type="image/webp" srcset="assets/ui-chrysalis-sm.webp 812w, assets/ui-chrysalis.webp 1476w" sizes="300px" />
+            <img src="assets/ui-chrysalis.png" width="1476" height="2680" loading="lazy" decoding="async" alt="App screen: a green chrysalis. 'She's becoming something new. Three breaths. That's all she asks.'" />
+          </picture>
           <figcaption><b>Transform</b>Breathe with her as she changes.</figcaption>
         </figure>
         <figure class="screen">
-          <img src="assets/ui-ar.png" loading="lazy" decoding="async" alt="App screen: AR activation, a glowing egg aligning in the camera view." />
+          <picture>
+            <source type="image/avif" srcset="assets/ui-ar-sm.avif 812w, assets/ui-ar.avif 1476w" sizes="300px" />
+            <source type="image/webp" srcset="assets/ui-ar-sm.webp 812w, assets/ui-ar.webp 1476w" sizes="300px" />
+            <img src="assets/ui-ar.png" width="1476" height="2680" loading="lazy" decoding="async" alt="App screen: AR activation, a glowing egg aligning in the camera view." />
+          </picture>
           <figcaption><b>Step through</b>The realm opens in your room.</figcaption>
         </figure>
         <figure class="screen">
-          <img src="assets/ui-status.png" loading="lazy" decoding="async" alt="App screen: Nila's status, day 1 of her life, vitality 100%." />
+          <picture>
+            <source type="image/avif" srcset="assets/ui-status-sm.avif 812w, assets/ui-status.avif 1476w" sizes="300px" />
+            <source type="image/webp" srcset="assets/ui-status-sm.webp 812w, assets/ui-status.webp 1476w" sizes="300px" />
+            <img src="assets/ui-status.png" width="1476" height="2882" loading="lazy" decoding="async" alt="App screen: Nila's status, day 1 of her life, vitality 100%." />
+          </picture>
           <figcaption><b>She remembers</b>Your care, kept alive.</figcaption>
         </figure>
       </div>
     </div>
-    <p class="screens__hint reveal">Drag, scroll, or swipe →</p>
+    <p class="screens__hint reveal">Scroll to explore →</p>
   </section>
 
   <!-- ===================== LIFECYCLE ===================== -->
@@ -327,23 +358,43 @@
       <h2 class="display reveal" data-d="1">Four stages. <em>Earned, not given.</em></h2>
       <p class="lede reveal" data-d="2">She grows only when you show up. Tasks done in the real world move her through a life, roughly a week of small, deliberate care.</p>
     </div>
-    <div class="cycle">
-      <div class="cycle__line" aria-hidden="true"></div>
-      <div class="cycle__step reveal">
-        <div class="cycle__art" data-stage="egg"></div>
-        <h3>The Egg</h3><p>She arrives in your care, waiting. The realm is quiet until you begin.</p>
+
+    <!-- Motion-OK: main.js pins this panel (GSAP ScrollTrigger) and scrubs
+         the background field's own particles through egg → caterpillar →
+         chrysalis → butterfly as the reader scrolls, forward and back. The
+         text below just follows along, snapping between the four stages.
+         Reduced motion: CSS un-pins this into a plain static 4-up grid
+         (see the prefers-reduced-motion block in style.css) — no pin, no
+         scrub, everything readable at once. -->
+    <div class="cycle-pin" id="cyclePin">
+      <div class="cycle-pin__rail" aria-hidden="true">
+        <i class="cycle-pin__rail-fill" id="cyclePinFill"></i>
+        <span class="cycle-pin__dot is-active" data-stage="0"></span>
+        <span class="cycle-pin__dot" data-stage="1"></span>
+        <span class="cycle-pin__dot" data-stage="2"></span>
+        <span class="cycle-pin__dot" data-stage="3"></span>
       </div>
-      <div class="cycle__step reveal" data-d="1">
-        <div class="cycle__art" data-stage="larva"></div>
-        <h3>The Caterpillar</h3><p>She hatches and feeds. Each day of care thickens her toward the next threshold.</p>
-      </div>
-      <div class="cycle__step reveal" data-d="2">
-        <div class="cycle__art" data-stage="chrysalis"></div>
-        <h3>The Chrysalis</h3><p>She folds inward. Three slow breaths from you, and the change begins.</p>
-      </div>
-      <div class="cycle__step reveal" data-d="3">
-        <div class="cycle__art" data-stage="butterfly"></div>
-        <h3>The Butterfly</h3><p>She opens her wings, takes your name, and flies free in the realm.</p>
+      <div class="cycle-pin__stages">
+        <div class="cycle-pin__stage is-active" data-stage="0">
+          <span class="cycle-pin__n">01 · Egg</span>
+          <h3>The Egg</h3>
+          <p>She arrives in your care, waiting. The realm is quiet until you begin.</p>
+        </div>
+        <div class="cycle-pin__stage" data-stage="1">
+          <span class="cycle-pin__n">02 · Caterpillar</span>
+          <h3>The Caterpillar</h3>
+          <p>She hatches and feeds. Each day of care thickens her toward the next threshold.</p>
+        </div>
+        <div class="cycle-pin__stage" data-stage="2">
+          <span class="cycle-pin__n">03 · Chrysalis</span>
+          <h3>The Chrysalis</h3>
+          <p>She folds inward. Three slow breaths from you, and the change begins.</p>
+        </div>
+        <div class="cycle-pin__stage" data-stage="3">
+          <span class="cycle-pin__n">04 · Butterfly</span>
+          <h3>The Butterfly</h3>
+          <p>She opens her wings, takes your name, and flies free in the realm.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -351,7 +402,11 @@
   <!-- ===================== STORY PLATES ===================== -->
   <section class="section plates">
     <div class="plate">
-      <figure class="plate__img reveal"><img src="assets/sketch-egg.png" loading="lazy" decoding="async" alt="Sketch: a person discovers a glowing egg." /></figure>
+      <figure class="plate__img reveal"><picture>
+        <source type="image/avif" srcset="assets/sketch-egg-sm.avif 564w, assets/sketch-egg.avif 1024w" sizes="(max-width:760px) 92vw, 545px" />
+        <source type="image/webp" srcset="assets/sketch-egg-sm.webp 564w, assets/sketch-egg.webp 1024w" sizes="(max-width:760px) 92vw, 545px" />
+        <img src="assets/sketch-egg.png" width="1024" height="1024" loading="lazy" decoding="async" alt="Sketch: a person discovers a glowing egg." />
+      </picture></figure>
       <div class="plate__txt reveal" data-d="1">
         <span class="kicker">A quiet beginning</span>
         <h3 class="display-sm">It starts with something you could lose.</h3>
@@ -359,7 +414,11 @@
       </div>
     </div>
     <div class="plate plate--rev">
-      <figure class="plate__img reveal"><img src="assets/sketch-emergence.png" loading="lazy" decoding="async" alt="Sketch: a butterfly emerges in augmented reality from a phone." /></figure>
+      <figure class="plate__img reveal"><picture>
+        <source type="image/avif" srcset="assets/sketch-emergence-sm.avif 564w, assets/sketch-emergence.avif 1024w" sizes="(max-width:760px) 92vw, 545px" />
+        <source type="image/webp" srcset="assets/sketch-emergence-sm.webp 564w, assets/sketch-emergence.webp 1024w" sizes="(max-width:760px) 92vw, 545px" />
+        <img src="assets/sketch-emergence.png" width="1024" height="1024" loading="lazy" decoding="async" alt="Sketch: a butterfly emerges in augmented reality from a phone." />
+      </picture></figure>
       <div class="plate__txt reveal" data-d="1">
         <span class="kicker">A precious moment</span>
         <h3 class="display-sm">“Because of you, I made it.”</h3>
@@ -367,7 +426,11 @@
       </div>
     </div>
     <div class="plate">
-      <figure class="plate__img reveal"><img src="assets/sketch-liveshere.png" loading="lazy" decoding="async" alt="Sketch: a butterfly badge placed on a desk, taken from a weekend market." /></figure>
+      <figure class="plate__img reveal"><picture>
+        <source type="image/avif" srcset="assets/sketch-liveshere-sm.avif 564w, assets/sketch-liveshere.avif 1024w" sizes="(max-width:760px) 92vw, 545px" />
+        <source type="image/webp" srcset="assets/sketch-liveshere-sm.webp 564w, assets/sketch-liveshere.webp 1024w" sizes="(max-width:760px) 92vw, 545px" />
+        <img src="assets/sketch-liveshere.png" width="1024" height="1024" loading="lazy" decoding="async" alt="Sketch: a butterfly badge placed on a desk, taken from a weekend market." />
+      </picture></figure>
       <div class="plate__txt reveal" data-d="1">
         <span class="kicker">It lives here now</span>
         <h3 class="display-sm">A creature that follows you home.</h3>
@@ -386,11 +449,24 @@
     </div>
     <div class="installation__media">
       <figure class="installation__hero reveal">
-        <img src="assets/installation-hands.png" loading="lazy" decoding="async" alt="Visitor holds a phone at the installation; the camera reveals a swarm of AR butterflies rising from a paper bouquet." />
+        <picture>
+          <source type="image/avif" srcset="assets/installation-hands.avif" />
+          <source type="image/webp" srcset="assets/installation-hands.webp" />
+          <img src="assets/installation-hands.png" width="749" height="1000" loading="lazy" decoding="async" alt="Visitor holds a phone at the installation; the camera reveals a swarm of AR butterflies rising from a paper bouquet." />
+        </picture>
       </figure>
       <div class="installation__side">
-        <figure class="reveal" data-d="1"><img src="assets/fieldtest-1.png" loading="lazy" decoding="async" alt="Field test: a visitor interacting with the installation." /></figure>
-        <figure class="reveal" data-d="2"><img src="assets/fieldtest-2.png" loading="lazy" decoding="async" alt="Field test: visitors at the Realm of Elementals installation." /></figure>
+        <figure class="reveal" data-d="1"><picture>
+          <source type="image/avif" srcset="assets/fieldtest-1-sm.avif 876w, assets/fieldtest-1.avif 1593w" sizes="(max-width:760px) 45vw, 462px" />
+          <source type="image/webp" srcset="assets/fieldtest-1-sm.webp 876w, assets/fieldtest-1.webp 1593w" sizes="(max-width:760px) 45vw, 462px" />
+          <img src="assets/fieldtest-1.png" width="1593" height="1106" loading="lazy" decoding="async" alt="Field test: a visitor interacting with the installation." />
+        </picture></figure>
+        <figure class="reveal" data-d="2"><picture>
+          <!-- No AVIF source: transparency preserved via WebP/PNG only (the
+               build-time AVIF encoder strips alpha). -->
+          <source type="image/webp" srcset="assets/fieldtest-2-sm.webp 876w, assets/fieldtest-2.webp 1593w" sizes="(max-width:760px) 45vw, 462px" />
+          <img src="assets/fieldtest-2.png" width="1593" height="1106" loading="lazy" decoding="async" alt="Field test: visitors at the Realm of Elementals installation." />
+        </picture></figure>
       </div>
     </div>
   </section>
@@ -413,7 +489,11 @@
         </div>
         <figure class="enter__card reveal" data-d="3">
           <span class="enter__step">Step 2 · Summon</span>
-          <div class="enter__card-frame enter__target"><img src="assets/target-emerald-peacock-landscape.png" loading="lazy" decoding="async" alt="The Emerald Peacock butterfly marker. Point your camera at it to summon the swarm." /></div>
+          <div class="enter__card-frame enter__target"><picture>
+            <source type="image/avif" srcset="assets/target-emerald-peacock-landscape-sm.avif 726w, assets/target-emerald-peacock-landscape.avif 1319w" sizes="(max-width:640px) 92vw, 469px" />
+            <source type="image/webp" srcset="assets/target-emerald-peacock-landscape-sm.webp 726w, assets/target-emerald-peacock-landscape.webp 1319w" sizes="(max-width:640px) 92vw, 469px" />
+            <img src="assets/target-emerald-peacock-landscape.png" width="1319" height="720" loading="lazy" decoding="async" alt="The Emerald Peacock butterfly marker. Point your camera at it to summon the swarm." />
+          </picture></div>
           <figcaption>Point your camera here to summon the swarm</figcaption>
         </figure>
       </div>
@@ -672,9 +752,9 @@
 
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 
-  <!-- libs -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <!-- libs (self-hosted, see vendor/) -->
+  <script src="vendor/gsap/gsap.min.js"></script>
+  <script src="vendor/gsap/ScrollTrigger.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

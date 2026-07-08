@@ -1,8 +1,15 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import type { RoziPalette } from "@/components/rozi/palette";
+import { prefersReducedMotionNow } from "@/hooks/usePrefersReducedMotion";
 
 /* ═══════════════════════════════════════════════════════════════════
    Rozi — User persona card for "Mashidur Shaik".
-   Pure presentational. HTML/flex medium with an inline-SVG avatar glyph.
+   Mostly presentational — HTML/flex medium with an inline-SVG avatar
+   glyph. The one piece of behavior is TechBarItem below: the "Comfort with
+   technology" bars grow from 0 on scroll-into-view instead of already
+   sitting at their final width.
    ═══════════════════════════════════════════════════════════════════ */
 
 type MetaRow = { k: string; v: string };
@@ -51,6 +58,92 @@ const TRAITS: Trait[] = [
     items: ["Losing a job overnight"],
   },
 ];
+
+/* ── Tech-adoption bar — grows from 0 on scroll-into-view ────────────
+   SSR/no-JS-safe: the server (and the very first client render) ships
+   the bar at its real final width, so no-JS readers and crawlers get
+   the correct value. Mirrors Reveal.tsx's own fold-check: only a bar
+   that's actually BELOW the fold when it mounts gets reset to 0% and
+   animated back up — content already on screen never flashes empty.
+   Direct DOM style mutation (no React state) keeps the animation off
+   the render path entirely; reduced motion skips the reset outright,
+   so the final width is what's on screen the whole time. */
+function TechBarItem({ p, label, pct }: { p: RoziPalette; label: string; pct: number }) {
+  const fillRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = fillRef.current;
+    if (!el || prefersReducedMotionNow()) return;
+
+    const fold = window.innerHeight * 0.9;
+    if (el.getBoundingClientRect().top < fold) return; // already visible — keep final width
+
+    el.style.width = "0%";
+
+    if (typeof IntersectionObserver === "undefined") {
+      el.style.width = `${pct}%`;
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        requestAnimationFrame(() => {
+          el.style.width = `${pct}%`;
+        });
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -10% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [pct]);
+
+  return (
+    <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          marginBottom: 6,
+        }}
+      >
+        <span style={{ fontSize: ".8rem", color: p.PAP }}>{label}</span>
+        <span
+          style={{
+            fontFamily: p.MONO,
+            fontSize: ".72rem",
+            color: p.GOLDT,
+            letterSpacing: ".04em",
+          }}
+        >
+          {pct}%
+        </span>
+      </div>
+      <div
+        role="presentation"
+        style={{
+          height: 7,
+          borderRadius: 999,
+          background: p.LINEW,
+          overflow: "hidden",
+        }}
+      >
+        <div
+          ref={fillRef}
+          style={{
+            height: "100%",
+            width: `${pct}%`,
+            borderRadius: 999,
+            background: p.GOLD,
+            transition: "width 1000ms cubic-bezier(.16,1,.3,1)",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function PersonaCard({ p }: { p: RoziPalette }) {
   const kicker: React.CSSProperties = {
@@ -259,46 +352,7 @@ export default function PersonaCard({ p }: { p: RoziPalette }) {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {TECH.map((t) => (
-                <div key={t.label}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "baseline",
-                      marginBottom: 6,
-                    }}
-                  >
-                    <span style={{ fontSize: ".8rem", color: p.PAP }}>{t.label}</span>
-                    <span
-                      style={{
-                        fontFamily: p.MONO,
-                        fontSize: ".72rem",
-                        color: p.GOLDT,
-                        letterSpacing: ".04em",
-                      }}
-                    >
-                      {t.pct}%
-                    </span>
-                  </div>
-                  <div
-                    role="presentation"
-                    style={{
-                      height: 7,
-                      borderRadius: 999,
-                      background: p.LINEW,
-                      overflow: "hidden",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${t.pct}%`,
-                        borderRadius: 999,
-                        background: p.GOLD,
-                      }}
-                    />
-                  </div>
-                </div>
+                <TechBarItem key={t.label} p={p} label={t.label} pct={t.pct} />
               ))}
             </div>
           </div>

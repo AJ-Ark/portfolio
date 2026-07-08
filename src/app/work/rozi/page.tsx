@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import type { CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import InlineVideo from "@/components/ui/InlineVideo";
 import Reveal from "@/components/ui/Reveal";
 import NextProject from "@/components/ui/NextProject";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import RoziThemeSync from "@/components/rozi/RoziThemeSync";
 import { makeRoziPalette, type RoziPalette } from "@/components/rozi/palette";
 import FieldNotes from "@/components/rozi/FieldNotes";
 import EmpathyMap from "@/components/rozi/EmpathyMap";
@@ -18,6 +19,9 @@ import Methodology from "@/components/rozi/Methodology";
 import UserFlow from "@/components/rozi/UserFlow";
 import MarketStudy from "@/components/rozi/MarketStudy";
 import InfoArchitecture from "@/components/rozi/InfoArchitecture";
+import { useInView } from "@/hooks/useInView";
+import { prefersReducedMotionNow } from "@/hooks/usePrefersReducedMotion";
+import { useParticle, subscribeClimate } from "@/lib/particleContext";
 
 /* ── Content ──────────────────────────────────────────────────────── */
 
@@ -94,14 +98,278 @@ function SectionTitle({ p, children, max }: { p: RoziPalette; children: React.Re
   );
 }
 
+/* ── Count-up stat (scroll-triggered) ────────────────────────────────
+   SSR/no-JS-safe: ships the authored final string ("40 cr", "93%",
+   "₹0", "4+"…) so crawlers and no-JS readers always get the real
+   number. Mirrors Reveal.tsx's fold-check: only resets to zero and
+   counts back up if the stat is actually below the fold when it
+   mounts — content already on screen never flashes empty-then-full.
+   Reduced motion never resets it, so the authored value is on screen
+   the entire time. Direct textContent mutation, no React state, so
+   the 60fps tween never touches the render path. */
+function CountUp({ value }: { value: string }) {
+  const ref = useRef<HTMLSpanElement | null>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || prefersReducedMotionNow()) return;
+
+    const match = value.match(/[\d.]+/);
+    if (!match || match.index === undefined) return;
+    const target = parseFloat(match[0]);
+    if (Number.isNaN(target)) return;
+    const decimals = match[0].includes(".") ? match[0].split(".")[1].length : 0;
+    const prefix = value.slice(0, match.index);
+    const suffix = value.slice(match.index + match[0].length);
+    const format = (t: number) => `${prefix}${(target * t).toFixed(decimals)}${suffix}`;
+
+    const fold = window.innerHeight * 0.9;
+    if (el.getBoundingClientRect().top < fold) return; // already visible — keep the final value
+
+    el.textContent = format(0);
+
+    if (typeof IntersectionObserver === "undefined") {
+      el.textContent = value;
+      return;
+    }
+
+    let raf = 0;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        io.disconnect();
+        const duration = 1100;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / duration);
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = t < 1 ? format(eased) : value;
+          if (t < 1) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+      },
+      { threshold: 0.3, rootMargin: "0px 0px -10% 0px" }
+    );
+    io.observe(el);
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, [value]);
+
+  return <span ref={ref}>{value}</span>;
+}
+
+/* ── Chapter seam ─────────────────────────────────────────────────────
+   A gradient-faded gap between phases. The site's dust field renders
+   behind every route already (WebGLLayer is a fixed, persistent
+   canvas — see src/components/3d/ENGINE-API.md); this page just
+   happens to be fully opaque top to bottom, so the field is never
+   actually seen while reading it. A seam is a deliberate hole in that
+   opacity: background fades from the previous section's ground color
+   to fully transparent and back into the next section's — while it's
+   in view it also pins the "rozi" ripple formation (owner "rozi", the
+   engine's owner-keyed formation stack) so what shows through is
+   unmistakably this case study's own field, not a stray hover preview
+   from elsewhere. Releases the owner on leave/unmount; no-op under
+   reduced motion. Purely atmospheric — no copy — so the hairline
+   border the adjacent sections used to carry is dropped in favor of
+   this softer transition. */
+function ChapterSeam({ p, from, to }: { p: RoziPalette; from: string; to: string }) {
+  const { ref, inView } = useInView<HTMLDivElement>({ threshold: 0, rootMargin: "0px 0px -20% 0px" });
+  const { requestFormation } = useParticle();
+
+  useEffect(() => {
+    if (!inView || prefersReducedMotionNow()) return;
+    requestFormation("rozi", { owner: "rozi" });
+    return () => requestFormation(null, { owner: "rozi" });
+  }, [inView, requestFormation]);
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden="true"
+      style={{
+        position: "relative",
+        height: "clamp(200px, 26vw, 340px)",
+        background: `linear-gradient(to bottom, ${from} 0%, transparent 40%, transparent 60%, ${to} 100%)`,
+      }}
+    >
+      <span
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          width: "1px",
+          height: "56px",
+          background: `linear-gradient(to bottom, transparent, ${p.GOLD}, transparent)`,
+          opacity: 0.5,
+        }}
+      />
+    </div>
+  );
+}
+
+/* ── The Mashidur interstitial ────────────────────────────────────────
+   A dramatized chapter seam pinned between Empathize and Define: the
+   verbatim line from the field visit (see FieldNotes.tsx — "the words
+   he kept returning to") gets the full viewport to itself. Same
+   transparent-window + owner-keyed "rozi" formation mechanism as
+   ChapterSeam above, plus a CSS-only monsoon treatment layered on top:
+   a diagonal "rain" texture and a gold→maroon wash both intensify as
+   the section crosses into view (a `subscribeClimate` reader also
+   feeds the field's own live turbulence/excitement into the rain
+   opacity — the exact "DOM gradient reacting to the field's
+   temperament" pattern in ENGINE-API.md §3). `excite()` fires once on
+   entry as the "gust" that opens the downpour. Everything is gated by
+   `.is-inview` (CSS transitions/keyframes only) so it degrades to a
+   static, already-settled, maroon-leaning scene under reduced motion —
+   no motion, no scroll dependency, verbatim quote unchanged either way. */
+function MashidurInterstitial({ p }: { p: RoziPalette }) {
+  const { ref, inView } = useInView<HTMLElement>({ threshold: 0.4, rootMargin: "0px 0px -15% 0px" });
+  const { requestFormation, excite } = useParticle();
+  const excitedRef = useRef(false);
+
+  useEffect(() => {
+    if (!inView || prefersReducedMotionNow()) return;
+    requestFormation("rozi", { owner: "rozi" });
+    if (!excitedRef.current) {
+      excite(0.5);
+      excitedRef.current = true;
+    }
+    return () => requestFormation(null, { owner: "rozi" });
+  }, [inView, requestFormation, excite]);
+
+  useEffect(() => {
+    if (!inView || prefersReducedMotionNow()) return;
+    return subscribeClimate((c) => {
+      ref.current?.style.setProperty(
+        "--rz-rain-heat",
+        String(Math.min(1, c.excitement + c.turbulence))
+      );
+    });
+  }, [inView, ref]);
+
+  return (
+    <section
+      ref={ref}
+      aria-label="Field note"
+      className={`rz-interstitial${inView ? " is-inview" : ""}`}
+      style={{
+        position: "relative",
+        minHeight: "100dvh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        padding: "6rem var(--pad)",
+        ["--rz-rain-heat" as string]: "0",
+      }}
+    >
+      <style>{`
+        .rz-interstitial {
+          background: linear-gradient(to bottom, ${p.GND2} 0%, transparent 16%, transparent 84%, ${p.GND} 100%);
+        }
+        .rz-interstitial::before,
+        .rz-interstitial::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+        }
+        .rz-interstitial::before {
+          background: radial-gradient(120% 90% at 50% 34%, color-mix(in srgb, ${p.GOLD} 26%, transparent), transparent 68%);
+          opacity: .55;
+          transition: opacity 1.3s var(--ease-plot, ease);
+        }
+        .rz-interstitial::after {
+          background: radial-gradient(130% 100% at 50% 72%, color-mix(in srgb, ${p.ACC} 40%, transparent), transparent 70%);
+          opacity: .1;
+          transition: opacity 1.3s var(--ease-plot, ease);
+        }
+        .rz-interstitial.is-inview::before { opacity: .1; }
+        .rz-interstitial.is-inview::after  { opacity: .6; }
+
+        .rz-interstitial .rz-rain {
+          position: absolute;
+          inset: -12% -6%;
+          pointer-events: none;
+          background-image: repeating-linear-gradient(112deg, ${p.FAINT} 0 1px, transparent 1px 34px);
+          opacity: calc(.14 + var(--rz-rain-heat, 0) * .22);
+          transition: opacity .8s var(--ease-plot, ease);
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .rz-interstitial .rz-rain { animation: rz-rain-fall 2.8s linear infinite; }
+          .rz-interstitial.is-inview .rz-rain { animation-duration: 1.15s; }
+        }
+        @keyframes rz-rain-fall {
+          from { background-position: 0 0; }
+          to   { background-position: -48px 240px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .rz-interstitial::before { opacity: .1 !important; transition: none; }
+          .rz-interstitial::after  { opacity: .6 !important; transition: none; }
+          .rz-interstitial .rz-rain { opacity: .3 !important; animation: none !important; transition: none; }
+        }
+
+        .rz-interstitial-mark {
+          color: ${p.GOLDT};
+          transition: color 1.1s var(--ease-plot, ease);
+        }
+        .rz-interstitial.is-inview .rz-interstitial-mark { color: ${p.ACCT}; }
+        @media (prefers-reduced-motion: reduce) {
+          .rz-interstitial-mark { color: ${p.ACCT} !important; transition: none; }
+        }
+      `}</style>
+
+      <span className="rz-rain" aria-hidden="true" />
+
+      <div style={{ position: "relative", zIndex: 1, maxWidth: "56ch", textAlign: "center" }}>
+        <span
+          style={{
+            fontFamily: p.MONO, fontSize: ".56rem", letterSpacing: ".28em",
+            textTransform: "uppercase", color: p.FAINT, display: "block", marginBottom: "2rem",
+          }}
+        >
+          Field note · verbatim
+        </span>
+        <span
+          aria-hidden="true"
+          className="rz-interstitial-mark"
+          style={{ fontFamily: p.SERIF, fontSize: "clamp(3rem, 7vw, 5.5rem)", lineHeight: 0.6, display: "block", marginBottom: "1rem" }}
+        >
+          &ldquo;
+        </span>
+        <p
+          style={{
+            fontFamily: p.SERIF, fontStyle: "italic", fontWeight: 400,
+            fontSize: "clamp(1.8rem, 4.6vw, 3.4rem)", lineHeight: 1.2,
+            letterSpacing: "-.01em", color: p.PAP, marginBottom: "1.6rem",
+          }}
+        >
+          Adjust karna padta hai.
+        </p>
+        <p style={{ fontSize: ".95rem", color: p.DIM, marginBottom: "2.2rem" }}>
+          — roughly, &ldquo;we just have to adjust.&rdquo;
+        </p>
+        <span
+          style={{
+            fontFamily: p.MONO, fontSize: ".56rem", letterSpacing: ".2em",
+            textTransform: "uppercase", color: p.FAINT,
+          }}
+        >
+          Mashidur Shaik, 26 · migrant construction worker, Kerala
+        </span>
+      </div>
+    </section>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════ */
 
 export default function RoziPage() {
-  // Called only to keep data-theme in sync on live OS-theme changes; all
-  // colors resolve from CSS vars (per data-theme), so nothing branches on a
-  // JS boolean — server and client render identical markup (no hydration
-  // mismatch, no flash).
-  useColorScheme();
   const p = makeRoziPalette();
   const GND88 = "color-mix(in srgb, var(--rz-gnd) 90%, transparent)";
   const GND50 = "color-mix(in srgb, var(--rz-gnd) 55%, transparent)";
@@ -109,8 +377,22 @@ export default function RoziPage() {
 
   return (
     <>
+      {/* Client island: keeps data-theme in sync on live OS-theme changes.
+          Renders nothing. (The page itself is now a client component —
+          see the chapter seams/interstitial below — but RoziThemeSync
+          still isolates the theme-sync effect on its own, same as every
+          other case study.) */}
+      <RoziThemeSync />
       <Navigation />
-      <main id="main-content" style={{ background: p.GND, color: p.PAP }}>
+      {/* No background here on purpose: every section below already paints
+          its own opaque ground (p.GND / p.GND2), so main staying transparent
+          costs nothing normally — except at the chapter seams and the
+          Mashidur interstitial, which are DELIBERATELY left without one so
+          the sitewide dust field (always rendering behind every route —
+          see WebGLLayer) shows through for that one beat. The epilogue
+          below is wrapped with its own explicit background to keep its
+          look unchanged. */}
+      <main id="main-content" style={{ color: p.PAP }}>
 
         {/* ═══ 01 · HERO ═══ */}
         <section style={{
@@ -139,11 +421,34 @@ export default function RoziPage() {
             userSelect: "none", pointerEvents: "none",
           }}>Rozi</div>
 
-          <Reveal stagger style={{ position: "relative", zIndex: 3 }}>
-            <span style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "1.4rem" }}>
+          {/* Staged entrance: kicker → headline → lede → stat row. Reveal.tsx
+              deliberately skips above-the-fold content (hiding it after
+              paint would flash it out and back in), so the hero — always
+              above the fold — has never animated in. This is a pure-CSS
+              stand-in that's safe from that exact flash: the keyframes are
+              declared in the stylesheet from the very first paint (no JS
+              timing race), scoped to `no-preference` so reduced motion
+              renders every line at its final position immediately. */}
+          <div style={{ position: "relative", zIndex: 3 }}>
+            <style>{`
+              @media (prefers-reduced-motion: no-preference) {
+                .rz-hero-kicker, .rz-hero-head, .rz-hero-lede, .rz-hero-stats {
+                  animation: rz-hero-in .8s var(--ease-plot, ease) both;
+                }
+                .rz-hero-kicker { animation-delay: .05s; }
+                .rz-hero-head   { animation-delay: .22s; }
+                .rz-hero-lede   { animation-delay: .46s; }
+                .rz-hero-stats  { animation-delay: .66s; }
+              }
+              @keyframes rz-hero-in {
+                from { opacity: 0; transform: translateY(18px); }
+                to   { opacity: 1; transform: translateY(0); }
+              }
+            `}</style>
+            <span className="rz-hero-kicker" style={{ ...kick(p.MONO, p.GOLDT), marginBottom: "1.4rem" }}>
               UX Research · Service Design · SARVA Designathon 2021
             </span>
-            <h1 style={{
+            <h1 className="rz-hero-head" style={{
               fontFamily: p.SERIF, fontWeight: 400,
               fontSize: "clamp(2.8rem, 7vw, 6rem)", lineHeight: 1.0,
               letterSpacing: "-.02em", color: p.PAP, marginBottom: "1.4rem",
@@ -151,11 +456,11 @@ export default function RoziPage() {
               No middlemen.<br />
               <em style={{ fontStyle: "italic", color: p.GOLDB }}>Just work.</em>
             </h1>
-            <p style={{ fontSize: "clamp(.9rem, 1.5vw, 1.1rem)", color: p.DIM, maxWidth: "50ch", lineHeight: 1.7, marginBottom: "2.5rem" }}>
+            <p className="rz-hero-lede" style={{ fontSize: "clamp(.9rem, 1.5vw, 1.1rem)", color: p.DIM, maxWidth: "50ch", lineHeight: 1.7, marginBottom: "2.5rem" }}>
               A marketplace connecting India&apos;s 40 crore informal workers to employers
               directly. Register, find work, get paid — the contractor takes nothing.
             </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "2.5rem", paddingTop: "1.8rem", borderTop: `1px solid ${p.LINEW}` }}>
+            <div className="rz-hero-stats" style={{ display: "flex", flexWrap: "wrap", gap: "2.5rem", paddingTop: "1.8rem", borderTop: `1px solid ${p.LINEW}` }}>
               {[
                 ["Outcome",  "Top 5 nationally"],
                 ["Sprint",   "24 hours"],
@@ -168,7 +473,7 @@ export default function RoziPage() {
                 </div>
               ))}
             </div>
-          </Reveal>
+          </div>
         </section>
 
         {/* ═══ 02 · OVERVIEW ═══ */}
@@ -207,7 +512,7 @@ export default function RoziPage() {
                 { value: "₹0",    label: "Legal recourse when wages are skimmed" },
               ].map(({ value, label }, i) => (
                 <div key={label} style={{ height: "100%", padding: "1rem 3rem", borderLeft: i === 0 ? "none" : `1px solid ${p.LINEW}` }}>
-                  <div style={{ fontFamily: p.SERIF, fontWeight: 300, fontSize: "clamp(2.6rem, 5.5vw, 4.5rem)", lineHeight: 1, letterSpacing: "-.03em", color: p.ACC, marginBottom: ".6rem" }}>{value}</div>
+                  <div style={{ fontFamily: p.SERIF, fontWeight: 300, fontSize: "clamp(2.6rem, 5.5vw, 4.5rem)", lineHeight: 1, letterSpacing: "-.03em", color: p.ACC, marginBottom: ".6rem" }}><CountUp value={value} /></div>
                   <div style={{ fontFamily: p.MONO, fontSize: ".52rem", letterSpacing: ".18em", textTransform: "uppercase", color: p.DIM }}>{label}</div>
                 </div>
               ))}
@@ -290,7 +595,7 @@ export default function RoziPage() {
                 { value: "7",   label: "Systemic gaps mapped" },
               ].map(({ value, label }, i) => (
                 <div key={label} style={{ height: "100%", padding: "0 2.5rem", borderLeft: i === 0 ? "none" : `1px solid ${p.LINEW}` }}>
-                  <div style={{ fontFamily: p.SERIF, fontWeight: 300, fontSize: "clamp(2rem, 4vw, 3.2rem)", lineHeight: 1, letterSpacing: "-.03em", color: p.GOLDT, marginBottom: ".5rem" }}>{value}</div>
+                  <div style={{ fontFamily: p.SERIF, fontWeight: 300, fontSize: "clamp(2rem, 4vw, 3.2rem)", lineHeight: 1, letterSpacing: "-.03em", color: p.GOLDT, marginBottom: ".5rem" }}><CountUp value={value} /></div>
                   <div style={{ fontFamily: p.MONO, fontSize: ".5rem", letterSpacing: ".18em", textTransform: "uppercase", color: p.DIM }}>{label}</div>
                 </div>
               ))}
@@ -298,8 +603,10 @@ export default function RoziPage() {
           </div>
         </section>
 
+        <ChapterSeam p={p} from={p.GND} to={p.GND2} />
+
         {/* ═══ 06 · EMPATHIZE ═══ */}
-        <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND2, padding: "8rem var(--pad)" }}>
+        <section style={{ background: p.GND2, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
             <Reveal>
               <PhaseHeader p={p} num="01" label="Empathize" />
@@ -334,8 +641,10 @@ export default function RoziPage() {
           </div>
         </section>
 
+        <MashidurInterstitial p={p} />
+
         {/* ═══ 07 · DEFINE ═══ */}
-        <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND, padding: "8rem var(--pad)" }}>
+        <section style={{ background: p.GND, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
             <Reveal>
               <PhaseHeader p={p} num="02" label="Define" />
@@ -359,8 +668,10 @@ export default function RoziPage() {
           </div>
         </section>
 
+        <ChapterSeam p={p} from={p.GND} to={p.GND2} />
+
         {/* ═══ 08 · IDEATE ═══ */}
-        <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND2, padding: "8rem var(--pad)" }}>
+        <section style={{ background: p.GND2, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
             <Reveal>
               <PhaseHeader p={p} num="03" label="Ideate" />
@@ -408,8 +719,10 @@ export default function RoziPage() {
           </div>
         </section>
 
+        <ChapterSeam p={p} from={p.GND2} to={p.GND} />
+
         {/* ═══ 09 · PROTOTYPE / ARCHITECTURE ═══ */}
-        <section style={{ borderTop: `1px solid ${p.LINEW}`, background: p.GND, padding: "8rem var(--pad)" }}>
+        <section style={{ background: p.GND, padding: "8rem var(--pad)" }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
             <Reveal>
               <PhaseHeader p={p} num="04" label="Prototype" />
@@ -527,7 +840,13 @@ export default function RoziPage() {
         </section>
 
         {/* ═══ 12 · EPILOGUE — match-cut into Realm of Elementals ═══ */}
-        <NextProject current="rozi" />
+        {/* NextProject paints no background of its own (by design elsewhere
+            in the codebase); it used to inherit main's flat p.GND. Now that
+            main is transparent (see the seams above), wrap it explicitly so
+            its look is unchanged from before this pass. */}
+        <div style={{ background: p.GND }}>
+          <NextProject current="rozi" />
+        </div>
 
       </main>
       <Footer />

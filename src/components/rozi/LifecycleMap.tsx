@@ -1,6 +1,6 @@
 "use client";
 
-import { useInView } from "@/hooks/useInView";
+import { useEffect, useRef } from "react";
 import type { RoziPalette } from "@/components/rozi/palette";
 import { lifecycleStageColors } from "@/components/rozi/palette";
 
@@ -12,6 +12,16 @@ import { lifecycleStageColors } from "@/components/rozi/palette";
    them. On mobile the whole thing reflows to a vertical timeline with
    a connector rail on the left. Card tints run gold → deep maroon
    (early opportunity fading into hardship) via lifecycleStageColors(p).
+
+   Each stage card reveals on ITS OWN scroll entry — a per-cell
+   IntersectionObserver, not one root-level trigger for the whole grid
+   — so the descending cascade literally steps down as the reader
+   scrolls past each stage, one at a time (most legible on the mobile
+   vertical timeline, where stage 4 can be a full screen below stage
+   1). CSS-driven like Reveal.tsx: resting markup ships fully visible,
+   the observer only flips `.is-inview` on the cell that crossed the
+   threshold, and the (reduced-motion-gated) CSS animation below does
+   the rest — no React state, no re-render per intersection.
    ═══════════════════════════════════════════════════════════════════ */
 
 type Stage = {
@@ -46,9 +56,37 @@ const STAGES: Stage[] = [
 
 export default function LifecycleMap({ p }: { p: RoziPalette }) {
   const stageColors = lifecycleStageColors(p);
-  /* threshold 0 + bottom rootMargin: fires as the block meaningfully
-     enters, independent of its height (it can exceed one viewport). */
-  const { ref, inView } = useInView({ threshold: 0, rootMargin: "0px 0px -10% 0px" });
+
+  /* One ref per stage cell; a single observer watches all four and
+     flips `.is-inview` on whichever one just crossed the threshold —
+     independently, so stage 4 doesn't light up just because stage 1
+     (the block's top) reached the viewport. */
+  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const cells = cellRefs.current.filter((c): c is HTMLDivElement => !!c);
+    if (!cells.length) return;
+
+    if (typeof IntersectionObserver === "undefined") {
+      cells.forEach((c) => c.classList.add("is-inview"));
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add("is-inview");
+          io.unobserve(entry.target);
+        }
+      },
+      /* threshold 0 + bottom rootMargin: each cell fires as it
+         meaningfully enters, independent of the grid's total height. */
+      { threshold: 0, rootMargin: "0px 0px -12% 0px" }
+    );
+    cells.forEach((c) => io.observe(c));
+    return () => io.disconnect();
+  }, []);
 
   /* Text-safe accent per stage (gold family → maroon), mirroring the
      gold→maroon marker sequence. `marker` colors are fill-tuned and too
@@ -83,7 +121,7 @@ export default function LifecycleMap({ p }: { p: RoziPalette }) {
   );
 
   return (
-    <div ref={ref} className={`rzlc-root${inView ? " is-inview" : ""}`}>
+    <div className="rzlc-root">
       <style>{`
         .rzlc-root {
           --rzlc-step: clamp(14px, 2.6vw, 34px);
@@ -135,16 +173,13 @@ export default function LifecycleMap({ p }: { p: RoziPalette }) {
         }
         .rzlc-rail { display: none; }
 
-        /* Entrance: subtle rise + fade, staggered. Gated on .is-inview
-           (useInView) so it plays when the map scrolls into the viewport;
+        /* Entrance: subtle rise + fade, per cell. Gated on that cell's own
+           .is-inview (per-cell IntersectionObserver above) so each stage
+           plays as IT scrolls into the viewport — not all four at once;
            the resting state stays fully visible (pre-JS / no-JS safe).
            Reduced motion never enters this block — cards just sit there. */
         @media (prefers-reduced-motion: no-preference) {
-          .rzlc-root.is-inview .rzlc-card { animation: rzlc-rise .6s both; }
-          .rzlc-root.is-inview .rzlc-cell:nth-child(1) .rzlc-card { animation-delay: .00s; }
-          .rzlc-root.is-inview .rzlc-cell:nth-child(2) .rzlc-card { animation-delay: .09s; }
-          .rzlc-root.is-inview .rzlc-cell:nth-child(3) .rzlc-card { animation-delay: .18s; }
-          .rzlc-root.is-inview .rzlc-cell:nth-child(4) .rzlc-card { animation-delay: .27s; }
+          .rzlc-cell.is-inview .rzlc-card { animation: rzlc-rise .6s .04s both; }
         }
         @keyframes rzlc-rise {
           from { opacity: 0; transform: translateY(10px); }
@@ -199,7 +234,13 @@ export default function LifecycleMap({ p }: { p: RoziPalette }) {
           const ink = stageInkColors[i];
           const last = i === STAGES.length - 1;
           return (
-            <div className="rzlc-cell" key={s.idx}>
+            <div
+              className="rzlc-cell"
+              key={s.idx}
+              ref={(el) => {
+                cellRefs.current[i] = el;
+              }}
+            >
               {/* mobile timeline node (colored per stage) */}
               <span
                 className="rzlc-node"

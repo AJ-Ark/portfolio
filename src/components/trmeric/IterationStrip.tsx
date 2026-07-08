@@ -1,21 +1,37 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Shot from "./Shot";
 import type { TrmColors } from "./PrototypeFrame";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
-/* The 36-iteration story, shown instead of narrated.
-   Left: a line-art reconstruction of v13 (three rows of controls).
-   Right: the real v36 that shipped (one control bar).
-   Above: the 24 ticks between them, annotated at the turning points. */
+/* The 24-iteration story (v13 → v36), scrubbed instead of narrated.
+   A native <input type="range"> drives everything — pointer drag, touch
+   drag, and full keyboard support (←/→ step one iteration, Home/End jump
+   to v13/v36) come for free from the browser rather than being
+   hand-rolled, and it's a real, accessible slider (role="slider" is
+   implicit) rather than a div wearing a slider costume.
 
-const TICKS = 24; // v13 → v36 inclusive
+   The frame crossfades between the reconstructed v13 schematic and the
+   real, shipped v36 screenshot as the scrubber moves — there is no
+   screenshot for every intermediate version, so the crossfade itself IS
+   the honest representation of "36 iterations happened between these two
+   states" rather than fabricating 22 screenshots that never existed. The
+   strip always resolves to the real v36 photo at the right-hand end.
 
-const MILESTONES: { at: number; text: string }[] = [
-  { at: 0, text: "v13 · three rows of controls" },
-  { at: 8, text: "every feature-add rejected" },
-  { at: 14, text: "“less is more” — Siddharth" },
-  { at: 19, text: "dashboard ↔ action mode" },
-  { at: 23, text: "v36 · shipped" },
+   Reduced motion: renders the original static before/after + tick-strip
+   layout — no drag surface, nothing to operate, just the two end states
+   side by side. */
+
+const V_MIN = 13;
+const V_MAX = 36;
+
+const MILESTONES: { v: number; text: string }[] = [
+  { v: 13, text: "v13 · three rows of controls" },
+  { v: 21, text: "every feature-add rejected" },
+  { v: 27, text: "“less is more” — Siddharth" },
+  { v: 32, text: "dashboard ↔ action mode" },
+  { v: 36, text: "v36 · shipped" },
 ];
 
 /* Line-art reconstruction of the rejected v13 layout. Same schematic
@@ -33,7 +49,8 @@ function V13Schematic({ colors: c }: { colors: TrmColors }) {
   return (
     <div
       style={{
-        aspectRatio: "16/10",
+        width: "100%",
+        height: "100%",
         borderRadius: 14,
         border: `1px dashed ${c.line}`,
         background: c.base,
@@ -88,63 +105,83 @@ function V13Schematic({ colors: c }: { colors: TrmColors }) {
   );
 }
 
-export default function IterationStrip({ colors: c }: { colors: TrmColors }) {
+/* The tick row shared by both the interactive scrubber and the static
+   reduced-motion fallback — milestone labels above, 24 hairline ticks
+   below, taller + accented at each milestone. `active` (a v-number or
+   null) is exact-match only, matching the spec: annotations pop in at
+   their exact tick positions, not "any tick at or past this one". */
+function TickRow({ colors: c, active }: { colors: TrmColors; active: number | null }) {
+  return (
+    <div style={{ position: "relative", paddingTop: "2.1rem" }}>
+      {MILESTONES.map(({ v, text }) => {
+        const reached = active !== null && active >= v;
+        const popped = active === v;
+        return (
+          <span
+            key={v}
+            className="trm-iter-label"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: `${((v - V_MIN) / (V_MAX - V_MIN)) * 100}%`,
+              transform: `${v === V_MIN ? "" : v === V_MAX ? "translateX(-100%)" : "translateX(-50%)"} scale(${popped ? 1.1 : 1})`,
+              transformOrigin: v === V_MIN ? "left top" : v === V_MAX ? "right top" : "center top",
+              fontFamily: "var(--font-mono)",
+              fontSize: ".52rem",
+              letterSpacing: ".1em",
+              textTransform: "uppercase",
+              color: popped ? c.acc : reached ? c.accd : c.faint,
+              opacity: popped ? 1 : reached ? 0.85 : 0.5,
+              whiteSpace: "nowrap",
+              transition: "transform .25s cubic-bezier(.16,1,.3,1), color .25s ease, opacity .25s ease",
+            }}
+          >
+            {text}
+          </span>
+        );
+      })}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+        {Array.from({ length: V_MAX - V_MIN + 1 }, (_, i) => {
+          const v = V_MIN + i;
+          const isMilestone = MILESTONES.some((m) => m.v === v);
+          const popped = active === v;
+          return (
+            <span
+              key={v}
+              style={{
+                width: popped ? 2.5 : 1.5,
+                height: isMilestone ? (popped ? 32 : 26) : 13,
+                background: popped ? c.acc : isMilestone ? c.acc : c.line,
+                display: "block",
+                transition: "width .2s ease, height .2s ease",
+              }}
+            />
+          );
+        })}
+      </div>
+      <div style={{ height: 1, background: c.line, marginTop: 0 }} />
+      <style>{`
+        @media (max-width: 900px) {
+          .trm-iter-label { display: none; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+/* Reduced-motion fallback: the original static before/after layout, no
+   drag surface, nothing to operate. */
+function StaticIterationTimeline({ colors: c }: { colors: TrmColors }) {
   return (
     <div>
-      {/* tick strip */}
       <div style={{ marginBottom: "2.2rem" }}>
-        <div style={{ position: "relative", paddingTop: "2.1rem" }}>
-          {/* milestone labels */}
-          {MILESTONES.map(({ at, text }) => (
-            <span
-              key={at}
-              className="trm-iter-label"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: `${(at / (TICKS - 1)) * 100}%`,
-                transform: at === 0 ? "none" : at === TICKS - 1 ? "translateX(-100%)" : "translateX(-50%)",
-                fontFamily: "var(--font-mono)",
-                fontSize: ".52rem",
-                letterSpacing: ".1em",
-                textTransform: "uppercase",
-                color: at === TICKS - 1 ? c.accd : c.faint,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {text}
-            </span>
-          ))}
-          {/* ticks */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
-            {Array.from({ length: TICKS }, (_, i) => {
-              const isMilestone = MILESTONES.some((m) => m.at === i);
-              return (
-                <span
-                  key={i}
-                  style={{
-                    width: 1.5,
-                    height: isMilestone ? 26 : 13,
-                    background: isMilestone ? c.acc : c.line,
-                    display: "block",
-                  }}
-                />
-              );
-            })}
-          </div>
-          <div style={{ height: 1, background: c.line, marginTop: 0 }} />
-        </div>
-        <style>{`
-          @media (max-width: 900px) {
-            .trm-iter-label { display: none; }
-          }
-        `}</style>
+        <TickRow colors={c} active={null} />
       </div>
-
-      {/* before / after */}
       <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", alignItems: "start" }}>
         <div>
-          <V13Schematic colors={c} />
+          <div style={{ aspectRatio: "16/10" }}>
+            <V13Schematic colors={c} />
+          </div>
           <p style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".14em", textTransform: "uppercase", color: c.faint, marginTop: ".7rem" }}>
             v13 — every capability visible, nothing legible · rejected
           </p>
@@ -163,6 +200,140 @@ export default function IterationStrip({ colors: c }: { colors: TrmColors }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function IterationStrip({ colors: c }: { colors: TrmColors }) {
+  const reducedMotion = usePrefersReducedMotion();
+  const [iter, setIter] = useState(V_MAX); // rests on the real, shipped v36 shot
+
+  const progress = (iter - V_MIN) / (V_MAX - V_MIN);
+  const exact = useMemo(() => MILESTONES.find((m) => m.v === iter) ?? null, [iter]);
+
+  if (reducedMotion) return <StaticIterationTimeline colors={c} />;
+
+  return (
+    <div>
+      <div style={{ marginBottom: "1.6rem" }}>
+        <TickRow colors={c} active={iter} />
+      </div>
+
+      {/* the crossfading frame: v13 schematic ↔ real v36 screenshot.
+          Only the visually-dominant layer is interactive: gate pointer-events
+          AND inert on opacity, or the transparent-but-on-top v36 Shot button
+          would intercept clicks over the v13 schematic and stay tabbable. */}
+      <div style={{ position: "relative", aspectRatio: "16/10", borderRadius: 14, overflow: "hidden" }}>
+        <div
+          inert={progress >= 0.5}
+          style={{ position: "absolute", inset: 0, opacity: 1 - progress, transition: "none", pointerEvents: progress < 0.5 ? "auto" : "none" }}
+        >
+          <V13Schematic colors={c} />
+        </div>
+        <div
+          inert={progress < 0.5}
+          style={{ position: "absolute", inset: 0, opacity: progress, transition: "none", pointerEvents: progress >= 0.5 ? "auto" : "none" }}
+        >
+          <Shot
+            src="/images/trmeric/portfolio-monitor.png"
+            alt="Portfolio Monitor v36, the shipped version: a single dock-style control bar and a full-height force graph"
+            ratio="16/10"
+            border={`1px solid ${c.line}`}
+            accent={c.acc}
+            sizes="(max-width: 900px) 100vw, 550px"
+          />
+        </div>
+      </div>
+
+      {/* the scrubber itself */}
+      <div className="trm-iter-scrubber" style={{ position: "relative", marginTop: "1.1rem", height: "1.8rem", display: "flex", alignItems: "center" }}>
+        <input
+          type="range"
+          className="trm-iter-input"
+          min={V_MIN}
+          max={V_MAX}
+          step={1}
+          value={iter}
+          onChange={(e) => setIter(Number(e.target.value))}
+          aria-label="Portfolio Monitor iteration, version 13 to version 36"
+          aria-valuetext={`Version ${iter}${exact ? ` — ${exact.text}` : ""}`}
+          style={{ ["--trm-acc" as string]: c.acc, ["--trm-line" as string]: c.line }}
+          /* Chromium mutates a styled (-webkit-appearance:none) range
+             input's live style attribute (adds caret-color: transparent)
+             before React's hydration walk reaches it — a browser-internal
+             artifact, not an SSR/CSR content difference (verified: every
+             prop this component actually controls matches exactly). This
+             is the documented escape hatch for that class of mismatch. */
+          suppressHydrationWarning
+        />
+      </div>
+
+      {/* live readout */}
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: ".7rem", marginTop: ".9rem", flexWrap: "wrap" }}>
+        <span style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontSize: "1.3rem", color: c.acc, fontVariantNumeric: "tabular-nums" }}>
+          v{iter}
+        </span>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", color: c.dim }}>
+          {exact ? exact.text : "drag, or use ← → (Home/End for the ends)"}
+        </span>
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: ".6rem" }}>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".14em", textTransform: "uppercase", color: iter === V_MIN ? c.accd : c.faint, transition: "color .25s ease" }}>
+          v13 — every capability visible, nothing legible · rejected
+        </span>
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: ".55rem", letterSpacing: ".14em", textTransform: "uppercase", color: iter === V_MAX ? c.accd : c.faint, transition: "color .25s ease", textAlign: "right" }}>
+          v36 — one control bar, more context per control · shipped
+        </span>
+      </div>
+
+      <style>{`
+        .trm-iter-input {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          background: transparent;
+          cursor: ew-resize;
+          touch-action: pan-y;
+        }
+        .trm-iter-input:focus-visible {
+          outline: 2px solid var(--trm-acc);
+          outline-offset: 4px;
+          border-radius: 999px;
+        }
+        .trm-iter-input::-webkit-slider-runnable-track {
+          height: 2px;
+          background: var(--trm-line);
+          border-radius: 999px;
+        }
+        .trm-iter-input::-moz-range-track {
+          height: 2px;
+          background: var(--trm-line);
+          border-radius: 999px;
+        }
+        .trm-iter-input::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 18px;
+          height: 18px;
+          margin-top: -8px;
+          border-radius: 50%;
+          background: var(--trm-acc);
+          border: 3px solid color-mix(in srgb, var(--trm-acc) 30%, white 70%);
+          box-shadow: 0 2px 10px -2px rgba(0,0,0,.4);
+          cursor: ew-resize;
+        }
+        .trm-iter-input::-moz-range-thumb {
+          width: 18px;
+          height: 18px;
+          border-radius: 50%;
+          background: var(--trm-acc);
+          border: 3px solid color-mix(in srgb, var(--trm-acc) 30%, white 70%);
+          box-shadow: 0 2px 10px -2px rgba(0,0,0,.4);
+          cursor: ew-resize;
+        }
+      `}</style>
     </div>
   );
 }

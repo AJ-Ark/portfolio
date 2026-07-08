@@ -28,19 +28,16 @@ function hidePreloader(){
 setTimeout(hidePreloader, 4000);
 
 /* ============================================================
-   SMOOTH SCROLL (Lenis) + GSAP sync
+   ANCHOR LINKS — native smooth scroll
+   (This page never loaded Lenis — no script tag anywhere defines
+   window.Lenis — so the old "if(!reduceMotion && window.Lenis)" guard
+   was dead code that could never run, and its else-branch below is the
+   only path that ever executed. Removed the dead branch rather than
+   wiring up a real Lenis instance: this page has no scroll-jacking left
+   once the metamorphosis pin and the gallery's horizontal scrub (both
+   below) replace the old wheel-hijacking, so native scroll + ScrollTrigger
+   is all it needs — one less rAF loop, one less self-hosted dependency.)
    ============================================================ */
-let lenis = null;
-if(!reduceMotion && window.Lenis){
-  lenis = new window.Lenis({ lerp:0.09, wheelMultiplier:1, smoothWheel:true });
-  function raf(t){ lenis.raf(t); requestAnimationFrame(raf); }
-  requestAnimationFrame(raf);
-  if(gsap && ScrollTrigger){
-    lenis.on("scroll", ScrollTrigger.update);
-  }
-}
-
-/* anchor links -> smooth */
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
   a.addEventListener("click", e=>{
     const id = a.getAttribute("href");
@@ -48,8 +45,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     const el = document.querySelector(id);
     if(!el) return;
     e.preventDefault();
-    if(lenis) lenis.scrollTo(el, { offset:-10, duration:1.4 });
-    else el.scrollIntoView({behavior:"smooth"});
+    el.scrollIntoView({behavior:"smooth"});
   });
 });
 
@@ -132,14 +128,43 @@ if(gsap && ScrollTrigger && !reduceMotion){
 }
 
 /* ============================================================
-   HORIZONTAL SCREENS GALLERY (drag / wheel / swipe)
+   SCREENS GALLERY
+   Motion-OK: pinned horizontal scrub — the section pins in place and the
+   track slides sideways as the reader scrolls the page's single vertical
+   axis, so the gallery rides the same gesture as everything else instead
+   of hijacking the wheel.
+   Reduced motion / no GSAP: the old calm fallback — native overflow-x:auto
+   scrolling (no pin, no scrub), with click-and-drag and a vertical-wheel
+   remap as conveniences.
    ============================================================ */
 (function screensGallery(){
   const view = document.getElementById("screens");
-  if(!view) return;
+  const track = document.getElementById("screensTrack");
+  if(!view || !track) return;
 
-  // Touch devices use native momentum scrolling (overflow-x:auto) — intuitive by default.
-  // For mouse, add click-and-drag-to-scroll; for trackpad/wheel, map vertical to horizontal.
+  if(gsap && ScrollTrigger && !reduceMotion){
+    view.classList.add("screens--pinned");
+    // function-based x/end + invalidateOnRefresh: a plain window resize (or
+    // an orientation change) re-invokes these on ScrollTrigger.refresh(),
+    // so the scrub distance never goes stale the way a one-off computed
+    // number would.
+    gsap.to(track, {
+      x: () => -Math.max(0, track.scrollWidth - view.clientWidth),
+      ease: "none",
+      scrollTrigger: {
+        trigger: view,
+        start: "top top",
+        end: () => "+=" + Math.max(0, track.scrollWidth - view.clientWidth),
+        pin: true,
+        scrub: 0.4,
+        invalidateOnRefresh: true
+      }
+    });
+    window.addEventListener("resize", ()=> ScrollTrigger.refresh());
+    return;
+  }
+
+  // ---- fallback: native horizontal scroll, drag-to-scroll, wheel remap ----
   let down=false, startX=0, startLeft=0, moved=false;
 
   view.addEventListener("pointerdown",(e)=>{
@@ -401,6 +426,130 @@ if(gsap && ScrollTrigger && !reduceMotion){
     scene.add(s); butterflies.push(s);
   }
 
+  /* ============================================================
+     METAMORPHOSIS — pinned scroll-scrub through egg → caterpillar →
+     chrysalis → butterfly. Reuses this scene's own particle vocabulary
+     (the pollen dot sprite) rather than new geometry/materials: every
+     stage is just another target array for the same kind of points this
+     scene already draws. Position is always a pure function of scroll
+     progress, so scrubbing back up simply re-evaluates the same
+     interpolation the other way — no separate "reverse" path needed.
+     Gated on !reduceMotion: the pinned/scrubbed effect has a fully static
+     calm path (CSS un-pins #cyclePin into a plain readable grid; see
+     style.css), so skipping this block entirely is the correct reduced-
+     motion behavior, not a degraded one.
+     ============================================================ */
+  let lifecycleMat = null;   // read by ambient() below to dim the ambient field while this plays
+  if(!reduceMotion){
+    (function metamorphosis(){
+      const pin = document.getElementById("cyclePin");
+      if(!pin || !gsap || !ScrollTrigger) return;
+
+      // Opt into the pinned/scrubbed layout only now that GSAP+ScrollTrigger
+      // are confirmed live. Without this class the stages render as a static,
+      // fully-readable grid (see .cycle-pin base rules in style.css), so a
+      // no-JS / failed-GSAP visitor never gets blank stages.
+      pin.classList.add("is-scrub");
+
+      const N = window.innerWidth < 760 ? 380 : 680;
+      const hash = (i, s) => { const x = Math.sin(i*127.1 + s*311.7)*43758.5453; return x - Math.floor(x); };
+
+      function buildShape(kind){
+        const arr = new Float32Array(N*3);
+        for(let i=0;i<N;i++){
+          const u = i/N;
+          const r1 = hash(i,1.7), r2 = hash(i,5.3), r3 = hash(i,9.1);
+          let x=0,y=0,z=0;
+          if(kind === "egg"){
+            // volume-filled ellipsoid, tapered narrower at both poles (egg profile)
+            const phi = r1*Math.PI*2, ct = r2*2-1, th = Math.acos(ct), rad = Math.cbrt(r3);
+            const sx = rad*Math.sin(th)*Math.cos(phi), sy = rad*ct, sz = rad*Math.sin(th)*Math.sin(phi);
+            const taper = 1 - 0.28*Math.max(0,sy) - 0.12*Math.max(0,-sy);
+            x = sx*1.05*taper; y = sy*1.55; z = sz*1.05*taper;
+          } else if(kind === "caterpillar"){
+            // lumpy horizontal tube, tapering to a point at both ends
+            const L = 6.2, env = Math.sin(Math.PI*Math.min(1,Math.max(0,u)));
+            const seg = 0.78 + 0.22*Math.sin(u*Math.PI*6.5);
+            const radius = 0.82*env*seg;
+            const ang = r1*Math.PI*2, rr = Math.sqrt(r2)*radius;
+            x = (u-0.5)*L + (r3-0.5)*0.12;
+            y = Math.cos(ang)*rr; z = Math.sin(ang)*rr*0.9;
+          } else if(kind === "chrysalis"){
+            // hanging pod: pinched at the top attachment, tapering to a point at the bottom
+            const envelope = Math.max(0, Math.sin(Math.PI*u)*(1-0.5*u));
+            const radius = 0.95*envelope;
+            const ang = r1*Math.PI*2, rr = Math.sqrt(r2)*radius;
+            y = 1.6 - u*3.6; x = Math.cos(ang)*rr; z = Math.sin(ang)*rr*0.85;
+          } else {
+            // butterfly: Fay's butterfly curve (a well-known closed-form curve
+            // shaped like a butterfly), sampled once per particle with a
+            // touch of radial jitter so the outline reads as dust, not a line
+            const th = u*12*Math.PI;
+            let rC = Math.exp(Math.cos(th)) - 2*Math.cos(4*th) + Math.pow(Math.sin(th/12),5);
+            rC *= (1 + (r2-0.5)*0.22);
+            x = Math.sin(th)*rC*0.62; y = Math.cos(th)*rC*0.62; z = (r3-0.5)*0.6;
+          }
+          arr[i*3]=x; arr[i*3+1]=y; arr[i*3+2]=z;
+        }
+        return arr;
+      }
+
+      const shapes = ["egg","caterpillar","chrysalis","butterfly"].map(buildShape);
+      const positions = new Float32Array(N*3);
+      positions.set(shapes[0]);
+
+      const mGeo = new THREE.BufferGeometry();
+      mGeo.setAttribute("position", new THREE.BufferAttribute(positions,3));
+      const mMat = new THREE.PointsMaterial({
+        size:0.5, map:dotTex, transparent:true, depthWrite:false,
+        blending:THREE.AdditiveBlending, color:0xf1d8a3, sizeAttenuation:true, opacity:0
+      });
+      const morphPoints = new THREE.Points(mGeo, mMat);
+      scene.add(morphPoints);
+      lifecycleMat = mMat;
+
+      const stages = [...pin.querySelectorAll(".cycle-pin__stage")];
+      const dots = [...pin.querySelectorAll(".cycle-pin__dot")];
+      const fill = document.getElementById("cyclePinFill");
+      let lastStage = 0;
+
+      function setProgress(p){
+        const segF = Math.min(0.999999, Math.max(0, p)) * 3;
+        const idx = Math.floor(segF);
+        const t = segF - idx;
+        const a = shapes[idx], b = shapes[Math.min(3, idx+1)];
+        const pos = mGeo.attributes.position.array;
+        for(let i=0;i<N;i++){
+          pos[i*3]   = a[i*3]   + (b[i*3]   - a[i*3])  *t;
+          pos[i*3+1] = a[i*3+1] + (b[i*3+1] - a[i*3+1])*t;
+          pos[i*3+2] = a[i*3+2] + (b[i*3+2] - a[i*3+2])*t;
+        }
+        mGeo.attributes.position.needsUpdate = true;
+
+        const nearest = Math.round(segF);
+        if(nearest !== lastStage){
+          lastStage = nearest;
+          stages.forEach((el,i)=> el.classList.toggle("is-active", i===nearest));
+          dots.forEach((el,i)=> el.classList.toggle("is-active", i<=nearest));
+        }
+        if(fill) fill.style.width = (p*100) + "%";
+      }
+
+      ScrollTrigger.create({
+        trigger: pin,
+        start: "top top",
+        end: "+=250%",
+        pin: true,
+        scrub: 0.5,
+        onUpdate(self){ setProgress(self.progress); },
+        onEnter(){ gsap.to(mMat, {opacity:0.85, duration:.6, overwrite:true}); },
+        onEnterBack(){ gsap.to(mMat, {opacity:0.85, duration:.6, overwrite:true}); },
+        onLeave(){ gsap.to(mMat, {opacity:0, duration:.6, overwrite:true}); },
+        onLeaveBack(){ gsap.to(mMat, {opacity:0, duration:.6, overwrite:true}); }
+      });
+    })();
+  }
+
   /* ---- input parallax: mouse, touch, and device tilt ---- */
   const mouse = {x:0,y:0,tx:0,ty:0};
   const setTarget = (cx,cy)=>{
@@ -477,6 +626,10 @@ if(gsap && ScrollTrigger && !reduceMotion){
   // driftEase (0→1) lets the camera ease into its drift after the warp rather
   // than snapping on.
   function ambient(t, dt, damp, driftEase){
+    // while the metamorphosis pin is scrubbing, ease the ambient field back
+    // so its own particles read clearly — same material, one shared spotlight
+    const dim = lifecycleMat ? lifecycleMat.opacity/0.85 : 0;   // 0..1
+
     butterflies.forEach(s=>{
       const u = s.userData;
       // emergence: each one grows, brightens and eases its wings open out of
@@ -491,7 +644,7 @@ if(gsap && ScrollTrigger && !reduceMotion){
       if(s.position.y > 9){ s.position.y = -9; s.position.x = (Math.random()-0.5)*22; }
       if(s.position.x > 13) s.position.x = -13;
       if(s.position.x < -13) s.position.x = 13;
-      s.material.opacity = 0.92 * em;                          // fade up on the curve
+      s.material.opacity = 0.92 * em * (1 - dim*0.7);          // fade up on the curve, dimmed during the morph
       const grow = 0.28 + 0.72*em;                             // swell from a sliver to full
       const flapAmp = 0.85 * em;                               // wings ease open as it arrives
       const flap = (Math.sin(t*(u.flap + startled*0.6) + u.phase)*0.5+0.5);
@@ -499,8 +652,9 @@ if(gsap && ScrollTrigger && !reduceMotion){
       s.scale.y = u.sc * grow;
     });
 
-    core.material.opacity = 0.42 + Math.sin(t*0.6)*0.08;
+    core.material.opacity = (0.42 + Math.sin(t*0.6)*0.08) * (1 - dim*0.55);
     core.scale.setScalar(26);
+    mat.opacity = 0.9 * (1 - dim*0.7);                         // the pollen field itself steps back too
 
     // camera: gentle drift + input parallax + scroll dolly-back (the zoom-out)
     smoothP += (scrollProgress - smoothP)*0.06;

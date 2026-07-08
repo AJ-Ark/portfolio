@@ -1,5 +1,3 @@
-"use client";
-
 import Shot from "./Shot";
 import type { TrmColors } from "./PrototypeFrame";
 

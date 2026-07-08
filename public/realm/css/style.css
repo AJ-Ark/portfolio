@@ -49,6 +49,11 @@ body.lenis{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 
 img{max-width:100%;display:block;height:auto}
+/* <picture> wrappers (AVIF/WebP art direction) must stay invisible to layout —
+   descendant selectors like `.screen img` and percentage heights like
+   `.installation__hero img{height:100%}` need the <img> to behave as if it
+   were still a direct child. */
+picture{display:contents}
 a{color:inherit;text-decoration:none}
 ::selection{background:var(--gold);color:var(--forest-0)}
 
@@ -265,6 +270,11 @@ body:not(.entered) .nav{opacity:0;pointer-events:none}
 .screens::-webkit-scrollbar{display:none}
 .screens.drag{cursor:grabbing}
 .screens.drag .screen img{transition:none}
+/* Motion-OK path: GSAP pins this element and drives #screensTrack's
+   transform directly, so the native scroll container gets out of the way
+   (no double-scrolling, no grab cursor — the vertical scroll gesture does
+   the work now). */
+.screens.screens--pinned{overflow:hidden;cursor:default;-webkit-user-select:auto;user-select:auto}
 .screens__track{display:flex;gap:28px;padding-inline:var(--pad);width:max-content}
 .screen{flex:0 0 auto;width:clamp(220px,26vw,300px);scroll-snap-align:center}
 .screen img{
@@ -291,44 +301,86 @@ body:not(.entered) .nav{opacity:0;pointer-events:none}
 /* ============================================================
    LIFECYCLE
    ============================================================ */
-.lifecycle{background:linear-gradient(180deg,#070b07,#0b120b)}
+/* Chapter seam 1/3: this section IS the metamorphosis pin, so it's thinned
+   well below the shared ~85%-opaque panel treatment further up this file —
+   the atmospheric field needs to read clearly through it while it morphs. */
+.lifecycle{background:linear-gradient(180deg,rgba(7,11,7,.22),rgba(11,18,11,.4) 20%,rgba(11,18,11,.4) 80%,rgba(7,11,7,.22))!important}
 .lifecycle .wrap{text-align:center}
 .lifecycle .lede{margin-inline:auto}
-.cycle{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:clamp(50px,8vh,90px);max-width:1180px;margin-inline:auto;padding-inline:var(--pad)}
-.cycle__line{position:absolute;top:80px;left:12%;right:12%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold-deep),var(--gold),var(--gold-deep),transparent);opacity:.4}
-.cycle__step{position:relative;text-align:center}
-.cycle__art{width:120px;height:120px;margin:0 auto 26px;position:relative}
-.cycle__step h3{font-family:var(--display);font-size:1.35rem;margin-bottom:.5rem;font-weight:500;color:var(--cream)}
-.cycle__step p{font-size:.88rem;color:var(--text-dim);font-weight:300;max-width:24ch;margin-inline:auto}
+.lifecycle .kicker,.lifecycle .display,.lifecycle .lede{text-shadow:0 3px 26px rgba(3,5,3,.65)}
+/* Motion-OK: pinned by main.js (ScrollTrigger). The "art" for each stage is
+   no longer CSS — it's the background field's own particles, scrubbed
+   through egg/caterpillar/chrysalis/butterfly behind this (thinned) panel. */
+/* BASE = the no-JS / no-GSAP fallback: a plain static 4-up grid with every
+   stage readable at once (matches the reduced-motion calm path). The pinned,
+   scrubbed presentation is layered on ONLY when main.js's metamorphosis()
+   confirms GSAP + ScrollTrigger and adds .is-scrub — so a visitor whose JS is
+   blocked, slow, or errored (with motion allowed) never sees blank stages. */
+.cycle-pin{
+  position:relative;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:44px 16px;max-width:1180px;margin-inline:auto;margin-top:clamp(20px,4vh,40px);
+  padding-inline:var(--pad);
+}
+.cycle-pin__rail{display:none}
+.cycle-pin__rail::before{
+  content:"";position:absolute;left:5px;right:5px;top:50%;height:1px;
+  background:var(--line);transform:translateY(-50%);z-index:0;
+}
+.cycle-pin__rail-fill{
+  position:absolute;left:5px;top:50%;height:1px;width:0;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));
+  transform:translateY(-50%);z-index:1;
+}
+.cycle-pin__dot{
+  position:relative;z-index:2;width:10px;height:10px;border-radius:50%;
+  background:var(--forest-1);border:1px solid var(--line);
+  transition:background .4s var(--ease),border-color .4s var(--ease),transform .4s var(--ease);
+}
+.cycle-pin__dot.is-active{background:var(--gold);border-color:var(--gold);transform:scale(1.3);box-shadow:0 0 14px rgba(217,180,106,.6)}
+.cycle-pin__stages{display:contents}
+.cycle-pin__stage{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;opacity:1;padding-inline:0;
+}
 
-/* css art for stages */
-.cycle__art::before,.cycle__art::after{content:"";position:absolute;inset:0;margin:auto}
-.cycle__art[data-stage="egg"]::before{
-  width:54px;height:70px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
-  background:radial-gradient(circle at 38% 30%,#f1d8a3,#d9b46a 50%,#9b7a3e);
-  box-shadow:0 0 40px rgba(217,180,106,.45);animation:bob 4s var(--ease) infinite}
-.cycle__art[data-stage="larva"]::before{
-  width:74px;height:30px;border-radius:30px;
-  background:repeating-linear-gradient(90deg,#7d9b4e,#7d9b4e 9px,#62823a 9px,#62823a 16px);
-  box-shadow:0 0 30px rgba(125,155,78,.4);animation:bob 4s var(--ease) infinite}
-.cycle__art[data-stage="chrysalis"]::before{
-  width:42px;height:74px;border-radius:46% 46% 50% 50%/30% 30% 70% 70%;
-  background:linear-gradient(160deg,#9fb083,#5e7544);box-shadow:0 0 34px rgba(159,176,131,.4);
-  animation:sway 5s var(--ease) infinite}
-.cycle__art[data-stage="chrysalis"]::after{width:1px;height:30px;background:var(--gold-deep);top:-30px;bottom:auto}
-.cycle__art[data-stage="butterfly"]{color:var(--gold-bright)}
-.cycle__art[data-stage="butterfly"]::before{
-  width:100px;height:100px;
-  background:no-repeat center/contain;
-  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 50c-6-16-18-24-30-22-9 1.5-13 9-10 18 3 9 16 16 27 14 5-1 9-4 13-10zM50 50c6-16 18-24 30-22 9 1.5 13 9 10 18-3 9-16 16-27 14-5-1-9-4-13-10zM50 50c-4 12-6 22-5 31 .4 4 5 4 5 0 1-9-1-19-5-31z'/%3E%3C/svg%3E") center/contain no-repeat;
-  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 50c-6-16-18-24-30-22-9 1.5-13 9-10 18 3 9 16 16 27 14 5-1 9-4 13-10zM50 50c6-16 18-24 30-22 9 1.5 13 9 10 18-3 9-16 16-27 14-5-1-9-4-13-10zM50 50c-4 12-6 22-5 31 .4 4 5 4 5 0 1-9-1-19-5-31z'/%3E%3C/svg%3E") center/contain no-repeat;
-  background:linear-gradient(135deg,#f1d8a3,#d9b46a);
-  filter:drop-shadow(0 0 22px rgba(217,180,106,.6));
-  animation:flap 2.4s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
-@media(max-width:760px){.cycle{grid-template-columns:1fr 1fr;gap:44px 16px}.cycle__line{display:none}}
+/* .is-scrub — JS-enhanced pinned scrub (added by main.js only when the
+   metamorphosis ScrollTrigger is live and motion is allowed). */
+.cycle-pin.is-scrub{
+  height:100svh;min-height:520px;grid-template-columns:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(28px,5vh,52px);max-width:none;padding-inline:0;
+}
+.cycle-pin.is-scrub .cycle-pin__rail{position:relative;display:flex;align-items:center;gap:clamp(46px,9vw,110px)}
+.cycle-pin.is-scrub .cycle-pin__stages{position:relative;display:block;width:100%;max-width:640px;text-align:center;min-height:9em}
+.cycle-pin.is-scrub .cycle-pin__stage{
+  position:absolute;inset:0;
+  opacity:0;pointer-events:none;transition:opacity .5s var(--ease);padding-inline:var(--pad);
+  text-shadow:0 4px 30px rgba(3,5,3,.7);
+}
+.cycle-pin.is-scrub .cycle-pin__stage.is-active{opacity:1;pointer-events:auto}
+.cycle-pin__n{
+  display:block;font-family:'JetBrains Mono','Fira Code',monospace;
+  font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.9rem;
+}
+.cycle-pin__stage h3{font-family:var(--display);font-weight:500;font-size:clamp(1.6rem,3.4vw,2.4rem);margin-bottom:.6rem;color:var(--cream)}
+.cycle-pin__stage p{font-size:.98rem;color:var(--text-dim);font-weight:300;max-width:36ch;margin-inline:auto}
+
+/* Reduced motion: no pin, no scrub — a plain static 4-up grid, everything
+   readable at once (grouped with the site's global reduced-motion rules
+   further down doesn't apply here since layout, not just motion, changes). */
+@media(prefers-reduced-motion:reduce){
+  .cycle-pin{
+    height:auto;min-height:0;display:grid;grid-template-columns:repeat(4,1fr);
+    gap:44px 16px;max-width:1180px;margin-inline:auto;padding-inline:var(--pad);
+  }
+  .cycle-pin__rail{display:none}
+  .cycle-pin__stages{display:contents;max-width:none;min-height:0}
+  .cycle-pin__stage{position:static;opacity:1;pointer-events:auto;padding-inline:0;text-shadow:none}
+}
+@media(prefers-reduced-motion:reduce) and (max-width:760px){
+  .cycle-pin{grid-template-columns:1fr 1fr}
+}
 
 /* ============================================================
    STORY PLATES
@@ -360,13 +412,15 @@ body:not(.entered) .nav{opacity:0;pointer-events:none}
 /* ============================================================
    ENTER (CTA)
    ============================================================ */
-.enter{position:relative;overflow:hidden}
+/* Chapter seam 2/3: thinned so the field shows through around the QR/target
+   cards (which carry their own opaque cream backing, so legibility holds). */
+.enter{position:relative;overflow:hidden;background:linear-gradient(180deg,rgba(7,11,7,.4),rgba(9,13,9,.55) 30%,rgba(9,13,9,.55) 70%,rgba(7,11,7,.35))!important}
 .enter__bg{position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(60% 55% at 72% 28%,rgba(217,180,106,.13),transparent),
   radial-gradient(60% 50% at 8% 92%,rgba(58,74,38,.28),transparent)}
 .enter .wrap{position:relative}
-.enter .display{margin:.4rem 0 1rem}
-.enter .lede{max-width:54ch}
+.enter .display{margin:.4rem 0 1rem;text-shadow:0 4px 30px rgba(3,5,3,.6)}
+.enter .lede{max-width:54ch;text-shadow:0 2px 20px rgba(3,5,3,.5)}
 .enter__steps2{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
   gap:clamp(18px,3vw,44px);margin:clamp(36px,6vh,64px) auto clamp(26px,4vh,40px)}
 .enter__card{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
@@ -400,11 +454,13 @@ body:not(.entered) .nav{opacity:0;pointer-events:none}
 /* ============================================================
    REFLECTION
    ============================================================ */
-.reflection{background:linear-gradient(180deg,#090d09,#0b120b)}
+/* Chapter seam 3/3: large italic lead + bulleted list keep enough contrast
+   on their own (cream/gold on dark) to thin the panel behind them here too. */
+.reflection{background:linear-gradient(180deg,rgba(9,13,9,.45),rgba(11,18,11,.55))!important}
 .reflection__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,80px);margin-top:clamp(30px,5vh,50px);align-items:start}
-.reflection__lead{font-family:var(--display);font-weight:300;font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.4;color:var(--cream)}
+.reflection__lead{font-family:var(--display);font-weight:300;font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.4;color:var(--cream);text-shadow:0 2px 20px rgba(3,5,3,.6)}
 .reflection__list{list-style:none;display:flex;flex-direction:column;gap:18px}
-.reflection__list li{padding-left:26px;position:relative;color:var(--text-dim);font-weight:300;font-size:1rem}
+.reflection__list li{padding-left:26px;position:relative;color:var(--text-dim);font-weight:300;font-size:1rem;text-shadow:0 2px 16px rgba(3,5,3,.6)}
 .reflection__list li::before{content:"";position:absolute;left:0;top:9px;width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px rgba(217,180,106,.6)}
 .reflection__list b{color:var(--cream);font-weight:500}
 @media(max-width:760px){.reflection__grid{grid-template-columns:1fr;gap:34px}}

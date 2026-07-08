@@ -1,65 +1,68 @@
-"use client";
-
 import Link from "next/link";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import PlotInLines from "@/components/ui/PlotInLines";
 import Reveal from "@/components/ui/Reveal";
 import Shot from "@/components/trmeric/Shot";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import TrmericTheme from "@/components/trmeric/TrmericTheme";
+import GrowTheMark from "@/components/trmeric/GrowTheMark";
+import type { TrmColors } from "@/components/trmeric/PrototypeFrame";
 
-/* ── Accent is the same in dark + light ── */
+/* ── Accent is the same in dark + light — the rest read from the CSS
+   custom properties TrmericTheme (a client component) sets from
+   useColorScheme(), so this page can be a server component. Values are
+   byte-identical to what used to be computed inline per render. ── */
 const ACC = "#FFA426";
+const BASE  = "var(--trm-base)";
+const BASE2 = "var(--trm-base2)";
+const INK   = "var(--trm-ink)";
+const DIM   = "var(--trm-dim)";
+const FAINT = "var(--trm-faint)";
+const ACCD  = "var(--trm-accd)";
+const LINE  = "var(--trm-line)";
+const SHADOW = "var(--trm-shadow)";
+
+const C: TrmColors = { base: BASE, base2: BASE2, ink: INK, dim: DIM, faint: FAINT, line: LINE, acc: ACC, accd: ACCD };
+
+const s = {
+  kicker: {
+    fontFamily: "var(--font-mono)",
+    fontSize: ".65rem",
+    letterSpacing: ".22em",
+    textTransform: "uppercase" as const,
+    color: ACCD,
+    display: "block",
+    marginBottom: "1.1rem",
+  },
+  body: {
+    fontSize: ".9375rem",
+    color: DIM,
+    lineHeight: 1.78,
+    maxWidth: "56ch",
+  },
+  stageKicker: {
+    fontFamily: "var(--font-mono)",
+    fontSize: ".58rem",
+    letterSpacing: ".2em",
+    textTransform: "uppercase" as const,
+    color: ACC,
+    marginBottom: "1.2rem",
+    opacity: 0.8,
+  },
+  h3: {
+    fontFamily: "var(--font-body)",
+    fontWeight: 700,
+    fontSize: "clamp(1.4rem, 2.5vw, 2rem)",
+    letterSpacing: "-.02em",
+    color: INK,
+    lineHeight: 1.2,
+    marginBottom: "1.2rem",
+  },
+};
 
 export default function TrmericBrandPage() {
-  const dark = useColorScheme();
-  const BASE  = dark ? "#0E0C0A" : "#FAF7F1";
-  const BASE2 = dark ? "#1A1613" : "#F1EADC";
-  const INK   = dark ? "#F2E8D0" : "#17150F";
-  const DIM   = dark ? "rgba(242,232,208,.62)" : "rgba(23,21,15,.62)";
-  const FAINT = dark ? "rgba(242,232,208,.36)" : "rgba(23,21,15,.36)";
-  const ACCD  = dark ? "#FF9A35" : "#E8730E";
-  const LINE  = dark ? "rgba(255,164,38,.14)" : "rgba(23,21,15,.12)";
-  const SHADOW = dark ? "0 4px 32px -8px rgba(0,0,0,.65)" : "0 4px 24px -8px rgba(23,21,15,.14)";
-
-  const s = {
-    kicker: {
-      fontFamily: "var(--font-mono)",
-      fontSize: ".65rem",
-      letterSpacing: ".22em",
-      textTransform: "uppercase" as const,
-      color: ACCD,
-      display: "block",
-      marginBottom: "1.1rem",
-    },
-    body: {
-      fontSize: ".9375rem",
-      color: DIM,
-      lineHeight: 1.78,
-      maxWidth: "56ch",
-    },
-    stageKicker: {
-      fontFamily: "var(--font-mono)",
-      fontSize: ".58rem",
-      letterSpacing: ".2em",
-      textTransform: "uppercase" as const,
-      color: ACC,
-      marginBottom: "1.2rem",
-      opacity: 0.8,
-    },
-    h3: {
-      fontFamily: "var(--font-body)",
-      fontWeight: 700,
-      fontSize: "clamp(1.4rem, 2.5vw, 2rem)",
-      letterSpacing: "-.02em",
-      color: INK,
-      lineHeight: 1.2,
-      marginBottom: "1.2rem",
-    },
-  };
-
   return (
-    <div style={{ background: BASE, color: INK, minHeight: "100vh" }}>
+    <TrmericTheme style={{ background: BASE }}>
       <Navigation />
 
       <main id="main-content">
@@ -179,6 +182,22 @@ export default function TrmericBrandPage() {
                 accent={ACC}
                 caption="Primary rhizome · Cross sections 1–18 · Abstracted forms a–f · Combined to X, Y, Z · Final mark"
               />
+            </Reveal>
+          </div>
+        </div>
+
+        {/* ── 04b: Grow the mark — the sequence, live ── */}
+        <div style={{ borderBottom: `1px solid ${LINE}` }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
+            <Reveal style={{ textAlign: "center", marginBottom: "2.5rem" }}>
+              <div style={{ ...s.stageKicker, marginBottom: "1.2rem" }}>Watch it assemble</div>
+              <h3 style={{ ...s.h3, marginBottom: ".8rem" }}>The mark, growing itself.</h3>
+              <p style={{ ...s.body, maxWidth: "56ch", margin: "0 auto" }}>
+                Everything on this page described as a step, here in one sequence: the photograph gives way to a traced outline, the outline averages into a ring form, and the five golden-ratio rings stroke-draw themselves at 12 / 9.71 / 7.85 / 6.35 / 4.99px, outer to inner.
+              </p>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <GrowTheMark colors={C} />
             </Reveal>
           </div>
         </div>
@@ -328,6 +347,6 @@ export default function TrmericBrandPage() {
 
       </main>
       <Footer />
-    </div>
+    </TrmericTheme>
   );
 }
