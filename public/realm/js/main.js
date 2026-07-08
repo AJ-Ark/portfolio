@@ -511,6 +511,10 @@ if(gsap && ScrollTrigger && !reduceMotion){
       // centered heading and reads as a distinct shape rather than a blur
       // hidden behind the text.
       morphPoints.scale.setScalar(1.25);
+      // Lift the figure above screen-centre so it reads as an illustration
+      // ABOVE the stage text (which the CSS pins to the lower viewport),
+      // not a backdrop the heading overlaps.
+      morphPoints.position.y = 2.2;
       scene.add(morphPoints);
       lifecycleMat = mMat;
 

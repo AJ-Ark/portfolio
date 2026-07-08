@@ -546,6 +546,12 @@ function Slide({ index, active, total, hinting = false, children }: {
         inset: 0,
         zIndex: 10 - Math.abs(diff),
         pointerEvents: "none",
+        // SSR / pre-hydration position: framer's `animate` only writes the
+        // transform client-side, so without this every absolute slide paints
+        // stacked at inset:0 (all content overlapping the hero) until JS runs.
+        // This inline transform ships the correct offset in the server HTML;
+        // framer takes over the y on hydration (matching value → no jump).
+        transform: `translateY(${diff * 100}%)`,
       }}
     >
       {/* pointer-events:none on the wrapper so fixed-position elements
