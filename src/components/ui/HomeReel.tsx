@@ -764,6 +764,20 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
     if (!instant && !prefersReducedMotionNow()) excite(0.28);
   };
 
+  /* Progressive disclosure: ~a few seconds after the slide settles, the
+     layout re-composes — the name shrinks and rises to the top, the copy
+     drops to the bottom of the viewport, and the clip fades in through the
+     opened-up middle. Resets when the slide is parked so it replays on the
+     next landing. Reduced motion / no-JS start already composed (no timed
+     reveal, clip shown as its poster). */
+  const [spread, setSpread] = useState(instant);
+  useEffect(() => {
+    if (instant || prefersReducedMotionNow()) { setSpread(true); return; }
+    if (!active) { setSpread(false); return; }
+    const timer = window.setTimeout(() => setSpread(true), 2600);
+    return () => window.clearTimeout(timer);
+  }, [active, instant]);
+
   return (
     <Link
       href={`/work/${item.slug}`}
@@ -791,18 +805,18 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          padding: "0 var(--pad)",
+          justifyContent: spread ? "space-between" : "center",
+          padding: spread ? "clamp(3.5rem, 9vh, 6.5rem) var(--pad)" : "0 var(--pad)",
           position: "relative",
           zIndex: 1,
+          transition: "padding 0.8s var(--ease)",
         }}
       >
         {/* The project clip FILLS this panel as its background (the copy
-            overlays it). A base ground colour shows before the poster/video
-            paints; a left-weighted scrim keeps the text legible while the
-            clip stays visible toward the right, where the same edge mask
-            dissolves it into the dust field. zIndex -1 keeps the whole layer
-            under the text (panel is position:relative + zIndex:1). */}
+            overlays it), fading in during the progressive disclosure. A base
+            ground colour shows before the poster/video paints; a left-weighted
+            scrim keeps the text legible while the clip stays visible toward the
+            right, where the edge mask dissolves it into the dust field. */}
         <div
           aria-hidden="true"
           className="reel-text-bg"
@@ -811,8 +825,9 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
             inset: 0,
             zIndex: -1,
             overflow: "hidden",
+            opacity: spread ? 1 : 0,
             backgroundColor: "var(--color-ground)",
-            transition: "background-color 0.9s var(--ease)",
+            transition: "opacity 1.1s var(--ease), background-color 0.9s var(--ease)",
             WebkitMaskImage: EDGE_FADE,
             maskImage: EDGE_FADE,
           }}
@@ -831,46 +846,53 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
 
         <div aria-hidden="true" style={{ position: "absolute", top: "2rem", left: "var(--pad)", width: 18, height: 18, borderTop: `1px solid ${item.accent}`, borderLeft: `1px solid ${item.accent}`, opacity: 0.6 }} />
 
-        <MaskLine
-          phase={phase}
-          order={0}
-          style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: "clamp(2rem, 4.4vw, 4rem)", lineHeight: 1.0, letterSpacing: "-.02em", color: "var(--color-paper)" }}
-          maskStyle={{ marginBottom: `calc(1.4rem - ${MASK_PAD})` }}
-        >
-          {/* Typography lives on the mask (see MaskLine); the heading inherits
-              it (Tailwind preflight resets h* to font-size/weight inherit). */}
-          <h2>{item.headline}</h2>
-        </MaskLine>
-        <MaskLine
-          phase={phase}
-          order={1}
-          style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--color-paper)", lineHeight: 1.65 }}
-          maskStyle={{ marginBottom: `calc(1.6rem - ${MASK_PAD})` }}
-        >
-          <p>{item.body}</p>
-        </MaskLine>
-        <motion.div
-          aria-hidden="true"
-          initial={false}
-          animate={{ scaleX: phase === "staged" ? 0 : 1 }}
-          transition={phase === "visible" ? { ...SPRING, delay: 2 * LINE_STAGGER_S } : { duration: 0 }}
-          style={{ height: "1px", background: item.accent, opacity: 0.5, marginBottom: "1.2rem", maxWidth: "16rem", transformOrigin: "left center" }}
-        />
-        <MaskLine
-          phase={phase}
-          order={3}
-          style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-paper)", opacity: 0.75 }}
-          maskStyle={{ marginBottom: `calc(.8rem - ${MASK_PAD})` }}
-        >
-          <span>{item.label}</span>
-        </MaskLine>
-        <MaskLine
-          phase={phase}
-          order={4}
-          style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: item.accent, opacity: 0.95 }}
-        >
-          <span data-cursor="enter" data-magnetic="">{t("home.reel.enter")}</span>
-        </MaskLine>
+        {/* NAME — shrinks and rises to the top of the panel on disclosure. */}
+        <motion.div layout="position">
+          <MaskLine
+            phase={phase}
+            order={0}
+            style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: spread ? "clamp(1.4rem, 2.8vw, 2.3rem)" : "clamp(2rem, 4.4vw, 4rem)", lineHeight: 1.0, letterSpacing: "-.02em", color: "var(--color-paper)", transition: "font-size 0.8s var(--ease)" }}
+            maskStyle={{ marginBottom: spread ? 0 : `calc(1.4rem - ${MASK_PAD})` }}
+          >
+            {/* Typography lives on the mask (see MaskLine); the heading inherits
+                it (Tailwind preflight resets h* to font-size/weight inherit). */}
+            <h2>{item.headline}</h2>
+          </MaskLine>
+        </motion.div>
+
+        {/* DESCRIPTION + META — drop to the bottom of the viewport on disclosure. */}
+        <motion.div layout="position" style={{ display: "flex", flexDirection: "column" }}>
+          <MaskLine
+            phase={phase}
+            order={1}
+            style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--color-paper)", lineHeight: 1.65 }}
+            maskStyle={{ marginBottom: `calc(1.6rem - ${MASK_PAD})` }}
+          >
+            <p>{item.body}</p>
+          </MaskLine>
+          <motion.div
+            aria-hidden="true"
+            initial={false}
+            animate={{ scaleX: phase === "staged" ? 0 : 1 }}
+            transition={phase === "visible" ? { ...SPRING, delay: 2 * LINE_STAGGER_S } : { duration: 0 }}
+            style={{ height: "1px", background: item.accent, opacity: 0.5, marginBottom: "1.2rem", maxWidth: "16rem", transformOrigin: "left center" }}
+          />
+          <MaskLine
+            phase={phase}
+            order={3}
+            style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-paper)", opacity: 0.75 }}
+            maskStyle={{ marginBottom: `calc(.8rem - ${MASK_PAD})` }}
+          >
+            <span>{item.label}</span>
+          </MaskLine>
+          <MaskLine
+            phase={phase}
+            order={4}
+            style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: item.accent, opacity: 0.95 }}
+          >
+            <span data-cursor="enter" data-magnetic="">{t("home.reel.enter")}</span>
+          </MaskLine>
+        </motion.div>
 
         <div aria-hidden="true" style={{ position: "absolute", bottom: "2rem", right: "1.5rem", width: 18, height: 18, borderBottom: `1px solid ${item.accent}`, borderRight: `1px solid ${item.accent}`, opacity: 0.6 }} />
       </div>
