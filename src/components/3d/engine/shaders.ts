@@ -203,6 +203,10 @@ void main() {
   gl_PointSize = uSize * sizeJitter
     * (1.0 + uExcitement * 0.35 + uDive * 0.6)
     * uPixelScale / max(depth, 0.1);
+  /* Cap the on-screen size: a close dive (camera z -> ~1.25) otherwise scales
+     near dust into huge fuzzy blobs that blur out completely. Capping keeps
+     the field reading as crisp discrete points at any depth. */
+  gl_PointSize = min(gl_PointSize, 18.0);
 
   /* Brightness by depth — near dust is brighter and warmer, but even the
      far field keeps a strong floor so the whole cloud reads as present
@@ -223,8 +227,10 @@ void main() {
   vec2 c = gl_PointCoord * 2.0 - 1.0;
   float d2 = dot(c, c);
   if (d2 > 1.0) discard;
-  float a = 1.0 - d2;
-  a = pow(a, 1.5); /* soft falloff with a fuller, brighter core */
+  /* A crisp dot with a tight anti-aliased rim — a defined point, not a soft
+     glow. The old wide radial falloff read as tacky and blurred out entirely
+     when the dive scaled points up; a solid core keeps it high-definition. */
+  float a = 1.0 - smoothstep(0.18, 0.92, d2);
   gl_FragColor = vec4(vColor, a * vAlpha);
 }
 `;
