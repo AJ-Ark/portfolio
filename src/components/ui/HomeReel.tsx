@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion, type Transition } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { subscribeClimate, useParticle, useWarpNavigate } from "@/lib/particleContext";
 import { useTranslation } from "@/lib/TranslationContext";
 import { LOADER_MAX_MS } from "@/components/ui/Preloader";
+import InlineVideo from "@/components/ui/InlineVideo";
 import { EASE_OUT, SPRING } from "@/lib/motion";
 import {
   prefersReducedMotionNow,
@@ -13,12 +15,20 @@ import {
 } from "@/hooks/usePrefersReducedMotion";
 import type { Domain } from "@/data/projects";
 
+interface ReelClip {
+  kind: "video" | "image";
+  src: string;
+  poster?: string;
+  alt: string;
+}
+
 interface DomainItem {
   slug: Domain;
   headline: string;
   body: string;
   label: string;
   accent: string;
+  clip: ReelClip;
 }
 
 const WHEEL_THRESHOLD = 12;       // px of deltaY to count as an intentional tick
@@ -474,6 +484,11 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
 const REEL_CSS = `
   [data-reel-slide][data-parked],
   [data-reel-slide][data-parked] * { pointer-events: none !important; }
+  /* Slow ken-burns for the still clips (Trmeric/Realm). The global
+     reduced-motion rule (and html[data-motion="reduce"]) forces
+     animation-duration to ~0 !important, so it holds a static frame there. */
+  @keyframes reelClipZoom { from { transform: scale(1.03); } to { transform: scale(1.13); } }
+  .reel-clip-still { animation: reelClipZoom 16s ease-in-out infinite alternate; will-change: transform; }
 `;
 
 /* Quiet editorial progress indicator — mono numerals around a hairline
@@ -707,6 +722,42 @@ function HeroContent({ active = true, instant = false }: { active?: boolean; ins
 const EDGE_FADE =
   "linear-gradient(to right, #000 calc(100% - var(--pad) * 1.6), rgba(0,0,0,.62) calc(100% - var(--pad) * .6), transparent 100%)";
 
+/* The project clip that sits between the name and description on a reel
+   slide. Video (Rippl/Rozi) uses InlineVideo — preload:none + play-only-
+   in-view, so parked slides never fetch it and reduced-motion shows the
+   poster. Still (Trmeric/Realm, no footage yet) gets a slow ken-burns zoom
+   (killed under reduced motion by the global rule). */
+function ReelClip({ clip, accent }: { clip: ReelClip; accent: string }) {
+  const boxStyle: React.CSSProperties = {
+    position: "relative",
+    width: "100%",
+    aspectRatio: "16 / 9",
+    maxHeight: "min(30vh, 260px)",
+    borderRadius: "10px",
+    overflow: "hidden",
+    border: `1px solid ${accent}2e`,
+    background: "var(--color-ground-2)",
+    boxShadow: "var(--shadow-sm)",
+  };
+  if (clip.kind === "video") {
+    return (
+      <InlineVideo src={clip.src} poster={clip.poster ?? ""} aria-label={clip.alt} style={boxStyle} />
+    );
+  }
+  return (
+    <div style={boxStyle}>
+      <Image
+        src={clip.src}
+        alt={clip.alt}
+        fill
+        sizes="(max-width: 760px) 90vw, 520px"
+        className="reel-clip-still"
+        style={{ objectFit: "cover" }}
+      />
+    </div>
+  );
+}
+
 function ProjectContent({ item, active = false, instant = false }: { item: DomainItem; active?: boolean; instant?: boolean }) {
   const warpNav = useWarpNavigate();
   const { excite } = useParticle();
@@ -783,9 +834,21 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
               it (Tailwind preflight resets h* to font-size/weight inherit). */}
           <h2>{item.headline}</h2>
         </MaskLine>
+        {/* The project playing between the name and description. Loads/plays
+            only while its slide is in view (InlineVideo = preload:none +
+            IntersectionObserver), so the hero slide and parked slides never
+            fetch it. Video where footage exists; a slow-zoom still otherwise. */}
+        <motion.div
+          initial={false}
+          animate={{ opacity: phase === "staged" ? 0 : 1, y: phase === "staged" ? 18 : phase === "exit" ? -8 : 0 }}
+          transition={phase === "visible" ? { ...SPRING, delay: 1 * LINE_STAGGER_S } : { duration: phase === "exit" ? 0.4 : 0, ease: EASE_OUT }}
+          style={{ marginBottom: "1.5rem" }}
+        >
+          <ReelClip clip={item.clip} accent={item.accent} />
+        </motion.div>
         <MaskLine
           phase={phase}
-          order={1}
+          order={2}
           style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.65 }}
           maskStyle={{ marginBottom: `calc(1.6rem - ${MASK_PAD})` }}
         >
@@ -795,12 +858,12 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
           aria-hidden="true"
           initial={false}
           animate={{ scaleX: phase === "staged" ? 0 : 1 }}
-          transition={phase === "visible" ? { ...SPRING, delay: 2 * LINE_STAGGER_S } : { duration: 0 }}
+          transition={phase === "visible" ? { ...SPRING, delay: 3 * LINE_STAGGER_S } : { duration: 0 }}
           style={{ height: "1px", background: item.accent, opacity: 0.5, marginBottom: "1.2rem", maxWidth: "16rem", transformOrigin: "left center" }}
         />
         <MaskLine
           phase={phase}
-          order={3}
+          order={4}
           style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-graphite-light)", opacity: 0.6 }}
           maskStyle={{ marginBottom: `calc(.8rem - ${MASK_PAD})` }}
         >
@@ -808,7 +871,7 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
         </MaskLine>
         <MaskLine
           phase={phase}
-          order={4}
+          order={5}
           style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: item.accent, opacity: 0.9 }}
         >
           <span data-cursor="enter" data-magnetic="">{t("home.reel.enter")}</span>

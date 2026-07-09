@@ -15,6 +15,10 @@ const DOMAINS: {
   label: string;
   accent: string;
   coverImage?: string;
+  /* The clip that plays between the name and description on the reel slide.
+     Rippl/Rozi have real footage; Trmeric/Realm use an animated still until
+     dedicated clips exist. */
+  clip: { kind: "video" | "image"; src: string; poster?: string; alt: string };
 }[] = [
   {
     slug: "realm",
@@ -23,6 +27,7 @@ const DOMAINS: {
     label: "WebAR · Tata Motors · Graduation thesis",
     accent: "#d9b46a",
     coverImage: "/images/realm/installation-cover.jpg",
+    clip: { kind: "image", src: "/images/realm/installation-cover.jpg", alt: "Realm of Elementals installation" },
   },
   {
     slug: "rippl",
@@ -31,6 +36,7 @@ const DOMAINS: {
     label: "Interaction Design · Physical Computing",
     accent: "#4FA8A0",
     coverImage: "/images/rippl/rippl-hero.jpg",
+    clip: { kind: "video", src: "/videos/rippl/flows/marking.mp4", poster: "/videos/rippl/flows/marking-poster.webp", alt: "Rippl marking interaction" },
   },
   {
     slug: "trmeric",
@@ -39,6 +45,7 @@ const DOMAINS: {
     label: "Enterprise SaaS · AI Design · Founding Team",
     accent: "#FFA426",
     coverImage: "/images/trmeric/allinone.png",
+    clip: { kind: "image", src: "/images/trmeric/allinone.png", alt: "Trmeric platform surfaces" },
   },
   {
     slug: "rozi",
@@ -47,6 +54,7 @@ const DOMAINS: {
     label: "Service Design · UX Research · SARVA Designathon",
     accent: "#C94030",
     coverImage: "/images/rozi/hero-phones.png",
+    clip: { kind: "video", src: "/videos/rozi/flow-02-jobs.mp4", poster: "/videos/rozi/flow-02-jobs-poster.webp", alt: "Rozi job-finding flow" },
   },
 ];
 
