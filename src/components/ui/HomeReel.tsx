@@ -722,39 +722,32 @@ function HeroContent({ active = true, instant = false }: { active?: boolean; ins
 const EDGE_FADE =
   "linear-gradient(to right, #000 calc(100% - var(--pad) * 1.6), rgba(0,0,0,.62) calc(100% - var(--pad) * .6), transparent 100%)";
 
-/* The project clip that sits between the name and description on a reel
-   slide. Video (Rippl/Rozi) uses InlineVideo — preload:none + play-only-
-   in-view, so parked slides never fetch it and reduced-motion shows the
-   poster. Still (Trmeric/Realm, no footage yet) gets a slow ken-burns zoom
-   (killed under reduced motion by the global rule). */
-function ReelClip({ clip, accent }: { clip: ReelClip; accent: string }) {
-  const boxStyle: React.CSSProperties = {
-    position: "relative",
-    width: "100%",
-    aspectRatio: "16 / 9",
-    maxHeight: "min(30vh, 260px)",
-    borderRadius: "10px",
-    overflow: "hidden",
-    border: `1px solid ${accent}2e`,
-    background: "var(--color-ground-2)",
-    boxShadow: "var(--shadow-sm)",
-  };
+/* The project clip that FILLS the left panel as its background (the copy
+   overlays it). Rendered absolute-fill inside .reel-text-bg. Video
+   (Rippl/Rozi) uses InlineVideo — preload:none + play-only-in-view, so
+   parked slides never fetch it and reduced-motion shows the poster. Still
+   (Trmeric/Realm, no footage yet) gets a slow ken-burns zoom, clipped by
+   the panel's overflow and killed under reduced motion by the global rule. */
+function ReelClip({ clip }: { clip: ReelClip }) {
   if (clip.kind === "video") {
     return (
-      <InlineVideo src={clip.src} poster={clip.poster ?? ""} aria-label={clip.alt} style={boxStyle} />
+      <InlineVideo
+        src={clip.src}
+        poster={clip.poster ?? ""}
+        aria-label={clip.alt}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+      />
     );
   }
   return (
-    <div style={boxStyle}>
-      <Image
-        src={clip.src}
-        alt={clip.alt}
-        fill
-        sizes="(max-width: 760px) 90vw, 520px"
-        className="reel-clip-still"
-        style={{ objectFit: "cover" }}
-      />
-    </div>
+    <Image
+      src={clip.src}
+      alt={clip.alt}
+      fill
+      sizes="(max-width: 760px) 64vw, 760px"
+      className="reel-clip-still"
+      style={{ objectFit: "cover" }}
+    />
   );
 }
 
@@ -804,10 +797,12 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
           zIndex: 1,
         }}
       >
-        {/* Ground layer — a plain background-color (transitions with the
-            palette crossfade) whose right edge is dissolved by a constant
-            mask. zIndex -1 keeps it under the text inside this panel's own
-            stacking context (position:relative + zIndex:1 above). */}
+        {/* The project clip FILLS this panel as its background (the copy
+            overlays it). A base ground colour shows before the poster/video
+            paints; a left-weighted scrim keeps the text legible while the
+            clip stays visible toward the right, where the same edge mask
+            dissolves it into the dust field. zIndex -1 keeps the whole layer
+            under the text (panel is position:relative + zIndex:1). */}
         <div
           aria-hidden="true"
           className="reel-text-bg"
@@ -815,12 +810,24 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
             position: "absolute",
             inset: 0,
             zIndex: -1,
+            overflow: "hidden",
             backgroundColor: "var(--color-ground)",
             transition: "background-color 0.9s var(--ease)",
             WebkitMaskImage: EDGE_FADE,
             maskImage: EDGE_FADE,
           }}
-        />
+        >
+          <ReelClip clip={item.clip} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(100deg, var(--color-ground) 20%, color-mix(in srgb, var(--color-ground) 62%, transparent) 52%, color-mix(in srgb, var(--color-ground) 24%, transparent) 78%, transparent 100%)",
+              transition: "background 0.9s var(--ease)",
+            }}
+          />
+        </div>
 
         <div aria-hidden="true" style={{ position: "absolute", top: "2rem", left: "var(--pad)", width: 18, height: 18, borderTop: `1px solid ${item.accent}`, borderLeft: `1px solid ${item.accent}`, opacity: 0.6 }} />
 
@@ -834,22 +841,10 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
               it (Tailwind preflight resets h* to font-size/weight inherit). */}
           <h2>{item.headline}</h2>
         </MaskLine>
-        {/* The project playing between the name and description. Loads/plays
-            only while its slide is in view (InlineVideo = preload:none +
-            IntersectionObserver), so the hero slide and parked slides never
-            fetch it. Video where footage exists; a slow-zoom still otherwise. */}
-        <motion.div
-          initial={false}
-          animate={{ opacity: phase === "staged" ? 0 : 1, y: phase === "staged" ? 18 : phase === "exit" ? -8 : 0 }}
-          transition={phase === "visible" ? { ...SPRING, delay: 1 * LINE_STAGGER_S } : { duration: phase === "exit" ? 0.4 : 0, ease: EASE_OUT }}
-          style={{ marginBottom: "1.5rem" }}
-        >
-          <ReelClip clip={item.clip} accent={item.accent} />
-        </motion.div>
         <MaskLine
           phase={phase}
-          order={2}
-          style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--color-graphite-light)", lineHeight: 1.65 }}
+          order={1}
+          style={{ fontFamily: "var(--font-body)", fontSize: "1rem", color: "var(--color-paper)", lineHeight: 1.65 }}
           maskStyle={{ marginBottom: `calc(1.6rem - ${MASK_PAD})` }}
         >
           <p>{item.body}</p>
@@ -858,21 +853,21 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
           aria-hidden="true"
           initial={false}
           animate={{ scaleX: phase === "staged" ? 0 : 1 }}
-          transition={phase === "visible" ? { ...SPRING, delay: 3 * LINE_STAGGER_S } : { duration: 0 }}
+          transition={phase === "visible" ? { ...SPRING, delay: 2 * LINE_STAGGER_S } : { duration: 0 }}
           style={{ height: "1px", background: item.accent, opacity: 0.5, marginBottom: "1.2rem", maxWidth: "16rem", transformOrigin: "left center" }}
         />
         <MaskLine
           phase={phase}
-          order={4}
-          style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-graphite-light)", opacity: 0.6 }}
+          order={3}
+          style={{ fontFamily: "var(--font-mono)", fontSize: ".58rem", letterSpacing: ".18em", textTransform: "uppercase", color: "var(--color-paper)", opacity: 0.75 }}
           maskStyle={{ marginBottom: `calc(.8rem - ${MASK_PAD})` }}
         >
           <span>{item.label}</span>
         </MaskLine>
         <MaskLine
           phase={phase}
-          order={5}
-          style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: item.accent, opacity: 0.9 }}
+          order={4}
+          style={{ fontFamily: "var(--font-mono)", fontSize: ".68rem", letterSpacing: ".16em", textTransform: "uppercase", color: item.accent, opacity: 0.95 }}
         >
           <span data-cursor="enter" data-magnetic="">{t("home.reel.enter")}</span>
         </MaskLine>
