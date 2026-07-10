@@ -319,7 +319,15 @@ export default function HomeReel({ domains }: { domains: DomainItem[] }) {
       const container = containerRef.current;
       if (!target || !container) return;
       if (!container.contains(target)) {
-        if (activeRef.current) release();
+        // Only a genuine tab-out to content AFTER the reel (About/footer
+        // links) releases the hijack. Programmatic focus restores to the
+        // document TOP — e.g. the loader lifting on first visit — target
+        // elements before the reel; releasing on those was disengaging the
+        // hijack the instant you landed, so the whole page free-scrolled.
+        const following =
+          container.compareDocumentPosition(target) &
+          Node.DOCUMENT_POSITION_FOLLOWING;
+        if (activeRef.current && following) release();
         return;
       }
       const slideEl = target.closest<HTMLElement>("[data-reel-slide]");

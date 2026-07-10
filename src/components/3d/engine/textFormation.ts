@@ -83,7 +83,7 @@ export async function bakeTextFormation(
     // Upright (roman), very thin weight (250) by default — italic only when
     // explicitly requested. Thin, near-uniform strokes (no bold) match the
     // site's refined display voice; italic glyphs sampled into dust smeared.
-    const fontStyle = `${opts.italic ? "italic " : ""}${opts.weight ?? 250} ${FONT_PX}px ${family}`;
+    const fontStyle = `${opts.italic ? "italic " : ""}${opts.weight ?? 130} ${FONT_PX}px ${family}`;
 
     /* Wait for the real face — fonts.load() also kicks lazy loads. */
     try {
@@ -111,7 +111,7 @@ export async function bakeTextFormation(
     canvas.width = w;
     canvas.height = h;
     /* Canvas size reset clears state — set the font again (scaled). */
-    ctx.font = `${opts.italic ? "italic " : ""}${opts.weight ?? 250} ${Math.floor(FONT_PX * scaleDown)}px ${family}`;
+    ctx.font = `${opts.italic ? "italic " : ""}${opts.weight ?? 130} ${Math.floor(FONT_PX * scaleDown)}px ${family}`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "#fff";
