@@ -42,7 +42,7 @@ export default function NextProject({ current }: { current: Domain }) {
   const nextDomain = CHAIN[current];
   const next = projectsBySlug[nextDomain];
   const { t } = useTranslation();
-  const { setPreviewDomain, requestFormation, excite, scatterSettle } = useParticle();
+  const { setPreviewDomain, requestFormation, scatterSettle } = useParticle();
   const pathname = usePathname();
   const previewing = useRef(false);
 
@@ -74,9 +74,8 @@ export default function NextProject({ current }: { current: Domain }) {
       previewing.current = on;
       setPreviewDomain(on ? nextDomain : null);
       requestFormation(on ? nextDomain : null, { owner: "next-project" });
-      if (on) excite(0.35);
     },
-    [nextDomain, setPreviewDomain, requestFormation, excite],
+    [nextDomain, setPreviewDomain, requestFormation],
   );
   useEffect(
     () => () => {

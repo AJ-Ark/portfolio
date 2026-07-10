@@ -761,16 +761,8 @@ function ReelClip({ clip }: { clip: ReelClip }) {
 
 function ProjectContent({ item, active = false, instant = false }: { item: DomainItem; active?: boolean; instant?: boolean }) {
   const warpNav = useWarpNavigate();
-  const { excite } = useParticle();
   const { t } = useTranslation();
   const phase = useLineChoreo(active, instant);
-
-  /* Hover excites the field (excite() is a no-op under reduced motion —
-     the instant check is belt and braces). Focus gets the same energy so
-     keyboard users see the field respond too. */
-  const wake = () => {
-    if (!instant && !prefersReducedMotionNow()) excite(0.28);
-  };
 
   /* Progressive disclosure: ~a few seconds after the slide settles, the
      layout re-composes — the name shrinks and rises to the top, the copy
@@ -791,8 +783,6 @@ function ProjectContent({ item, active = false, instant = false }: { item: Domai
       href={`/work/${item.slug}`}
       className="reel-card"
       style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%", pointerEvents: "auto", position: "relative" }}
-      onPointerEnter={wake}
-      onFocus={wake}
       onClick={(e) => {
         // Enter through the particles: dive-in transition covers the route
         // change. With reduced motion (instant) the Link navigates natively —

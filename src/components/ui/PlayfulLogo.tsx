@@ -47,7 +47,6 @@ export default function PlayfulLogo({
     let tx = 0, ty = 0, rx = 0, ry = 0;
     let gx = 0, gy = 0, grx = 0, gry = 0;
     let near = false;
-    let lastStir = 0;
     let raf = 0;
     let running = false;
 
@@ -86,13 +85,11 @@ export default function PlayfulLogo({
         gy = Math.max(-MAX_SHIFT, Math.min(MAX_SHIFT, dy * 0.1 * f));
         gry = Math.max(-MAX_TILT, Math.min(MAX_TILT, (dx / RADIUS) * 20));
         grx = Math.max(-MAX_TILT, Math.min(MAX_TILT, (-dy / RADIUS) * 20));
-        if (!near) {
-          near = true;
-          excite(0.6); // a burst as the pointer arrives
-        } else if (f > 0.45 && e.timeStamp - lastStir > 240) {
-          lastStir = e.timeStamp;
-          excite(0.3 + f * 0.4); // keep the material stirring while close
-        }
+        // No excite pulse on approach: the dust already leans toward the
+        // cursor via the shader's smooth local repulsion, so discrete stirs
+        // only read as the field "resetting". The mark stays magnetic
+        // (tilt/parallax) — that's the smooth interaction.
+        near = true;
         wake();
       } else if (near) {
         near = false;

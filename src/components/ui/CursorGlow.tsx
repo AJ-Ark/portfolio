@@ -14,8 +14,9 @@
    • Pointer position + velocity feed the climate store via the
      engine's ref-counted initPointerTracking() — the dust field's
      vertex shader reads cursorX/Y/velocity for repulsion, so nearby
-     dust leans around the cursor. Fast flicks additionally excite()
-     the field a little.
+     dust leans around the cursor — a smooth, continuous reaction (no
+     discrete excite pulses on hover/flick; those read as the field
+     "resetting"). Only a deliberate press ripples the field.
    • Per-frame work rides the site's single clock through
      subscribeClimate() — no private rAF loop, no React re-render per
      pointer move. Contextual states are event-delegated (pointerover)
@@ -215,13 +216,12 @@ export default function CursorGlow() {
       const el = e.target instanceof Element ? e.target : null;
       setMode(resolveMode(el));
 
-      /* The field notices the lens opening. */
+      /* Track the lens target for the cursor mode only. The field no longer
+         pulses on hover — a discrete excite() on every [data-cursor] entry
+         read as the dust "resetting" on every hover. It reacts purely via the
+         smooth cursor-lean (shader local repulsion) now, which is continuous. */
       const tagged = el ? el.closest("[data-cursor]") : null;
-      if (tagged !== hotEl) {
-        hotEl = tagged;
-        if (tagged && tagged.getAttribute("data-cursor") !== "native")
-          excite(0.35, 900);
-      }
+      if (tagged !== hotEl) hotEl = tagged;
 
       const m = el ? el.closest<HTMLElement>("[data-magnetic]") : null;
       if (m !== magEl) {
@@ -308,9 +308,8 @@ export default function CursorGlow() {
         hWS = hs;
       }
 
-      /* Fast flicks stir the field beyond the shader's local repulsion. */
-      if (c.cursorVelocity > 0.85)
-        excite(Math.min(0.25, (c.cursorVelocity - 0.85) * 0.4), 450);
+      /* No velocity excite: the dust already follows the cursor via smooth
+         local repulsion, so discrete flick-kicks only read as jitter. */
 
       /* Belt-and-braces: if a magnet left the document without a
          pointerout (route changes are cleared eagerly, but React can
