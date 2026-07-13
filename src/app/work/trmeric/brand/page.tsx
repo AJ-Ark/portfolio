@@ -5,7 +5,7 @@ import PlotInLines from "@/components/ui/PlotInLines";
 import Reveal from "@/components/ui/Reveal";
 import Shot from "@/components/trmeric/Shot";
 import TrmericTheme from "@/components/trmeric/TrmericTheme";
-import GrowTheMark from "@/components/trmeric/GrowTheMark";
+import ConstructionShow from "@/components/trmeric/ConstructionShow";
 import type { TrmColors } from "@/components/trmeric/PrototypeFrame";
 
 /* ── Accent is the same in dark + light — the rest read from the CSS
@@ -168,7 +168,7 @@ export default function TrmericBrandPage() {
               <div style={s.stageKicker}>The derivation</div>
               <h3 style={{ ...s.h3, marginBottom: ".8rem", maxWidth: "28ch" }}>18 cross-sections. 3 groups. 1 mark.</h3>
               <p style={{ ...s.body, marginBottom: "2.5rem", maxWidth: "60ch" }}>
-                Three primary rhizomes were selected. Each was sliced into six cross-sections and photographed at scale. Each group of six was traced and averaged into a single ring form (a, b, c, d, e, f), then paired and superimposed (a+b = X, c+d = Y, e+f = Z) to find the best organic shape. The final outline emerged from X+Y+Z: not a circle, but something that came from real plant geometry.
+                Three primary rhizomes were selected. Each was sliced into six cross-sections and photographed at scale. The sections were traced and averaged in threes into six ring forms (1+2+3 = a, on through 16+17+18 = f), then paired and superimposed (a+b = X, c+d = Y, e+f = Z) to find the best organic shape. The final outline emerged from X+Y+Z: not a circle, but something that came from real plant geometry.
               </p>
             </Reveal>
             <Reveal>
@@ -186,57 +186,11 @@ export default function TrmericBrandPage() {
           </div>
         </div>
 
-        {/* ── 04b: Grow the mark — the sequence, live ── */}
+        {/* ── 04b + 05, cohered: the construction — two acts, one stage ── */}
         <div style={{ borderBottom: `1px solid ${LINE}` }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)" }}>
-            <Reveal style={{ textAlign: "center", marginBottom: "2.5rem" }}>
-              <div style={{ ...s.stageKicker, marginBottom: "1.2rem" }}>Watch it assemble</div>
-              <h3 style={{ ...s.h3, marginBottom: ".8rem" }}>The mark, growing itself.</h3>
-              <p style={{ ...s.body, maxWidth: "56ch", margin: "0 auto" }}>
-                Everything on this page described as a step, here in one sequence: the photograph gives way to a traced outline, the outline averages into a ring form, and the five rings stroke-draw themselves at their authored weights — 12 / 10.25 / 8.5 / 6.75 / 4.99px, outer to inner.
-              </p>
-            </Reveal>
-            <Reveal delay={0.1}>
-              <GrowTheMark colors={C} />
-            </Reveal>
-          </div>
-        </div>
-
-        {/* ── 05: Golden ratio ── */}
-        <div style={{ borderBottom: `1px solid ${LINE}` }}>
-          <div className="mobile-stack" style={{ maxWidth: "1100px", margin: "0 auto", padding: "5rem var(--pad)", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5rem", alignItems: "center" }}>
-            <div>
-              <Reveal>
-                <div style={s.stageKicker}>The mathematics</div>
-                <h3 style={s.h3}>Every ring is governed by the golden ratio.</h3>
-                <p style={{ ...s.body, marginBottom: "1rem" }}>
-                  The outermost stroke of the mark is 12px. Each successive inner ring is sized by multiplying ×0.809, the reciprocal of the golden ratio (1/φ, expressed as sin 54°). Five rings, five strokes, each one mathematically smaller than the last.
-                </p>
-                <p style={s.body}>
-                  This is not aesthetic decoration. It means the mark has the same proportional logic as a nautilus shell, a sunflower spiral, or the branching pattern of the very rhizome it depicts. The plant and the ratio share the same geometry.
-                </p>
-              </Reveal>
-              {/* Color swatches */}
-              <Reveal stagger delay={0.2} style={{ display: "flex", gap: ".5rem", marginTop: "1.8rem", alignItems: "center" }}>
-                {["#FFA426", "#FF981C", "#FF8C13", "#FF7F0A", "#FF7300"].map((c) => (
-                  <div key={c} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: ".4rem" }}>
-                    <div style={{ width: 32, height: 32, borderRadius: "50%", background: c }} />
-                    <span style={{ fontFamily: "var(--font-mono)", fontSize: ".4rem", letterSpacing: ".08em", color: FAINT }}>{c.slice(1)}</span>
-                  </div>
-                ))}
-              </Reveal>
-            </div>
-            <Reveal delay={0.1}>
-              <Shot
-                src="/images/trmeric/logo-story/05.png"
-                alt="Golden ratio applied to the Trmeric mark, construction diagram showing how a = 1.618, b = 1, and the spiral derived from them governs each ring stroke"
-                ratio="16/9"
-                radius={12}
-                border={`1px solid ${LINE}`}
-                shadow={SHADOW}
-                accent={ACC}
-                sizes="(max-width: 900px) 100vw, 550px"
-              />
+            <Reveal>
+              <ConstructionShow colors={C} />
             </Reveal>
           </div>
         </div>
@@ -287,7 +241,7 @@ export default function TrmericBrandPage() {
                 The five ring colors step from warm amber (#FFA426) to deep burnt orange (#FF7300), the exact gradient inside a freshly cut turmeric rhizome. Outer ring lightest, innermost most saturated, the deeper you go, the more concentrated the colour.
               </p>
               <p style={s.body}>
-                The right-hand diagram is the calculation behind it: the stroke thickness steps inward by the same ratio as the colour. 12px outer, divided by 0.809 (half the golden ratio, a = 1.618) at each ring, down to 4.99px innermost. One number, expressed twice, once in hue and once in thickness, not eyeballed to "look about right."
+                It is the same sequence you watched in the construction above, expressed a second time — once in thickness, once in hue. One number runs through both, not eyeballed to "look about right." Colour earns its place by carrying the system, not decorating it.
               </p>
             </Reveal>
           </div>
