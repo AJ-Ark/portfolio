@@ -193,7 +193,7 @@ export default function TrmericBrandPage() {
               <div style={{ ...s.stageKicker, marginBottom: "1.2rem" }}>Watch it assemble</div>
               <h3 style={{ ...s.h3, marginBottom: ".8rem" }}>The mark, growing itself.</h3>
               <p style={{ ...s.body, maxWidth: "56ch", margin: "0 auto" }}>
-                Everything on this page described as a step, here in one sequence: the photograph gives way to a traced outline, the outline averages into a ring form, and the five golden-ratio rings stroke-draw themselves at 12 / 9.71 / 7.85 / 6.35 / 4.99px, outer to inner.
+                Everything on this page described as a step, here in one sequence: the photograph gives way to a traced outline, the outline averages into a ring form, and the five rings stroke-draw themselves at their authored weights — 12 / 10.25 / 8.5 / 6.75 / 4.99px, outer to inner.
               </p>
             </Reveal>
             <Reveal delay={0.1}>
