@@ -240,6 +240,16 @@ export default function WorkIndex() {
   const warpNav = useWarpNavigate();
   const wrapRef = useRef<HTMLDivElement | null>(null);
 
+  /* Seat the resting field to the right on mount (offsetX 0.55 — the same
+     seat a hover uses), so the dust orb never sits centered over the header
+     on first load. Without this the field only shifts right AFTER the first
+     hover-out (which sets previewOffsetX), reading as a jump. Applied in all
+     motion modes: it's a static seat, not an animation, and it keeps the
+     header text clear regardless. */
+  useEffect(() => {
+    setPreviewDomain(null, FORMATION_OFFSET_X);
+  }, [setPreviewDomain]);
+
   /* Enable the hover-fade/dimming grammar only after hydration and only
      when motion is allowed — the SSR document stays fully visible. */
   useEffect(() => {
