@@ -115,6 +115,12 @@ export default function ConstructionShow({ colors: c }: { colors: TrmColors }) {
 
   const grown = mode !== "seed";
   const animated = mode === "growing";
+  /* Seed must SNAP to the hidden state (no transition): replay arms seed for
+     only two animation frames before promoting to "growing" — any transition
+     here means elements barely start fading, then the growing branch's long
+     delays freeze them at ~full opacity and the previous render stays on
+     stage for the whole run. The .2s ease is for hover-dim in "static" only. */
+  const idle = mode === "seed" ? "none" : "opacity .2s ease";
 
   const mono = (size: string): React.CSSProperties => ({
     fontFamily: "var(--font-mono)",
@@ -127,7 +133,7 @@ export default function ConstructionShow({ colors: c }: { colors: TrmColors }) {
 
   const fade = (delay: number, dur = 420): React.CSSProperties => ({
     opacity: grown ? 1 : 0,
-    transition: animated ? `opacity ${dur}ms ease ${delay}ms` : "opacity .2s ease",
+    transition: animated ? `opacity ${dur}ms ease ${delay}ms` : idle,
   });
   const pop = (delay: number): React.CSSProperties => ({
     opacity: grown ? 1 : 0,
@@ -136,7 +142,7 @@ export default function ConstructionShow({ colors: c }: { colors: TrmColors }) {
     transformOrigin: "center",
     transition: animated
       ? `opacity 320ms ease ${delay}ms, transform 420ms cubic-bezier(.2,1.4,.4,1) ${delay}ms`
-      : "opacity .2s ease",
+      : idle,
   });
 
   const svgText = (size: number): React.CSSProperties => ({
@@ -328,7 +334,7 @@ export default function ConstructionShow({ colors: c }: { colors: TrmColors }) {
                   transform: grown ? "translateY(0)" : "translateY(-18px)",
                   transition: animated
                     ? `opacity 420ms ease ${T.fall(i)}ms, transform 560ms cubic-bezier(.16,1,.3,1) ${T.fall(i)}ms`
-                    : "opacity .2s ease",
+                    : idle,
                 }}
               >
                 <use href={`#trmGold-r${i}`} fill="none" stroke={c.dim} strokeWidth={0.7} />
@@ -435,7 +441,7 @@ export default function ConstructionShow({ colors: c }: { colors: TrmColors }) {
                 clipPath: grown ? "inset(-3px 0% -3px 0%)" : "inset(-3px 0% -3px 100%)",
                 transition: animated
                   ? `opacity 200ms ease ${T.cal(i)}ms, clip-path 480ms ease-out ${T.cal(i)}ms`
-                  : "opacity .2s ease",
+                  : idle,
               }}
             >
               {[k.y1, k.y2].map((y) => (
