@@ -150,22 +150,29 @@ const OVERLOOK_CSS = `
     grid-column: 2;
     display: flex;
     flex-flow: row wrap;
-    gap: .4rem 1.4rem;
+    gap: .45rem 1.4rem;
     font-family: var(--font-mono);
     color: var(--color-graphite-light);
+    /* The annotations sit over the live particle field — a dark halo lifts
+       them off the bright gold specks so they stay legible without a boxy
+       card. Travels with the text, so it fades in/out with the annotations. */
+    text-shadow: 0 1px 14px rgba(0, 0, 0, .7), 0 0 3px rgba(0, 0, 0, .6);
   }
   .ovl-meta-year {
-    font-size: .625rem;
+    font-size: .68rem;
     letter-spacing: .14em;
     color: var(--ovl-accent-ink);
   }
   .ovl-meta-role {
-    font-size: .65rem;
+    font-size: .74rem;
     line-height: 1.7;
     max-width: 24rem;
+    /* Was graphite-light (dim) — the main body of the annotation needs to
+       read clearly over the field, so lift it to the paper ink. */
+    color: var(--color-paper);
   }
   .ovl-meta-keys {
-    font-size: .6rem;
+    font-size: .64rem;
     letter-spacing: .12em;
     text-transform: uppercase;
     line-height: 1.9;
