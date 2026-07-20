@@ -510,7 +510,44 @@ body:not(.entered) .nav{opacity:0;pointer-events:none}
              0 26px 70px -44px rgba(0,0,0,.95),
              0 0 54px -10px color-mix(in srgb,var(--accent) 32%,transparent);
 }
-.btile__head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative;z-index:2}
+/* CLICK AFFORDANCE — a ring in the corner that reads "open me", and rotates
+   into a ✕ once the tile is open. A pseudo-element, so all eight tiles get it
+   without extra markup. */
+.btile::after{
+  content:"+";
+  position:absolute;z-index:3;pointer-events:none;
+  top:clamp(12px,1.2vw,18px);right:clamp(12px,1.2vw,18px);
+  width:24px;height:24px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:1rem;line-height:1;font-weight:400;
+  color:var(--accent);
+  border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
+  background:color-mix(in srgb,var(--accent) 7%,transparent);
+  opacity:.5;
+  transition:opacity .3s var(--ease),transform .5s var(--ease),
+             background .3s var(--ease),border-color .3s var(--ease);
+}
+.btile:hover::after,.btile:focus-visible::after{
+  opacity:1;transform:scale(1.09);
+  background:color-mix(in srgb,var(--accent) 17%,transparent);
+  border-color:color-mix(in srgb,var(--accent) 66%,transparent);
+}
+.btile.is-active::after{
+  opacity:1;transform:rotate(45deg);            /* the + becomes a ✕ = close */
+  background:color-mix(in srgb,var(--accent) 20%,transparent);
+  border-color:color-mix(in srgb,var(--accent) 72%,transparent);
+}
+/* Press feedback lives on the RING, never the tile — the tile's transform is
+   owned by the FLIP morph, and scaling it here would corrupt the rects the
+   morph measures on click. */
+.btile:active::after{transform:scale(.9)}
+.btile.is-active:active::after{transform:rotate(45deg) scale(.9)}
+.btile:focus-visible{
+  outline:2px solid color-mix(in srgb,var(--accent) 80%,transparent);
+  outline-offset:3px;
+}
+/* padding-right keeps the num/tag clear of the ring */
+.btile__head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative;z-index:2;padding-right:30px}
 .btile__num{font-size:.66rem;letter-spacing:.18em;color:var(--text-faint);font-weight:600}
 .btile__tag{
   padding:3px 9px;border-radius:6px;font-size:.6rem;font-weight:600;

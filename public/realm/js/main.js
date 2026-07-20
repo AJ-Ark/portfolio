@@ -196,13 +196,16 @@ if(gsap && ScrollTrigger && !reduceMotion){
 })();
 
 /* ============================================================
-   RESEARCH BENTO — hover/tap to expand, neighbours reflow
+   RESEARCH BENTO — click to open, neighbours reflow
    ============================================================ */
 (function researchBento(){
   const grid = document.getElementById("bento");
   if(!grid) return;
   const tiles = [...grid.querySelectorAll(".btile")];
-  const hoverMode = window.matchMedia("(min-width:821px) and (hover:hover)");
+  /* The bento only reflows at the desktop layout, so gate the FLIP morph on
+     the LAYOUT rather than on hover capability — a touch laptop at this width
+     still gets the morph. */
+  const desktop = window.matchMedia("(min-width:821px)");
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   let activeIdx = -1;
 
@@ -220,13 +223,17 @@ if(gsap && ScrollTrigger && !reduceMotion){
   // bento rebalances fluidly (position + size) instead of snapping.
   function apply(i){
     if(i === activeIdx) return;
-    const flip = hoverMode.matches && !reduce.matches;
+    const flip = desktop.matches && !reduce.matches;
     let first;
     if(flip){
       tiles.forEach(t=> t.getAnimations().forEach(a=>a.finish()));   // settle any in-flight morph
       first = tiles.map(t=>t.getBoundingClientRect());
     }
-    tiles.forEach((t,j)=>t.classList.toggle("is-active", j===i));
+    tiles.forEach((t,j)=>{
+      const on = j === i;
+      t.classList.toggle("is-active", on);
+      t.setAttribute("aria-expanded", on ? "true" : "false");        // it's a disclosure now
+    });
     grid.classList.toggle("has-active", i>=0);
     activeIdx = i;
     if(!flip) return;
@@ -244,37 +251,29 @@ if(gsap && ScrollTrigger && !reduceMotion){
     });
   }
 
-  // Hover INTENT: open a tile only once the cursor settles on it. Sweeping
-  // across does nothing (the timer keeps resetting), so the bento never
-  // reshuffles mid-motion. A layout shift under a still cursor fires no
-  // pointermove, so it can't hijack the selection either.
-  let hoverTimer = null, pendingIdx = -1;
-  const DWELL = 140;
-  grid.addEventListener("pointermove",(e)=>{
-    if(!hoverMode.matches) return;
-    const tile = e.target.closest(".btile");
-    const idx = tile ? tiles.indexOf(tile) : -1;
-    if(idx === activeIdx){ clearTimeout(hoverTimer); pendingIdx = -1; return; }  // already open
-    if(idx === pendingIdx) return;                                               // still aiming at it
-    pendingIdx = idx;
-    clearTimeout(hoverTimer);
-    if(idx < 0) return;                                                          // over a gap
-    hoverTimer = setTimeout(()=>{ apply(idx); pendingIdx = -1; }, DWELL);
-  });
-  grid.addEventListener("pointerleave",()=>{
-    clearTimeout(hoverTimer); pendingIdx = -1;
-    if(hoverMode.matches) apply(-1);
-  });
-
+  // CLICK to open — the same gesture on every device. Hover no longer changes
+  // the layout at all (it only lights the tile up), so the bento can never
+  // reshuffle under a cursor that was merely passing through, and reading a
+  // tile no longer depends on holding the pointer still.
   tiles.forEach((t,i)=>{
-    t.addEventListener("focus", ()=>{ if(hoverMode.matches) apply(i); });
     t.addEventListener("click",()=>{
-      if(hoverMode.matches) return;                       // desktop is hover-driven
-      apply(t.classList.contains("is-active") ? -1 : i);  // touch: tap toggles
+      apply(t.classList.contains("is-active") ? -1 : i);   // second click closes
     });
   });
-  grid.addEventListener("focusout",(e)=>{ if(hoverMode.matches && !grid.contains(e.relatedTarget)) apply(-1); });
-  hoverMode.addEventListener("change", ()=>apply(-1));
+
+  // An open tile reads as a panel, so dismiss it like one: Escape closes and
+  // hands focus back to the tile, clicking outside the grid closes.
+  document.addEventListener("keydown",(e)=>{
+    if(e.key !== "Escape" || activeIdx < 0) return;
+    const open = tiles[activeIdx];
+    apply(-1);
+    open.focus();
+  });
+  document.addEventListener("pointerdown",(e)=>{
+    if(activeIdx >= 0 && !grid.contains(e.target)) apply(-1);
+  });
+
+  desktop.addEventListener("change", ()=>apply(-1));
 })();
 
 /* ============================================================
