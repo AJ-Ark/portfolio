@@ -8,9 +8,11 @@ import { useParticle } from "@/lib/particleContext";
 import { useTranslation } from "@/lib/TranslationContext";
 import { projectsBySlug, type Domain } from "@/data/projects";
 
-/* The tour order — every case study hands over to the next climate.
-   realm→rippl closes the loop from inside the static Realm site
-   (public/realm/index.html footer), not through this component. */
+/* The tour order — every case study hands over to the next climate,
+   realm→rippl closing the loop. Realm used to hand over from inside its
+   own standalone footer (a hard navigation out of a static document);
+   now that it's a real route, it goes through this component exactly
+   like every other case study. */
 const CHAIN: Record<Domain, Domain> = {
   rippl: "trmeric",
   trmeric: "rozi",

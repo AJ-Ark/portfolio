@@ -93,9 +93,6 @@ const WARP_FAILSAFE_MS = 4000;
 /* How long the dive owns the screen before the route swaps underneath it.
    Long enough to feel like a slow immersion, not a cut. */
 const WARP_NAV_MS = 900;
-/* Realm is a standalone static site — entering it is a hard navigation,
-   handled specially below so the dive stays alive until the very swap. */
-const REALM_DOC = "/realm/index.html";
 
 /** Owner used when a caller doesn't pass one — keeps old/ad-hoc call sites
  *  working exactly like the pre-stack single-slot override. */
@@ -237,30 +234,24 @@ export function useWarpNavigate() {
 
   return useCallback(
     (href: string, domain: Domain) => {
-      /* Realm skips the /work/realm redirect hop and navigates straight to
-         the static document. Crucially, a hard navigation keeps the CURRENT
-         page rendering while the next document is fetched — the dive never
-         stops moving until the swap — and the cross-document view
-         transition (globals.css) crossfades the two instead of flashing. */
-      const isRealm = domain === "realm";
-      const dest = isRealm ? REALM_DOC : href;
-
+      /* Realm used to be a hard navigation to a standalone static document
+         (window.location.assign) — that document is now a real route
+         (/work/realm), rendered by this same app, so it takes the ordinary
+         client-side path like every other project. The global dust field
+         stays mounted straight through the transition instead of the page
+         reloading out from under it, which is what actually makes the two
+         particle moments read as one continuous journey — the old
+         "warm the doc in the HTTP cache" trick was compensating for a hard
+         reload that no longer happens. */
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        if (isRealm) window.location.assign(dest);
-        else router.push(dest);
+        router.push(href);
         return;
       }
 
-      if (isRealm) {
-        // Warm the document in the HTTP cache while the dive plays.
-        fetch(dest, { cache: "force-cache" }).catch(() => {});
-      } else {
-        router.prefetch(dest);
-      }
+      router.prefetch(href);
       startWarp(domain);
       window.setTimeout(() => {
-        if (isRealm) window.location.assign(dest);
-        else router.push(dest);
+        router.push(href);
       }, WARP_NAV_MS);
     },
     [router, startWarp]

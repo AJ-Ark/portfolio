@@ -17,6 +17,7 @@
 
 import { Canvas, advance, useFrame } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import ParticleField from "./ParticleField";
 import DustField from "./engine/DustField";
 import { detectTier, type EngineTier } from "./engine/tier";
@@ -47,6 +48,30 @@ function ReadyProbe() {
 export default function GlobalCanvas() {
   const { activeDomain, activeFormation, formationOffsetX, warping, warpMode } = useParticle();
   const dark = useColorScheme();
+  const pathname = usePathname();
+
+  /* Realm has its own persistent three.js field (RealmHeroScene) — running
+     both at once would double up the dust for as long as the page is open,
+     not just during arrival. While mid-dive (warping) this stays visible so
+     the dive itself is unbroken; the moment the arrival hold ends (chrome
+     fades back in), it dissolves out — by then Realm's own field has
+     already been running for that same hold, so one is already moving
+     before the other goes, instead of a hard cut. Symmetric on the way
+     out: warping flips true again the instant the NEXT dive starts, so
+     this is back at full opacity before it's ever visible again. */
+  const onRealm = pathname?.startsWith("/work/realm") ?? false;
+  const hideForRealm = onRealm && !warping;
+
+  /* Opacity alone would still leave this fully simulating/rendering every
+     frame for as long as the visitor stays on the page — real GPU cost,
+     doubled up with Realm's own busy scene, for something invisible. The
+     existing occlusion escape hatch (Shot.tsx's lightbox uses the same
+     flag) drops the actual per-frame driver call, not just its opacity. */
+  useEffect(() => {
+    if (!hideForRealm) return;
+    document.documentElement.setAttribute("data-canvas-occluded", "1");
+    return () => document.documentElement.removeAttribute("data-canvas-occluded");
+  }, [hideForRealm]);
 
   /* Tier detection probes a WebGL2 context and preflight-compiles the
      engine shaders — main-thread work that must NOT run mid-hydration.
@@ -104,6 +129,8 @@ export default function GlobalCanvas() {
         inset: 0,
         zIndex: 0,
         pointerEvents: "none",
+        opacity: hideForRealm ? 0 : 1,
+        transition: "opacity 900ms ease",
       }}
     >
       <Canvas

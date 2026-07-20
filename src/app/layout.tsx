@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SmoothScroll from "@/components/layout/SmoothScroll";
-import RealmPrefetch from "@/components/layout/RealmPrefetch";
 import { ParticleProvider } from "@/lib/particleContext";
 import WebGLLayer from "@/components/3d/WebGLLayer";
 import CursorGlow from "@/components/ui/CursorGlow";
@@ -50,9 +49,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>
-
-        {/* Idle-time Realm prefetch — home route only, renders nothing */}
-        <RealmPrefetch />
 
         <ParticleProvider>
           <TranslationProvider>

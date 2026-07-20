@@ -64,7 +64,7 @@ export default function WarpLink({
 
     if (resolved === "warp" && domain) {
       pending.current = true;
-      warpNav(href, domain); // handles prefetch, reduced motion, Realm hard-nav
+      warpNav(href, domain); // handles prefetch + reduced motion
       window.setTimeout(() => { pending.current = false; }, 1200);
       return;
     }
