@@ -273,6 +273,13 @@
    the work now). */
 .realm-doc .screens.screens--pinned{overflow:hidden;cursor:default;-webkit-user-select:auto;user-select:auto}
 .realm-doc .screens__track{display:flex;gap:28px;padding-inline:var(--pad);width:max-content}
+/* RealmSectionRail sits fixed at the same breakpoint (1100px+) and
+   measures ~150px from the viewport edge — wider than --pad alone, so
+   the first card started underneath it. Push just the leading edge out
+   past the rail; the trailing edge keeps the normal --pad. */
+@media (min-width:1100px){
+  .realm-doc .screens__track{padding-left:calc(var(--pad) + 100px)}
+}
 .realm-doc .screen{flex:0 0 auto;width:clamp(220px,26vw,300px);scroll-snap-align:center}
 .realm-doc .screen img{
   border-radius:26px;border:1px solid var(--line);
