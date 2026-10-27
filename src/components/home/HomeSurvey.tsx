@@ -453,7 +453,7 @@ function ProjectContent({
       className="survey-link"
       data-cursor="enter"
       onClick={onNavigate}
-      style={{ "--survey-accent": project.accent } as CSSProperties}
+      style={{ "--survey-accent": project.accent, pointerEvents: "auto" } as CSSProperties}
     >
       <Reveal className="survey-content" stagger delay={0.05}>
         <div className="survey-index">
